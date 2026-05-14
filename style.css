@@ -1,0 +1,1306 @@
+/* =============================================================
+   Subtext Living — Market Data Dashboard
+   Restyled to the Subtext masterbrand: Mencken Std serif + Pragmatica
+   sans, beige background, slate gray text, lime green accent.
+   ============================================================= */
+
+@font-face {
+  font-family: "Pragmatica";
+  src: url("assets/fonts/Pragmatica-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pragmatica";
+  src: url("assets/fonts/Pragmatica-Light.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pragmatica";
+  src: url("assets/fonts/Pragmatica-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mencken Std";
+  src: url("assets/fonts/MenckenStd-Regular.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mencken Std";
+  src: url("assets/fonts/MenckenStd-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mencken Std";
+  src: url("assets/fonts/MenckenStd-ExtraBold.otf") format("opentype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+:root {
+  /* Subtext masterbrand palette (Subtext Brand Colors.pdf) */
+  --slate:        #2b2825;
+  --slate-90:     #3a3633;
+  --slate-70:     #5a544f;
+  --slate-50:     #837c75;
+  --slate-30:     #b6b1ab;
+  --slate-15:     #d8d4ce;
+
+  --everest:      #16352e;
+  --birch:        #a95818;
+  --brown:        #512213;
+  --beige:        #f7f1e3;
+  --beige-deep:   #ede5cf;
+  --lime:         #c1d100;
+  --lime-soft:    #e6ee99;
+
+  --surface:      #ffffff;
+  --bg:           var(--beige);
+
+  /* Status — derived from the masterbrand palette */
+  --good:         var(--everest);
+  --good-soft:    #d8e3df;
+  --bad:          var(--birch);
+  --bad-soft:     #f0d9c4;
+  --warn:         #c79830;
+  --warn-soft:    #f4e9d0;
+
+  --radius-sm:    4px;
+  --radius:       8px;
+  --radius-lg:    12px;
+  --shadow-sm:    0 1px 1px rgba(43, 40, 37, 0.04);
+  --shadow:       0 2px 4px rgba(43, 40, 37, 0.06), 0 1px 2px rgba(43, 40, 37, 0.04);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg);
+  color: var(--slate);
+  font-family: "Pragmatica", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* All numerals tabular for clean alignment in tables/charts */
+body { font-variant-numeric: tabular-nums; }
+
+/* Headings use the serif masterbrand face */
+h1, h2, h3, .serif {
+  font-family: "Mencken Std", Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  color: var(--slate);
+}
+
+/* =============================================================
+   App shell
+   ============================================================= */
+
+.app {
+  display: grid;
+  grid-template-columns: 240px 1fr;
+  min-height: 100vh;
+}
+
+/* ----- Sidebar (slate background, lime accent) --------------- */
+
+.sidebar {
+  background: var(--slate);
+  color: var(--beige);
+  padding: 26px 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 28px;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  /* Above Leaflet's max z-index (700) so the sidebar isn't covered by map tiles */
+  z-index: 1000;
+}
+
+.brand {
+  padding: 6px 14px 12px;
+}
+.brand img {
+  display: block;
+  height: 44px;
+  width: auto;
+  max-width: 100%;
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: var(--radius-sm);
+  color: var(--beige);
+  font-weight: 400;
+  cursor: pointer;
+  user-select: none;
+  text-decoration: none;
+  opacity: 0.78;
+  transition: background 0.12s, opacity 0.12s, color 0.12s;
+}
+.nav-item:hover {
+  background: var(--slate-90);
+  opacity: 1;
+}
+.nav-item.active {
+  background: var(--lime);
+  color: var(--slate);
+  opacity: 1;
+  font-weight: 700;
+}
+.nav-item .icon {
+  width: 16px; height: 16px;
+  flex: 0 0 16px;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  fill: none;
+}
+
+.sidebar-footer {
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 10px;
+  border-top: 1px solid var(--slate-70);
+}
+.avatar {
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: var(--lime);
+  color: var(--slate);
+  font-weight: 700;
+  display: grid;
+  place-items: center;
+  font-size: 12px;
+}
+.sidebar-footer .name {
+  font-weight: 400;
+  font-size: 13px;
+  color: var(--beige);
+}
+
+/* ----- Main column ------------------------------------------- */
+
+.main { display: flex; flex-direction: column; }
+
+.topbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--beige-deep);
+  padding: 14px 28px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  position: sticky;
+  top: 0;
+  /* Above Leaflet's max z-index (700) so map tiles don't bleed over the topbar */
+  z-index: 1000;
+}
+
+.search {
+  flex: 1;
+  max-width: 600px;
+  position: relative;
+}
+.search input {
+  width: 100%;
+  padding: 9px 36px 9px 14px;
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  font-size: 14px;
+  font-family: inherit;
+  background: var(--bg);
+  color: var(--slate);
+  transition: border-color 0.15s, background 0.15s;
+}
+.search input::placeholder { color: var(--slate-50); }
+.search input:focus {
+  outline: none;
+  border-color: var(--lime);
+  background: white;
+  box-shadow: 0 0 0 3px var(--lime-soft);
+}
+.search-icon {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--slate-50);
+}
+
+.topbar-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-left: auto;
+}
+
+.subtext-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 12px;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--slate);
+  user-select: none;
+}
+.subtext-toggle input { margin: 0; accent-color: var(--lime); }
+.subtext-toggle.active {
+  background: var(--lime-soft);
+  border-color: var(--lime);
+  color: var(--slate);
+  font-weight: 700;
+}
+
+.freshness {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 4px 12px;
+  background: var(--lime);
+  border-radius: 999px;
+  color: var(--slate);
+  font-size: 12px;
+  font-weight: 400;
+}
+.freshness .value {
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ----- Content area ------------------------------------------ */
+
+.content {
+  padding: 26px 28px 60px;
+  width: 100%;
+}
+
+.page-header {
+  margin: 0 0 22px;
+}
+.page-header h1 {
+  margin: 0 0 6px;
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.page-header p {
+  margin: 0;
+  color: var(--slate-70);
+  font-size: 14px;
+  max-width: 900px;
+}
+
+/* KPI strip ---------------------------------------------------- */
+
+.kpi-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 14px;
+  margin-bottom: 20px;
+}
+.kpi {
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius);
+  padding: 16px 18px 18px;
+  box-shadow: var(--shadow-sm);
+  position: relative;
+}
+.kpi::before {
+  content: "";
+  position: absolute;
+  left: 0; bottom: 0;
+  width: 36px;
+  height: 3px;
+  background: var(--lime);
+}
+.kpi-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: 8px;
+}
+.kpi-value {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--slate);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  line-height: 1.05;
+}
+.kpi-value.kpi-good { color: var(--good); }
+.kpi-value.kpi-bad  { color: var(--bad); }
+.kpi-sub {
+  margin-top: 6px;
+  font-size: 12px;
+  color: var(--slate-70);
+}
+
+/* Cards -------------------------------------------------------- */
+
+.card {
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.card-header {
+  padding: 18px 20px 14px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.card-header h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.card-header p {
+  margin: 4px 0 0;
+  font-size: 12px;
+  color: var(--slate-70);
+}
+.card-controls {
+  display: flex;
+  gap: 8px;
+}
+.card-body {
+  padding: 10px 20px 18px;
+}
+
+.select {
+  padding: 6px 10px;
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  font-size: 13px;
+  font-family: inherit;
+  color: var(--slate);
+  cursor: pointer;
+}
+.select:focus { outline: 2px solid var(--lime); outline-offset: -1px; }
+
+.grid-2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+@media (max-width: 1100px) {
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .grid-2 { grid-template-columns: 1fr; }
+}
+@media (max-width: 760px) {
+  .app { grid-template-columns: 1fr; }
+  .sidebar {
+    flex-direction: row;
+    height: auto;
+    position: static;
+    padding: 10px 14px;
+    overflow-x: auto;
+    gap: 16px;
+  }
+  .brand img { height: 22px; }
+  .nav { flex-direction: row; gap: 4px; }
+  .sidebar-footer { display: none; }
+  .content { padding: 14px; }
+  .topbar { padding: 10px 14px; flex-wrap: wrap; }
+  .page-header h1 { font-size: 26px; }
+  .kpi-row { grid-template-columns: repeat(2, 1fr); }
+  .kpi-value { font-size: 24px; }
+}
+
+/* National map on the Industry tab ----------------------------- */
+
+.industry-map {
+  width: 100%;
+  height: 460px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--beige-deep);
+  overflow: hidden;
+}
+.industry-map-card { margin-bottom: 20px; }
+
+/* Fullscreen toggle button (used on all three maps) */
+.leaflet-fs-control a {
+  display: block;
+  width: 30px;
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+  font-size: 16px;
+  color: var(--slate);
+  background: white;
+  cursor: pointer;
+  text-decoration: none;
+}
+.leaflet-fs-control a:hover {
+  background: var(--bg);
+  color: var(--slate);
+}
+
+/* When a map container is fullscreened, force it to fill the viewport */
+.leaflet-container:fullscreen,
+.leaflet-container:-webkit-full-screen {
+  width: 100vw !important;
+  height: 100vh !important;
+  border-radius: 0 !important;
+  border: none !important;
+}
+
+/* Scorecard table --------------------------------------------- */
+
+.table-wrap {
+  max-height: 540px;
+  overflow: auto;
+}
+
+#scorecard {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+#scorecard thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--beige-deep);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+#scorecard thead th:hover { color: var(--slate); }
+#scorecard thead th[data-type="num"] { text-align: right; }
+#scorecard thead th.sorted-asc::after  { content: " ↑"; color: var(--slate); }
+#scorecard thead th.sorted-desc::after { content: " ↓"; color: var(--slate); }
+
+#scorecard tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--beige-deep);
+  white-space: nowrap;
+  color: var(--slate);
+}
+#scorecard tbody td.num { text-align: right; }
+#scorecard tbody tr {
+  transition: background 0.1s;
+  cursor: pointer;
+}
+#scorecard tbody tr:hover { background: var(--bg); }
+#scorecard tbody tr.selected {
+  background: var(--lime-soft);
+  outline: 1.5px solid var(--lime);
+  outline-offset: -1px;
+}
+#scorecard td.university-cell {
+  font-weight: 700;
+  color: var(--slate);
+}
+#scorecard td .city-state {
+  display: block;
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--slate-70);
+  margin-top: 1px;
+}
+
+.s30-star {
+  color: var(--lime);
+  margin-right: 4px;
+  font-weight: 700;
+}
+
+.band-pill {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+.band-Under-supplied { background: var(--good-soft); color: var(--good); }
+.band-Balanced       { background: var(--warn-soft); color: var(--warn); }
+.band-Over-supplied  { background: var(--bad-soft);  color: var(--bad); }
+.band-N\/A           { background: var(--slate-15);  color: var(--slate-70); }
+
+.delta {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  font-weight: 700;
+  font-size: 12px;
+}
+.delta.up   { color: var(--good); }
+.delta.down { color: var(--bad);  }
+.delta.flat { color: var(--slate-70); font-weight: 400; }
+.delta .arrow { font-size: 10px; }
+
+/* Charts ------------------------------------------------------- */
+
+.chart-wrap {
+  position: relative;
+  width: 100%;
+  height: 360px;
+}
+.chart-tall { height: 460px; }
+
+.empty-state {
+  padding: 40px;
+  text-align: center;
+  color: var(--slate-70);
+}
+
+.result-count {
+  padding: 10px 20px 0;
+  color: var(--slate-70);
+  font-size: 12px;
+}
+
+/* Analysis tab ------------------------------------------------- */
+
+#analysis {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+#analysis thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--beige-deep);
+  padding: 10px 12px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+#analysis thead th:hover { color: var(--slate); }
+#analysis thead th.sorted-asc::after  { content: " ↑"; color: var(--slate); }
+#analysis thead th.sorted-desc::after { content: " ↓"; color: var(--slate); }
+#analysis tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  color: var(--slate);
+  vertical-align: top;
+}
+#analysis tbody td.num { text-align: right; white-space: nowrap; }
+#analysis tbody td.analysis-section {
+  font-size: 11.5px;
+  color: var(--slate-70);
+  white-space: nowrap;
+}
+#analysis tbody td.market-cell {
+  font-weight: 700;
+  white-space: nowrap;
+}
+#analysis tbody td.notes-cell {
+  max-width: 360px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 12px;
+  color: var(--slate-70);
+}
+#analysis tbody tr:hover { background: var(--bg); }
+
+/* View routing ------------------------------------------------- */
+
+.view { display: none; }
+.view.active { display: block; }
+
+/* Sources tab -------------------------------------------------- */
+
+.src-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.src-table thead th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  background: var(--bg);
+}
+.src-table tbody td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  vertical-align: top;
+  color: var(--slate);
+  line-height: 1.55;
+}
+.src-table tbody td:first-child {
+  font-weight: 700;
+  white-space: nowrap;
+  padding-right: 18px;
+}
+.src-table tbody td:nth-child(2) {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--everest);
+  word-break: break-word;
+}
+.src-table .hint {
+  display: inline-block;
+  margin-left: 6px;
+  font-weight: 400;
+  color: var(--slate-70);
+  font-size: 11.5px;
+}
+.src-table tr.src-section td {
+  background: var(--bg);
+  color: var(--slate);
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  padding: 12px 12px 8px;
+  border-top: 2px solid var(--lime);
+  border-bottom: 1px solid var(--beige-deep);
+  text-transform: none;
+}
+.src-table code {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--beige-deep);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--slate);
+  white-space: nowrap;
+}
+.src-table tbody td:nth-child(2) code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  color: inherit;
+  white-space: normal;
+}
+
+.src-list {
+  margin: 0;
+  padding-left: 20px;
+}
+.src-list li {
+  margin-bottom: 10px;
+  color: var(--slate);
+  line-height: 1.55;
+}
+.src-list li:last-child { margin-bottom: 0; }
+.src-list code {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--beige-deep);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--everest);
+}
+
+/* Inline code in headers / paragraphs */
+.page-header code,
+.card-header code {
+  background: var(--bg);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--beige-deep);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  color: var(--slate);
+}
+
+/* =============================================================
+   Market detail page (market.html)
+   ============================================================= */
+
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 7px 14px 7px 10px;
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--slate);
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+  transition: background 0.1s, border-color 0.1s;
+}
+.back-link:hover {
+  background: var(--lime-soft);
+  border-color: var(--lime);
+}
+
+.market-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+/* Two-column layout for market detail: main content + sticky right sidebar */
+.market-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(320px, 420px);
+  gap: 16px;
+  align-items: start;
+}
+.market-main { min-width: 0; }  /* prevents grid blowout on wide tables */
+.market-sidebar {
+  position: sticky;
+  top: 78px;  /* sits below the topbar */
+  align-self: start;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+}
+.market-sidebar .card { margin-bottom: 0; }
+
+@media (max-width: 1100px) {
+  .market-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .market-sidebar {
+    position: static;
+    max-height: none;
+    overflow: visible;
+  }
+}
+.market-title h1 {
+  font-size: 36px;
+  line-height: 1;
+  margin: 0 0 6px;
+}
+.market-subtitle {
+  margin: 0;
+  color: var(--slate-70);
+  font-size: 14px;
+}
+.s30-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  background: var(--lime);
+  color: var(--slate);
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.kpi-row-6 {
+  grid-template-columns: repeat(6, 1fr);
+}
+@media (max-width: 1300px) { .kpi-row-6 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px)  { .kpi-row-6 { grid-template-columns: repeat(2, 1fr); } }
+
+/* Map ---------------------------------------------------------- */
+
+.map-wrap {
+  width: 100%;
+  height: 480px;
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  border: 1px solid var(--beige-deep);
+}
+.leaflet-container {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 13px;
+}
+.leaflet-popup-content-wrapper {
+  border-radius: var(--radius-sm);
+  background: var(--surface);
+  color: var(--slate);
+  box-shadow: var(--shadow);
+}
+.leaflet-popup-content {
+  margin: 10px 14px;
+  line-height: 1.5;
+  font-size: 12.5px;
+}
+.leaflet-popup-tip { background: var(--surface); }
+.leaflet-popup-content .popup-link {
+  display: inline-block;
+  margin-top: 6px;
+  font-weight: 700;
+  color: var(--everest);
+  text-decoration: none;
+  border-bottom: 1px solid var(--lime);
+}
+.leaflet-popup-content .popup-link:hover { color: var(--lime); }
+
+.market-back-link {
+  color: var(--everest);
+  text-decoration: none;
+  font-weight: 600;
+  border-bottom: 1px solid var(--lime);
+}
+.market-back-link:hover { color: var(--lime); }
+
+/* Floating legend over the map (bottom-left, like the reference screenshot) */
+.map-with-legend {
+  position: relative;
+}
+.map-legend {
+  position: absolute;
+  left: 12px;
+  bottom: 12px;
+  background: white;
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: 0 2px 8px rgba(43, 40, 37, 0.18);
+  font-size: 12px;
+  z-index: 400;
+  min-width: 150px;
+  pointer-events: none;
+}
+.map-legend .legend-section { margin-bottom: 8px; }
+.map-legend .legend-section:last-child { margin-bottom: 0; }
+.map-legend .legend-section-title {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 12.5px;
+  color: var(--slate);
+  margin-bottom: 4px;
+  padding-bottom: 2px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.map-legend .legend-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 2px 0;
+  color: var(--slate);
+}
+.map-legend .legend-shape {
+  display: inline-flex;
+  width: 14px;
+  height: 14px;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.map-legend .legend-line {
+  display: inline-block;
+  width: 18px;
+  height: 0;
+  border-top: 2px solid #d32f2f;
+  flex-shrink: 0;
+}
+
+/* Leaflet custom marker icons (set as L.divIcon) */
+.leaflet-prop-pin .pin-dot {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 2px solid white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.2);
+}
+.leaflet-campus-pin .pin-campus-svg {
+  filter: drop-shadow(0 1px 1px rgba(0, 0, 0, 0.3));
+}
+.leaflet-campus-pin .pin-campus-svg.anchor svg { transform: scale(1.15); }
+
+/* Logo badge for anchor universities with a logo file present.
+   Rounded rectangle (not circle) so wide wordmarks like "CLEMSON
+   UNIVERSITY" display in full instead of being squished to a sliver. */
+.leaflet-logo-pin {
+  /* Center the inline-block bubble inside Leaflet's iconSize box,
+     anchored to the bottom (where the notch points down to the lat/lng). */
+  display: flex !important;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+}
+.leaflet-logo-pin .logo-pin-bubble {
+  display: inline-block;
+  padding: 6px 8px;
+  background: white;
+  border: 2px solid var(--lime);
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  position: relative;
+  white-space: nowrap;
+  line-height: 0;
+}
+.leaflet-logo-pin .logo-pin-bubble::after {
+  /* Small lime notch pointing down so it reads as a pin */
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--lime);
+}
+.leaflet-logo-pin .logo-pin-bubble::before {
+  /* White inner fill of the notch, draws over the lime to hide its base */
+  content: "";
+  position: absolute;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid white;
+  z-index: 1;
+}
+.leaflet-logo-pin .logo-pin-bubble img {
+  display: block;
+  /* !important to beat Leaflet's '.leaflet-container img { max-width: none !important }' default */
+  max-width: 80px !important;
+  max-height: 32px !important;
+  width: auto !important;
+  height: auto !important;
+  object-fit: contain;
+}
+
+/* Property table customizations -------------------------------- */
+
+/* Shared styling for the comp-properties and floor-plan tables */
+#properties,
+#plans {
+  width: 100%;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+}
+#properties thead th,
+#plans thead th {
+  position: sticky;
+  top: 0;
+  background: var(--bg);
+  border-bottom: 1px solid var(--beige-deep);
+  padding: 10px 14px;
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 1;
+}
+#properties thead th:hover,
+#plans thead th:hover { color: var(--slate); }
+#properties thead th[data-type="num"],
+#plans thead th[data-type="num"] { text-align: right; }
+#properties thead th.sorted-asc::after,
+#plans thead th.sorted-asc::after  { content: " ↑"; color: var(--slate); }
+#properties thead th.sorted-desc::after,
+#plans thead th.sorted-desc::after { content: " ↓"; color: var(--slate); }
+
+#properties tbody td,
+#plans tbody td {
+  padding: 11px 14px;
+  border-bottom: 1px solid var(--beige-deep);
+  white-space: nowrap;
+  color: var(--slate);
+}
+#properties tbody td.num,
+#plans tbody td.num { text-align: right; }
+
+#properties tbody tr,
+#plans tbody tr { transition: background 0.1s; }
+#properties tbody tr { cursor: pointer; }
+#properties tbody tr:hover,
+#plans tbody tr:hover { background: var(--bg); }
+#properties tbody tr.selected,
+#plans tbody tr.selected {
+  background: var(--lime-soft);
+  outline: 1.5px solid var(--lime);
+  outline-offset: -1px;
+}
+
+#properties td.property-cell,
+#plans td.property-cell {
+  font-weight: 700;
+  min-width: 220px;
+}
+#properties td.property-cell .city-state,
+#plans td.property-cell .city-state {
+  display: block;
+  font-weight: 400;
+  font-size: 11.5px;
+  color: var(--slate-70);
+  margin-top: 1px;
+}
+
+/* Filter chips (e.g., bedroom filter on the property page) */
+.filter-chips {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  padding: 8px 20px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  background: var(--surface);
+}
+.filter-chips .filter-label {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-right: 4px;
+}
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  background: var(--bg);
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--slate);
+  cursor: pointer;
+  user-select: none;
+  transition: background 0.1s, border-color 0.1s, color 0.1s;
+}
+.chip:hover {
+  background: white;
+  border-color: var(--slate-30);
+}
+.chip-active {
+  background: var(--lime);
+  border-color: var(--lime);
+  color: var(--slate);
+}
+.chip-active:hover {
+  background: var(--lime);
+  border-color: var(--slate);
+}
+.chip-count {
+  font-weight: 400;
+  font-size: 10.5px;
+  color: var(--slate-70);
+  background: white;
+  padding: 0 5px;
+  border-radius: 999px;
+  min-width: 18px;
+  text-align: center;
+}
+.chip-active .chip-count {
+  background: white;
+  color: var(--slate);
+}
+
+/* Search input embedded in a filter-chip row */
+.filter-search {
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: var(--bg);
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  padding: 4px 12px;
+  color: var(--slate-70);
+  transition: border-color 0.1s, background 0.1s;
+}
+.filter-search:focus-within {
+  background: white;
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px var(--lime-soft);
+}
+.filter-search input {
+  border: none;
+  background: transparent;
+  outline: none;
+  font-family: inherit;
+  font-size: 12px;
+  color: var(--slate);
+  width: 200px;
+}
+.filter-search input::placeholder { color: var(--slate-50); }
+
+/* Qualifier scorecard ------------------------------------------ */
+
+.qualifier-score-badge {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  padding: 6px 16px;
+  border-radius: var(--radius-sm);
+  background: var(--bg);
+  color: var(--slate);
+  min-width: 90px;
+  text-align: center;
+}
+.qualifier-score-badge[data-tier="good"] { background: var(--good-soft); color: var(--good); }
+.qualifier-score-badge[data-tier="warn"] { background: var(--warn-soft); color: var(--warn); }
+.qualifier-score-badge[data-tier="bad"]  { background: var(--bad-soft);  color: var(--bad); }
+.qualifier-score-badge[data-tier="na"]   { background: var(--slate-15); color: var(--slate-70); }
+
+.qualifier-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.qual-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.qual-row:last-child { border-bottom: none; }
+.qual-row.qual-na { opacity: 0.55; }
+.qual-label {
+  font-weight: 700;
+  color: var(--slate);
+  font-size: 12.5px;
+  line-height: 1.35;
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.qual-threshold { display: none; }      /* threshold info is in the label now */
+.qual-explanation { display: none; }
+
+/* Right-side stat: actual value, colored by tier (pass / warn / fail / na) */
+.qual-actual {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  white-space: nowrap;
+  flex: 0 0 auto;
+}
+.qual-actual-pass { color: var(--good); }
+.qual-actual-warn { color: var(--warn); }
+.qual-actual-fail { color: var(--bad); }
+.qual-actual-na   { color: var(--slate-50); font-weight: 400; }
+
+/* Compact qualifier pill used in the Industry scorecard column */
+.qual-mini {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
+}
+.qual-mini-good { background: var(--good-soft); color: var(--good); }
+.qual-mini-warn { background: var(--warn-soft); color: var(--warn); }
+.qual-mini-bad  { background: var(--bad-soft);  color: var(--bad); }
+.qual-mini-na   { background: var(--slate-15); color: var(--slate-70); font-weight: 400; }
+
+/* Phase pill — colored by phase, used in properties table */
+.phase-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 2px 10px 2px 6px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  background: var(--bg);
+  border: 1px solid var(--beige-deep);
+  color: var(--slate);
+}
+.phase-pill .phase-dot {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.phase-unknown { color: var(--slate-70); }
+
+/* Footer ------------------------------------------------------- */
+
+.page-footer {
+  margin-top: 28px;
+  color: var(--slate-50);
+  font-size: 12px;
+  text-align: center;
+}
+.page-footer code {
+  background: var(--surface);
+  padding: 1px 6px;
+  border-radius: 4px;
+  border: 1px solid var(--beige-deep);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  color: var(--slate);
+}

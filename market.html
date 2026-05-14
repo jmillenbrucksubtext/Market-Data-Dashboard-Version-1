@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtext — Market Detail</title>
+  <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/subtext-lime.png" alt="Subtext" />
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item active" href="index.html#industry">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 17V11"/><path d="M12 17V7"/><path d="M17 17v-4"/></svg>
+          Industry
+        </a>
+        <a class="nav-item" href="index.html#sources">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
+          Sources
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar">JM</div>
+        <div class="name">Subtext Team</div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <a class="back-link" href="index.html#industry">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          All markets
+        </a>
+
+        <div class="topbar-right">
+          <span class="freshness">
+            <span>Data as of</span>
+            <span class="value" id="data-as-of">—</span>
+          </span>
+        </div>
+      </header>
+
+      <div class="content">
+        <div id="market-loading" class="empty-state">Loading market…</div>
+
+        <div id="market-view" style="display: none;">
+
+          <div class="page-header market-header">
+            <div class="market-title">
+              <h1 id="market-name">—</h1>
+              <p id="market-subtitle" class="market-subtitle">—</p>
+            </div>
+            <span id="s30-badge" class="s30-badge" style="display:none;">★ Subtext-30 focus market</span>
+          </div>
+
+          <!-- Two-column layout: main content + sticky qualifier sidebar -->
+          <div class="market-grid">
+          <div class="market-main">
+
+          <!-- KPI strip (6 cards on this view) -->
+          <div class="kpi-row kpi-row-6">
+            <div class="kpi">
+              <div class="kpi-label">Existing Beds</div>
+              <div class="kpi-value" id="kpi-beds">—</div>
+              <div class="kpi-sub" id="kpi-beds-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Pipeline Beds</div>
+              <div class="kpi-value" id="kpi-pipeline">—</div>
+              <div class="kpi-sub" id="kpi-pipeline-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Penetration</div>
+              <div class="kpi-value" id="kpi-pen">—</div>
+              <div class="kpi-sub" id="kpi-pen-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Total Enrollment</div>
+              <div class="kpi-value" id="kpi-enr">—</div>
+              <div class="kpi-sub" id="kpi-enr-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Avg Rent / Bed</div>
+              <div class="kpi-value" id="kpi-rent">—</div>
+              <div class="kpi-sub" id="kpi-rent-sub">—</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Rent YoY</div>
+              <div class="kpi-value" id="kpi-rent-yoy">—</div>
+              <div class="kpi-sub" id="kpi-rent-yoy-sub">—</div>
+            </div>
+          </div>
+
+          <!-- Map -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Market Map</h2>
+                <p>Campus boundary plus comp properties (shape = phase). Click a pin for details.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="map-with-legend">
+                <div id="map" class="map-wrap"></div>
+                <div class="map-legend">
+                  <div class="legend-section">
+                    <div class="legend-row">
+                      <span class="legend-line"></span>
+                      <span>Campus boundary</span>
+                    </div>
+                  </div>
+                  <div class="legend-section">
+                    <div class="legend-section-title">Phase</div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="stable"></span>
+                      <span>Stabilized</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="lease up"></span>
+                      <span>Lease Up</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="under construction"></span>
+                      <span>Under Construction</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="planned"></span>
+                      <span>Planned</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <!-- Property list -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Comp Properties</h2>
+                <p id="prop-count">—</p>
+              </div>
+            </header>
+            <div class="table-wrap">
+              <table id="properties">
+                <thead>
+                  <tr>
+                    <th data-sort="property_name">Property</th>
+                    <th data-sort="phase">Phase</th>
+                    <th data-sort="beds" data-type="num">Beds</th>
+                    <th data-sort="yearBuilt" data-type="num">Year Built</th>
+                    <th data-sort="occupancy" data-type="num">Occupancy</th>
+                    <th data-sort="prelease" data-type="num">Pre-Lease</th>
+                    <th data-sort="avg_rent" data-type="num">Avg Rent</th>
+                    <th data-sort="avg_rent_per_sf" data-type="num">Rent / SF</th>
+                    <th data-sort="hasConcessions">Concessions</th>
+                    <th data-sort="milesToClosestCampus" data-type="num">Mi to Campus</th>
+                    <th data-sort="currentGoogleReviewAvg" data-type="num">Google ★</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+
+          <footer class="page-footer">
+            <p>
+              Source: <code>dbo.Properties</code> (purpose-built only) ·
+              campus locations from <code>dbo.Schools_Denormal</code> ·
+              map tiles by OpenStreetMap.
+            </p>
+          </footer>
+
+          </div> <!-- /.market-main -->
+
+          <aside class="market-sidebar">
+            <section class="card qualifier-card">
+              <header class="card-header">
+                <div>
+                  <h2>Subtext Qualifier Scorecard</h2>
+                  <p id="qualifier-summary">—</p>
+                </div>
+                <div id="qualifier-score-badge" class="qualifier-score-badge">—</div>
+              </header>
+              <div class="card-body">
+                <ul class="qualifier-list" id="qualifier-list"></ul>
+              </div>
+            </section>
+          </aside>
+
+          </div> <!-- /.market-grid -->
+        </div>
+
+        <div id="market-error" class="empty-state" style="display: none;"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="market.js" defer></script>
+</body>
+</html>

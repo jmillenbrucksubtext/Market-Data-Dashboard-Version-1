@@ -1,0 +1,176 @@
+[
+  {
+    "market_key": 11,
+    "university": "Clemson University",
+    "file": "11.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 12,
+    "university": "University of Georgia",
+    "file": "12.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 13,
+    "university": "Auburn University",
+    "file": "13.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 14,
+    "university": "University of Alabama",
+    "file": "14.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 15,
+    "university": "University of Mississippi",
+    "file": "15.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 17,
+    "university": "Georgia Institute of Technology",
+    "wiki_title": "Georgia Institute of Technology",
+    "status": "no_image"
+  },
+  {
+    "market_key": 18,
+    "university": "Florida State University",
+    "file": "18.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 20,
+    "university": "University of South Carolina",
+    "file": "20.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 24,
+    "university": "Texas A&M University",
+    "file": "24.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 25,
+    "university": "University of Michigan",
+    "file": "25.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 27,
+    "university": "University of Texas at Austin",
+    "file": "27.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 48,
+    "university": "University of Illinois at Urbana-Champaign",
+    "wiki_title": "University of Illinois at Urbana-Champaign",
+    "status": "no_image"
+  },
+  {
+    "market_key": 52,
+    "university": "University of Pittsburgh",
+    "file": "52.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 86,
+    "university": "University of Missouri",
+    "file": "86.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 118,
+    "university": "Indiana University Bloomington",
+    "file": "118.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 141,
+    "university": "University of Central Florida",
+    "file": "141.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 155,
+    "university": "Ohio State University",
+    "file": "155.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 180,
+    "university": "University of Arkansas",
+    "file": "180.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 334,
+    "university": "University of Wisconsin Madison",
+    "wiki_title": "University of Wisconsin Madison",
+    "status": "no_image"
+  },
+  {
+    "market_key": 553,
+    "university": "University of Tennessee",
+    "file": "553.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 567,
+    "university": "University of Kentucky",
+    "file": "567.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 568,
+    "university": "University of Virginia",
+    "file": "568.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 590,
+    "university": "University of Florida",
+    "file": "590.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 611,
+    "university": "Purdue University",
+    "file": "611.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1005,
+    "university": "University of Arizona",
+    "file": "1005.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1152,
+    "university": "Arizona State University",
+    "file": "1152.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2294,
+    "university": "University of Maryland College Park",
+    "file": "2294.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2344,
+    "university": "University of North Carolina at Chapel Hill",
+    "file": "2344.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2417,
+    "university": "Rutgers University",
+    "file": "2417.svg",
+    "status": "ok_existing"
+  }
+]

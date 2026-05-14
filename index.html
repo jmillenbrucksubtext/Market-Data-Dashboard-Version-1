@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtext — Market Performance</title>
+  <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
+  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+</head>
+<body>
+  <div class="app">
+
+    <!-- ============================================================
+         Sidebar
+         ============================================================ -->
+    <aside class="sidebar">
+      <div class="brand">
+        <img src="assets/subtext-lime.png" alt="Subtext" />
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item active" data-view="industry" href="#industry">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 17V11"/><path d="M12 17V7"/><path d="M17 17v-4"/></svg>
+          Industry
+        </a>
+        <a class="nav-item" data-view="analysis" href="#analysis">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
+          Analysis
+        </a>
+        <a class="nav-item" data-view="sources" href="#sources">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
+          Sources
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar" id="user-avatar">JM</div>
+        <div class="name" id="user-name">Subtext Team</div>
+      </div>
+    </aside>
+
+    <!-- ============================================================
+         Main column
+         ============================================================ -->
+    <div class="main">
+
+      <header class="topbar">
+        <div class="search">
+          <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off">
+          <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+        </div>
+
+        <div class="topbar-right">
+          <label class="subtext-toggle active" id="subtext-toggle-label">
+            <input type="checkbox" id="subtext30-only" checked>
+            <span>Subtext-30 only</span>
+          </label>
+          <span class="freshness">
+            <span>Data as of</span>
+            <span class="value" id="data-as-of">—</span>
+          </span>
+        </div>
+      </header>
+
+      <div class="content">
+
+      <!-- ============================================================
+           View: Industry (default)
+           ============================================================ -->
+      <section id="industry-view" class="view active">
+        <!-- National map: every tracked market, anchored on its university -->
+        <section class="card industry-map-card">
+          <header class="card-header">
+            <div>
+              <h2>Markets we track</h2>
+              <p>
+                Each pin is an anchor university, colored by qualifier score
+                (<span style="color:#16352e;font-weight:700">green ≥80%</span> ·
+                <span style="color:#c79830;font-weight:700">amber 60–79%</span> ·
+                <span style="color:#a95818;font-weight:700">rust &lt;60%</span>).
+                <span style="color:#c1d100;font-weight:700">Lime ring</span> = Subtext-30 focus market. Click any pin to drill in.
+              </p>
+            </div>
+          </header>
+          <div class="card-body">
+            <div id="industry-map" class="industry-map"></div>
+          </div>
+        </section>
+
+        <div class="page-header">
+          <h1>Market Performance</h1>
+          <p id="page-subtitle">
+            Student-housing market metrics across <span id="market-count">—</span> US markets,
+            anchored by the largest university in each. Source: <code>StudentResearch</code>, refreshed weekly.
+          </p>
+        </div>
+
+        <!-- KPI summary row -->
+        <div class="kpi-row" id="kpi-row">
+          <div class="kpi">
+            <div class="kpi-label">Markets Tracked</div>
+            <div class="kpi-value" id="kpi-markets">—</div>
+            <div class="kpi-sub" id="kpi-markets-sub">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Total Existing Beds</div>
+            <div class="kpi-value" id="kpi-beds">—</div>
+            <div class="kpi-sub" id="kpi-beds-sub">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Pipeline Beds</div>
+            <div class="kpi-value" id="kpi-pipeline">—</div>
+            <div class="kpi-sub" id="kpi-pipeline-sub">—</div>
+          </div>
+          <div class="kpi">
+            <div class="kpi-label">Bed-Weighted Avg Rent</div>
+            <div class="kpi-value" id="kpi-rent">—</div>
+            <div class="kpi-sub" id="kpi-rent-sub">—</div>
+          </div>
+        </div>
+
+        <!-- Scorecard table -->
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2>Market Scorecard</h2>
+              <p>One row per market. Click any column to sort. Click a row to select it.</p>
+            </div>
+          </header>
+          <div class="result-count" id="result-count">—</div>
+          <div class="table-wrap">
+            <table id="scorecard">
+              <thead>
+                <tr>
+                  <th data-sort="anchor_university">Anchor University</th>
+                  <th data-sort="state_abbr">State</th>
+                  <th data-sort="qualifier_score" data-type="num">Qualifier</th>
+                  <th data-sort="penetration_ratio" data-type="num">Penetration</th>
+                  <th data-sort="market_band">Band</th>
+                  <th data-sort="existing_beds" data-type="num">Existing Beds</th>
+                  <th data-sort="beds_pipeline_total" data-type="num">Pipeline</th>
+                  <th data-sort="total_enrollment" data-type="num">Enrollment</th>
+                  <th data-sort="avg_rent_per_bed" data-type="num">Avg Rent/Bed</th>
+                  <th data-sort="yoy_rent_growth" data-type="num">Rent YoY</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <div class="grid-2">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Penetration Ratio</h2>
+                <p>Beds per enrolled student. Lower = under-supplied / opportunity. Top 30 lowest.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap"><canvas id="penetration-chart"></canvas></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Pre-leasing Velocity</h2>
+                <p>Current cycle vs prior cycles. Pick a market.</p>
+              </div>
+              <div class="card-controls">
+                <select id="velocity-market" class="select"></select>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap"><canvas id="velocity-chart"></canvas></div>
+            </div>
+          </section>
+        </div>
+
+        <div class="grid-2">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Supply: Existing + Pipeline</h2>
+                <p>Operating beds plus pipeline by stage. Top 30 by total supply.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap"><canvas id="supply-chart"></canvas></div>
+            </div>
+          </section>
+
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Enrollment Growth</h2>
+                <p>5-year CAGR by university (top 30 by enrollment).</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap"><canvas id="demand-chart"></canvas></div>
+            </div>
+          </section>
+        </div>
+
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2>Pricing: Avg Rent &amp; YoY Growth</h2>
+              <p>Average rent per bed (left axis) and YoY rent growth (right axis). Top 30 by avg rent.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <div class="chart-wrap chart-tall"><canvas id="pricing-chart"></canvas></div>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Internal team reference · static export refreshed weekly · source:
+            <code>StudentResearch</code> on Azure SQL · not for external distribution.
+          </p>
+        </footer>
+      </section>
+
+      <!-- ============================================================
+           View: Analysis (Market Analysis Schedule from Excel)
+           ============================================================ -->
+      <section id="analysis-view" class="view">
+        <div class="page-header">
+          <h1>Market Analysis</h1>
+          <p>
+            Pipeline tracker mirrored from
+            <code>General/Markets/Support/Market Analysis Schedule.xlsx</code> on OneDrive.
+            Refreshes on every data pull.
+          </p>
+        </div>
+
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2 id="analysis-count">Schedule</h2>
+              <p>Click any column to sort. Use the chips below to filter by section.</p>
+            </div>
+          </header>
+          <div class="filter-chips" id="analysis-filter"></div>
+          <div class="table-wrap">
+            <table id="analysis">
+              <thead>
+                <tr>
+                  <th data-sort="category">Section</th>
+                  <th data-sort="market_type">Market Type</th>
+                  <th data-sort="market_name">Market</th>
+                  <th data-sort="analyst">Analyst</th>
+                  <th data-sort="initial_analysis_date">Initial Analysis</th>
+                  <th data-sort="initial_decision">Initial Decision</th>
+                  <th data-sort="ic_date">IC Date</th>
+                  <th data-sort="ic_decision">IC Decision</th>
+                  <th data-sort="status">Status</th>
+                  <th data-sort="est_sites">Est. Sites</th>
+                  <th data-sort="notes">Notes</th>
+                </tr>
+              </thead>
+              <tbody></tbody>
+            </table>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Source: <code>Market Analysis Schedule.xlsx</code> · sheet
+            <code>Market Analysis Schedule</code> · refreshed automatically each
+            time <code>export-data.py</code> runs.
+          </p>
+        </footer>
+      </section>
+
+      <!-- ============================================================
+           View: Sources (data provenance)
+           ============================================================ -->
+      <section id="sources-view" class="view">
+        <div class="page-header">
+          <h1>Sources</h1>
+          <p>
+            Every figure on the Industry tab traces back to a column in
+            <code>StudentResearch</code>. Below: the base tables we read,
+            then a row-by-row map from each on-page data point to its
+            exact SQL source. The SQL bodies are in
+            <code>j.dashboard-app/export-data.py</code>.
+          </p>
+        </div>
+
+        <!-- Base tables -->
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2>Base tables read from <code>StudentResearch</code></h2>
+              <p>The dashboard reads only these tables. Read-only via <code>db_datareader</code>.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <table class="src-table">
+              <thead>
+                <tr><th>Table</th><th>Role</th><th>Grain</th></tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>dbo.MarketReports</code></td>
+                  <td>Weekly market-level snapshot fact. Drives 7 of 9 metrics.</td>
+                  <td>1 row per <code>market_key</code> × <code>snapshot_date</code></td>
+                </tr>
+                <tr>
+                  <td><code>dbo.Markets</code></td>
+                  <td>Market dimension (city, state, region).</td>
+                  <td>1 row per market (<code>Key</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>dbo.Schools_Denormal</code></td>
+                  <td>University dimension with current-year enrollment.</td>
+                  <td>1 row per university (<code>schoolKey</code>)</td>
+                </tr>
+                <tr>
+                  <td><code>dbo.Enrollments_Manual</code></td>
+                  <td>Historical enrollment time-series. Drives YoY and 5-yr CAGR.</td>
+                  <td>1 row per <code>IPEDS_ID</code> × <code>Year</code></td>
+                </tr>
+                <tr>
+                  <td><code>dbo.IPEDS_CH_Crosswalk</code></td>
+                  <td>Maps <code>IPEDS_ID</code> → <code>marketKey</code>.</td>
+                  <td>1 row per (school, market)</td>
+                </tr>
+                <tr>
+                  <td><code>dbo.Subtext30</code></td>
+                  <td>The 30 Subtext focus universities (drives the ★ flag).</td>
+                  <td>1 row per focus university</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Per-data-point provenance -->
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2>Data point → SQL source</h2>
+              <p>Every column visible on the Industry tab, mapped to its source.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <table class="src-table">
+              <thead>
+                <tr><th>Dashboard data point</th><th>SQL source</th><th>Logic</th></tr>
+              </thead>
+              <tbody>
+
+                <!-- Scorecard / labels -->
+                <tr class="src-section"><td colspan="3">Labels &amp; identifiers</td></tr>
+                <tr>
+                  <td>Anchor University <span class="hint">(scorecard, charts)</span></td>
+                  <td><code>dbo.Schools_Denormal.name</code></td>
+                  <td>Largest school by <code>enrollmentTotal</code> per <code>marketKey</code>. Fallback: <code>Markets.city + ', ' + Markets.stateAbbr</code> if no school is mapped.</td>
+                </tr>
+                <tr>
+                  <td>City</td>
+                  <td><code>dbo.Markets.city</code></td>
+                  <td>Direct.</td>
+                </tr>
+                <tr>
+                  <td>State</td>
+                  <td><code>dbo.Markets.stateAbbr</code></td>
+                  <td>Direct.</td>
+                </tr>
+                <tr>
+                  <td>Region (sidebar / hidden)</td>
+                  <td><code>dbo.Markets.region</code></td>
+                  <td>Coarse grouping ("Midwest", "Southeast", …). Not shown in v1 visuals.</td>
+                </tr>
+                <tr>
+                  <td>★ Subtext-30 flag</td>
+                  <td><code>dbo.Subtext30.IPEDS_ID</code> ↔ <code>dbo.IPEDS_CH_Crosswalk.IPEDs</code> → <code>marketKey</code></td>
+                  <td>Market is flagged if any of its universities is in the Subtext-30 list.</td>
+                </tr>
+
+                <!-- Supply -->
+                <tr class="src-section"><td colspan="3">Supply</td></tr>
+                <tr>
+                  <td>Existing Beds</td>
+                  <td><code>dbo.MarketReports.beds_purpose_built</code></td>
+                  <td>At <code>MAX(snapshot_date)</code> per <code>market_key</code>.</td>
+                </tr>
+                <tr>
+                  <td>Pipeline · Lease-up</td>
+                  <td><code>dbo.MarketReports.beds_lease_up</code></td>
+                  <td>At <code>MAX(snapshot_date)</code>. Roughly 0–6 months to delivery.</td>
+                </tr>
+                <tr>
+                  <td>Pipeline · Under Construction</td>
+                  <td><code>dbo.MarketReports.beds_under_construction</code></td>
+                  <td>At <code>MAX(snapshot_date)</code>. Roughly 6–24 months.</td>
+                </tr>
+                <tr>
+                  <td>Pipeline · Planned</td>
+                  <td><code>dbo.MarketReports.beds_planned</code></td>
+                  <td>At <code>MAX(snapshot_date)</code>. Roughly 12–36+ months.</td>
+                </tr>
+                <tr>
+                  <td>Pipeline Total <span class="hint">(scorecard column)</span></td>
+                  <td><code>dbo.MarketReports.beds_pipeline</code></td>
+                  <td>Source-rolled total of the three stages above.</td>
+                </tr>
+
+                <!-- Demand -->
+                <tr class="src-section"><td colspan="3">Demand</td></tr>
+                <tr>
+                  <td>Total Enrollment <span class="hint">(scorecard)</span></td>
+                  <td><code>dbo.MarketReports.enr_total</code></td>
+                  <td>Market-level total at <code>MAX(snapshot_date)</code>.</td>
+                </tr>
+                <tr>
+                  <td>Enrollment by University <span class="hint">(chart)</span></td>
+                  <td><code>dbo.Schools_Denormal.enrollmentTotal</code></td>
+                  <td>Current academic year (<code>enrollmentYear</code>).</td>
+                </tr>
+                <tr>
+                  <td>Enrollment YoY</td>
+                  <td><code>dbo.Enrollments_Manual.Total_Enrollment</code></td>
+                  <td><code>(current_year / prev_year) − 1</code>, joined on <code>IPEDS_ID</code>.</td>
+                </tr>
+                <tr>
+                  <td>Enrollment 5-yr CAGR</td>
+                  <td><code>dbo.Enrollments_Manual.Total_Enrollment</code></td>
+                  <td><code>(current / current−5)^(1/5) − 1</code>. NULL if &lt;5 years of history.</td>
+                </tr>
+
+                <!-- Pricing -->
+                <tr class="src-section"><td colspan="3">Pricing</td></tr>
+                <tr>
+                  <td>Avg Rent / Bed</td>
+                  <td><code>dbo.MarketReports.rate_avg</code></td>
+                  <td>Source-computed bed-weighted average at <code>MAX(snapshot_date)</code>.</td>
+                </tr>
+                <tr>
+                  <td>Rent YoY</td>
+                  <td><code>dbo.MarketReports.rate_avg</code></td>
+                  <td><code>(current / prior) − 1</code> where prior = snapshot closest to <code>current_date − 365d</code> (within ±30 days).</td>
+                </tr>
+                <tr>
+                  <td>Bed weight <span class="hint">(rent reliability)</span></td>
+                  <td><code>dbo.MarketReports.beds_tracked_by_occupancy</code></td>
+                  <td>Number of beds the rent average is computed from.</td>
+                </tr>
+
+                <!-- Penetration -->
+                <tr class="src-section"><td colspan="3">Penetration &amp; band</td></tr>
+                <tr>
+                  <td>Penetration Ratio</td>
+                  <td>
+                    <code>dbo.MarketReports.beds_purpose_built</code> /
+                    <code>dbo.MarketReports.enr_total</code>
+                  </td>
+                  <td>At <code>MAX(snapshot_date)</code> per market. NULL if enrollment = 0.</td>
+                </tr>
+                <tr>
+                  <td>Penetration Band</td>
+                  <td><em>derived</em></td>
+                  <td><code>&lt; 0.30</code> Under-supplied · <code>0.30–0.55</code> Balanced · <code>&gt; 0.55</code> Over-supplied.</td>
+                </tr>
+
+                <!-- Pre-leasing -->
+                <tr class="src-section"><td colspan="3">Pre-leasing velocity</td></tr>
+                <tr>
+                  <td>Pre-lease %</td>
+                  <td><code>dbo.MarketReports.prelease</code></td>
+                  <td>
+                    <code>AVG(prelease)</code> grouped by <code>market_key</code> × <code>leasing_cycle</code> × <code>week_of_cycle</code>.
+                    Limited to last 3 cycles and top 50 markets by tracked beds.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Leasing cycle</td>
+                  <td><em>derived from</em> <code>MarketReports.snapshot_date</code></td>
+                  <td>
+                    <code>CASE WHEN MONTH(snapshot_date) ≤ 8 THEN YEAR(snapshot_date) ELSE YEAR(snapshot_date)+1 END</code>
+                    — i.e. the year of the next August move-in.
+                  </td>
+                </tr>
+                <tr>
+                  <td>Week of cycle (x-axis)</td>
+                  <td><em>derived</em></td>
+                  <td><code>DATEPART(ISO_WEEK, snapshot_date)</code></td>
+                </tr>
+
+                <!-- Freshness -->
+                <tr class="src-section"><td colspan="3">Freshness</td></tr>
+                <tr>
+                  <td>Data as of <span class="hint">(top-right pill)</span></td>
+                  <td><code>MAX(MarketReports.snapshot_date)</code></td>
+                  <td>Across all rows in <code>data.json</code>. Refreshed weekly when the export runs.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- Deviations -->
+        <section class="card">
+          <header class="card-header">
+            <div>
+              <h2>Known deviations from the dashboard spec</h2>
+              <p>Documented gaps where the source can't perfectly match <code>a.md/dashboard-spec.md</code>.</p>
+            </div>
+          </header>
+          <div class="card-body">
+            <ul class="src-list">
+              <li>
+                <strong>Pipeline by stage, not 12/24/36mo delivery cohort.</strong>
+                The source tracks pipeline as <code>lease_up</code> / <code>under_construction</code> / <code>planned</code>.
+                There's no per-project delivery-date column with a clean <code>marketKey</code> join, so we expose the source's stage split instead. See <code>g.docs/known-gaps.md</code> §1.
+              </li>
+              <li>
+                <strong>15 <code>market_key</code> values in <code>MarketReports</code> have no row in <code>Markets</code>.</strong>
+                INNER-JOIN to <code>Markets</code> excludes those 15 from the dashboard. See <code>known-gaps.md</code> §3.
+              </li>
+              <li>
+                <strong>One Subtext-30 university unmapped to a <code>marketKey</code>.</strong>
+                29 of 30 currently flagged. See <code>known-gaps.md</code> §4.
+              </li>
+              <li>
+                <strong>Pre-leasing uses ISO week, not Jan-anchored week-of-cycle.</strong>
+                ISO week gives a stable seasonal x-axis comparable across cycles. See <code>known-gaps.md</code> §2.
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <footer class="page-footer">
+          <p>
+            Want the exact SQL? See <code>j.dashboard-app/export-data.py</code> ·
+            view definitions in <code>d.data-model/metric-views.sql</code> ·
+            schema-discovery output in <code>b.schema/output/</code>.
+          </p>
+        </footer>
+      </section>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>

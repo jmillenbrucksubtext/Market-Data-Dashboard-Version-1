@@ -1,0 +1,263 @@
+[
+  {
+    "market_key": 11,
+    "university": "Clemson University",
+    "file": "11.geojson",
+    "osm_id": 145811,
+    "osm_type": "relation",
+    "osm_name": "Clemson University",
+    "status": "ok"
+  },
+  {
+    "market_key": 12,
+    "university": "University of Georgia",
+    "file": "12.geojson",
+    "osm_id": 497509577,
+    "osm_type": "way",
+    "osm_name": "University of Georgia",
+    "status": "ok"
+  },
+  {
+    "market_key": 13,
+    "university": "Auburn University",
+    "file": "13.geojson",
+    "osm_id": 8457841,
+    "osm_type": "relation",
+    "osm_name": "Auburn University",
+    "status": "ok"
+  },
+  {
+    "market_key": 14,
+    "university": "University of Alabama",
+    "file": "14.geojson",
+    "osm_id": 89748187,
+    "osm_type": "way",
+    "osm_name": "University of Alabama",
+    "status": "ok"
+  },
+  {
+    "market_key": 15,
+    "university": "University of Mississippi",
+    "file": "15.geojson",
+    "osm_id": 32945199,
+    "osm_type": "way",
+    "osm_name": "University of Mississippi",
+    "status": "ok"
+  },
+  {
+    "market_key": 17,
+    "university": "Georgia Institute of Technology",
+    "file": "17.geojson",
+    "osm_id": 3341535,
+    "osm_type": "relation",
+    "osm_name": "Georgia Tech",
+    "status": "ok"
+  },
+  {
+    "market_key": 18,
+    "university": "Florida State University",
+    "file": "18.geojson",
+    "osm_id": 18587875,
+    "osm_type": "relation",
+    "osm_name": "Florida State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 20,
+    "university": "University of South Carolina",
+    "file": "20.geojson",
+    "osm_id": 19034646,
+    "osm_type": "relation",
+    "osm_name": "University of South Carolina",
+    "status": "ok"
+  },
+  {
+    "market_key": 24,
+    "university": "Texas A&M University",
+    "file": "24.geojson",
+    "osm_id": 8556620,
+    "osm_type": "relation",
+    "osm_name": "Texas A&M University",
+    "status": "ok"
+  },
+  {
+    "market_key": 25,
+    "university": "University of Michigan",
+    "file": "25.geojson",
+    "osm_id": 3990210,
+    "osm_type": "relation",
+    "osm_name": "University of Michigan",
+    "status": "ok"
+  },
+  {
+    "market_key": 27,
+    "university": "University of Texas at Austin",
+    "file": "27.geojson",
+    "osm_id": 1701848,
+    "osm_type": "relation",
+    "osm_name": "University of Texas at Austin",
+    "status": "ok"
+  },
+  {
+    "market_key": 48,
+    "university": "University of Illinois at Urbana-Champaign",
+    "file": "48.geojson",
+    "osm_id": 12299045,
+    "osm_type": "relation",
+    "osm_name": "University of Illinois Urbana-Champaign",
+    "status": "ok"
+  },
+  {
+    "market_key": 52,
+    "university": "University of Pittsburgh",
+    "file": "52.geojson",
+    "osm_id": 2079309,
+    "osm_type": "relation",
+    "osm_name": "University of Pittsburgh",
+    "status": "ok"
+  },
+  {
+    "market_key": 86,
+    "university": "University of Missouri",
+    "file": "86.geojson",
+    "osm_id": 18446441,
+    "osm_type": "relation",
+    "osm_name": "University of Missouri",
+    "status": "ok"
+  },
+  {
+    "market_key": 118,
+    "university": "Indiana University Bloomington",
+    "file": "118.geojson",
+    "osm_id": 74173036,
+    "osm_type": "way",
+    "osm_name": "Indiana University Bloomington",
+    "status": "ok"
+  },
+  {
+    "market_key": 141,
+    "university": "University of Central Florida",
+    "file": "141.geojson",
+    "osm_id": 1159228,
+    "osm_type": "relation",
+    "osm_name": "University of Central Florida",
+    "status": "ok"
+  },
+  {
+    "market_key": 155,
+    "university": "Ohio State University",
+    "file": "155.geojson",
+    "osm_id": 306632,
+    "osm_type": "relation",
+    "osm_name": "The Ohio State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 180,
+    "university": "University of Arkansas",
+    "file": "180.geojson",
+    "osm_id": 12440820,
+    "osm_type": "relation",
+    "osm_name": "University of Arkansas",
+    "status": "ok"
+  },
+  {
+    "market_key": 334,
+    "university": "University of Wisconsin Madison",
+    "file": "334.geojson",
+    "osm_id": 7144092,
+    "osm_type": "relation",
+    "osm_name": "University of Wisconsin-Madison",
+    "status": "ok"
+  },
+  {
+    "market_key": 553,
+    "university": "University of Tennessee",
+    "file": "553.geojson",
+    "osm_id": 376167113,
+    "osm_type": "way",
+    "osm_name": "University of Tennessee, Knoxville",
+    "status": "ok"
+  },
+  {
+    "market_key": 567,
+    "university": "University of Kentucky",
+    "file": "567.geojson",
+    "osm_id": 4815526,
+    "osm_type": "relation",
+    "osm_name": "University of Kentucky",
+    "status": "ok"
+  },
+  {
+    "market_key": 568,
+    "university": "University of Virginia",
+    "file": "568.geojson",
+    "osm_id": 4218705,
+    "osm_type": "relation",
+    "osm_name": "University of Virginia",
+    "status": "ok"
+  },
+  {
+    "market_key": 590,
+    "university": "University of Florida",
+    "file": "590.geojson",
+    "osm_id": 18432136,
+    "osm_type": "relation",
+    "osm_name": "University of Florida",
+    "status": "ok"
+  },
+  {
+    "market_key": 611,
+    "university": "Purdue University",
+    "file": "611.geojson",
+    "osm_id": 12444296,
+    "osm_type": "relation",
+    "osm_name": "Purdue University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1005,
+    "university": "University of Arizona",
+    "file": "1005.geojson",
+    "osm_id": 6044244,
+    "osm_type": "relation",
+    "osm_name": "University of Arizona",
+    "status": "ok"
+  },
+  {
+    "market_key": 1152,
+    "university": "Arizona State University",
+    "file": "1152.geojson",
+    "osm_id": 3444656,
+    "osm_type": "relation",
+    "osm_name": "Arizona State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2294,
+    "university": "University of Maryland College Park",
+    "file": "2294.geojson",
+    "osm_id": 14718558,
+    "osm_type": "relation",
+    "osm_name": "University of Maryland, College Park",
+    "status": "ok"
+  },
+  {
+    "market_key": 2344,
+    "university": "University of North Carolina at Chapel Hill",
+    "file": "2344.geojson",
+    "osm_id": 2882828,
+    "osm_type": "relation",
+    "osm_name": "University of North Carolina at Chapel Hill",
+    "status": "ok"
+  },
+  {
+    "market_key": 2417,
+    "university": "Rutgers University",
+    "file": "2417.geojson",
+    "osm_id": 10996237,
+    "osm_type": "relation",
+    "osm_name": "Rutgers University",
+    "status": "ok"
+  }
+]

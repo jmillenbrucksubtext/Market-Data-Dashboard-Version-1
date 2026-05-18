@@ -514,49 +514,29 @@ QUERIES: dict[str, str] = {
         LEFT JOIN s30             ON s30.market_key = m.[Key]
     """,
     # market_history: one anchor snapshot per (market, year) from 2020+.
-    # We pick the snapshot closest to August 30 of each year (end of leasing
-    # cycle, when occupancy/rent reflect academic-year reality). The current
-    # year falls back to whatever's latest if August hasn't happened yet.
-    # Feeds the deck-style multi-year time-series charts on market.html.
-    "market_history": """
-        WITH anchors AS (
-            SELECT
-                mr.market_key,
-                YEAR(mr.snapshot_date)                  AS yr,
-                mr.snapshot_date,
-                mr.rate_avg,
-                mr.occupancy,
-                mr.prelease,
-                mr.beds_purpose_built,
-                mr.beds_lease_up,
-                mr.beds_under_construction,
-                mr.beds_planned,
-                mr.beds_pipeline,
-                ROW_NUMBER() OVER (
-                    PARTITION BY mr.market_key, YEAR(mr.snapshot_date)
-                    ORDER BY ABS(DATEDIFF(DAY, mr.snapshot_date,
-                        DATEFROMPARTS(YEAR(mr.snapshot_date), 8, 30)))
-                ) AS rn
-            FROM dbo.MarketReports mr
-            WHERE mr.market_key IS NOT NULL
-              AND YEAR(mr.snapshot_date) >= 2020
-        )
-        SELECT
-            market_key,
-            yr                                          AS year_,
-            snapshot_date                               AS data_as_of,
-            rate_avg                                    AS avg_rent_per_bed,
-            occupancy,
-            prelease,
-            beds_purpose_built                          AS existing_beds,
-            beds_lease_up,
-            beds_under_construction,
-            beds_planned,
-            beds_pipeline                               AS beds_pipeline_total
-        FROM anchors
-        WHERE rn = 1
-        ORDER BY market_key, yr
-    """,
+    # Each year is anchored to the SAME calendar date as the latest
+    # available snapshot, so the year-over-year comparison is apples to
+    # apples (e.g., 2026-05-09 vs 2025-05-09 vs 2024-05-09 ...). This
+    # moves automatically as the weekly refresh advances the latest
+    # snapshot. Feeds the deck-style multi-year charts on market.html.
+    "market_history": (
+        "WITH la AS (SELECT MONTH(MAX(snapshot_date)) AS mo, DAY(MAX(snapshot_date)) AS dy FROM dbo.MarketReports), "
+        "a AS ("
+        "SELECT mr.market_key, YEAR(mr.snapshot_date) AS yr, mr.snapshot_date, mr.rate_avg, mr.occupancy, mr.prelease, "
+        "mr.beds_purpose_built, mr.beds_lease_up, mr.beds_under_construction, mr.beds_planned, mr.beds_pipeline, "
+        "ROW_NUMBER() OVER (PARTITION BY mr.market_key, YEAR(mr.snapshot_date) "
+        "ORDER BY ABS(DATEDIFF(DAY, mr.snapshot_date, "
+        "DATEFROMPARTS(YEAR(mr.snapshot_date), la.mo, "
+        "CASE WHEN la.dy > DAY(EOMONTH(DATEFROMPARTS(YEAR(mr.snapshot_date), la.mo, 1))) "
+        "THEN DAY(EOMONTH(DATEFROMPARTS(YEAR(mr.snapshot_date), la.mo, 1))) ELSE la.dy END)))) AS rn "
+        "FROM dbo.MarketReports mr CROSS JOIN la "
+        "WHERE mr.market_key IS NOT NULL AND YEAR(mr.snapshot_date) >= 2020"
+        ") "
+        "SELECT market_key, yr AS year_, snapshot_date AS data_as_of, rate_avg AS avg_rent_per_bed, "
+        "occupancy, prelease, beds_purpose_built AS existing_beds, beds_lease_up, beds_under_construction, "
+        "beds_planned, beds_pipeline AS beds_pipeline_total "
+        "FROM a WHERE rn = 1 ORDER BY market_key, yr"
+    ),
 }
 
 

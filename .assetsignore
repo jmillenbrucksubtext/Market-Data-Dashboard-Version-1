@@ -1,0 +1,28 @@
+# Files Cloudflare Workers should NOT upload as static assets.
+# Same syntax as .gitignore. Lives next to the wrangler config and is
+# applied to the assets.directory at build time.
+#
+# Most importantly: .git/ contains a 40+ MiB packfile that exceeds
+# Cloudflare's 25 MiB per-asset limit and breaks the deploy entirely.
+
+# Version control internals
+.git/
+.gitignore
+.gitattributes
+
+# Local credentials and runtime logs (also gitignored, but belt-and-suspenders)
+.sql-cred.xml
+refresh.log
+refresh.log.*
+.env
+.env.*
+
+# Build/refresh tooling — not served to clients
+*.py
+*.ps1
+__pycache__/
+.venv/
+venv/
+
+# Project docs (also not served)
+README.md

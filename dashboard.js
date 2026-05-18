@@ -932,16 +932,38 @@ function renderIndustryMap() {
       weight: isS30 ? 3 : 1.5,
       fillOpacity: 0.92,
     });
-    const score = r.qualifier_score == null
+    const scorePct = r.qualifier_score == null
       ? "—"
-      : `${Math.round(r.qualifier_score * 100)}% qualifier score`;
+      : `${Math.round(r.qualifier_score * 100)}%`;
+    const beds = r.existing_beds != null ? fmtInt(r.existing_beds) : "—";
+    const rent = r.avg_rent_per_bed != null ? fmtUsd(r.avg_rent_per_bed) : "—";
+    const accent = pinColor(r.qualifier_score);
     marker.bindPopup(`
-      <strong>${escapeHtml(r.anchor_university || "")}</strong><br>
-      ${escapeHtml(r.city || "")}, ${escapeHtml(r.state_abbr || "")}<br>
-      ${fmtInt(r.existing_beds)} existing beds · ${fmtUsd(r.avg_rent_per_bed)} avg rent<br>
-      ${score}${isS30 ? " · ⭐ Subtext-30" : ""}<br>
-      <a href="market.html?id=${r.market_key}" class="popup-link">Open market →</a>
-    `);
+      <div class="market-popup" style="--popup-accent:${accent}">
+        <div class="market-popup-head">
+          <div class="market-popup-title">${escapeHtml(r.anchor_university || "")}</div>
+          <div class="market-popup-sub">
+            <span class="market-popup-loc">${escapeHtml(r.city || "")}, ${escapeHtml(r.state_abbr || "")}</span>
+            ${isS30 ? '<span class="market-popup-badge">★ Subtext-30</span>' : ""}
+          </div>
+        </div>
+        <div class="market-popup-stats">
+          <div class="market-popup-stat">
+            <div class="market-popup-stat-value">${beds}</div>
+            <div class="market-popup-stat-label">Existing beds</div>
+          </div>
+          <div class="market-popup-stat">
+            <div class="market-popup-stat-value">${rent}</div>
+            <div class="market-popup-stat-label">Avg rent</div>
+          </div>
+          <div class="market-popup-stat">
+            <div class="market-popup-stat-value">${scorePct}</div>
+            <div class="market-popup-stat-label">Qualifier</div>
+          </div>
+        </div>
+        <a href="market.html?id=${r.market_key}" class="market-popup-cta">Open market →</a>
+      </div>
+    `, { maxWidth: 320, minWidth: 280, className: "market-popup-wrapper" });
     marker.on("click", () => marker.openPopup());
     marker.addTo(industryMarkerLayer);
   }

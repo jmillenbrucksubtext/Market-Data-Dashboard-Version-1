@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="style.css?v=16">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 </head>
 <body>
@@ -235,17 +236,30 @@
           </section>
         </div>
 
-        <section class="card">
-          <header class="card-header">
-            <div>
-              <h2>Pricing: Avg Rent &amp; YoY Growth</h2>
-              <p>Average rent per bed (left axis) and YoY rent growth (right axis). Top 30 by avg rent.</p>
+        <div class="grid-2">
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Avg Rent per Bed</h2>
+                <p>Top 30 markets by current rent. Colored by Subtext-30 membership.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap chart-tall"><canvas id="pricing-rent-chart"></canvas></div>
             </div>
-          </header>
-          <div class="card-body">
-            <div class="chart-wrap chart-tall"><canvas id="pricing-chart"></canvas></div>
-          </div>
-        </section>
+          </section>
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Rent YoY Growth</h2>
+                <p>Top 30 markets by YoY rent growth (positive = lime, negative = rust).</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="chart-wrap chart-tall"><canvas id="pricing-growth-chart"></canvas></div>
+            </div>
+          </section>
+        </div>
 
         <footer class="page-footer">
           <p>
@@ -579,6 +593,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=10"></script>
+  <script src="dashboard.js?v=11"></script>
 </body>
 </html>

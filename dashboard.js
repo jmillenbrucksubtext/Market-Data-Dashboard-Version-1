@@ -501,6 +501,25 @@ function bandColor(pen) {
   return C.warn;                      // balanced
 }
 
+/* Register datalabels plugin once. Used on the less-dense charts where
+   value labels fit; left off the top-30 stacked supply chart to avoid
+   visual clutter. */
+if (typeof Chart !== "undefined" && window.ChartDataLabels) {
+  Chart.register(window.ChartDataLabels);
+}
+
+/* Shared chart defaults — deck language: no gridlines, bold Pragmatica
+   ticks, no chart-level legend (cards already have headers). */
+const CHART_FONT = "Pragmatica, sans-serif";
+function deckCleanScale(axisOpts = {}) {
+  return {
+    grid: { display: false, drawTicks: false },
+    border: { display: false },
+    ticks: { font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate, autoSkip: false, ...axisOpts.ticks },
+    ...axisOpts,
+  };
+}
+
 function renderPenetration(rows) {
   const top = rows.filter((r) => r.penetration_ratio != null)
     .sort((a, b) => a.penetration_ratio - b.penetration_ratio)
@@ -514,7 +533,7 @@ function renderPenetration(rows) {
       datasets: [{
         data: top.map((r) => r.penetration_ratio),
         backgroundColor: top.map((r) => bandColor(r.penetration_ratio)),
-        borderRadius: 4,
+        borderRadius: 3,
         barThickness: 12,
       }],
     },
@@ -524,6 +543,7 @@ function renderPenetration(rows) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
+        datalabels: { display: false },
         tooltip: {
           callbacks: {
             title: (items) => fullLabel(rowKey(top, items[0].dataIndex)),
@@ -531,15 +551,10 @@ function renderPenetration(rows) {
           },
         },
       },
+      layout: { padding: { top: 4, right: 36, left: 4, bottom: 4 } },
       scales: {
-        x: {
-          ticks: { callback: (v) => fmtPct(v, 0) },
-          grid: { color: C.beigeDeep, drawBorder: false },
-        },
-        y: {
-          ticks: { autoSkip: false, font: { size: 11 } },
-          grid: { display: false },
-        },
+        x: deckCleanScale({ ticks: { callback: (v) => fmtPct(v, 0), font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
+        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
       },
     },
   });
@@ -579,7 +594,8 @@ function renderSupply(rows) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "bottom" },
+        legend: { position: "bottom", labels: { boxWidth: 14, boxHeight: 14, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate, padding: 12 } },
+        datalabels: { display: false },
         tooltip: {
           callbacks: {
             title: (items) => fullLabel(rowKey(top, items[0].dataIndex)),
@@ -588,10 +604,8 @@ function renderSupply(rows) {
         },
       },
       scales: {
-        x: { stacked: true, ticks: { callback: (v) => fmtInt(v) },
-             grid: { color: C.beigeDeep, drawBorder: false } },
-        y: { stacked: true, ticks: { autoSkip: false, font: { size: 10 } },
-             grid: { display: false } },
+        x: { stacked: true, ...deckCleanScale({ ticks: { callback: (v) => fmtInt(v), font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }) },
+        y: { stacked: true, ...deckCleanScale({ ticks: { autoSkip: false, font: { size: 10, weight: 600, family: CHART_FONT }, color: C.slate } }) },
       },
     },
   });
@@ -601,8 +615,11 @@ function renderDemand(rows) {
   const visibleKeys = new Set(rows.map((r) => r.market_key));
   const trends = DATA.tables.enrollment_trend
     .filter((t) => visibleKeys.has(t.market_key))
-    .filter((t) => t.current_enrollment != null)
-    .sort((a, b) => b.current_enrollment - a.current_enrollment)
+    .filter((t) => t.cagr_5yr != null)
+    // Rank by 5-yr CAGR (the metric we're plotting), not by enrollment size.
+    // Show the top 30 fastest-growing schools so the chart actually tells
+    // a "growth" story.
+    .sort((a, b) => b.cagr_5yr - a.cagr_5yr)
     .slice(0, 30);
 
   const ctx = document.getElementById("demand-chart");
@@ -612,9 +629,9 @@ function renderDemand(rows) {
     data: {
       labels: trends.map((t) => t.university_name),
       datasets: [{
-        data: trends.map((t) => (t.cagr_5yr != null ? t.cagr_5yr * 100 : 0)),
-        backgroundColor: trends.map((t) => (t.cagr_5yr || 0) >= 0 ? C.good : C.bad),
-        borderRadius: 4,
+        data: trends.map((t) => t.cagr_5yr * 100),
+        backgroundColor: trends.map((t) => t.cagr_5yr >= 0 ? C.everest : C.birch),
+        borderRadius: 3,
         barThickness: 12,
       }],
     },
@@ -624,6 +641,12 @@ function renderDemand(rows) {
       maintainAspectRatio: false,
       plugins: {
         legend: { display: false },
+        datalabels: {
+          anchor: "end", align: "end", offset: 4, clip: false,
+          font: { weight: 700, size: 10, family: CHART_FONT },
+          color: C.slate,
+          formatter: (v) => v == null ? "" : `${v.toFixed(1)}%`,
+        },
         tooltip: {
           callbacks: {
             title: (items) => trends[items[0].dataIndex].university_name,
@@ -638,79 +661,112 @@ function renderDemand(rows) {
           },
         },
       },
+      layout: { padding: { top: 4, right: 56, left: 4, bottom: 4 } },
       scales: {
-        x: { ticks: { callback: (v) => v.toFixed(1) + "%" },
-             grid: { color: C.beigeDeep, drawBorder: false } },
-        y: { ticks: { autoSkip: false, font: { size: 10 } },
-             grid: { display: false } },
+        x: deckCleanScale({ ticks: { callback: (v) => v.toFixed(0) + "%", font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
+        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
       },
     },
   });
 }
 
 function renderPricing(rows) {
-  const yoyByKey = new Map(DATA.tables.rent_yoy.map((r) => [r.market_key, r.yoy_rent_growth]));
-  const top = rows.filter((r) => r.avg_rent_per_bed != null)
-    .sort((a, b) => (b.avg_rent_per_bed || 0) - (a.avg_rent_per_bed || 0))
-    .slice(0, 30);
+  renderRentLevels(rows);
+  renderRentGrowth(rows);
+}
 
-  const ctx = document.getElementById("pricing-chart");
-  if (charts.pricing) charts.pricing.destroy();
-  charts.pricing = new Chart(ctx, {
+function renderRentLevels(rows) {
+  const top = rows.filter((r) => r.avg_rent_per_bed != null)
+    .sort((a, b) => b.avg_rent_per_bed - a.avg_rent_per_bed)
+    .slice(0, 30);
+  const ctx = document.getElementById("pricing-rent-chart");
+  if (!ctx) return;
+  if (charts.pricingRent) charts.pricingRent.destroy();
+  charts.pricingRent = new Chart(ctx, {
     type: "bar",
     data: {
       labels: top.map((r) => r.anchor_university),
-      datasets: [
-        {
-          label: "Avg rent / bed",
-          data: top.map((r) => Number(r.avg_rent_per_bed) || 0),
-          backgroundColor: C.everest,
-          yAxisID: "y",
-          borderRadius: 4,
-          barThickness: 10,
-        },
-        {
-          label: "YoY rent growth",
-          data: top.map((r) => {
-            const v = yoyByKey.get(r.market_key);
-            return v == null ? 0 : v * 100;
-          }),
-          backgroundColor: top.map((r) => {
-            const v = yoyByKey.get(r.market_key);
-            return v == null ? C.slate30 : v >= 0 ? C.good : C.bad;
-          }),
-          yAxisID: "y1",
-          borderRadius: 4,
-          barThickness: 10,
-        },
-      ],
+      datasets: [{
+        data: top.map((r) => Number(r.avg_rent_per_bed)),
+        backgroundColor: top.map((r) => r.is_subtext30 === 1 ? C.everest : C.slate30),
+        borderRadius: 3,
+        barThickness: 12,
+      }],
     },
     options: {
+      indexAxis: "y",
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "bottom" },
+        legend: { display: false },
+        datalabels: {
+          anchor: "end", align: "end", offset: 4, clip: false,
+          font: { weight: 700, size: 10, family: CHART_FONT },
+          color: C.slate,
+          formatter: (v) => v == null ? "" : fmtUsd(v),
+        },
         tooltip: {
           callbacks: {
             title: (items) => fullLabel(rowKey(top, items[0].dataIndex)),
-            label: (ctx) => {
-              if (ctx.dataset.yAxisID === "y") return `Avg rent: ${fmtUsd(ctx.parsed.y)}`;
-              return `YoY: ${ctx.parsed.y.toFixed(1)}%`;
-            },
+            label: (c) => `Avg rent: ${fmtUsd(c.parsed.x)}`,
           },
         },
       },
+      layout: { padding: { top: 4, right: 60, left: 4, bottom: 4 } },
       scales: {
-        x: { ticks: { autoSkip: false, font: { size: 10 }, maxRotation: 70, minRotation: 70 },
-             grid: { display: false } },
-        y: { position: "left",
-             ticks: { callback: (v) => fmtUsd(v) },
-             grid: { color: C.beigeDeep, drawBorder: false },
-             title: { display: true, text: "Avg rent ($)", color: C.slate70 } },
-        y1: { position: "right",
-              grid: { drawOnChartArea: false },
-              ticks: { callback: (v) => v.toFixed(0) + "%" },
-              title: { display: true, text: "YoY growth (%)", color: C.slate70 } },
+        x: deckCleanScale({ ticks: { callback: (v) => fmtUsd(v), font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
+        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
+      },
+    },
+  });
+}
+
+function renderRentGrowth(rows) {
+  const yoyByKey = new Map(DATA.tables.rent_yoy.map((r) => [r.market_key, r.yoy_rent_growth]));
+  const top = rows
+    .map((r) => ({ ...r, yoy: yoyByKey.get(r.market_key) }))
+    .filter((r) => r.yoy != null)
+    .sort((a, b) => b.yoy - a.yoy)
+    .slice(0, 30);
+  const ctx = document.getElementById("pricing-growth-chart");
+  if (!ctx) return;
+  if (charts.pricingGrowth) charts.pricingGrowth.destroy();
+  charts.pricingGrowth = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels: top.map((r) => r.anchor_university),
+      datasets: [{
+        data: top.map((r) => r.yoy * 100),
+        backgroundColor: top.map((r) => r.yoy >= 0 ? C.lime : C.birch),
+        borderRadius: 3,
+        barThickness: 12,
+      }],
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        datalabels: {
+          anchor: (c) => (c.dataset.data[c.dataIndex] || 0) >= 0 ? "end" : "start",
+          align:  (c) => (c.dataset.data[c.dataIndex] || 0) >= 0 ? "end" : "start",
+          offset: 4, clip: false,
+          font: { weight: 700, size: 10, family: CHART_FONT },
+          color: C.slate,
+          formatter: (v) => v == null ? "" : `${v.toFixed(1)}%`,
+        },
+        tooltip: {
+          callbacks: {
+            title: (items) => fullLabel(rowKey(top, items[0].dataIndex)),
+            label: (c) => `YoY rent growth: ${c.parsed.x.toFixed(1)}%`,
+          },
+        },
+      },
+      layout: { padding: { top: 4, right: 60, left: 24, bottom: 4 } },
+      scales: {
+        x: deckCleanScale({ ticks: { callback: (v) => v.toFixed(0) + "%", font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
+        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
       },
     },
   });
@@ -777,21 +833,19 @@ function drawVelocityChart(marketKey) {
       responsive: true,
       maintainAspectRatio: false,
       plugins: {
-        legend: { position: "bottom" },
-        tooltip: {
-          callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` },
-        },
+        legend: { position: "top", align: "end", labels: { boxWidth: 16, boxHeight: 4, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate, padding: 12 } },
+        datalabels: { display: false },
+        tooltip: { callbacks: { label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y.toFixed(1)}%` } },
       },
       scales: {
-        x: { type: "linear",
-             title: { display: true, text: "ISO week of year", color: C.slate70 },
-             min: 1, max: 53,
-             ticks: { stepSize: 4 },
-             grid: { color: C.beigeDeep, drawBorder: false } },
-        y: { title: { display: true, text: "Pre-leased %", color: C.slate70 },
-             ticks: { callback: (v) => v + "%" },
-             min: 0, max: 100,
-             grid: { color: C.beigeDeep, drawBorder: false } },
+        x: { type: "linear", min: 1, max: 53,
+             ticks: { stepSize: 8, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70, callback: (v) => `Wk ${v}` },
+             grid: { display: false },
+             border: { color: C.beigeDeep } },
+        y: { min: 0, max: 100,
+             ticks: { stepSize: 20, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70, callback: (v) => v + "%" },
+             grid: { color: "#f5efde", drawTicks: false },
+             border: { display: false } },
       },
     },
   });

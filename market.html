@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=14">
+  <link rel="stylesheet" href="style.css?v=15">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -136,9 +136,21 @@
                   <figcaption class="perf-title">Rent YoY Growth</figcaption>
                   <div class="perf-chart-wrap"><canvas id="perf-rent-growth"></canvas></div>
                 </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">Market Occupancy</figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-occupancy"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">Penetration Ratio</figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-penetration"></canvas></div>
+                </figure>
                 <figure class="perf-chart perf-chart-wide">
                   <figcaption class="perf-title">Bed Supply: Existing + Pipeline</figcaption>
                   <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-supply"></canvas></div>
+                </figure>
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">Pre-leasing Velocity by Cycle</figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-velocity"></canvas></div>
                 </figure>
               </div>
             </div>
@@ -249,6 +261,6 @@
     </div>
   </div>
 
-  <script src="market.js?v=8" defer></script>
+  <script src="market.js?v=9" defer></script>
 </body>
 </html>

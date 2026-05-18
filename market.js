@@ -201,7 +201,49 @@ function renderPerformance() {
     });
   }
 
-  // 3) Bed supply: existing + pipeline ---------------------------------
+  // 3) Occupancy benchmark --------------------------------------------
+  const occRows = s30Rows("scorecard").map((r) => r.occupancy).filter((v) => v != null);
+  const s30Occ = mean(occRows);
+  const myOcc = MARKET.occupancy;
+  const occCtx = document.getElementById("perf-occupancy");
+  if (occCtx && (myOcc != null || s30Occ != null)) {
+    new Chart(occCtx, {
+      type: "bar",
+      data: {
+        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
+        datasets: [{
+          data: [myOcc, s30Occ],
+          backgroundColor: [PERF.anchorColor, PERF.benchColor],
+          borderRadius: 4,
+          maxBarThickness: 80,
+        }],
+      },
+      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v, 1) }),
+    });
+  }
+
+  // 4) Penetration benchmark ------------------------------------------
+  const penRows = s30Rows("scorecard").map((r) => r.penetration_ratio).filter((v) => v != null);
+  const s30Pen = mean(penRows);
+  const myPen = MARKET.penetration_ratio;
+  const penCtx = document.getElementById("perf-penetration");
+  if (penCtx && (myPen != null || s30Pen != null)) {
+    new Chart(penCtx, {
+      type: "bar",
+      data: {
+        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
+        datasets: [{
+          data: [myPen, s30Pen],
+          backgroundColor: [PERF.anchorColor, PERF.benchColor],
+          borderRadius: 4,
+          maxBarThickness: 80,
+        }],
+      },
+      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v, 1) }),
+    });
+  }
+
+  // 5) Bed supply: existing + pipeline ---------------------------------
   // Two stacked horizontal bars: this market on top, Subtext-30 avg on bottom.
   const pipeMap = new Map(DATA.tables.pipeline_beds.map((r) => [r.market_key, r]));
   const myPipe = pipeMap.get(MARKET.market_key) || {};
@@ -215,6 +257,62 @@ function renderPerformance() {
   const s30Lease = mean(s30Pipe.map((r) => r.beds_lease_up));
   const s30UC = mean(s30Pipe.map((r) => r.beds_under_construction));
   const s30Planned = mean(s30Pipe.map((r) => r.beds_planned));
+
+  // 6) Pre-leasing velocity: multi-cycle line for THIS market ---------
+  const velRows = (DATA.tables.prelease_velocity || []).filter((r) => r.market_key === MARKET.market_key);
+  const cycles = [...new Set(velRows.map((r) => r.leasing_cycle))].sort((a, b) => a - b);
+  // Keep the chart focused on the most recent three cycles (older lines
+  // crowd the view and obscure the YoY comparison that matters).
+  const recentCycles = cycles.slice(-3);
+  // Older → newer: slate → rust → everest. Latest cycle is emphasized.
+  const palette = ["#b6b1ab", "#a95818", "#16352e"];
+  const velCtx = document.getElementById("perf-velocity");
+  if (velCtx && recentCycles.length) {
+    const datasets = recentCycles.map((cycle, i) => {
+      const isLatest = i === recentCycles.length - 1;
+      const color = palette[(palette.length - recentCycles.length + i + palette.length) % palette.length];
+      const data = velRows.filter((r) => r.leasing_cycle === cycle)
+        .sort((a, b) => a.week_of_cycle - b.week_of_cycle)
+        .map((r) => ({ x: r.week_of_cycle, y: r.prelease_pct * 100 }));
+      return {
+        label: `Cycle ${cycle}`,
+        data,
+        borderColor: color,
+        backgroundColor: color,
+        borderWidth: isLatest ? 3 : 1.75,
+        pointRadius: isLatest ? 3 : 1.5,
+        pointBackgroundColor: color,
+        tension: 0.25,
+      };
+    });
+    new Chart(velCtx, {
+      type: "line",
+      data: { datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top", align: "end",
+            labels: { boxWidth: 16, boxHeight: 4, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12 },
+          },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}%` } },
+          datalabels: { display: false },
+        },
+        layout: { padding: { top: 4, right: 16, left: 8, bottom: 0 } },
+        scales: {
+          x: { type: "linear", min: 1, max: 53,
+               ticks: { stepSize: 8, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#5a544f", callback: (v) => `Wk ${v}` },
+               grid: { display: false },
+               border: { color: "#ede5cf" } },
+          y: { min: 0, max: 100,
+               ticks: { stepSize: 20, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#5a544f", callback: (v) => `${v}%` },
+               grid: { color: "#f5efde", drawTicks: false },
+               border: { display: false } },
+        },
+      },
+    });
+  }
 
   const supplyCtx = document.getElementById("perf-supply");
   if (supplyCtx) {

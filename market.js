@@ -158,6 +158,9 @@ function perfBaseOpts({ valueFmt }) {
 function renderPerformance() {
   if (typeof Chart === "undefined") return;
   if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+  // Populate the section-level legend label with the actual market name.
+  const legendAnchor = document.getElementById("perf-legend-anchor");
+  if (legendAnchor) legendAnchor.textContent = MARKET.anchor_university || "This market";
 
   /* ---- Multi-year time series: rent, rent growth, occupancy, prelease ---- */
   // For each year, this market's value vs the Subtext-30 average for that same year.
@@ -202,18 +205,17 @@ function renderPerformance() {
       data: {
         labels: years.map(String),
         datasets: [
-          { label: MARKET.anchor_university || "This market", data: myData, backgroundColor: PERF.anchorColor, borderRadius: 3, maxBarThickness: 38 },
-          { label: "Subtext-30 avg",                          data: s30Data, backgroundColor: PERF.benchColor, borderRadius: 3, maxBarThickness: 38 },
+          { label: MARKET.anchor_university || "This market", data: myData, backgroundColor: PERF.anchorColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
+          { label: "Subtext-30 avg",                          data: s30Data, backgroundColor: PERF.benchColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: {
-            position: "top", align: "center",
-            labels: { boxWidth: 14, boxHeight: 14, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12, usePointStyle: false },
-          },
+          legend: { display: false },
           tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : valueFmt(c.parsed.y)}` } },
           datalabels: {
             anchor: "end", align: "end", offset: 2, clip: false,
@@ -222,10 +224,10 @@ function renderPerformance() {
             formatter: (v) => v == null ? "" : valueFmt(v),
           },
         },
-        layout: { padding: { top: 22, right: 8, left: 8, bottom: 4 } },
+        layout: { padding: { top: 18, right: 6, left: 6, bottom: 0 } },
         scales: {
           x: { grid: { display: false }, border: { display: false },
-               ticks: { font: { size: 12, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+               ticks: { font: { size: 11, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
           y: { display: false, beginAtZero: true, max: yMax },
         },
       },
@@ -255,15 +257,17 @@ function renderPerformance() {
       data: {
         labels: growthYears.map(String),
         datasets: [
-          { label: MARKET.anchor_university || "This market", data: myGrowth.map((v) => v == null ? null : v * 100),  backgroundColor: PERF.anchorColor, borderRadius: 3, maxBarThickness: 38 },
-          { label: "Subtext-30 avg",                          data: s30Growth.map((v) => v == null ? null : v * 100), backgroundColor: PERF.benchColor, borderRadius: 3, maxBarThickness: 38 },
+          { label: MARKET.anchor_university || "This market", data: myGrowth.map((v) => v == null ? null : v * 100),  backgroundColor: PERF.anchorColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
+          { label: "Subtext-30 avg",                          data: s30Growth.map((v) => v == null ? null : v * 100), backgroundColor: PERF.benchColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
         ],
       },
       options: {
         responsive: true,
         maintainAspectRatio: false,
         plugins: {
-          legend: { position: "top", labels: { boxWidth: 14, boxHeight: 14, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12 } },
+          legend: { display: false },
           tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : c.parsed.y.toFixed(1) + "%"}` } },
           datalabels: {
             anchor: (c) => c.dataset.data[c.dataIndex] != null && c.dataset.data[c.dataIndex] >= 0 ? "end" : "start",
@@ -274,10 +278,10 @@ function renderPerformance() {
             formatter: (v) => v == null ? "" : `${v.toFixed(0)}%`,
           },
         },
-        layout: { padding: { top: 22, right: 8, left: 8, bottom: 22 } },
+        layout: { padding: { top: 18, right: 6, left: 6, bottom: 18 } },
         scales: {
           x: { grid: { display: false }, border: { display: false },
-               ticks: { font: { size: 12, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+               ticks: { font: { size: 11, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
           y: { display: false, suggestedMin: -5 },
         },
       },
@@ -297,8 +301,9 @@ function renderPerformance() {
         datasets: [{
           data: [myPen, s30Pen],
           backgroundColor: [PERF.anchorColor, PERF.benchColor],
-          borderRadius: 4,
-          maxBarThickness: 80,
+          borderRadius: 3,
+          categoryPercentage: 0.55,
+          barPercentage: 0.9,
         }],
       },
       options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v, 1) }),

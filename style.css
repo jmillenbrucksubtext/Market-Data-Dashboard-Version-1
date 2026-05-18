@@ -977,10 +977,41 @@ h1, h2, h3, .serif {
 }
 /* Market Performance — deck-style charts on market.html ------- */
 .performance-section .card-body { padding-top: 4px; }
+.performance-section .card-header { align-items: flex-start; gap: 16px; }
+
+.perf-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 16px;
+  padding: 6px 12px;
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate);
+  white-space: nowrap;
+}
+.perf-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+.perf-legend .swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+}
+.swatch-anchor { background: #a95818; }
+.swatch-bench  { background: #16352e; }
+
 .perf-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 18px 24px;
+  gap: 14px 18px;
 }
 .perf-chart {
   margin: 0;
@@ -991,22 +1022,23 @@ h1, h2, h3, .serif {
 .perf-chart-wide { grid-column: 1 / -1; }
 .perf-title {
   font-family: "Mencken Std", Georgia, "Times New Roman", serif;
-  font-size: 16px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--slate);
   text-align: center;
-  border-bottom: 2px solid var(--slate);
-  padding-bottom: 6px;
-  margin-bottom: 12px;
+  border-bottom: 1.5px solid var(--slate);
+  padding-bottom: 4px;
+  margin-bottom: 8px;
   letter-spacing: 0.01em;
 }
 .perf-chart-wrap {
   position: relative;
-  height: 220px;
+  height: 170px;
 }
-.perf-chart-wrap-tall { height: 180px; }
+.perf-chart-wrap-tall { height: 190px; }
 @media (max-width: 720px) {
   .perf-grid { grid-template-columns: 1fr; }
+  .performance-section .card-header { flex-direction: column; }
 }
 
 /* Market popup ------------------------------------------------ */

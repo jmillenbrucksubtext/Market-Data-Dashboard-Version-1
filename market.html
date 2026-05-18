@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=16">
+  <link rel="stylesheet" href="style.css?v=17">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -123,7 +123,11 @@
             <header class="card-header">
               <div>
                 <h2>Market Performance</h2>
-                <p>This market vs the Subtext-30 average at the current snapshot.</p>
+                <p>This market vs the Subtext-30 average. Multi-year metrics are anchored to the August snapshot of each year.</p>
+              </div>
+              <div class="perf-legend">
+                <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span id="perf-legend-anchor">This market</span></span>
+                <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
               </div>
             </header>
             <div class="card-body">
@@ -265,6 +269,6 @@
     </div>
   </div>
 
-  <script src="market.js?v=10" defer></script>
+  <script src="market.js?v=11" defer></script>
 </body>
 </html>

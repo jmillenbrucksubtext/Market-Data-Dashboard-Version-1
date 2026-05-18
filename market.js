@@ -159,70 +159,132 @@ function renderPerformance() {
   if (typeof Chart === "undefined") return;
   if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
 
-  // 1) Rent benchmark --------------------------------------------------
-  const rentRows = s30Rows("avg_rent");
-  const s30RentMean = mean(rentRows.map((r) => r.avg_rent_per_bed));
-  const myRent = MARKET.avg_rent_per_bed;
-  const rentCtx = document.getElementById("perf-rent");
-  if (rentCtx && (myRent != null || s30RentMean != null)) {
-    new Chart(rentCtx, {
-      type: "bar",
-      data: {
-        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
-        datasets: [{
-          data: [myRent, s30RentMean],
-          backgroundColor: [PERF.anchorColor, PERF.benchColor],
-          borderRadius: 4,
-          maxBarThickness: 80,
-        }],
-      },
-      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtUsd(v) }),
+  /* ---- Multi-year time series: rent, rent growth, occupancy, prelease ---- */
+  // For each year, this market's value vs the Subtext-30 average for that same year.
+  const history = DATA.tables.market_history || [];
+  const s30Keys = new Set(
+    DATA.tables.scorecard.filter((r) => r.is_subtext30 === 1).map((r) => r.market_key)
+  );
+  const myHistory = history.filter((r) => r.market_key === MARKET.market_key)
+    .sort((a, b) => a.year_ - b.year_);
+  const years = myHistory.map((r) => r.year_);
+
+  // Treat 0 as missing for these metrics — a real student-housing market
+  // never has $0 rent or 0% occupancy/prelease; zeros mean "market not yet
+  // tracked at this snapshot."
+  const cleanZero = (v) => (v == null || v === 0) ? null : Number(v);
+
+  function s30YearMean(field) {
+    const byYear = new Map();
+    for (const r of history) {
+      if (!s30Keys.has(r.market_key)) continue;
+      const v = cleanZero(r[field]);
+      if (v == null) continue;
+      if (!byYear.has(r.year_)) byYear.set(r.year_, []);
+      byYear.get(r.year_).push(v);
+    }
+    return years.map((y) => {
+      const xs = byYear.get(y) || [];
+      return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
     });
   }
 
-  // 2) Rent YoY growth -------------------------------------------------
-  const ryRows = s30Rows("rent_yoy");
-  const s30YoYMean = mean(ryRows.map((r) => r.yoy_rent_growth));
-  const myYoY = (DATA.tables.rent_yoy.find((r) => r.market_key === MARKET.market_key) || {}).yoy_rent_growth;
-  const ryCtx = document.getElementById("perf-rent-growth");
-  if (ryCtx && (myYoY != null || s30YoYMean != null)) {
-    new Chart(ryCtx, {
+  function renderTimeSeries(canvasId, field, valueFmt, { transform = (v) => v, yMax = null } = {}) {
+    const ctx = document.getElementById(canvasId);
+    if (!ctx || !years.length) return;
+    const myData = myHistory.map((r) => {
+      const v = cleanZero(r[field]);
+      return v == null ? null : transform(v);
+    });
+    const s30Data = s30YearMean(field).map((v) => v == null ? null : transform(v));
+    new Chart(ctx, {
       type: "bar",
       data: {
-        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
-        datasets: [{
-          data: [myYoY, s30YoYMean],
-          backgroundColor: [PERF.anchorColor, PERF.benchColor],
-          borderRadius: 4,
-          maxBarThickness: 80,
-        }],
+        labels: years.map(String),
+        datasets: [
+          { label: MARKET.anchor_university || "This market", data: myData, backgroundColor: PERF.anchorColor, borderRadius: 3, maxBarThickness: 38 },
+          { label: "Subtext-30 avg",                          data: s30Data, backgroundColor: PERF.benchColor, borderRadius: 3, maxBarThickness: 38 },
+        ],
       },
-      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v) }),
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: {
+            position: "top", align: "center",
+            labels: { boxWidth: 14, boxHeight: 14, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12, usePointStyle: false },
+          },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : valueFmt(c.parsed.y)}` } },
+          datalabels: {
+            anchor: "end", align: "end", offset: 2, clip: false,
+            font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+            color: "#2b2825",
+            formatter: (v) => v == null ? "" : valueFmt(v),
+          },
+        },
+        layout: { padding: { top: 22, right: 8, left: 8, bottom: 4 } },
+        scales: {
+          x: { grid: { display: false }, border: { display: false },
+               ticks: { font: { size: 12, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+          y: { display: false, beginAtZero: true, max: yMax },
+        },
+      },
     });
   }
 
-  // 3) Occupancy benchmark --------------------------------------------
-  const occRows = s30Rows("scorecard").map((r) => r.occupancy).filter((v) => v != null);
-  const s30Occ = mean(occRows);
-  const myOcc = MARKET.occupancy;
-  const occCtx = document.getElementById("perf-occupancy");
-  if (occCtx && (myOcc != null || s30Occ != null)) {
-    new Chart(occCtx, {
+  renderTimeSeries("perf-rent",         "avg_rent_per_bed", (v) => fmtUsd(v));
+  renderTimeSeries("perf-occupancy",    "occupancy",        (v) => `${(v * 100).toFixed(0)}%`, { yMax: 1 });
+  renderTimeSeries("perf-prelease",     "prelease",         (v) => `${(v * 100).toFixed(0)}%`, { yMax: 1 });
+
+  // Rent growth: compute YoY from consecutive years, drop the first year.
+  const rentGrowthCtx = document.getElementById("perf-rent-growth");
+  if (rentGrowthCtx && myHistory.length > 1) {
+    const myRentSeries = myHistory.map((r) => cleanZero(r.avg_rent_per_bed));
+    const s30RentSeries = s30YearMean("avg_rent_per_bed");
+    const growthYears = years.slice(1);
+    const myGrowth = growthYears.map((_, i) => {
+      const a = myRentSeries[i + 1], b = myRentSeries[i];
+      return (a != null && b != null && b !== 0) ? (a - b) / b : null;
+    });
+    const s30Growth = growthYears.map((_, i) => {
+      const a = s30RentSeries[i + 1], b = s30RentSeries[i];
+      return (a != null && b != null && b !== 0) ? (a - b) / b : null;
+    });
+    new Chart(rentGrowthCtx, {
       type: "bar",
       data: {
-        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
-        datasets: [{
-          data: [myOcc, s30Occ],
-          backgroundColor: [PERF.anchorColor, PERF.benchColor],
-          borderRadius: 4,
-          maxBarThickness: 80,
-        }],
+        labels: growthYears.map(String),
+        datasets: [
+          { label: MARKET.anchor_university || "This market", data: myGrowth.map((v) => v == null ? null : v * 100),  backgroundColor: PERF.anchorColor, borderRadius: 3, maxBarThickness: 38 },
+          { label: "Subtext-30 avg",                          data: s30Growth.map((v) => v == null ? null : v * 100), backgroundColor: PERF.benchColor, borderRadius: 3, maxBarThickness: 38 },
+        ],
       },
-      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v, 1) }),
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "top", labels: { boxWidth: 14, boxHeight: 14, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12 } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : c.parsed.y.toFixed(1) + "%"}` } },
+          datalabels: {
+            anchor: (c) => c.dataset.data[c.dataIndex] != null && c.dataset.data[c.dataIndex] >= 0 ? "end" : "start",
+            align:  (c) => c.dataset.data[c.dataIndex] != null && c.dataset.data[c.dataIndex] >= 0 ? "end" : "start",
+            offset: 2, clip: false,
+            font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+            color: "#2b2825",
+            formatter: (v) => v == null ? "" : `${v.toFixed(0)}%`,
+          },
+        },
+        layout: { padding: { top: 22, right: 8, left: 8, bottom: 22 } },
+        scales: {
+          x: { grid: { display: false }, border: { display: false },
+               ticks: { font: { size: 12, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+          y: { display: false, suggestedMin: -5 },
+        },
+      },
     });
   }
 
-  // 4) Penetration benchmark ------------------------------------------
+  // 5) Penetration benchmark ------------------------------------------
   const penRows = s30Rows("scorecard").map((r) => r.penetration_ratio).filter((v) => v != null);
   const s30Pen = mean(penRows);
   const myPen = MARKET.penetration_ratio;

@@ -18,7 +18,12 @@
 
 [CmdletBinding()]
 param(
-    [switch]$Push   # opt-in: also commit + push to origin/main after refresh
+    # Opt-in: commit + push origin/main after refresh. When set, EVERYTHING in
+    # the working tree (modified + untracked) is staged with `git add -A` so
+    # the live Cloudflare Worker deploy mirrors local state — not just the
+    # data file. Anything secret-looking is blocked before commit as defense
+    # in depth, but .gitignore is the primary protection.
+    [switch]$Push
 )
 
 $ErrorActionPreference = "Stop"
@@ -79,12 +84,34 @@ if (-not $Push) {
     exit 0
 }
 
+# Stage *everything* in the dashboard folder so the live site mirrors local.
+# .gitignore excludes .sql-cred.xml and refresh.log; double-check below.
+# Caveat: any work-in-progress edits sitting in the tree at run time will
+# get published. Don't leave broken HTML/JS in the working tree Sunday night.
 try {
-    git add data.json plans/ 2>&1 | Out-Null
+    git add -A 2>&1 | Out-Null
+
+    # Defense in depth: if anything that looks like a secret somehow slipped
+    # past .gitignore, bail before committing rather than push it publicly.
+    $staged = git diff --cached --name-only
+    $bad = $staged | Where-Object { $_ -match '\.sql-cred\.xml$|refresh\.log(\.\d+)?$|^\.env$|\.env\.local$' }
+    if ($bad) {
+        Write-Log "ABORT: secret-looking files were staged: $($bad -join ', ')"
+        git reset 2>&1 | Out-Null
+        exit 3
+    }
+
+    if (-not $staged) {
+        Write-Log "nothing to commit after staging"
+        Write-Log "=== weekly-refresh done ==="
+        exit 0
+    }
+
     $stamp = Get-Date -Format "yyyy-MM-dd"
-    git commit -m "weekly data refresh $stamp" 2>&1 | Out-Null
+    $fileCount = ($staged | Measure-Object).Count
+    git commit -m "weekly refresh $stamp ($fileCount files)" 2>&1 | Out-Null
     git push origin main 2>&1 | ForEach-Object { Write-Log "git: $_" }
-    Write-Log "git push complete"
+    Write-Log "git push complete ($fileCount files)"
 } catch {
     Write-Log "git step FAILED: $($_.Exception.Message) (local data.json is still fresh)"
 }

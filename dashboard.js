@@ -48,6 +48,45 @@ if (typeof Chart !== "undefined") {
   Chart.defaults.plugins.tooltip.titleFont = { weight: "700", size: 12 };
 }
 
+// Power 4 anchor universities (2024-25 conference alignment). Match against
+// scorecard.anchor_university (exact string). UCLA, Boston College, and
+// Miami (FL) are P4 schools that aren't currently tracked as anchor markets
+// in this dataset, so they're omitted.
+const POWER4_ANCHORS = new Set([
+  // SEC
+  "University of Alabama", "University of Arkansas", "Auburn University",
+  "University of Florida", "University of Georgia", "University of Kentucky",
+  "Louisiana State University", "Mississippi State University",
+  "University of Mississippi", "University of Missouri", "University of Oklahoma",
+  "University of South Carolina", "University of Tennessee",
+  "Texas A&M University", "University of Texas at Austin", "Vanderbilt University",
+  // Big Ten
+  "University of Illinois at Urbana-Champaign", "Indiana University Bloomington",
+  "University of Iowa", "University of Maryland College Park",
+  "University of Michigan", "Michigan State University",
+  "University of Minnesota Twin Cities", "University of Nebraska Lincoln",
+  "Northwestern University", "Ohio State University", "University of Oregon",
+  "Penn State", "Purdue University", "Rutgers University",
+  "University of Southern California", "University of Washington",
+  "University of Wisconsin Madison",
+  // Big 12
+  "University of Arizona", "Arizona State University", "Baylor University",
+  "Brigham Young University", "University of Cincinnati",
+  "University of Colorado Boulder", "University of Houston",
+  "Iowa State University", "University of Kansas", "Kansas State University",
+  "Oklahoma State University", "Texas Christian University",
+  "Texas Tech University", "University of Central Florida",
+  "University of Utah", "West Virginia University",
+  // ACC
+  "University of California Berkeley", "Clemson University", "Duke University",
+  "Florida State University", "Georgia Institute of Technology",
+  "University of Louisville", "North Carolina State University",
+  "University of North Carolina at Chapel Hill", "University of Notre Dame",
+  "University of Pittsburgh", "Southern Methodist University",
+  "Stanford University", "Syracuse University", "University of Virginia",
+  "Virginia Polytechnic Institute and State University", "Wake Forest University",
+]);
+
 let DATA = null;
 let LABELS = new Map(); // market_key → {anchor_university, city, state_abbr, is_subtext30}
 let ANCHOR_COORDS = new Map(); // market_key → {lat, lng}
@@ -206,6 +245,7 @@ function visibleScorecardRows() {
   let rows = DATA.tables.scorecard.slice();
   const q = document.getElementById("market-filter").value.trim().toLowerCase();
   const subtext30 = document.getElementById("subtext30-only").checked;
+  const power4 = document.getElementById("power4-only").checked;
 
   if (q) {
     rows = rows.filter((r) =>
@@ -217,6 +257,9 @@ function visibleScorecardRows() {
   if (subtext30) {
     rows = rows.filter((r) => r.is_subtext30 === 1);
   }
+  if (power4) {
+    rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
+  }
 
   // Attach yoy_rent_growth from rent_yoy
   const yoyByKey = new Map(
@@ -226,14 +269,24 @@ function visibleScorecardRows() {
   const qualByKey = new Map(
     (DATA.tables.market_qualifiers || []).map((q) => [q.market_key, q]),
   );
+  // Attach affluence (mean origin income) — null when sample is too small
+  const AFF_MIN_N = 100;
+  const affByKey = new Map(
+    (DATA.tables.market_affluence || []).map((a) => [a.market_key, a]),
+  );
   rows = rows.map((r) => {
     const q = qualByKey.get(r.market_key);
+    const a = affByKey.get(r.market_key);
+    const hasSample = a && a.n_students >= AFF_MIN_N;
     return {
       ...r,
       yoy_rent_growth: yoyByKey.get(r.market_key) ?? null,
       qualifier_score: q && q.score_pct != null ? q.score_pct : null,
       qualifier_passes: q?.passes ?? null,
       qualifier_evaluable: q?.evaluable ?? null,
+      mean_origin_income: hasSample ? a.mean_origin_income : null,
+      pct_hiinc: hasSample ? a.pct_hiinc : null,
+      affluence_n: a?.n_students ?? null,
     };
   });
 
@@ -258,6 +311,12 @@ function bindUI() {
   const label = document.getElementById("subtext-toggle-label");
   cb.addEventListener("change", () => {
     label.classList.toggle("active", cb.checked);
+    renderAll();
+  });
+  const p4 = document.getElementById("power4-only");
+  const p4Label = document.getElementById("power4-toggle-label");
+  p4.addEventListener("change", () => {
+    p4Label.classList.toggle("active", p4.checked);
     renderAll();
   });
 
@@ -315,8 +374,9 @@ function renderKpis(rows) {
   document.getElementById("kpi-rent-sub").textContent =
     weight > 0 ? `weighted by ${fmtInt(weight)} beds` : "—";
 
-  // page subtitle
-  document.getElementById("market-count").textContent = fmtInt(totalMarkets);
+  // page subtitle — element optional (was removed from layout)
+  const mc = document.getElementById("market-count");
+  if (mc) mc.textContent = fmtInt(totalMarkets);
 }
 
 /* ----- Scorecard table --------------------------------------- */
@@ -331,29 +391,32 @@ function renderScorecard(rows) {
   });
 
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No markets match the filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No markets match the filter.</td></tr>`;
   } else {
     tbody.innerHTML = rows
       .map((r) => {
-        const bandClass = "band-" + (r.market_band || "N/A").replace(/[^A-Za-z]/g, "-");
         const selected = r.market_key === activeMarketKey ? " selected" : "";
         const star = r.is_subtext30 === 1
           ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
+        const affTitle = r.affluence_n != null
+          ? (r.pct_hiinc != null
+              ? `${fmtPct(r.pct_hiinc)} from high-income tracts · n=${fmtInt(r.affluence_n)}`
+              : `n=${fmtInt(r.affluence_n)} students`)
+          : "no migration data";
         return `
           <tr class="${selected.trim()}" data-market-key="${r.market_key}">
             <td class="university-cell">
               ${star}${escapeHtml(r.anchor_university || "")}
-              <span class="city-state">${escapeHtml(r.city || "")}</span>
+              <span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span>
             </td>
-            <td>${escapeHtml(r.state_abbr || "")}</td>
             <td class="num">${qualifierPill(r)}</td>
             <td class="num">${fmtPct(r.penetration_ratio)}</td>
-            <td><span class="band-pill ${bandClass}">${escapeHtml(r.market_band || "—")}</span></td>
-            <td class="num">${fmtInt(r.existing_beds)}</td>
-            <td class="num">${fmtInt(r.beds_pipeline_total)}</td>
             <td class="num">${fmtInt(r.total_enrollment)}</td>
+            <td class="num">${fmtInt(r.existing_beds)}</td>
             <td class="num">${fmtUsd(r.avg_rent_per_bed)}</td>
             <td class="num">${deltaSpan(r.yoy_rent_growth)}</td>
+            <td class="num">${fmtInt(r.beds_pipeline_total)}</td>
+            <td class="num" title="${affTitle}">${fmtUsd(r.mean_origin_income)}</td>
           </tr>`;
       })
       .join("");
@@ -756,7 +819,31 @@ function renderIndustryMap() {
     };
     // Default to Satellite for visual richness
     baseLayers.Satellite.addTo(industryMap);
-    L.control.layers(baseLayers, null, { position: "topright", collapsed: false }).addTo(industryMap);
+
+    // State outlines overlay — non-interactive, thin contrasting stroke so it
+    // reads on the satellite basemap without obscuring it. Falls back silently
+    // if the GeoJSON file is missing.
+    const stateOutlines = L.layerGroup();
+    fetch("assets/geo/us-states.geojson", { cache: "force-cache" })
+      .then((res) => (res.ok ? res.json() : Promise.reject(res.status)))
+      .then((gj) => {
+        L.geoJSON(gj, {
+          interactive: false,
+          style: {
+            color: "#ffffff",
+            weight: 1.1,
+            opacity: 0.7,
+            fill: false,
+          },
+        }).addTo(stateOutlines);
+      })
+      .catch((err) => console.warn("state outlines unavailable:", err));
+    stateOutlines.addTo(industryMap);
+
+    L.control
+      .layers(baseLayers, { "State outlines": stateOutlines },
+              { position: "topright", collapsed: false })
+      .addTo(industryMap);
 
     addFullscreenControl(industryMap);
     industryMarkerLayer = L.layerGroup().addTo(industryMap);

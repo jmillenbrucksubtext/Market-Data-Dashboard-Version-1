@@ -54,11 +54,13 @@ against the Azure SQL database. Requires:
   (`General/Markets/Support/Market Analysis Schedule.xlsx`)
 
 ```bash
-# Set credentials in env vars — never commit them
+# Default: Azure AD interactive — pops a browser sign-in, no password in shell.
+python export-data.py
+
+# CI / scripted: env-var SQL login.
 set SQLUSER=<your_user>
 set SQLPASSWORD=<your_password>
-
-python export-data.py
+python export-data.py --auth env
 ```
 
 The script writes:

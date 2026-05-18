@@ -130,8 +130,7 @@ h1, h2, h3, .serif {
   position: sticky;
   top: 0;
   height: 100vh;
-  /* Above Leaflet's max z-index (700) so the sidebar isn't covered by map tiles */
-  z-index: 1000;
+  z-index: 2000;
 }
 
 .brand {
@@ -219,8 +218,8 @@ h1, h2, h3, .serif {
   gap: 14px;
   position: sticky;
   top: 0;
-  /* Above Leaflet's max z-index (700) so map tiles don't bleed over the topbar */
-  z-index: 1000;
+  /* Way above Leaflet's max (1000) AND above the cards' new z-index (1) */
+  z-index: 2000;
 }
 
 .search {
@@ -460,6 +459,9 @@ h1, h2, h3, .serif {
   border-radius: var(--radius-sm);
   border: 1px solid var(--beige-deep);
   overflow: hidden;
+  position: relative;
+  isolation: isolate;          /* new stacking context — Leaflet controls can't escape */
+  contain: layout paint;
 }
 .industry-map-card { margin-bottom: 20px; }
 
@@ -499,10 +501,21 @@ h1, h2, h3, .serif {
 
 #scorecard {
   width: 100%;
+  table-layout: fixed;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
   font-size: 13px;
 }
+/* Even-width numeric columns; anchor + qualifier hold a fixed slice. */
+#scorecard thead th:nth-child(1),
+#scorecard tbody td:nth-child(1) { width: 19%; }
+#scorecard thead th:nth-child(2),
+#scorecard tbody td:nth-child(2) { width: 9%; }
+#scorecard thead th:nth-child(n+3),
+#scorecard tbody td:nth-child(n+3) { width: 10.3%; }
+/* Right-side gutter so the last column doesn't crowd the scrollbar */
+#scorecard thead th:last-child,
+#scorecard tbody td:last-child { padding-right: 24px; }
 #scorecard thead th {
   position: sticky;
   top: 0;
@@ -545,6 +558,8 @@ h1, h2, h3, .serif {
 #scorecard td.university-cell {
   font-weight: 700;
   color: var(--slate);
+  white-space: normal;
+  overflow-wrap: anywhere;
 }
 #scorecard td .city-state {
   display: block;
@@ -857,6 +872,21 @@ h1, h2, h3, .serif {
 @media (max-width: 1300px) { .kpi-row-6 { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 760px)  { .kpi-row-6 { grid-template-columns: repeat(2, 1fr); } }
 
+.kpi-row-7 {
+  grid-template-columns: repeat(7, 1fr);
+}
+@media (max-width: 1500px) { .kpi-row-7 { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1100px) { .kpi-row-7 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px)  { .kpi-row-7 { grid-template-columns: repeat(2, 1fr); } }
+
+/* 9-card layout wraps to 2 rows (5+4) on most screens. */
+.kpi-row-9 {
+  grid-template-columns: repeat(5, 1fr);
+}
+@media (max-width: 1300px) { .kpi-row-9 { grid-template-columns: repeat(4, 1fr); } }
+@media (max-width: 1000px) { .kpi-row-9 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px)  { .kpi-row-9 { grid-template-columns: repeat(2, 1fr); } }
+
 /* Map ---------------------------------------------------------- */
 
 .map-wrap {
@@ -865,6 +895,9 @@ h1, h2, h3, .serif {
   border-radius: var(--radius-sm);
   overflow: hidden;
   border: 1px solid var(--beige-deep);
+  position: relative;
+  isolation: isolate;
+  contain: layout paint;
 }
 .leaflet-container {
   font-family: "Pragmatica", sans-serif;
@@ -950,6 +983,20 @@ h1, h2, h3, .serif {
   height: 0;
   border-top: 2px solid #d32f2f;
   flex-shrink: 0;
+}
+.map-legend .legend-dot {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  border: 1.5px solid white;
+  box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.15);
+  flex-shrink: 0;
+}
+.map-legend .legend-dot-ring {
+  background: transparent;
+  border: 3px solid var(--lime);
+  box-shadow: none;
 }
 
 /* Leaflet custom marker icons (set as L.divIcon) */

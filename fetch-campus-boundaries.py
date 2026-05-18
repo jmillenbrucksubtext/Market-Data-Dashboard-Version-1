@@ -1,26 +1,35 @@
 """
 fetch-campus-boundaries.py
 ---------------------------
-For each Subtext-30 anchor university in data.json, query the OpenStreetMap
-Overpass API for university polygons near its lat/lng, pick the best fit, and
-save it as GeoJSON to assets/campus-boundaries/<market_key>.geojson.
+For each tracked market's anchor university in data.json, query the
+OpenStreetMap Overpass API for university polygons near its lat/lng, pick the
+best fit, and save it as GeoJSON to assets/campus-boundaries/<market_key>.geojson.
 
 Coverage varies: large flagship universities almost always have detailed campus
 polygons in OSM; smaller schools may have only a bounding box or nothing.
+Already-fetched files are skipped, so re-running is safe and cheap.
 Failures are logged to _manifest.json.
 
 Run:
-    python fetch-campus-boundaries.py
+    python fetch-campus-boundaries.py             # all scorecard markets
+    python fetch-campus-boundaries.py --s30-only  # Subtext-30 markets only
 """
 
 from __future__ import annotations
 
+import argparse
 import json
 import sys
 import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+# Force UTF-8 stdout/stderr so OSM names with diacritics (e.g. Hawaiʻi, Mānoa,
+# São Paulo) don't blow up the cp1252 default console on Windows.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).parent
 OUT_DIR = ROOT / "assets" / "campus-boundaries"
@@ -297,16 +306,20 @@ def fetch_campus(market_key: int, university: str, lat: float, lng: float) -> di
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    parser.add_argument("--s30-only", action="store_true",
+                        help="Limit fetch to Subtext-30 focus markets only.")
+    args = parser.parse_args()
+
     if not DATA.exists():
         sys.exit(f"data.json not found at {DATA}")
     payload = json.loads(DATA.read_text(encoding="utf-8"))
 
     sc = payload["tables"]["scorecard"]
     campuses = payload["tables"]["campus_locations"]
-    # for each Subtext-30 market, pick the anchor campus's lat/lng
     anchors = []
     for r in sc:
-        if r.get("is_subtext30") != 1:
+        if args.s30_only and r.get("is_subtext30") != 1:
             continue
         anchor_school = next(
             (c for c in campuses
@@ -315,7 +328,6 @@ def main() -> int:
             None,
         )
         if anchor_school is None:
-            # fall back to any school in the market
             anchor_school = next((c for c in campuses if c["market_key"] == r["market_key"]), None)
         if anchor_school is None:
             anchors.append((r["market_key"], r["anchor_university"], None, None))
@@ -325,18 +337,31 @@ def main() -> int:
             anchor_school["campus_lat"], anchor_school["campus_lng"],
         ))
 
-    print(f"Subtext-30 markets to process: {len(anchors)}")
+    scope = "Subtext-30" if args.s30_only else "all scorecard"
+    print(f"{scope} markets to process: {len(anchors)}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    manifest = []
+    # Preserve existing manifest entries for markets we are not re-fetching this run.
+    existing_manifest: dict[int, dict] = {}
+    if MANIFEST.exists():
+        try:
+            for entry in json.loads(MANIFEST.read_text(encoding="utf-8")):
+                existing_manifest[entry["market_key"]] = entry
+        except (json.JSONDecodeError, KeyError):
+            pass
+
+    manifest_by_key: dict[int, dict] = dict(existing_manifest)
     for market_key, name, lat, lng in anchors:
         entry = fetch_campus(market_key, name, lat, lng)
-        manifest.append(entry)
-        time.sleep(REQUEST_GAP)
+        manifest_by_key[market_key] = entry
+        # Only sleep between actual Overpass hits — cached entries return instantly.
+        if entry["status"] == "ok":
+            time.sleep(REQUEST_GAP)
 
+    manifest = sorted(manifest_by_key.values(), key=lambda e: e["market_key"])
     MANIFEST.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     ok = sum(1 for m in manifest if m["status"] in ("ok", "ok_existing"))
-    print(f"\nDone. {ok}/{len(manifest)} polygons fetched. Manifest: {MANIFEST}")
+    print(f"\nDone. {ok}/{len(manifest)} polygons available. Manifest: {MANIFEST}")
     return 0
 
 

@@ -30,6 +30,12 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 16,
+    "university": "Georgia College & State University",
+    "file": "16.png",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 17,
     "university": "Georgia Institute of Technology",
     "wiki_title": "Georgia Institute of Technology",
@@ -45,6 +51,18 @@
     "market_key": 20,
     "university": "University of South Carolina",
     "file": "20.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 21,
+    "university": "Mississippi State University",
+    "file": "21.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 22,
+    "university": "University of West Georgia",
+    "file": "22.png",
     "status": "ok_existing"
   },
   {
@@ -66,6 +84,42 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 29,
+    "university": "University of Texas at San Antonio",
+    "file": "29.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 31,
+    "university": "University of Houston",
+    "file": "31.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 37,
+    "university": "Southern Methodist University",
+    "file": "37.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 38,
+    "university": "University of North Texas",
+    "file": "38.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 42,
+    "university": "University of Illinois at Chicago",
+    "file": "42.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 43,
+    "university": "Northwestern University",
+    "file": "43.svg",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 48,
     "university": "University of Illinois at Urbana-Champaign",
     "wiki_title": "University of Illinois at Urbana-Champaign",
@@ -78,9 +132,99 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 60,
+    "university": "Texas Christian University",
+    "file": "60.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 65,
+    "university": "George Mason University",
+    "file": "65.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 66,
+    "university": "Iowa State University",
+    "file": "66.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 69,
+    "university": "Texas State University",
+    "file": "69.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 74,
+    "university": "University of Nebraska at Omaha",
+    "wiki_title": "University of Nebraska at Omaha",
+    "status": "no_image"
+  },
+  {
+    "market_key": 78,
+    "university": "University of Central Oklahoma",
+    "file": "78.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 82,
+    "university": "Northeastern University",
+    "file": "82.png",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 86,
     "university": "University of Missouri",
     "file": "86.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 93,
+    "university": "Johns Hopkins University",
+    "file": "93.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 95,
+    "university": "Western Michigan University",
+    "file": "95.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 99,
+    "university": "University of North Carolina at Charlotte",
+    "file": "99.jpg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 100,
+    "university": "North Carolina State University",
+    "file": "100.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 104,
+    "university": "Mercer University",
+    "file": "104.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 106,
+    "university": "University of North Dakota",
+    "file": "106.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 107,
+    "university": "Temple University",
+    "file": "107.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 109,
+    "university": "George Washington University",
+    "file": "109.svg",
     "status": "ok_existing"
   },
   {
@@ -90,15 +234,51 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 121,
+    "university": "Vanderbilt University",
+    "file": "121.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 122,
+    "university": "University of Oklahoma",
+    "file": "122.png",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 141,
     "university": "University of Central Florida",
     "file": "141.png",
     "status": "ok_existing"
   },
   {
+    "market_key": 146,
+    "university": "Duke University",
+    "file": "146.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 149,
+    "university": "College of Charleston",
+    "file": "149.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 154,
+    "university": "Rutgers University Newark",
+    "wiki_title": "Rutgers University Newark",
+    "status": "no_image"
+  },
+  {
     "market_key": 155,
     "university": "Ohio State University",
     "file": "155.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 175,
+    "university": "University of North Carolina at Asheville",
+    "file": "175.png",
     "status": "ok_existing"
   },
   {
@@ -108,16 +288,286 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 185,
+    "university": "University of Minnesota Twin Cities",
+    "wiki_title": "University of Minnesota Twin Cities",
+    "status": "no_image"
+  },
+  {
+    "market_key": 189,
+    "university": "Southern Illinois University Carbondale",
+    "file": "189.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 194,
+    "university": "Indiana University-Purdue University Indianapolis",
+    "wiki_title": "Indiana University-Purdue University Indianapolis",
+    "status": "no_image"
+  },
+  {
+    "market_key": 211,
+    "university": "University of North Florida",
+    "file": "211.jpg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 215,
+    "university": "Eastern Michigan University",
+    "file": "215.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 224,
+    "university": "Wright State University",
+    "file": "224.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 261,
+    "university": "Southern Illinois University Edwardsville",
+    "file": "261.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 288,
+    "university": "University of Memphis",
+    "file": "288.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 294,
+    "university": "Baylor University",
+    "file": "294.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 296,
+    "university": "University of Wisconsin Milwaukee",
+    "wiki_title": "University of Wisconsin Milwaukee",
+    "status": "no_image"
+  },
+  {
+    "market_key": 297,
+    "university": "Coastal Carolina",
+    "file": "297.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 303,
+    "university": "University of West Florida",
+    "file": "303.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 317,
+    "university": "Florida International University",
+    "file": "317.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 321,
+    "university": "University of North Carolina Wilmington",
+    "file": "321.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 322,
+    "university": "University of Alabama at Birmingham",
+    "file": "322.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 330,
+    "university": "University of Southern Mississippi",
+    "file": "330.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 333,
+    "university": "Rochester Institute of Technology",
+    "file": "333.svg",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 334,
     "university": "University of Wisconsin Madison",
     "wiki_title": "University of Wisconsin Madison",
     "status": "no_image"
   },
   {
+    "market_key": 347,
+    "university": "Rensselaer Polytechnic Institute",
+    "file": "347.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 353,
+    "university": "University of Louisville",
+    "file": "353.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 364,
+    "university": "University of Iowa",
+    "file": "364.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 383,
+    "university": "University of Kansas",
+    "file": "383.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 395,
+    "university": "Rhode Island College",
+    "file": "395.jpg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 404,
+    "university": "The University of Alabama in Huntsville",
+    "wiki_title": "The University of Alabama in Huntsville",
+    "status": "no_image"
+  },
+  {
+    "market_key": 410,
+    "university": "Winthrop University",
+    "file": "410.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 414,
+    "university": "Bradley University",
+    "file": "414.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 418,
+    "university": "University of South Florida",
+    "file": "418.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 451,
+    "university": "University of Louisiana at LaFayette",
+    "file": "451.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 454,
+    "university": "Florida Atlantic University",
+    "file": "454.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 465,
+    "university": "Cleveland State University",
+    "file": "465.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 483,
+    "university": "Ferris State University",
+    "file": "483.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 494,
+    "university": "Valparaiso University",
+    "file": "494.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 496,
+    "university": "Illinois State University",
+    "file": "496.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 500,
+    "university": "Wichita State University",
+    "file": "500.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 504,
+    "university": "Old Dominion University",
+    "file": "504.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 509,
+    "university": "Columbus State University",
+    "file": "509.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 512,
+    "university": "Virginia Commonwealth University",
+    "file": "512.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 521,
+    "university": "East Carolina University",
+    "file": "521.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 524,
+    "university": "Ohio University",
+    "file": "524.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 526,
+    "university": "Tulane University",
+    "file": "526.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 538,
+    "university": "Yale University",
+    "file": "538.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 541,
+    "university": "University of Texas at Arlington",
+    "file": "541.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 549,
+    "university": "North Dakota State University",
+    "file": "549.png",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 553,
     "university": "University of Tennessee",
     "file": "553.png",
     "status": "ok_existing"
+  },
+  {
+    "market_key": 555,
+    "university": "Cornell University",
+    "file": "555.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 560,
+    "university": "Ball State University",
+    "file": "560.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 562,
+    "university": "SUNY Cortland",
+    "wiki_title": "SUNY Cortland",
+    "status": "no_image"
   },
   {
     "market_key": 567,
@@ -132,9 +582,39 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 578,
+    "university": "Stephen F. Austin State University",
+    "file": "578.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 580,
+    "university": "Texas A&M University Corpus Christi",
+    "wiki_title": "Texas A&M University Corpus Christi",
+    "status": "no_image"
+  },
+  {
     "market_key": 590,
     "university": "University of Florida",
     "file": "590.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 593,
+    "university": "Southeast Missouri State University",
+    "file": "593.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 595,
+    "university": "Midwestern State University",
+    "file": "595.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 596,
+    "university": "Drake University",
+    "file": "596.svg",
     "status": "ok_existing"
   },
   {
@@ -144,10 +624,388 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 621,
+    "university": "Savannah College of Art & Design",
+    "wiki_title": "Savannah College of Art & Design",
+    "status": "no_image"
+  },
+  {
+    "market_key": 624,
+    "university": "College of William and Mary",
+    "wiki_title": "College of William and Mary",
+    "status": "no_image"
+  },
+  {
+    "market_key": 629,
+    "university": "University of Nebraska Lincoln",
+    "wiki_title": "University of Nebraska Lincoln",
+    "status": "no_image"
+  },
+  {
+    "market_key": 635,
+    "university": "Youngstown State University",
+    "file": "635.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 650,
+    "university": "University at Buffalo SUNY",
+    "wiki_title": "University at Buffalo SUNY",
+    "status": "no_image"
+  },
+  {
+    "market_key": 667,
+    "university": "Wake Forest University",
+    "file": "667.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 682,
+    "university": "Louisiana Tech University",
+    "file": "682.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 700,
+    "university": "Austin Peay State University",
+    "file": "700.jpg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 710,
+    "university": "Bloomsburg University of Pennsylvania",
+    "wiki_title": "Bloomsburg University of Pennsylvania",
+    "status": "no_image"
+  },
+  {
+    "market_key": 714,
+    "university": "Valdosta State University",
+    "file": "714.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 732,
+    "university": "Syracuse University",
+    "file": "732.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 734,
+    "university": "Brandeis University",
+    "file": "734.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 757,
+    "university": "University of Massachusetts Lowell",
+    "file": "757.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 769,
+    "university": "University of Missouri St. Louis",
+    "wiki_title": "University of Missouri St. Louis",
+    "status": "no_image"
+  },
+  {
+    "market_key": 800,
+    "university": "University of Akron",
+    "file": "800.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 807,
+    "university": "University at Albany SUNY",
+    "wiki_title": "University at Albany-SUNY",
+    "status": "no_image"
+  },
+  {
+    "market_key": 823,
+    "university": "Oklahoma State University",
+    "file": "823.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 838,
+    "university": "University of Vermont",
+    "file": "838.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 843,
+    "university": "East Tennessee State University",
+    "file": "843.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 847,
+    "university": "University of North Carolina Greensboro",
+    "wiki_title": "University of North Carolina Greensboro",
+    "status": "no_image"
+  },
+  {
+    "market_key": 896,
+    "university": "University of Notre Dame",
+    "file": "896.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 903,
+    "university": "University of Toledo",
+    "file": "903.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 914,
+    "university": "Middle Tennessee State University",
+    "file": "914.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 921,
+    "university": "Grand Valley State University",
+    "file": "921.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 931,
+    "university": "California State University Fresno",
+    "file": "931.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 933,
+    "university": "California State University Sacramento",
+    "file": "933.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 935,
+    "university": "University of California Santa Barbara",
+    "file": "935.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 936,
+    "university": "University of Colorado Colorado Springs",
+    "file": "936.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 940,
+    "university": "University of Washington",
+    "file": "940.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 941,
+    "university": "Portland State University",
+    "file": "941.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 942,
+    "university": "Grand Canyon University",
+    "file": "942.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 946,
+    "university": "University of Southern California",
+    "file": "946.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 960,
+    "university": "Oregon State University",
+    "file": "960.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 970,
+    "university": "University of Wyoming",
+    "file": "970.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 975,
+    "university": "University of California San Diego",
+    "file": "975.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 976,
+    "university": "Eastern Washington University",
+    "file": "976.jpg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 977,
+    "university": "University of Colorado Boulder",
+    "file": "977.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 982,
+    "university": "Western Washington University",
+    "file": "982.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 984,
+    "university": "University of San Francisco",
+    "file": "984.gif",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 992,
+    "university": "New Mexico State University",
+    "file": "992.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 994,
+    "university": "University of California Merced",
+    "file": "994.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1002,
+    "university": "Texas Tech University",
+    "file": "1002.png",
+    "status": "ok_existing"
+  },
+  {
     "market_key": 1005,
     "university": "University of Arizona",
     "file": "1005.png",
     "status": "ok_existing"
+  },
+  {
+    "market_key": 1006,
+    "university": "University of California Berkeley",
+    "file": "1006.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1012,
+    "university": "University of Utah",
+    "file": "1012.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1027,
+    "university": "California State University Chico",
+    "file": "1027.png",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1028,
+    "university": "University of Nevada Reno",
+    "file": "1028.svg",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1029,
+    "university": "University of Hawaii at Manoa",
+    "wiki_title": "University of Hawai\u02bbi at M\u0101noa",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/8/8f/UH_Manoa_Logo.png/500px-UH_Manoa_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1029.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1040,
+    "university": "Montana State University",
+    "wiki_title": "Montana State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Montana_State_University_logo.svg/500px-Montana_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1040.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1055,
+    "university": "San Jose State University",
+    "wiki_title": "San Jose State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d3/SJSU_Seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1055.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1060,
+    "university": "University of Nevada Las Vegas",
+    "wiki_title": "University of Nevada, Las Vegas",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9f/University_of_Nevada%2C_Las_Vegas_logo.svg/500px-University_of_Nevada%2C_Las_Vegas_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1060.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1063,
+    "university": "California Polytechnic State University San Luis Obispo",
+    "wiki_title": "California Polytechnic State University, San Luis Obispo",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/Cal_Poly_Logo_2019.svg/500px-Cal_Poly_Logo_2019.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1063.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1065,
+    "university": "University of New Mexico",
+    "wiki_title": "University of New Mexico",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/University_of_New_Mexico_logo.svg/500px-University_of_New_Mexico_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1065.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1066,
+    "university": "West Texas A&M University",
+    "wiki_title": "West Texas A&M University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a8/West_Texas_A%26M_Athletics_logo.svg/500px-West_Texas_A%26M_Athletics_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1066.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1069,
+    "university": "University of California Irvine",
+    "wiki_title": "University of California, Irvine",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b0/The_University_of_California_Irvine.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1069.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1084,
+    "university": "California State University Fullerton",
+    "wiki_title": "California State University, Fullerton",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1a/California_State_University%2C_Fullerton_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1084.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1090,
+    "university": "Lehigh University",
+    "wiki_title": "Lehigh University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/6/63/Lehigh_University_seal.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "1090.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1093,
+    "university": "Mesa, AZ",
+    "wiki_title": "Mesa, AZ",
+    "status": "no_image"
+  },
+  {
+    "market_key": 1099,
+    "university": "Colorado State University",
+    "wiki_title": "Colorado State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/95/Colorado_State_University_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1099.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1104,
+    "university": "Boise State University",
+    "wiki_title": "Boise State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/29/Administration_Building_seen_from_Friendship_Bridge.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1104.jpg",
+    "status": "ok"
   },
   {
     "market_key": 1152,
@@ -156,10 +1014,431 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 1160,
+    "university": "Santa Clara University",
+    "wiki_title": "Santa Clara University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/Santa_Clara_University_Text_Logo_Stacked.png/500px-Santa_Clara_University_Text_Logo_Stacked.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1160.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1183,
+    "university": "Pepperdine University",
+    "wiki_title": "Pepperdine University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/a/af/Pepperdine_University_seal.svg/500px-Pepperdine_University_seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1183.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1242,
+    "university": "Florida Institute of Technology",
+    "wiki_title": "Florida Institute of Technology",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/03/Florida_tech_star_wordmark.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1242.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1258,
+    "university": "Central Connecticut State University",
+    "wiki_title": "Central Connecticut State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/8/85/Central_Connecticut_State_University_Logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "1258.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1299,
+    "university": "University of Oregon",
+    "wiki_title": "University of Oregon",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/25/Seal_of_the_University_of_Oregon.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1299.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1353,
+    "university": "University of South Carolina Upstate",
+    "wiki_title": "University of South Carolina Upstate",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/d/d1/USC_Upstate_Seal.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1353.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1401,
+    "university": "Sam Houston State University",
+    "wiki_title": "Sam Houston State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Sam_Houston_State_University_logo.svg/500px-Sam_Houston_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1401.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1410,
+    "university": "University of California Riverside",
+    "wiki_title": "University of California, Riverside",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/0b/UC_Riverside_Athletics_Logo_2020.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "1410.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1447,
+    "university": "Utah Valley University",
+    "wiki_title": "Utah Valley University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/00/UVU-Institutional-Square-Mark-2016.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1447.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1492,
+    "university": "West Chester University of Pennsylvania",
+    "wiki_title": "West Chester University of Pennsylvania",
+    "status": "no_image"
+  },
+  {
+    "market_key": 1558,
+    "university": "University of Colorado Denver",
+    "wiki_title": "University of Colorado Denver",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/0/02/Seal_of_the_University_of_Colorado.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1558.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1560,
+    "university": "Michigan State University",
+    "wiki_title": "Michigan State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Michigan_State_University_wordmark.svg/500px-Michigan_State_University_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1560.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1574,
+    "university": "Missouri State University",
+    "wiki_title": "Missouri State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/1/1f/Missouri_State_University_Seal.svg/500px-Missouri_State_University_Seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1574.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1598,
+    "university": "University of California Davis",
+    "wiki_title": "University of California, Davis",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f3/The_University_of_California_Davis.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1598.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1620,
+    "university": "Kennesaw State University",
+    "wiki_title": "Kennesaw State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/7/75/Kennesaw_State_University_seal.svg/500px-Kennesaw_State_University_seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1620.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1653,
+    "university": "University of Montana",
+    "wiki_title": "University of Montana",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3d/University_of_Montana_logo_%282013%29.svg/500px-University_of_Montana_logo_%282013%29.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1653.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1666,
+    "university": "University of Texas Rio Grande Valley",
+    "wiki_title": "University of Texas Rio Grande Valley",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/56/University_of_Texas_Rio_Grande_Valley_logo.svg/500px-University_of_Texas_Rio_Grande_Valley_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1666.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1760,
+    "university": "Liberty University",
+    "wiki_title": "Liberty University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/22/Liberty_University_logo.svg/500px-Liberty_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1760.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1771,
+    "university": "New York University",
+    "wiki_title": "New York University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/16/New_York_University_Seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1771.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1780,
+    "university": "California Polytechnic State University Pomona",
+    "wiki_title": "California Polytechnic State University, Pomona",
+    "status": "no_image"
+  },
+  {
+    "market_key": 1804,
+    "university": "Louisiana State University",
+    "wiki_title": "Louisiana State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/fa/Louisiana_State_University%2C_Baton_Rouge%2C_LA.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1804.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1905,
+    "university": "Northern Arizona University",
+    "wiki_title": "Northern Arizona University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/a/a8/Northern_Arizona_University_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1905.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1924,
+    "university": "University of Central Arkansas",
+    "wiki_title": "University of Central Arkansas",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/9/91/University_of_Central_Arkansas_logo.svg/500px-University_of_Central_Arkansas_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1924.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1967,
+    "university": "Utah Tech University",
+    "wiki_title": "Utah Tech University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/bc/Utah_Tech_University_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "1967.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 1988,
+    "university": "Purdue University Fort Wayne",
+    "wiki_title": "Purdue University Fort Wayne",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/6/61/Purdue_University_seal.svg/500px-Purdue_University_seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1988.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 1995,
+    "university": "Indiana State University",
+    "wiki_title": "Indiana State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/71/Indiana_State_University_logo.svg/500px-Indiana_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "1995.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2146,
+    "university": "University of South Alabama",
+    "wiki_title": "University of South Alabama",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/University_of_South_Alabama_wordmark.svg/500px-University_of_South_Alabama_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2146.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2147,
+    "university": "Western Carolina University",
+    "wiki_title": "Western Carolina University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/7/71/Western_Carolina_University_Logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2147.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2170,
+    "university": "Towson University",
+    "wiki_title": "Towson University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/69/Towson_University_logo_horiz_2019.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2170.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2227,
+    "university": "University of Michigan Dearborn",
+    "wiki_title": "University of Michigan Dearborn",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2251,
+    "university": "Jacksonville State University",
+    "wiki_title": "Jacksonville State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/17/Jacksonville_State_University_seal.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2251.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2253,
+    "university": "University of North Alabama",
+    "wiki_title": "University of North Alabama",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/f/fd/University_of_North_Alabama_logo.svg/500px-University_of_North_Alabama_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2253.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2256,
+    "university": "Arkansas Tech University",
+    "wiki_title": "Arkansas Tech University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/28/Arkansas_Tech_University_Athletics_logo.svg/500px-Arkansas_Tech_University_Athletics_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2256.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2260,
+    "university": "California State University San Bernardino",
+    "wiki_title": "California State University, San Bernardino",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/CSU_sanbernardino_univ_logo.svg/500px-CSU_sanbernardino_univ_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2260.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2264,
+    "university": "University of Northern Colorado",
+    "wiki_title": "University of Northern Colorado",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/a/a5/Normal_School%2C_Greeley%2C_Colorado_%28The_Journal_of_Education%2C_1902%29.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2264.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2267,
+    "university": "Fairfield University",
+    "wiki_title": "Fairfield University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/0f/Fairfield_Stags_logo.svg/500px-Fairfield_Stags_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2267.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2269,
+    "university": "University of Delaware",
+    "wiki_title": "University of Delaware",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b3/University_of_Delaware_wordmark.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2269.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2272,
+    "university": "Embry-Riddle Aeronautical University",
+    "wiki_title": "Embry-Riddle Aeronautical University",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2273,
+    "university": "Florida Gulf Coast University",
+    "wiki_title": "Florida Gulf Coast University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/8/89/Florida_gcu_logo.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "2273.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2275,
+    "university": "University of Idaho",
+    "wiki_title": "University of Idaho",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/University_of_Idaho_logo.svg/500px-University_of_Idaho_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2275.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2282,
+    "university": "Kansas State University",
+    "wiki_title": "Kansas State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/59/Kansas_State_University_wordmark.svg/500px-Kansas_State_University_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2282.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2285,
+    "university": "Murray State University",
+    "wiki_title": "Murray State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d8/Murray_State_University_logo.svg/500px-Murray_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2285.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2287,
+    "university": "Western Kentucky University",
+    "wiki_title": "Western Kentucky University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/0/04/WKU_logo.svg/500px-WKU_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2287.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2290,
+    "university": "University of Maine",
+    "wiki_title": "University of Maine",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/3/3a/University_of_Maine_logo.svg/500px-University_of_Maine_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2290.png",
+    "status": "ok"
+  },
+  {
     "market_key": 2294,
     "university": "University of Maryland College Park",
     "file": "2294.png",
     "status": "ok_existing"
+  },
+  {
+    "market_key": 2295,
+    "university": "University of Massachusetts Amherst",
+    "wiki_title": "University of Massachusetts Amherst",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/4f/UMass_Seal_Medium_PMS_202.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2295.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2300,
+    "university": "Central Michigan University",
+    "wiki_title": "Central Michigan University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/ed/Central_Michigan_University_wordmark.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2300.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2302,
+    "university": "Minnesota State University Mankato",
+    "wiki_title": "Minnesota State University, Mankato",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/2e/Minnesota_State_University%2C_Mankato_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2302.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2308,
+    "university": "Dartmouth College",
+    "wiki_title": "Dartmouth College",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Dartmouth_College_logo.svg/500px-Dartmouth_College_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2308.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2310,
+    "university": "University of New Hampshire",
+    "wiki_title": "University of New Hampshire",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/65/University_of_New_Hampshire_logo.svg/500px-University_of_New_Hampshire_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2310.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2323,
+    "university": "State University of New York at Oswego",
+    "wiki_title": "State University of New York at Oswego",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/92/Oswego_athletics_wordmark.png/500px-Oswego_athletics_wordmark.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2323.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2333,
+    "university": "SUNY Oneonta",
+    "wiki_title": "SUNY Oneonta College Observatory",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/f/f3/Usa_edcp_relief_location_map.png/500px-Usa_edcp_relief_location_map.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2333.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2339,
+    "university": "College at Brockport SUNY",
+    "status": "no_wiki_page"
+  },
+  {
+    "market_key": 2341,
+    "university": "Appalachian State University",
+    "wiki_title": "Appalachian State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/1/16/Appalachian_State_University_logo_2.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail_unscaled",
+    "file": "2341.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2342,
+    "university": "Elon University",
+    "wiki_title": "Elon University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7f/Elon_University_logo.svg/500px-Elon_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2342.png",
+    "status": "ok"
   },
   {
     "market_key": 2344,
@@ -168,9 +1447,439 @@
     "status": "ok_existing"
   },
   {
+    "market_key": 2345,
+    "university": "University of North Carolina at Pembroke",
+    "wiki_title": "University of North Carolina at Pembroke",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/University_of_North_Carolina_at_Pembroke_logo.svg/500px-University_of_North_Carolina_at_Pembroke_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2345.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2347,
+    "university": "Bowling Green State University",
+    "wiki_title": "Bowling Green State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Bowling_Green_State_University_wordmark.svg/500px-Bowling_Green_State_University_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2347.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2349,
+    "university": "Kent State University",
+    "wiki_title": "Kent State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/a/a9/Kent_State_University_logo.svg/500px-Kent_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2349.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2350,
+    "university": "Miami University",
+    "wiki_title": "Miami University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Miami_University_logo_2021.svg/500px-Miami_University_logo_2021.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2350.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2354,
+    "university": "University of Cincinnati",
+    "wiki_title": "University of Cincinnati",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/63/University_of_Cincinnati_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2354.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2362,
+    "university": "Kutztown University of Pennsylvania",
+    "wiki_title": "Kutztown University of Pennsylvania",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2364,
+    "university": "Villanova University",
+    "wiki_title": "Villanova University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/c/c8/Villanova_University_logo.svg/500px-Villanova_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2364.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2369,
+    "university": "Indiana University of Pennsylvania",
+    "wiki_title": "Indiana University of Pennsylvania",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/2/20/IUP_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2369.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2375,
+    "university": "Penn State",
+    "wiki_title": "Penn State",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2377,
+    "university": "Slippery Rock University of Pennsylvania",
+    "wiki_title": "Slippery Rock University of Pennsylvania",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2381,
+    "university": "University of South Dakota",
+    "wiki_title": "University of South Dakota",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/9/98/University_of_South_Dakota_logo.svg/500px-University_of_South_Dakota_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2381.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2383,
+    "university": "Tennessee Technological University",
+    "wiki_title": "Tennessee Technological University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/c/c8/Tennessee_Technological_University_logo.svg/500px-Tennessee_Technological_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2383.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2386,
+    "university": "Angelo State University",
+    "wiki_title": "Angelo State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/59/Angelostate_univ_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2386.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2387,
+    "university": "Lamar University",
+    "wiki_title": "Lamar University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Lamar_University_logo.svg/500px-Lamar_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2387.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2388,
+    "university": "Tarleton State University",
+    "wiki_title": "Tarleton State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/e/e2/Tarleton_State_University_logo.svg/500px-Tarleton_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2388.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2389,
+    "university": "Texas A&M International University",
+    "wiki_title": "Texas A&M International University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/6c/Texas_A%26M_International_University_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2389.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2391,
+    "university": "Texas A&M University Kingsville",
+    "wiki_title": "Texas A&M University Kingsville",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2392,
+    "university": "Brigham Young University",
+    "wiki_title": "Brigham Young University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b2/Brigham_Young_University_medallion.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2392.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2393,
+    "university": "Utah State University",
+    "wiki_title": "Utah State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/2/27/Utah_State_University_logo.svg/500px-Utah_State_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2393.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2397,
+    "university": "James Madison University",
+    "wiki_title": "James Madison University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/James_Madison_University_Athletics_logo.svg/500px-James_Madison_University_Athletics_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2397.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2399,
+    "university": "Radford University",
+    "wiki_title": "Radford University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/9/91/Radford_University_Logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2399.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2400,
+    "university": "Virginia Polytechnic Institute and State University",
+    "wiki_title": "Virginia Polytechnic Institute and State University",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2402,
+    "university": "Central Washington University",
+    "wiki_title": "Central Washington University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/Cwu_university_logo.svg/500px-Cwu_university_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2402.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2403,
+    "university": "Washington State University",
+    "wiki_title": "Washington State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/0/0e/Washington_State_University_seal.svg/500px-Washington_State_University_seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2403.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2407,
+    "university": "West Virginia University",
+    "wiki_title": "West Virginia University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/1b/West_Virginia_University_seal.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2407.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2415,
+    "university": "Georgia Southern University",
+    "wiki_title": "Georgia Southern University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/2/2d/Georgia_Southern_University_logo.svg/500px-Georgia_Southern_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2415.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2416,
+    "university": "Troy University",
+    "wiki_title": "Troy University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Troy_University_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2416.png",
+    "status": "ok"
+  },
+  {
     "market_key": 2417,
     "university": "Rutgers University",
     "file": "2417.svg",
     "status": "ok_existing"
+  },
+  {
+    "market_key": 2418,
+    "university": "University of Connecticut",
+    "wiki_title": "University of Connecticut",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/8/8f/University_of_Connecticut_logo.svg/500px-University_of_Connecticut_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2418.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2419,
+    "university": "Binghamton University",
+    "wiki_title": "Binghamton University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/6/67/Binghamton_University_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2419.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2420,
+    "university": "University of Tennessee at Chattanooga",
+    "wiki_title": "University of Tennessee at Chattanooga",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/c8/The_University_of_Tennessee_at_Chattanooga.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2420.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2421,
+    "university": "University of North Georgia",
+    "wiki_title": "University of North Georgia",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b1/University_of_North_Georgia_logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2421.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2422,
+    "university": "University of Central Missouri",
+    "wiki_title": "University of Central Missouri",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/7/7a/University_of_Central_Missouri_logo.svg/500px-University_of_Central_Missouri_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2422.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2423,
+    "university": "University of Texas at Dallas",
+    "wiki_title": "University of Texas at Dallas",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/45/UT_Dallas_-_Full_Mark_Texas_Logo.jpg/500px-UT_Dallas_-_Full_Mark_Texas_Logo.jpg?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2423.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2425,
+    "university": "Temple College",
+    "wiki_title": "Temple College",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/e/e7/Temple_College_Student_Union_IMG_0667.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2425.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2427,
+    "university": "Arkansas State University",
+    "wiki_title": "Arkansas State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/f/f4/AState_Logo.png?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2427.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2430,
+    "university": "Gonzaga University",
+    "wiki_title": "Gonzaga University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/6/65/Gonzaga_University_Logo.svg/500px-Gonzaga_University_Logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2430.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2435,
+    "university": "Brigham Young University-Idaho",
+    "wiki_title": "Brigham Young University-Idaho",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2437,
+    "university": "Salisbury University",
+    "wiki_title": "Salisbury University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/0/04/Salisbury_University_logo.svg/500px-Salisbury_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2437.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2438,
+    "university": "Claremont McKenna College",
+    "wiki_title": "Claremont McKenna College",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/d/d9/Claremont_McKenna_College_logo.svg/500px-Claremont_McKenna_College_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2438.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2441,
+    "university": "Prairie View A&M University",
+    "wiki_title": "Prairie View A&M University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/b/b0/Prairie_View_A%26M_University_logo.svg/500px-Prairie_View_A%26M_University_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2441.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2442,
+    "university": "California State University Stanislaus",
+    "wiki_title": "California State University, Stanislaus",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/5/55/Csu_stanislaus_shield_logo.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2442.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2443,
+    "university": "Abilene Christian University",
+    "wiki_title": "Abilene Christian University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/1/11/Abilene_Christian_University_wordmark_hz_logo.svg/500px-Abilene_Christian_University_wordmark_hz_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2443.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2447,
+    "university": "Gulf Coast State College",
+    "wiki_title": "Gulf Coast State College",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/c/cb/Gulf_Coast_State_College.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2447.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2448,
+    "university": "The Ohio State University at Mansfield",
+    "wiki_title": "The Ohio State University at Mansfield",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2449,
+    "university": "Northwestern State University",
+    "wiki_title": "Northwestern State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/4/47/Friedman_Student_Union_Building_IMG_2000.JPG?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2449.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2450,
+    "university": "Gainesville, GA",
+    "wiki_title": "Gainesville, GA",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2451,
+    "university": "Northern Iowa University",
+    "wiki_title": "Northern Iowa University",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2453,
+    "university": "Albany State University",
+    "wiki_title": "Albany State University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/4d/Albany_state_univ_logo.svg/500px-Albany_state_univ_logo.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2453.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2454,
+    "university": "Lancaster, PA",
+    "wiki_title": "Lancaster, PA",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2475,
+    "university": "Key West, FL",
+    "wiki_title": "Key West, FL",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2478,
+    "university": "Fox Valley Technical College",
+    "wiki_title": "Fox Valley Technical College",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/be/Appleton_Campus.jpg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2478.jpg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2479,
+    "university": "Shreveport, LA",
+    "wiki_title": "Shreveport, LA",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2484,
+    "university": "Harrisburg, PA",
+    "wiki_title": "Harrisburg, PA",
+    "status": "no_image"
+  },
+  {
+    "market_key": 2486,
+    "university": "University of Texas at Tyler",
+    "wiki_title": "University of Texas at Tyler",
+    "image_url": "https://upload.wikimedia.org/wikipedia/en/thumb/3/36/University_of_Texas_at_Tyler_seal.svg/500px-University_of_Texas_at_Tyler_seal.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2486.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2487,
+    "university": "Stanford University",
+    "wiki_title": "Stanford University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/b/b5/Seal_of_Leland_Stanford_Junior_University.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2487.svg",
+    "status": "ok"
+  },
+  {
+    "market_key": 2488,
+    "university": "California Institute of Technology",
+    "wiki_title": "California Institute of Technology",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/3f/Caltech_Athletics_wordmark.svg/500px-Caltech_Athletics_wordmark.svg.png?utm_source=en.wikipedia.org&utm_campaign=imageinfo&utm_content=thumbnail",
+    "file": "2488.png",
+    "status": "ok"
+  },
+  {
+    "market_key": 2489,
+    "university": "Tufts University",
+    "wiki_title": "Tufts University",
+    "image_url": "https://upload.wikimedia.org/wikipedia/commons/1/12/Tufts_University_wordmark.svg?utm_source=en.wikipedia.org&utm_campaign=api&utm_content=original",
+    "file": "2489.svg",
+    "status": "ok"
   }
 ]

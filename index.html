@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Performance</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=9">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
@@ -58,6 +58,10 @@
             <input type="checkbox" id="subtext30-only" checked>
             <span>Subtext-30 only</span>
           </label>
+          <label class="subtext-toggle" id="power4-toggle-label" title="SEC · Big Ten · Big 12 · ACC anchor schools">
+            <input type="checkbox" id="power4-only">
+            <span>Power 4 only</span>
+          </label>
           <span class="freshness">
             <span>Data as of</span>
             <span class="value" id="data-as-of">—</span>
@@ -76,26 +80,44 @@
           <header class="card-header">
             <div>
               <h2>Markets we track</h2>
-              <p>
-                Each pin is an anchor university, colored by qualifier score
-                (<span style="color:#16352e;font-weight:700">green ≥80%</span> ·
-                <span style="color:#c79830;font-weight:700">amber 60–79%</span> ·
-                <span style="color:#a95818;font-weight:700">rust &lt;60%</span>).
-                <span style="color:#c1d100;font-weight:700">Lime ring</span> = Subtext-30 focus market. Click any pin to drill in.
-              </p>
             </div>
           </header>
           <div class="card-body">
-            <div id="industry-map" class="industry-map"></div>
+            <div class="map-with-legend">
+              <div id="industry-map" class="industry-map"></div>
+              <div class="map-legend">
+                <div class="legend-section">
+                  <div class="legend-section-title">Qualifier score</div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#16352e"></span>
+                    <span>≥ 80%</span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#c79830"></span>
+                    <span>60 – 79%</span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#a95818"></span>
+                    <span>&lt; 60%</span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#b6b1ab"></span>
+                    <span>No data</span>
+                  </div>
+                </div>
+                <div class="legend-section">
+                  <div class="legend-row">
+                    <span class="legend-dot legend-dot-ring"></span>
+                    <span>Subtext-30 focus</span>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
 
         <div class="page-header">
           <h1>Market Performance</h1>
-          <p id="page-subtitle">
-            Student-housing market metrics across <span id="market-count">—</span> US markets,
-            anchored by the largest university in each. Source: <code>StudentResearch</code>, refreshed weekly.
-          </p>
         </div>
 
         <!-- KPI summary row -->
@@ -136,15 +158,14 @@
               <thead>
                 <tr>
                   <th data-sort="anchor_university">Anchor University</th>
-                  <th data-sort="state_abbr">State</th>
                   <th data-sort="qualifier_score" data-type="num">Qualifier</th>
                   <th data-sort="penetration_ratio" data-type="num">Penetration</th>
-                  <th data-sort="market_band">Band</th>
-                  <th data-sort="existing_beds" data-type="num">Existing Beds</th>
-                  <th data-sort="beds_pipeline_total" data-type="num">Pipeline</th>
                   <th data-sort="total_enrollment" data-type="num">Enrollment</th>
+                  <th data-sort="existing_beds" data-type="num">Existing Beds</th>
                   <th data-sort="avg_rent_per_bed" data-type="num">Avg Rent/Bed</th>
                   <th data-sort="yoy_rent_growth" data-type="num">Rent YoY</th>
+                  <th data-sort="beds_pipeline_total" data-type="num">Pipeline</th>
+                  <th data-sort="mean_origin_income" data-type="num" title="Mean household income of the census tracts incoming students migrated from (migration data).">Origin Inc</th>
                 </tr>
               </thead>
               <tbody></tbody>
@@ -551,6 +572,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js"></script>
+  <script src="dashboard.js?v=8"></script>
 </body>
 </html>

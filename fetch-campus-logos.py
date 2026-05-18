@@ -1,7 +1,7 @@
 """
 fetch-campus-logos.py
 ---------------------
-For every Subtext-30 anchor university in data.json, fetch its primary
+For every tracked market's anchor university in data.json, fetch its primary
 infobox image from Wikipedia and save as assets/campus-logos/<market_key>.png.
 
 Wikipedia API flow per school:
@@ -9,12 +9,17 @@ Wikipedia API flow per school:
   2. Fetch original image URL: /w/api.php?action=query&prop=pageimages&piprop=original&titles=<title>
   3. Download the image.
 
-If a step fails for a school, we skip it cleanly and continue. A manifest is
-written to assets/campus-logos/_manifest.json with the result for each market.
+Already-fetched files are skipped — re-running is safe and cheap.
+A manifest is written to assets/campus-logos/_manifest.json.
+
+Run:
+    python fetch-campus-logos.py              # all scorecard markets
+    python fetch-campus-logos.py --s30-only   # Subtext-30 markets only
 """
 
 from __future__ import annotations
 
+import argparse
 import io
 import json
 import sys
@@ -22,6 +27,13 @@ import time
 import urllib.parse
 import urllib.request
 from pathlib import Path
+
+# Force UTF-8 stdout/stderr so Wikipedia titles with diacritics
+# (e.g. "University of Hawaiʻi at Mānoa") don't blow up the cp1252
+# default console on Windows.
+if hasattr(sys.stdout, "reconfigure"):
+    sys.stdout.reconfigure(encoding="utf-8", errors="replace")
+    sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 ROOT = Path(__file__).parent
 OUT_DIR = ROOT / "assets" / "campus-logos"
@@ -218,36 +230,52 @@ def fetch_logo(market_key: int, university_name: str) -> dict:
 
 
 def main() -> int:
+    parser = argparse.ArgumentParser(description=__doc__.split("\n")[1])
+    parser.add_argument("--s30-only", action="store_true",
+                        help="Limit fetch to Subtext-30 focus markets only.")
+    args = parser.parse_args()
+
     if not DATA.exists():
         sys.exit(f"data.json not found at {DATA}")
     payload = json.loads(DATA.read_text(encoding="utf-8"))
     targets = [
         (r["market_key"], r["anchor_university"])
         for r in payload["tables"]["scorecard"]
-        if r.get("is_subtext30") == 1
+        if not args.s30_only or r.get("is_subtext30") == 1
     ]
-    print(f"Subtext-30 markets to process: {len(targets)}")
+    scope = "Subtext-30" if args.s30_only else "all scorecard"
+    print(f"{scope} markets to process: {len(targets)}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
     # Resume support — if a logo already exists for a market_key, skip fetch.
     existing = {p.stem: p for p in OUT_DIR.glob("*") if p.is_file() and p.name != "_manifest.json"}
 
-    manifest = []
+    # Preserve existing manifest entries so a partial re-run keeps prior results.
+    existing_manifest: dict[int, dict] = {}
+    if MANIFEST.exists():
+        try:
+            for entry in json.loads(MANIFEST.read_text(encoding="utf-8")):
+                existing_manifest[entry["market_key"]] = entry
+        except (json.JSONDecodeError, KeyError):
+            pass
+
+    manifest_by_key: dict[int, dict] = dict(existing_manifest)
     for market_key, name in targets:
         if str(market_key) in existing:
             print(f"[{market_key}] {name} — already fetched ({existing[str(market_key)].name})")
-            manifest.append({
+            manifest_by_key[market_key] = {
                 "market_key": market_key, "university": name,
                 "file": existing[str(market_key)].name, "status": "ok_existing",
-            })
+            }
             continue
         entry = fetch_logo(market_key, name)
-        manifest.append(entry)
+        manifest_by_key[market_key] = entry
         time.sleep(REQUEST_GAP)
 
+    manifest = sorted(manifest_by_key.values(), key=lambda e: e["market_key"])
     MANIFEST.write_text(json.dumps(manifest, indent=2), encoding="utf-8")
-    ok = sum(1 for m in manifest if m["status"] == "ok")
-    print(f"\nDone. {ok}/{len(manifest)} logos fetched. Manifest: {MANIFEST}")
+    ok = sum(1 for m in manifest if m["status"] in ("ok", "ok_existing"))
+    print(f"\nDone. {ok}/{len(manifest)} logos available. Manifest: {MANIFEST}")
     return 0
 
 

@@ -12,6 +12,15 @@ venv/
 .env.local
 .env.*.local
 
+# DPAPI-encrypted credential blob used by weekly-refresh.ps1.
+# File is encrypted to the current Windows user + machine, so it's useless
+# anywhere else, but no reason to publish it either.
+.sql-cred.xml
+
+# Local log from weekly-refresh.ps1
+refresh.log
+refresh.log.1
+
 # Editors / IDEs
 .vscode/
 .idea/

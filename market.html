@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=10">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 </head>
@@ -67,8 +67,8 @@
           <div class="market-grid">
           <div class="market-main">
 
-          <!-- KPI strip (6 cards on this view) -->
-          <div class="kpi-row kpi-row-6">
+          <!-- KPI strip (9 cards, wraps to 2 rows on smaller screens) -->
+          <div class="kpi-row kpi-row-9">
             <div class="kpi">
               <div class="kpi-label">Existing Beds</div>
               <div class="kpi-value" id="kpi-beds">—</div>
@@ -84,8 +84,8 @@
               <div class="kpi-value" id="kpi-pen">—</div>
               <div class="kpi-sub" id="kpi-pen-sub">—</div>
             </div>
-            <div class="kpi">
-              <div class="kpi-label">Total Enrollment</div>
+            <div class="kpi" title="Headline = full-time enrollment (MarketReports.enr_full_time). YoY shows real FTE YoY when fte_history is loaded; falls back to total-enrollment YoY (enrollment_trend) otherwise.">
+              <div class="kpi-label">FTE Enrollment</div>
               <div class="kpi-value" id="kpi-enr">—</div>
               <div class="kpi-sub" id="kpi-enr-sub">—</div>
             </div>
@@ -98,6 +98,21 @@
               <div class="kpi-label">Rent YoY</div>
               <div class="kpi-value" id="kpi-rent-yoy">—</div>
               <div class="kpi-sub" id="kpi-rent-yoy-sub">—</div>
+            </div>
+            <div class="kpi" title="Bed-weighted market occupancy at the latest snapshot.">
+              <div class="kpi-label">Occupancy</div>
+              <div class="kpi-value" id="kpi-occupancy">—</div>
+              <div class="kpi-sub" id="kpi-occupancy-sub">—</div>
+            </div>
+            <div class="kpi" title="Bed-weighted market pre-lease at the latest snapshot.">
+              <div class="kpi-label">Pre-lease</div>
+              <div class="kpi-value" id="kpi-prelease">—</div>
+              <div class="kpi-sub" id="kpi-prelease-sub">—</div>
+            </div>
+            <div class="kpi" title="Mean household income of the census tracts incoming students migrated from. Higher = wealthier inbound student base.">
+              <div class="kpi-label">Mean Origin Income</div>
+              <div class="kpi-value" id="kpi-affluence">—</div>
+              <div class="kpi-sub" id="kpi-affluence-sub">—</div>
             </div>
           </div>
 
@@ -165,7 +180,6 @@
                     <th data-sort="avg_rent_per_sf" data-type="num">Rent / SF</th>
                     <th data-sort="hasConcessions">Concessions</th>
                     <th data-sort="milesToClosestCampus" data-type="num">Mi to Campus</th>
-                    <th data-sort="currentGoogleReviewAvg" data-type="num">Google ★</th>
                   </tr>
                 </thead>
                 <tbody></tbody>
@@ -207,6 +221,6 @@
     </div>
   </div>
 
-  <script src="market.js" defer></script>
+  <script src="market.js?v=7" defer></script>
 </body>
 </html>

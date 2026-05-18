@@ -3,261 +3,2022 @@
     "market_key": 11,
     "university": "Clemson University",
     "file": "11.geojson",
-    "osm_id": 145811,
-    "osm_type": "relation",
-    "osm_name": "Clemson University",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 12,
     "university": "University of Georgia",
     "file": "12.geojson",
-    "osm_id": 497509577,
-    "osm_type": "way",
-    "osm_name": "University of Georgia",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 13,
     "university": "Auburn University",
     "file": "13.geojson",
-    "osm_id": 8457841,
-    "osm_type": "relation",
-    "osm_name": "Auburn University",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 14,
     "university": "University of Alabama",
     "file": "14.geojson",
-    "osm_id": 89748187,
-    "osm_type": "way",
-    "osm_name": "University of Alabama",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 15,
     "university": "University of Mississippi",
     "file": "15.geojson",
-    "osm_id": 32945199,
-    "osm_type": "way",
-    "osm_name": "University of Mississippi",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 16,
+    "university": "Georgia College & State University",
+    "file": "16.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 17,
     "university": "Georgia Institute of Technology",
     "file": "17.geojson",
-    "osm_id": 3341535,
-    "osm_type": "relation",
-    "osm_name": "Georgia Tech",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 18,
     "university": "Florida State University",
     "file": "18.geojson",
-    "osm_id": 18587875,
-    "osm_type": "relation",
-    "osm_name": "Florida State University",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 20,
     "university": "University of South Carolina",
     "file": "20.geojson",
-    "osm_id": 19034646,
-    "osm_type": "relation",
-    "osm_name": "University of South Carolina",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 21,
+    "university": "Mississippi State University",
+    "file": "21.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 22,
+    "university": "University of West Georgia",
+    "file": "22.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 24,
     "university": "Texas A&M University",
     "file": "24.geojson",
-    "osm_id": 8556620,
-    "osm_type": "relation",
-    "osm_name": "Texas A&M University",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 25,
     "university": "University of Michigan",
     "file": "25.geojson",
-    "osm_id": 3990210,
-    "osm_type": "relation",
-    "osm_name": "University of Michigan",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 27,
     "university": "University of Texas at Austin",
     "file": "27.geojson",
-    "osm_id": 1701848,
-    "osm_type": "relation",
-    "osm_name": "University of Texas at Austin",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 29,
+    "university": "University of Texas at San Antonio",
+    "file": "29.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 31,
+    "university": "University of Houston",
+    "file": "31.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 37,
+    "university": "Southern Methodist University",
+    "file": "37.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 38,
+    "university": "University of North Texas",
+    "file": "38.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 42,
+    "university": "University of Illinois at Chicago",
+    "file": "42.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 43,
+    "university": "Northwestern University",
+    "file": "43.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 48,
     "university": "University of Illinois at Urbana-Champaign",
     "file": "48.geojson",
-    "osm_id": 12299045,
-    "osm_type": "relation",
-    "osm_name": "University of Illinois Urbana-Champaign",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 52,
     "university": "University of Pittsburgh",
     "file": "52.geojson",
-    "osm_id": 2079309,
-    "osm_type": "relation",
-    "osm_name": "University of Pittsburgh",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 60,
+    "university": "Texas Christian University",
+    "file": "60.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 65,
+    "university": "George Mason University",
+    "file": "65.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 66,
+    "university": "Iowa State University",
+    "file": "66.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 69,
+    "university": "Texas State University",
+    "file": "69.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 74,
+    "university": "University of Nebraska at Omaha",
+    "file": "74.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 78,
+    "university": "University of Central Oklahoma",
+    "file": "78.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 82,
+    "university": "Northeastern University",
+    "file": "82.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 86,
     "university": "University of Missouri",
     "file": "86.geojson",
-    "osm_id": 18446441,
-    "osm_type": "relation",
-    "osm_name": "University of Missouri",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 93,
+    "university": "Johns Hopkins University",
+    "file": "93.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 95,
+    "university": "Western Michigan University",
+    "file": "95.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 99,
+    "university": "University of North Carolina at Charlotte",
+    "file": "99.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 100,
+    "university": "North Carolina State University",
+    "file": "100.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 104,
+    "university": "Mercer University",
+    "file": "104.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 106,
+    "university": "University of North Dakota",
+    "file": "106.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 107,
+    "university": "Temple University",
+    "file": "107.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 109,
+    "university": "George Washington University",
+    "file": "109.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 118,
     "university": "Indiana University Bloomington",
     "file": "118.geojson",
-    "osm_id": 74173036,
-    "osm_type": "way",
-    "osm_name": "Indiana University Bloomington",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 121,
+    "university": "Vanderbilt University",
+    "file": "121.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 122,
+    "university": "University of Oklahoma",
+    "file": "122.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 141,
     "university": "University of Central Florida",
     "file": "141.geojson",
-    "osm_id": 1159228,
-    "osm_type": "relation",
-    "osm_name": "University of Central Florida",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 146,
+    "university": "Duke University",
+    "file": "146.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 149,
+    "university": "College of Charleston",
+    "file": "149.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 154,
+    "university": "Rutgers University Newark",
+    "file": "154.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 155,
     "university": "Ohio State University",
     "file": "155.geojson",
-    "osm_id": 306632,
-    "osm_type": "relation",
-    "osm_name": "The Ohio State University",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 175,
+    "university": "University of North Carolina at Asheville",
+    "file": "175.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 180,
     "university": "University of Arkansas",
     "file": "180.geojson",
-    "osm_id": 12440820,
-    "osm_type": "relation",
-    "osm_name": "University of Arkansas",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 185,
+    "university": "University of Minnesota Twin Cities",
+    "file": "185.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 189,
+    "university": "Southern Illinois University Carbondale",
+    "file": "189.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 194,
+    "university": "Indiana University-Purdue University Indianapolis",
+    "file": "194.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 211,
+    "university": "University of North Florida",
+    "file": "211.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 215,
+    "university": "Eastern Michigan University",
+    "file": "215.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 224,
+    "university": "Wright State University",
+    "file": "224.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 261,
+    "university": "Southern Illinois University Edwardsville",
+    "file": "261.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 288,
+    "university": "University of Memphis",
+    "file": "288.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 294,
+    "university": "Baylor University",
+    "file": "294.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 296,
+    "university": "University of Wisconsin Milwaukee",
+    "file": "296.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 297,
+    "university": "Coastal Carolina",
+    "file": "297.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 303,
+    "university": "University of West Florida",
+    "file": "303.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 317,
+    "university": "Florida International University",
+    "file": "317.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 321,
+    "university": "University of North Carolina Wilmington",
+    "file": "321.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 322,
+    "university": "University of Alabama at Birmingham",
+    "file": "322.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 330,
+    "university": "University of Southern Mississippi",
+    "file": "330.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 333,
+    "university": "Rochester Institute of Technology",
+    "file": "333.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 334,
     "university": "University of Wisconsin Madison",
     "file": "334.geojson",
-    "osm_id": 7144092,
-    "osm_type": "relation",
-    "osm_name": "University of Wisconsin-Madison",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 347,
+    "university": "Rensselaer Polytechnic Institute",
+    "file": "347.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 353,
+    "university": "University of Louisville",
+    "file": "353.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 364,
+    "university": "University of Iowa",
+    "file": "364.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 383,
+    "university": "University of Kansas",
+    "file": "383.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 395,
+    "university": "Rhode Island College",
+    "file": "395.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 404,
+    "university": "The University of Alabama in Huntsville",
+    "file": "404.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 410,
+    "university": "Winthrop University",
+    "file": "410.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 414,
+    "university": "Bradley University",
+    "file": "414.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 418,
+    "university": "University of South Florida",
+    "file": "418.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 451,
+    "university": "University of Louisiana at LaFayette",
+    "file": "451.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 454,
+    "university": "Florida Atlantic University",
+    "file": "454.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 465,
+    "university": "Cleveland State University",
+    "file": "465.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 483,
+    "university": "Ferris State University",
+    "file": "483.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 494,
+    "university": "Valparaiso University",
+    "file": "494.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 496,
+    "university": "Illinois State University",
+    "file": "496.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 500,
+    "university": "Wichita State University",
+    "file": "500.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 504,
+    "university": "Old Dominion University",
+    "file": "504.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 509,
+    "university": "Columbus State University",
+    "file": "509.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 512,
+    "university": "Virginia Commonwealth University",
+    "file": "512.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 521,
+    "university": "East Carolina University",
+    "file": "521.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 524,
+    "university": "Ohio University",
+    "file": "524.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 526,
+    "university": "Tulane University",
+    "file": "526.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 538,
+    "university": "Yale University",
+    "file": "538.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 541,
+    "university": "University of Texas at Arlington",
+    "file": "541.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 549,
+    "university": "North Dakota State University",
+    "file": "549.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 553,
     "university": "University of Tennessee",
     "file": "553.geojson",
-    "osm_id": 376167113,
-    "osm_type": "way",
-    "osm_name": "University of Tennessee, Knoxville",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 555,
+    "university": "Cornell University",
+    "file": "555.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 560,
+    "university": "Ball State University",
+    "file": "560.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 562,
+    "university": "SUNY Cortland",
+    "file": "562.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 567,
     "university": "University of Kentucky",
     "file": "567.geojson",
-    "osm_id": 4815526,
-    "osm_type": "relation",
-    "osm_name": "University of Kentucky",
-    "status": "ok"
+    "status": "ok_existing"
   },
   {
     "market_key": 568,
     "university": "University of Virginia",
     "file": "568.geojson",
-    "osm_id": 4218705,
-    "osm_type": "relation",
-    "osm_name": "University of Virginia",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 578,
+    "university": "Stephen F. Austin State University",
+    "file": "578.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 580,
+    "university": "Texas A&M University Corpus Christi",
+    "file": "580.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 590,
     "university": "University of Florida",
     "file": "590.geojson",
-    "osm_id": 18432136,
-    "osm_type": "relation",
-    "osm_name": "University of Florida",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 593,
+    "university": "Southeast Missouri State University",
+    "file": "593.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 595,
+    "university": "Midwestern State University",
+    "file": "595.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 596,
+    "university": "Drake University",
+    "file": "596.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 611,
     "university": "Purdue University",
     "file": "611.geojson",
-    "osm_id": 12444296,
-    "osm_type": "relation",
-    "osm_name": "Purdue University",
-    "status": "ok"
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 621,
+    "university": "Savannah College of Art & Design",
+    "file": "621.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 624,
+    "university": "College of William and Mary",
+    "file": "624.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 629,
+    "university": "University of Nebraska Lincoln",
+    "file": "629.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 635,
+    "university": "Youngstown State University",
+    "file": "635.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 650,
+    "university": "University at Buffalo SUNY",
+    "file": "650.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 667,
+    "university": "Wake Forest University",
+    "file": "667.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 682,
+    "university": "Louisiana Tech University",
+    "file": "682.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 700,
+    "university": "Austin Peay State University",
+    "file": "700.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 710,
+    "university": "Bloomsburg University of Pennsylvania",
+    "file": "710.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 714,
+    "university": "Valdosta State University",
+    "file": "714.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 732,
+    "university": "Syracuse University",
+    "file": "732.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 734,
+    "university": "Brandeis University",
+    "file": "734.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 757,
+    "university": "University of Massachusetts Lowell",
+    "file": "757.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 769,
+    "university": "University of Missouri St. Louis",
+    "file": "769.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 800,
+    "university": "University of Akron",
+    "file": "800.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 807,
+    "university": "University at Albany SUNY",
+    "file": "807.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 823,
+    "university": "Oklahoma State University",
+    "file": "823.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 838,
+    "university": "University of Vermont",
+    "file": "838.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 843,
+    "university": "East Tennessee State University",
+    "file": "843.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 847,
+    "university": "University of North Carolina Greensboro",
+    "file": "847.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 896,
+    "university": "University of Notre Dame",
+    "file": "896.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 903,
+    "university": "University of Toledo",
+    "file": "903.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 914,
+    "university": "Middle Tennessee State University",
+    "file": "914.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 921,
+    "university": "Grand Valley State University",
+    "file": "921.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 931,
+    "university": "California State University Fresno",
+    "file": "931.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 933,
+    "university": "California State University Sacramento",
+    "file": "933.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 935,
+    "university": "University of California Santa Barbara",
+    "file": "935.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 936,
+    "university": "University of Colorado Colorado Springs",
+    "file": "936.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 940,
+    "university": "University of Washington",
+    "file": "940.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 941,
+    "university": "Portland State University",
+    "file": "941.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 942,
+    "university": "Grand Canyon University",
+    "file": "942.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 946,
+    "university": "University of Southern California",
+    "file": "946.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 960,
+    "university": "Oregon State University",
+    "file": "960.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 970,
+    "university": "University of Wyoming",
+    "file": "970.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 975,
+    "university": "University of California San Diego",
+    "file": "975.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 976,
+    "university": "Eastern Washington University",
+    "file": "976.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 977,
+    "university": "University of Colorado Boulder",
+    "file": "977.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 982,
+    "university": "Western Washington University",
+    "file": "982.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 984,
+    "university": "University of San Francisco",
+    "file": "984.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 992,
+    "university": "New Mexico State University",
+    "file": "992.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 994,
+    "university": "University of California Merced",
+    "file": "994.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1002,
+    "university": "Texas Tech University",
+    "file": "1002.geojson",
+    "status": "ok_existing"
   },
   {
     "market_key": 1005,
     "university": "University of Arizona",
     "file": "1005.geojson",
-    "osm_id": 6044244,
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1006,
+    "university": "University of California Berkeley",
+    "file": "1006.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1012,
+    "university": "University of Utah",
+    "file": "1012.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1027,
+    "university": "California State University Chico",
+    "file": "1027.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1028,
+    "university": "University of Nevada Reno",
+    "file": "1028.geojson",
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1029,
+    "university": "University of Hawaii at Manoa",
+    "file": "1029.geojson",
+    "osm_id": 31811863,
+    "osm_type": "way",
+    "osm_name": "University of Hawai\u02bbi at M\u0101noa",
+    "status": "ok"
+  },
+  {
+    "market_key": 1040,
+    "university": "Montana State University",
+    "file": "1040.geojson",
+    "osm_id": 312833325,
+    "osm_type": "way",
+    "osm_name": "Montana State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1055,
+    "university": "San Jose State University",
+    "file": "1055.geojson",
+    "osm_id": 25775883,
+    "osm_type": "way",
+    "osm_name": "San Jos\u00e9 State University Main Campus",
+    "status": "ok"
+  },
+  {
+    "market_key": 1060,
+    "university": "University of Nevada Las Vegas",
+    "file": "1060.geojson",
+    "osm_id": 19558356,
     "osm_type": "relation",
-    "osm_name": "University of Arizona",
+    "osm_name": "University of Nevada, Las Vegas",
+    "status": "ok"
+  },
+  {
+    "market_key": 1063,
+    "university": "California Polytechnic State University San Luis Obispo",
+    "file": "1063.geojson",
+    "osm_id": 290467779,
+    "osm_type": "way",
+    "osm_name": "California Polytechnic State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1065,
+    "university": "University of New Mexico",
+    "file": "1065.geojson",
+    "osm_id": 305072242,
+    "osm_type": "way",
+    "osm_name": "University of New Mexico",
+    "status": "ok"
+  },
+  {
+    "market_key": 1066,
+    "university": "West Texas A&M University",
+    "file": "1066.geojson",
+    "osm_id": 334335820,
+    "osm_type": "way",
+    "osm_name": "West Texas A&M University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1069,
+    "university": "University of California Irvine",
+    "file": "1069.geojson",
+    "osm_id": 35154092,
+    "osm_type": "way",
+    "osm_name": "University of California, Irvine",
+    "status": "ok"
+  },
+  {
+    "market_key": 1084,
+    "university": "California State University Fullerton",
+    "file": "1084.geojson",
+    "osm_id": 32025397,
+    "osm_type": "way",
+    "osm_name": "California State University Fullerton",
+    "status": "ok"
+  },
+  {
+    "market_key": 1090,
+    "university": "Lehigh University",
+    "file": "1090.geojson",
+    "osm_id": 2597692,
+    "osm_type": "relation",
+    "osm_name": "Lehigh University Asa Packer Campus",
+    "status": "ok"
+  },
+  {
+    "market_key": 1093,
+    "university": "Mesa, AZ",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 1099,
+    "university": "Colorado State University",
+    "file": "1099.geojson",
+    "osm_id": 8539568,
+    "osm_type": "relation",
+    "osm_name": "Colorado State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1104,
+    "university": "Boise State University",
+    "file": "1104.geojson",
+    "osm_id": 13117245,
+    "osm_type": "relation",
+    "osm_name": "Boise State University",
     "status": "ok"
   },
   {
     "market_key": 1152,
     "university": "Arizona State University",
     "file": "1152.geojson",
-    "osm_id": 3444656,
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 1160,
+    "university": "Santa Clara University",
+    "file": "1160.geojson",
+    "osm_id": 4648353,
     "osm_type": "relation",
-    "osm_name": "Arizona State University",
+    "osm_name": "Santa Clara University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1183,
+    "university": "Pepperdine University",
+    "file": "1183.geojson",
+    "osm_id": 11341244,
+    "osm_type": "relation",
+    "osm_name": "Pepperdine University - Malibu Campus",
+    "status": "ok"
+  },
+  {
+    "market_key": 1242,
+    "university": "Florida Institute of Technology",
+    "file": "1242.geojson",
+    "osm_id": 282186715,
+    "osm_type": "way",
+    "osm_name": "Florida Institute of Technology",
+    "status": "ok"
+  },
+  {
+    "market_key": 1258,
+    "university": "Central Connecticut State University",
+    "file": "1258.geojson",
+    "osm_id": 11578305,
+    "osm_type": "relation",
+    "osm_name": "Central Connecticut State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1299,
+    "university": "University of Oregon",
+    "file": "1299.geojson",
+    "osm_id": 4770158,
+    "osm_type": "relation",
+    "osm_name": "University of Oregon",
+    "status": "ok"
+  },
+  {
+    "market_key": 1353,
+    "university": "University of South Carolina Upstate",
+    "file": "1353.geojson",
+    "osm_id": 194672109,
+    "osm_type": "way",
+    "osm_name": "University of South Carolina Upstate",
+    "status": "ok"
+  },
+  {
+    "market_key": 1401,
+    "university": "Sam Houston State University",
+    "file": "1401.geojson",
+    "osm_id": 5624010,
+    "osm_type": "relation",
+    "osm_name": "Sam Houston State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1410,
+    "university": "University of California Riverside",
+    "file": "1410.geojson",
+    "osm_id": 1634776,
+    "osm_type": "relation",
+    "osm_name": "University of California, Riverside",
+    "status": "ok"
+  },
+  {
+    "market_key": 1447,
+    "university": "Utah Valley University",
+    "file": "1447.geojson",
+    "osm_id": 28337037,
+    "osm_type": "way",
+    "osm_name": "Utah Valley University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1492,
+    "university": "West Chester University of Pennsylvania",
+    "file": "1492.geojson",
+    "osm_id": 152243534,
+    "osm_type": "way",
+    "osm_name": "West Chester University (South Campus)",
+    "status": "ok"
+  },
+  {
+    "market_key": 1558,
+    "university": "University of Colorado Denver",
+    "file": "1558.geojson",
+    "osm_id": 1316262537,
+    "osm_type": "way",
+    "osm_name": "CU Denver Comcast Media & Technology Center",
+    "status": "ok"
+  },
+  {
+    "market_key": 1560,
+    "university": "Michigan State University",
+    "file": "1560.geojson",
+    "osm_id": 13708038,
+    "osm_type": "relation",
+    "osm_name": "Michigan State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1574,
+    "university": "Missouri State University",
+    "file": "1574.geojson",
+    "osm_id": 11511527,
+    "osm_type": "relation",
+    "osm_name": "Missouri State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1598,
+    "university": "University of California Davis",
+    "file": "1598.geojson",
+    "osm_id": 5267472,
+    "osm_type": "relation",
+    "osm_name": "University of California, Davis",
+    "status": "ok"
+  },
+  {
+    "market_key": 1620,
+    "university": "Kennesaw State University",
+    "file": "1620.geojson",
+    "osm_id": 34846140,
+    "osm_type": "way",
+    "osm_name": "Kennesaw State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1653,
+    "university": "University of Montana",
+    "file": "1653.geojson",
+    "osm_id": 13125112,
+    "osm_type": "relation",
+    "osm_name": "University of Montana",
+    "status": "ok"
+  },
+  {
+    "market_key": 1666,
+    "university": "University of Texas Rio Grande Valley",
+    "file": "1666.geojson",
+    "osm_id": 276326924,
+    "osm_type": "way",
+    "osm_name": "University of Texas Rio Grande Valley",
+    "status": "ok"
+  },
+  {
+    "market_key": 1760,
+    "university": "Liberty University",
+    "file": "1760.geojson",
+    "osm_id": 7112206,
+    "osm_type": "relation",
+    "osm_name": "Liberty University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1771,
+    "university": "New York University",
+    "file": "1771.geojson",
+    "osm_id": 108156090,
+    "osm_type": "way",
+    "osm_name": "New York University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1780,
+    "university": "California Polytechnic State University Pomona",
+    "file": "1780.geojson",
+    "osm_id": 11352841,
+    "osm_type": "relation",
+    "osm_name": "California State Polytechnic University, Pomona",
+    "status": "ok"
+  },
+  {
+    "market_key": 1804,
+    "university": "Louisiana State University",
+    "file": "1804.geojson",
+    "osm_id": 38501878,
+    "osm_type": "way",
+    "osm_name": "Louisiana State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1905,
+    "university": "Northern Arizona University",
+    "file": "1905.geojson",
+    "osm_id": 201526317,
+    "osm_type": "way",
+    "osm_name": "Northern Arizona University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1924,
+    "university": "University of Central Arkansas",
+    "file": "1924.geojson",
+    "osm_id": 511305587,
+    "osm_type": "way",
+    "osm_name": "University of Central Arkansas",
+    "status": "ok"
+  },
+  {
+    "market_key": 1967,
+    "university": "Utah Tech University",
+    "file": "1967.geojson",
+    "osm_id": 54139202,
+    "osm_type": "way",
+    "osm_name": "Utah Tech University",
+    "status": "ok"
+  },
+  {
+    "market_key": 1988,
+    "university": "Purdue University Fort Wayne",
+    "file": "1988.geojson",
+    "osm_id": 1339491913,
+    "osm_type": "way",
+    "osm_name": "Purdue University Fort Wayne",
+    "status": "ok"
+  },
+  {
+    "market_key": 1995,
+    "university": "Indiana State University",
+    "file": "1995.geojson",
+    "osm_id": 13534134,
+    "osm_type": "relation",
+    "osm_name": "Indiana State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2146,
+    "university": "University of South Alabama",
+    "file": "2146.geojson",
+    "osm_id": 13006129,
+    "osm_type": "relation",
+    "osm_name": "University of South Alabama",
+    "status": "ok"
+  },
+  {
+    "market_key": 2147,
+    "university": "Western Carolina University",
+    "file": "2147.geojson",
+    "osm_id": 8408116,
+    "osm_type": "relation",
+    "osm_name": "Western Carolina University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2170,
+    "university": "Towson University",
+    "file": "2170.geojson",
+    "osm_id": 3170935,
+    "osm_type": "relation",
+    "osm_name": "Towson University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2227,
+    "university": "University of Michigan Dearborn",
+    "file": "2227.geojson",
+    "osm_id": 228379953,
+    "osm_type": "way",
+    "osm_name": "University of Michigan-Dearborn",
+    "status": "ok"
+  },
+  {
+    "market_key": 2251,
+    "university": "Jacksonville State University",
+    "file": "2251.geojson",
+    "osm_id": 2688960,
+    "osm_type": "relation",
+    "osm_name": "Jacksonville State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2253,
+    "university": "University of North Alabama",
+    "file": "2253.geojson",
+    "osm_id": 443666478,
+    "osm_type": "way",
+    "osm_name": "University of North Alabama",
+    "status": "ok"
+  },
+  {
+    "market_key": 2256,
+    "university": "Arkansas Tech University",
+    "file": "2256.geojson",
+    "osm_id": 951989507,
+    "osm_type": "way",
+    "osm_name": "Arkansas Tech University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2260,
+    "university": "California State University San Bernardino",
+    "file": "2260.geojson",
+    "osm_id": 45101505,
+    "osm_type": "way",
+    "osm_name": "California State University, San Bernardino",
+    "status": "ok"
+  },
+  {
+    "market_key": 2264,
+    "university": "University of Northern Colorado",
+    "file": "2264.geojson",
+    "osm_id": 13274354,
+    "osm_type": "relation",
+    "osm_name": "University of Northern Colorado",
+    "status": "ok"
+  },
+  {
+    "market_key": 2267,
+    "university": "Fairfield University",
+    "file": "2267.geojson",
+    "osm_id": 75032071,
+    "osm_type": "way",
+    "osm_name": "Fairfield University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2269,
+    "university": "University of Delaware",
+    "file": "2269.geojson",
+    "osm_id": 468467819,
+    "osm_type": "way",
+    "osm_name": "University of Delaware",
+    "status": "ok"
+  },
+  {
+    "market_key": 2272,
+    "university": "Embry-Riddle Aeronautical University",
+    "file": "2272.geojson",
+    "osm_id": 361065421,
+    "osm_type": "way",
+    "osm_name": "Embry-Riddle Aeronautical University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2273,
+    "university": "Florida Gulf Coast University",
+    "file": "2273.geojson",
+    "osm_id": 165049342,
+    "osm_type": "way",
+    "osm_name": "Florida Gulf Coast University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2275,
+    "university": "University of Idaho",
+    "file": "2275.geojson",
+    "osm_id": 245242111,
+    "osm_type": "way",
+    "osm_name": "University of Idaho",
+    "status": "ok"
+  },
+  {
+    "market_key": 2282,
+    "university": "Kansas State University",
+    "file": "2282.geojson",
+    "osm_id": 1410002,
+    "osm_type": "relation",
+    "osm_name": "Kansas State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2285,
+    "university": "Murray State University",
+    "file": "2285.geojson",
+    "osm_id": 479649961,
+    "osm_type": "way",
+    "osm_name": "Murray State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2287,
+    "university": "Western Kentucky University",
+    "file": "2287.geojson",
+    "osm_id": 313703237,
+    "osm_type": "way",
+    "osm_name": "Western Kentucky University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2290,
+    "university": "University of Maine",
+    "file": "2290.geojson",
+    "osm_id": 18594342,
+    "osm_type": "relation",
+    "osm_name": "University of Maine",
     "status": "ok"
   },
   {
     "market_key": 2294,
     "university": "University of Maryland College Park",
     "file": "2294.geojson",
-    "osm_id": 14718558,
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2295,
+    "university": "University of Massachusetts Amherst",
+    "file": "2295.geojson",
+    "osm_id": 9361144,
     "osm_type": "relation",
-    "osm_name": "University of Maryland, College Park",
+    "osm_name": "University of Massachusetts Amherst",
+    "status": "ok"
+  },
+  {
+    "market_key": 2300,
+    "university": "Central Michigan University",
+    "file": "2300.geojson",
+    "osm_id": 285252074,
+    "osm_type": "way",
+    "osm_name": "Central Michigan University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2302,
+    "university": "Minnesota State University Mankato",
+    "file": "2302.geojson",
+    "osm_id": 510968150,
+    "osm_type": "way",
+    "osm_name": "Minnesota State University, Mankato",
+    "status": "ok"
+  },
+  {
+    "market_key": 2308,
+    "university": "Dartmouth College",
+    "file": "2308.geojson",
+    "osm_id": 15261101,
+    "osm_type": "relation",
+    "osm_name": "Dartmouth College",
+    "status": "ok"
+  },
+  {
+    "market_key": 2310,
+    "university": "University of New Hampshire",
+    "file": "2310.geojson",
+    "osm_id": 15954211,
+    "osm_type": "relation",
+    "osm_name": "University of New Hampshire",
+    "status": "ok"
+  },
+  {
+    "market_key": 2323,
+    "university": "State University of New York at Oswego",
+    "file": "2323.geojson",
+    "osm_id": 9701464,
+    "osm_type": "relation",
+    "osm_name": "State University of New York at Oswego",
+    "status": "ok"
+  },
+  {
+    "market_key": 2333,
+    "university": "SUNY Oneonta",
+    "file": "2333.geojson",
+    "osm_id": 132165918,
+    "osm_type": "way",
+    "osm_name": "State University of New York at Oneonta",
+    "status": "ok"
+  },
+  {
+    "market_key": 2339,
+    "university": "College at Brockport SUNY",
+    "file": "2339.geojson",
+    "osm_id": 558864835,
+    "osm_type": "way",
+    "osm_name": "The College at Brockport",
+    "status": "ok"
+  },
+  {
+    "market_key": 2341,
+    "university": "Appalachian State University",
+    "file": "2341.geojson",
+    "osm_id": 17208432,
+    "osm_type": "relation",
+    "osm_name": "Appalachian State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2342,
+    "university": "Elon University",
+    "file": "2342.geojson",
+    "osm_id": 6442121,
+    "osm_type": "relation",
+    "osm_name": "Elon University",
     "status": "ok"
   },
   {
     "market_key": 2344,
     "university": "University of North Carolina at Chapel Hill",
     "file": "2344.geojson",
-    "osm_id": 2882828,
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2345,
+    "university": "University of North Carolina at Pembroke",
+    "file": "2345.geojson",
+    "osm_id": 510825904,
+    "osm_type": "way",
+    "osm_name": "University of North Carolina at Pembroke",
+    "status": "ok"
+  },
+  {
+    "market_key": 2347,
+    "university": "Bowling Green State University",
+    "file": "2347.geojson",
+    "osm_id": 13559203,
     "osm_type": "relation",
-    "osm_name": "University of North Carolina at Chapel Hill",
+    "osm_name": "Bowling Green State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2349,
+    "university": "Kent State University",
+    "file": "2349.geojson",
+    "osm_id": 194552384,
+    "osm_type": "way",
+    "osm_name": "Kent State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2350,
+    "university": "Miami University",
+    "file": "2350.geojson",
+    "osm_id": 183831887,
+    "osm_type": "way",
+    "osm_name": "Miami University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2354,
+    "university": "University of Cincinnati",
+    "file": "2354.geojson",
+    "osm_id": 225009998,
+    "osm_type": "way",
+    "osm_name": "University of Cincinnati Uptown (West) Campus",
+    "status": "ok"
+  },
+  {
+    "market_key": 2362,
+    "university": "Kutztown University of Pennsylvania",
+    "file": "2362.geojson",
+    "osm_id": 28942586,
+    "osm_type": "way",
+    "osm_name": "Kutztown University of Pennsylvania",
+    "status": "ok"
+  },
+  {
+    "market_key": 2364,
+    "university": "Villanova University",
+    "file": "2364.geojson",
+    "osm_id": 68730290,
+    "osm_type": "way",
+    "osm_name": "Villanova University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2369,
+    "university": "Indiana University of Pennsylvania",
+    "file": "2369.geojson",
+    "osm_id": 19616460,
+    "osm_type": "relation",
+    "osm_name": "Indiana University of Pennsylvania",
+    "status": "ok"
+  },
+  {
+    "market_key": 2375,
+    "university": "Penn State",
+    "file": "2375.geojson",
+    "osm_id": 14073946,
+    "osm_type": "relation",
+    "osm_name": "Pennsylvania State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2377,
+    "university": "Slippery Rock University of Pennsylvania",
+    "file": "2377.geojson",
+    "osm_id": 571210858,
+    "osm_type": "way",
+    "osm_name": "Slippery Rock University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2381,
+    "university": "University of South Dakota",
+    "file": "2381.geojson",
+    "osm_id": 243099114,
+    "osm_type": "way",
+    "osm_name": "University of South Dakota",
+    "status": "ok"
+  },
+  {
+    "market_key": 2383,
+    "university": "Tennessee Technological University",
+    "file": "2383.geojson",
+    "osm_id": 473843629,
+    "osm_type": "way",
+    "osm_name": "Tennessee Technological University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2386,
+    "university": "Angelo State University",
+    "file": "2386.geojson",
+    "osm_id": 15521853,
+    "osm_type": "relation",
+    "osm_name": "Angelo State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2387,
+    "university": "Lamar University",
+    "file": "2387.geojson",
+    "osm_id": 10706204,
+    "osm_type": "relation",
+    "osm_name": "Lamar University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2388,
+    "university": "Tarleton State University",
+    "file": "2388.geojson",
+    "osm_id": 12080142,
+    "osm_type": "relation",
+    "osm_name": "Tarleton State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2389,
+    "university": "Texas A&M International University",
+    "file": "2389.geojson",
+    "osm_id": 930353812,
+    "osm_type": "way",
+    "osm_name": "Texas A&M International University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2391,
+    "university": "Texas A&M University Kingsville",
+    "file": "2391.geojson",
+    "osm_id": 259253561,
+    "osm_type": "way",
+    "osm_name": "Texas A&M University-Kingsville",
+    "status": "ok"
+  },
+  {
+    "market_key": 2392,
+    "university": "Brigham Young University",
+    "file": "2392.geojson",
+    "osm_id": 28355561,
+    "osm_type": "way",
+    "osm_name": "Brigham Young University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2393,
+    "university": "Utah State University",
+    "file": "2393.geojson",
+    "osm_id": 6790710,
+    "osm_type": "relation",
+    "osm_name": "Utah State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2397,
+    "university": "James Madison University",
+    "file": "2397.geojson",
+    "osm_id": 7029893,
+    "osm_type": "relation",
+    "osm_name": "James Madison University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2399,
+    "university": "Radford University",
+    "file": "2399.geojson",
+    "osm_id": 11106846,
+    "osm_type": "relation",
+    "osm_name": "Radford University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2400,
+    "university": "Virginia Polytechnic Institute and State University",
+    "file": "2400.geojson",
+    "osm_id": 1214378,
+    "osm_type": "relation",
+    "osm_name": "Virginia Tech",
+    "status": "ok"
+  },
+  {
+    "market_key": 2402,
+    "university": "Central Washington University",
+    "file": "2402.geojson",
+    "osm_id": 541752353,
+    "osm_type": "way",
+    "osm_name": "Central Washington University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2403,
+    "university": "Washington State University",
+    "file": "2403.geojson",
+    "osm_id": 6954348,
+    "osm_type": "relation",
+    "osm_name": "Washington State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2407,
+    "university": "West Virginia University",
+    "file": "2407.geojson",
+    "osm_id": 15630375,
+    "osm_type": "relation",
+    "osm_name": "West Virginia University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2415,
+    "university": "Georgia Southern University",
+    "file": "2415.geojson",
+    "osm_id": 6431103,
+    "osm_type": "relation",
+    "osm_name": "Georgia Southern University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2416,
+    "university": "Troy University",
+    "file": "2416.geojson",
+    "osm_id": 346976702,
+    "osm_type": "way",
+    "osm_name": "Troy University",
     "status": "ok"
   },
   {
     "market_key": 2417,
     "university": "Rutgers University",
     "file": "2417.geojson",
-    "osm_id": 10996237,
+    "status": "ok_existing"
+  },
+  {
+    "market_key": 2418,
+    "university": "University of Connecticut",
+    "file": "2418.geojson",
+    "osm_id": 13084337,
     "osm_type": "relation",
-    "osm_name": "Rutgers University",
+    "osm_name": "University of Connecticut",
+    "status": "ok"
+  },
+  {
+    "market_key": 2419,
+    "university": "Binghamton University",
+    "file": "2419.geojson",
+    "osm_id": 13933555,
+    "osm_type": "relation",
+    "osm_name": "State University of New York at Binghamton",
+    "status": "ok"
+  },
+  {
+    "market_key": 2420,
+    "university": "University of Tennessee at Chattanooga",
+    "file": "2420.geojson",
+    "osm_id": 2858853,
+    "osm_type": "relation",
+    "osm_name": "University of Tennessee Chattanooga",
+    "status": "ok"
+  },
+  {
+    "market_key": 2421,
+    "university": "University of North Georgia",
+    "file": "2421.geojson",
+    "osm_id": 8338296,
+    "osm_type": "relation",
+    "osm_name": "University of North Georgia - Dahlonega Campus",
+    "status": "ok"
+  },
+  {
+    "market_key": 2422,
+    "university": "University of Central Missouri",
+    "file": "2422.geojson",
+    "osm_id": 9964433,
+    "osm_type": "relation",
+    "osm_name": "University of Central Missouri",
+    "status": "ok"
+  },
+  {
+    "market_key": 2423,
+    "university": "University of Texas at Dallas",
+    "file": "2423.geojson",
+    "osm_id": 7316239,
+    "osm_type": "relation",
+    "osm_name": "University of Texas at Dallas",
+    "status": "ok"
+  },
+  {
+    "market_key": 2425,
+    "university": "Temple College",
+    "file": "2425.geojson",
+    "osm_id": 68838103,
+    "osm_type": "way",
+    "osm_name": "Temple College",
+    "status": "ok"
+  },
+  {
+    "market_key": 2427,
+    "university": "Arkansas State University",
+    "file": "2427.geojson",
+    "osm_id": 449611788,
+    "osm_type": "way",
+    "osm_name": "Arkansas State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2430,
+    "university": "Gonzaga University",
+    "file": "2430.geojson",
+    "osm_id": 14972265,
+    "osm_type": "relation",
+    "osm_name": "Gonzaga University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2435,
+    "university": "Brigham Young University-Idaho",
+    "file": "2435.geojson",
+    "osm_id": 8311245,
+    "osm_type": "relation",
+    "osm_name": "Brigham Young University - Idaho",
+    "status": "ok"
+  },
+  {
+    "market_key": 2437,
+    "university": "Salisbury University",
+    "file": "2437.geojson",
+    "osm_id": 9395653,
+    "osm_type": "relation",
+    "osm_name": "Salisbury University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2438,
+    "university": "Claremont McKenna College",
+    "file": "2438.geojson",
+    "osm_id": 19559549,
+    "osm_type": "relation",
+    "osm_name": "Claremont McKenna College",
+    "status": "ok"
+  },
+  {
+    "market_key": 2441,
+    "university": "Prairie View A&M University",
+    "file": "2441.geojson",
+    "osm_id": 452801963,
+    "osm_type": "way",
+    "osm_name": "Prairie View A&M University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2442,
+    "university": "California State University Stanislaus",
+    "file": "2442.geojson",
+    "osm_id": 232387028,
+    "osm_type": "way",
+    "osm_name": "California State University, Stanislaus",
+    "status": "ok"
+  },
+  {
+    "market_key": 2443,
+    "university": "Abilene Christian University",
+    "file": "2443.geojson",
+    "osm_id": 187009585,
+    "osm_type": "way",
+    "osm_name": "Abilene Christian University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2447,
+    "university": "Gulf Coast State College",
+    "file": "2447.geojson",
+    "osm_id": 237754782,
+    "osm_type": "way",
+    "osm_name": "Gulf Coast State College",
+    "status": "ok"
+  },
+  {
+    "market_key": 2448,
+    "university": "The Ohio State University at Mansfield",
+    "file": "2448.geojson",
+    "osm_id": 316613897,
+    "osm_type": "way",
+    "osm_name": "Ohio State University Mansfield",
+    "status": "ok"
+  },
+  {
+    "market_key": 2449,
+    "university": "Northwestern State University",
+    "file": "2449.geojson",
+    "osm_id": 189192304,
+    "osm_type": "way",
+    "osm_name": "Northwestern State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2450,
+    "university": "Gainesville, GA",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 2451,
+    "university": "Northern Iowa University",
+    "file": "2451.geojson",
+    "osm_id": 544674332,
+    "osm_type": "way",
+    "osm_name": "University of Northern Iowa",
+    "status": "ok"
+  },
+  {
+    "market_key": 2453,
+    "university": "Albany State University",
+    "file": "2453.geojson",
+    "osm_id": 624970678,
+    "osm_type": "way",
+    "osm_name": "Albany State University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2454,
+    "university": "Lancaster, PA",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 2475,
+    "university": "Key West, FL",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 2478,
+    "university": "Fox Valley Technical College",
+    "file": "2478.geojson",
+    "osm_id": 8504790,
+    "osm_type": "relation",
+    "osm_name": "Fox Valley Technical College-Appleton",
+    "status": "ok"
+  },
+  {
+    "market_key": 2479,
+    "university": "Shreveport, LA",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 2484,
+    "university": "Harrisburg, PA",
+    "status": "no_coords"
+  },
+  {
+    "market_key": 2486,
+    "university": "University of Texas at Tyler",
+    "file": "2486.geojson",
+    "osm_id": 231354268,
+    "osm_type": "way",
+    "osm_name": "The University of Texas at Tyler",
+    "status": "ok"
+  },
+  {
+    "market_key": 2487,
+    "university": "Stanford University",
+    "file": "2487.geojson",
+    "osm_id": 29268613,
+    "osm_type": "way",
+    "osm_name": "Stanford University",
+    "status": "ok"
+  },
+  {
+    "market_key": 2488,
+    "university": "California Institute of Technology",
+    "file": "2488.geojson",
+    "osm_id": 29111188,
+    "osm_type": "way",
+    "osm_name": "California Institute of Technology",
+    "status": "ok"
+  },
+  {
+    "market_key": 2489,
+    "university": "Tufts University",
+    "file": "2489.geojson",
+    "osm_id": 3567946,
+    "osm_type": "relation",
+    "osm_name": "Tufts University",
     "status": "ok"
   }
 ]

@@ -176,9 +176,63 @@ function renderKpis() {
     : "Balanced";
   document.getElementById("kpi-pen-sub").textContent = band;
 
-  document.getElementById("kpi-enr").textContent = fmtInt(MARKET.total_enrollment);
-  document.getElementById("kpi-enr-sub").textContent =
-    CAMPUSES.length > 0 ? `${CAMPUSES.length} ${CAMPUSES.length === 1 ? "university" : "universities"}` : "—";
+  // FTE = current full-time enrollment snapshot from MarketReports.
+  // Total = sum of IPEDS totals across distinct institutions in this market.
+  // Schools_Denormal can have multiple branch rows per institution (e.g.,
+  // 10 Rutgers campus locations all rolling up to one IPEDS ID), so dedupe
+  // by IPEDS ID before summing to avoid 10x inflation.
+  const byIpeds = new Map();
+  for (const c of CAMPUSES) {
+    const key = c.ipeds_id ?? `school-${c.school_key}`;
+    if (!byIpeds.has(key)) byIpeds.set(key, c.total_enrollment || 0);
+  }
+  const ipedsTotal = [...byIpeds.values()].reduce((s, n) => s + n, 0);
+
+  // YoY preference order:
+  //   1. fte_history.yoy_fte_growth (true FTE YoY from MarketReports history)
+  //   2. enrollment_trend.yoy_change (total-enrollment YoY — proxy when FTE
+  //      history isn't loaded)
+  let yoyPct = null;
+  let yoyLabel = "YoY";   // "FTE YoY" when real FTE; "total YoY" when proxy
+  let trendYear = null;
+
+  const fteHist = (DATA.tables.fte_history || [])
+    .find((r) => r.market_key === MARKET.market_key);
+  if (fteHist && fteHist.yoy_fte_growth != null) {
+    yoyPct = fteHist.yoy_fte_growth;
+    yoyLabel = "FTE YoY";
+    trendYear = fteHist.current_snapshot
+      ? new Date(fteHist.current_snapshot).getFullYear()
+      : null;
+  } else {
+    const trendRows = (DATA.tables.enrollment_trend || [])
+      .filter((r) => r.market_key === MARKET.market_key
+                     && r.current_enrollment != null
+                     && r.prev_year_enrollment != null);
+    if (trendRows.length > 0) {
+      const cur = trendRows.reduce((s, r) => s + r.current_enrollment, 0);
+      const prev = trendRows.reduce((s, r) => s + r.prev_year_enrollment, 0);
+      if (prev > 0) yoyPct = (cur - prev) / prev;
+      yoyLabel = "total YoY";
+      trendYear = Math.max(...trendRows.map((r) => r.current_year || 0)) || null;
+    }
+  }
+
+  // Headline: FTE snapshot. Subline: total + YoY arrow.
+  const enrEl = document.getElementById("kpi-enr");
+  const enrSub = document.getElementById("kpi-enr-sub");
+  enrEl.textContent = fmtInt(MARKET.enr_full_time);
+  const parts = [];
+  if (ipedsTotal > 0) parts.push(`${fmtInt(ipedsTotal)} total`);
+  if (yoyPct != null) {
+    const arrow = yoyPct > 0.001 ? "▲" : yoyPct < -0.001 ? "▼" : "";
+    const cls = yoyPct > 0.001 ? "kpi-good" : yoyPct < -0.001 ? "kpi-bad" : "";
+    const yoyStr = `<span class="${cls}">${arrow} ${(yoyPct * 100).toFixed(1)}% ${yoyLabel}</span>`;
+    parts.push(trendYear ? `${yoyStr} (${trendYear})` : yoyStr);
+  }
+  enrSub.innerHTML = parts.length
+    ? parts.join(" · ")
+    : "IPEDS · no enrollment data";
 
   document.getElementById("kpi-rent").textContent = fmtUsd(MARKET.avg_rent_per_bed);
   document.getElementById("kpi-rent-sub").textContent = "bed-weighted average";
@@ -198,6 +252,56 @@ function renderKpis() {
     yoyEl.className = "kpi-value";
     yoyEl.textContent = "—";
     document.getElementById("kpi-rent-yoy-sub").textContent = "no prior-year data";
+  }
+
+  // Occupancy — bed-weighted from MarketReports
+  const occEl = document.getElementById("kpi-occupancy");
+  const occSub = document.getElementById("kpi-occupancy-sub");
+  if (MARKET.occupancy != null) {
+    const o = MARKET.occupancy;
+    const occTone = o >= 0.92 ? "kpi-good" : o < 0.88 ? "kpi-bad" : "";
+    occEl.className = `kpi-value ${occTone}`;
+    occEl.textContent = fmtPct(o, 1);
+    occSub.textContent = "bed-weighted";
+  } else {
+    occEl.className = "kpi-value";
+    occEl.textContent = "—";
+    occSub.textContent = "no occupancy on file";
+  }
+
+  // Pre-lease — latest cycle from MarketReports
+  const preEl = document.getElementById("kpi-prelease");
+  const preSub = document.getElementById("kpi-prelease-sub");
+  if (MARKET.prelease != null) {
+    const p = MARKET.prelease;
+    const preTone = p >= 0.85 ? "kpi-good" : p < 0.65 ? "kpi-bad" : "";
+    preEl.className = `kpi-value ${preTone}`;
+    preEl.textContent = fmtPct(p, 1);
+    preSub.textContent = "latest cycle";
+  } else {
+    preEl.className = "kpi-value";
+    preEl.textContent = "—";
+    preSub.textContent = "no prelease on file";
+  }
+
+  // Affluence — mean origin household income of incoming students.
+  const aff = (DATA.tables.market_affluence || [])
+    .find((r) => r.market_key === MARKET.market_key);
+  const affEl = document.getElementById("kpi-affluence");
+  const affSub = document.getElementById("kpi-affluence-sub");
+  if (aff && aff.mean_origin_income != null && aff.n_students >= 100) {
+    affEl.textContent = fmtUsd(aff.mean_origin_income);
+    const hi = aff.pct_hiinc;
+    affSub.textContent = hi != null
+      ? `${fmtPct(hi)} from high-income tracts · ${aff.data_as_of}`
+      : `mean origin income · ${aff.data_as_of}`;
+  } else if (aff && aff.n_students > 0) {
+    affEl.textContent = aff.mean_origin_income != null
+      ? fmtUsd(aff.mean_origin_income) : "—";
+    affSub.textContent = `low sample · n=${fmtInt(aff.n_students)}`;
+  } else {
+    affEl.textContent = "—";
+    affSub.textContent = "no migration data";
   }
 }
 
@@ -297,7 +401,6 @@ function renderProperties() {
       <td class="num">${p.avg_rent_per_sf != null ? "$" + fmtNum(p.avg_rent_per_sf, 2) : "—"}</td>
       <td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">—</span>'}</td>
       <td class="num">${fmtNum(p.milesToClosestCampus, 1)}</td>
-      <td class="num">${p.currentGoogleReviewAvg != null ? fmtNum(p.currentGoogleReviewAvg, 1) : "—"}</td>
     </tr>
   `).join("");
 
@@ -554,7 +657,7 @@ async function renderMap() {
     }).addTo(map);
     m.bindPopup(`
       <strong>${escapeHtml(c.university_name)}</strong><br>
-      Enrollment: ${fmtInt(c.total_enrollment)} (${c.enrollment_year || "—"})
+      IPEDS total enrollment: ${fmtInt(c.total_enrollment)} (${c.enrollment_year || "—"})
       ${isAnchor ? '<br><em>Anchor university</em>' : ""}
     `);
     allLatLngs.push([c.campus_lat, c.campus_lng]);

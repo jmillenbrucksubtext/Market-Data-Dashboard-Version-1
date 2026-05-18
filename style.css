@@ -223,8 +223,8 @@ h1, h2, h3, .serif {
 }
 
 .search {
-  flex: 1;
-  max-width: 600px;
+  flex: 0 1 340px;
+  min-width: 220px;
   position: relative;
 }
 .search input {
@@ -286,9 +286,8 @@ h1, h2, h3, .serif {
    .topbar-right on the Industry view only. Click anywhere → dispatch site
    in a new tab. Hover pauses the scroll so users can read a headline. */
 .dispatch-ticker {
-  flex: 1 1 320px;
+  flex: 1 1 0;
   min-width: 0;
-  max-width: 560px;
   height: 36px;
   display: inline-flex;
   align-items: stretch;
@@ -335,7 +334,7 @@ h1, h2, h3, .serif {
   white-space: nowrap;
   font-size: 13px;
   font-weight: 500;
-  animation: dispatch-scroll 60s linear infinite;
+  animation: dispatch-scroll 180s linear infinite;
   will-change: transform;
 }
 .dispatch-ticker:hover .dispatch-ticker-track {

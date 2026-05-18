@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Performance</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=9">
+  <link rel="stylesheet" href="style.css?v=10">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
@@ -52,6 +52,13 @@
           <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off">
           <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
         </div>
+
+        <a class="dispatch-ticker" id="dispatch-ticker" href="https://subtext-dispatch.jacksubtextuse.workers.dev/" target="_blank" rel="noopener" hidden>
+          <span class="dispatch-ticker-label">DISPATCH</span>
+          <span class="dispatch-ticker-viewport">
+            <span class="dispatch-ticker-track" id="dispatch-ticker-track"></span>
+          </span>
+        </a>
 
         <div class="topbar-right">
           <label class="subtext-toggle active" id="subtext-toggle-label">
@@ -572,6 +579,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=8"></script>
+  <script src="dashboard.js?v=9"></script>
 </body>
 </html>

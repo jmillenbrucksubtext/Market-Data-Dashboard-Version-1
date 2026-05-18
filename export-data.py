@@ -986,6 +986,21 @@ def main() -> int:
     # --- Compute Subtext qualifier scorecard per market ---
     payload["tables"]["market_qualifiers"] = compute_qualifiers(payload["tables"])
 
+    # --- Fetch this week's Subtext Dispatch headlines (for the ticker) ---
+    # Lives at the top level (not under 'tables') because it's a single
+    # object, not a row-set. Non-fatal: dispatch outages must not block
+    # the weekly SQL refresh.
+    try:
+        from load_dispatch import fetch_dispatch_headlines
+        payload["dispatch_headlines"] = fetch_dispatch_headlines()
+        print(f"  dispatch_headlines: "
+              f"{len(payload['dispatch_headlines']['features'])} features + "
+              f"{len(payload['dispatch_headlines']['briefs'])} briefs "
+              f"[{payload['dispatch_headlines']['issue']}]")
+    except Exception as e:
+        print(f"  dispatch_headlines SKIPPED: {type(e).__name__}: {e}")
+        payload["dispatch_headlines"] = None
+
     # --- Split: plans → per-property JSON files (loaded on demand) ---
     plans_dir = OUTPUT.parent / "plans"
     plans_dir.mkdir(exist_ok=True)

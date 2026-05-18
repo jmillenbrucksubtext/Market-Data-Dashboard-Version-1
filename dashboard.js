@@ -179,8 +179,67 @@ function showView(name) {
   if (location.hash !== `#${name}`) {
     history.replaceState(null, "", `#${name}`);
   }
+  // Ticker is Industry-only. Build lazily on first show.
+  const ticker = document.getElementById("dispatch-ticker");
+  if (ticker) {
+    if (name === "industry") {
+      buildDispatchTicker();
+      ticker.hidden = !ticker.dataset.populated;
+    } else {
+      ticker.hidden = true;
+    }
+  }
   // scroll to top of content on view switch
   window.scrollTo({ top: 0, behavior: "instant" });
+}
+
+/* ----- Dispatch ticker --------------------------------------- */
+
+function buildDispatchTicker() {
+  const ticker = document.getElementById("dispatch-ticker");
+  const track  = document.getElementById("dispatch-ticker-track");
+  if (!ticker || !track || ticker.dataset.populated) return;
+
+  const h = DATA && DATA.dispatch_headlines;
+  if (!h || (!h.features?.length && !h.briefs?.length)) return;
+
+  if (h.url) ticker.href = h.url;
+  ticker.title = h.issue
+    ? `The Subtext Dispatch — ${h.issue} (click to open)`
+    : "The Subtext Dispatch (click to open)";
+
+  // Features first, then briefs — same order as the dispatch page.
+  const items = [...(h.features || []), ...(h.briefs || [])];
+
+  // Build a single run, then duplicate it inside the track so the
+  // CSS translateX(-50%) loop is seamless.
+  const buildRun = () => {
+    const frag = document.createDocumentFragment();
+    items.forEach((title, i) => {
+      const item = document.createElement("span");
+      item.className = "dispatch-ticker-item";
+      item.textContent = title;
+      frag.appendChild(item);
+      if (i < items.length - 1) {
+        const sep = document.createElement("span");
+        sep.className = "dispatch-ticker-sep";
+        sep.textContent = "◆";
+        frag.appendChild(sep);
+      }
+    });
+    return frag;
+  };
+
+  track.appendChild(buildRun());
+  // Spacer between the two copies so the join isn't an awkward double-headline.
+  const tail = document.createElement("span");
+  tail.className = "dispatch-ticker-sep";
+  tail.textContent = "◆";
+  tail.style.padding = "0 10px";
+  track.appendChild(tail);
+  track.appendChild(buildRun());
+
+  ticker.dataset.populated = "1";
 }
 
 /* ----- Helpers ------------------------------------------------ */

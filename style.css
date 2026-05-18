@@ -282,6 +282,78 @@ h1, h2, h3, .serif {
   font-weight: 700;
 }
 
+/* Subtext Dispatch ticker — sits in the topbar between .search and
+   .topbar-right on the Industry view only. Click anywhere → dispatch site
+   in a new tab. Hover pauses the scroll so users can read a headline. */
+.dispatch-ticker {
+  flex: 1 1 320px;
+  min-width: 0;
+  max-width: 560px;
+  height: 36px;
+  display: inline-flex;
+  align-items: stretch;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--slate);
+  cursor: pointer;
+  transition: border-color .15s, box-shadow .15s;
+}
+.dispatch-ticker:hover {
+  border-color: var(--lime);
+  box-shadow: 0 0 0 3px var(--lime-soft);
+}
+.dispatch-ticker[hidden] { display: none !important; }
+
+.dispatch-ticker-label {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 10px;
+  background: #c8102e;
+  color: #fff;
+  font-weight: 800;
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  flex: 0 0 auto;
+}
+
+.dispatch-ticker-viewport {
+  position: relative;
+  flex: 1 1 0;
+  min-width: 0;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  -webkit-mask-image: linear-gradient(to right, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
+          mask-image: linear-gradient(to right, transparent 0, black 14px, black calc(100% - 14px), transparent 100%);
+}
+
+.dispatch-ticker-track {
+  display: inline-flex;
+  white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  animation: dispatch-scroll 60s linear infinite;
+  will-change: transform;
+}
+.dispatch-ticker:hover .dispatch-ticker-track {
+  animation-play-state: paused;
+}
+
+.dispatch-ticker-item { padding: 0 10px; }
+.dispatch-ticker-sep {
+  color: var(--lime);
+  font-weight: 700;
+  align-self: center;
+}
+
+@keyframes dispatch-scroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 .freshness {
   display: inline-flex;
   align-items: baseline;

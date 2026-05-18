@@ -77,6 +77,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderProperties();
   bindPropertySort();
   renderLegend();
+  renderPerformance();
 
   // Wait for Leaflet to load (deferred script)
   if (typeof L === "undefined") {
@@ -84,6 +85,174 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
   renderMap();
 });
+
+/* ----- Market Performance (deck-style charts) ---------------- */
+
+const PERF = {
+  anchorColor:  "#a95818",   // rust / birch — anchor market
+  benchColor:   "#16352e",   // everest — Subtext-30 average
+  pipeColors: {
+    existing:           "#2b2825",  // slate
+    lease_up:           "#16352e",  // everest
+    under_construction: "#a95818",  // rust
+    planned:            "#b6b1ab",  // slate30
+  },
+};
+
+function s30Rows(table, joinKey = "market_key") {
+  const s30Keys = new Set(
+    DATA.tables.scorecard.filter((r) => r.is_subtext30 === 1).map((r) => r.market_key)
+  );
+  return DATA.tables[table].filter((r) => s30Keys.has(r[joinKey]));
+}
+
+function mean(arr) {
+  const xs = arr.filter((x) => x != null && !isNaN(x));
+  return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
+}
+
+function sumBy(rows, field) {
+  let s = 0, any = false;
+  for (const r of rows) {
+    const v = r[field];
+    if (v != null && !isNaN(v)) { s += v; any = true; }
+  }
+  return any ? s : null;
+}
+
+/** Shared Chart.js options for the deck-style benchmark charts. */
+function perfBaseOpts({ valueFmt }) {
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    plugins: {
+      legend: { display: false },
+      tooltip: {
+        callbacks: { label: (c) => `${c.dataset.label || c.label}: ${valueFmt(c.parsed.y)}` },
+      },
+      datalabels: {
+        anchor: "end",
+        align: "end",
+        offset: 4,
+        clip: false,
+        font: { weight: 700, size: 12, family: "Pragmatica, sans-serif" },
+        color: "#2b2825",
+        formatter: valueFmt,
+      },
+    },
+    layout: { padding: { top: 24, right: 8, left: 8, bottom: 4 } },
+    scales: {
+      x: {
+        grid: { display: false, drawBorder: false },
+        ticks: { font: { size: 12, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" },
+        border: { display: false },
+      },
+      y: {
+        display: false,
+        beginAtZero: true,
+      },
+    },
+  };
+}
+
+function renderPerformance() {
+  if (typeof Chart === "undefined") return;
+  if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+
+  // 1) Rent benchmark --------------------------------------------------
+  const rentRows = s30Rows("avg_rent");
+  const s30RentMean = mean(rentRows.map((r) => r.avg_rent_per_bed));
+  const myRent = MARKET.avg_rent_per_bed;
+  const rentCtx = document.getElementById("perf-rent");
+  if (rentCtx && (myRent != null || s30RentMean != null)) {
+    new Chart(rentCtx, {
+      type: "bar",
+      data: {
+        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
+        datasets: [{
+          data: [myRent, s30RentMean],
+          backgroundColor: [PERF.anchorColor, PERF.benchColor],
+          borderRadius: 4,
+          maxBarThickness: 80,
+        }],
+      },
+      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtUsd(v) }),
+    });
+  }
+
+  // 2) Rent YoY growth -------------------------------------------------
+  const ryRows = s30Rows("rent_yoy");
+  const s30YoYMean = mean(ryRows.map((r) => r.yoy_rent_growth));
+  const myYoY = (DATA.tables.rent_yoy.find((r) => r.market_key === MARKET.market_key) || {}).yoy_rent_growth;
+  const ryCtx = document.getElementById("perf-rent-growth");
+  if (ryCtx && (myYoY != null || s30YoYMean != null)) {
+    new Chart(ryCtx, {
+      type: "bar",
+      data: {
+        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
+        datasets: [{
+          data: [myYoY, s30YoYMean],
+          backgroundColor: [PERF.anchorColor, PERF.benchColor],
+          borderRadius: 4,
+          maxBarThickness: 80,
+        }],
+      },
+      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v) }),
+    });
+  }
+
+  // 3) Bed supply: existing + pipeline ---------------------------------
+  // Two stacked horizontal bars: this market on top, Subtext-30 avg on bottom.
+  const pipeMap = new Map(DATA.tables.pipeline_beds.map((r) => [r.market_key, r]));
+  const myPipe = pipeMap.get(MARKET.market_key) || {};
+  const myExisting = MARKET.existing_beds || 0;
+  const myLease = myPipe.beds_lease_up || 0;
+  const myUC = myPipe.beds_under_construction || 0;
+  const myPlanned = myPipe.beds_planned || 0;
+
+  const s30Pipe = s30Rows("pipeline_beds");
+  const s30Existing = mean(s30Rows("existing_beds").map((r) => r.existing_beds));
+  const s30Lease = mean(s30Pipe.map((r) => r.beds_lease_up));
+  const s30UC = mean(s30Pipe.map((r) => r.beds_under_construction));
+  const s30Planned = mean(s30Pipe.map((r) => r.beds_planned));
+
+  const supplyCtx = document.getElementById("perf-supply");
+  if (supplyCtx) {
+    new Chart(supplyCtx, {
+      type: "bar",
+      data: {
+        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
+        datasets: [
+          { label: "Existing",           backgroundColor: PERF.pipeColors.existing,           data: [myExisting, s30Existing], borderRadius: 2 },
+          { label: "Lease-up",           backgroundColor: PERF.pipeColors.lease_up,           data: [myLease,    s30Lease],    borderRadius: 2 },
+          { label: "Under construction", backgroundColor: PERF.pipeColors.under_construction, data: [myUC,       s30UC],       borderRadius: 2 },
+          { label: "Planned",            backgroundColor: PERF.pipeColors.planned,            data: [myPlanned,  s30Planned],  borderRadius: 2 },
+        ],
+      },
+      options: {
+        indexAxis: "y",
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom", labels: { font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", boxWidth: 12, boxHeight: 12, padding: 14 } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.x)} beds` } },
+          datalabels: {
+            color: "#fff",
+            font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+            formatter: (v) => (v != null && v >= 200) ? fmtInt(v) : "",  // hide labels on tiny segments
+          },
+        },
+        layout: { padding: { top: 4, right: 12, left: 4, bottom: 4 } },
+        scales: {
+          x: { stacked: true, display: false, beginAtZero: true },
+          y: { stacked: true, grid: { display: false, drawBorder: false },
+               border: { display: false },
+               ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        },
+      },
+    });
+  }
+}
 
 /* ----- Helpers ----------------------------------------------- */
 

@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=10">
+  <link rel="stylesheet" href="style.css?v=14">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 </head>
 <body>
@@ -116,6 +118,32 @@
             </div>
           </div>
 
+          <!-- Market Performance — deck-style charts benchmarked vs Subtext-30 avg -->
+          <section class="card performance-section">
+            <header class="card-header">
+              <div>
+                <h2>Market Performance</h2>
+                <p>This market vs the Subtext-30 average at the current snapshot.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="perf-grid">
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">Average Rent per Bed</figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-rent"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">Rent YoY Growth</figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-rent-growth"></canvas></div>
+                </figure>
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">Bed Supply: Existing + Pipeline</figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-supply"></canvas></div>
+                </figure>
+              </div>
+            </div>
+          </section>
+
           <!-- Map -->
           <section class="card">
             <header class="card-header">
@@ -221,6 +249,6 @@
     </div>
   </div>
 
-  <script src="market.js?v=7" defer></script>
+  <script src="market.js?v=8" defer></script>
 </body>
 </html>

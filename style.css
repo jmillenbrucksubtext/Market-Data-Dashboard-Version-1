@@ -975,6 +975,40 @@ h1, h2, h3, .serif {
   font-family: "Pragmatica", sans-serif;
   font-size: 13px;
 }
+/* Market Performance — deck-style charts on market.html ------- */
+.performance-section .card-body { padding-top: 4px; }
+.perf-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 24px;
+}
+.perf-chart {
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+.perf-chart-wide { grid-column: 1 / -1; }
+.perf-title {
+  font-family: "Mencken Std", Georgia, "Times New Roman", serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--slate);
+  text-align: center;
+  border-bottom: 2px solid var(--slate);
+  padding-bottom: 6px;
+  margin-bottom: 12px;
+  letter-spacing: 0.01em;
+}
+.perf-chart-wrap {
+  position: relative;
+  height: 220px;
+}
+.perf-chart-wrap-tall { height: 180px; }
+@media (max-width: 720px) {
+  .perf-grid { grid-template-columns: 1fr; }
+}
+
 /* Market popup ------------------------------------------------ */
 .leaflet-popup.market-popup-wrapper .leaflet-popup-content-wrapper {
   padding: 0;

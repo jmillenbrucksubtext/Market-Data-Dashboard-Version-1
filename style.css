@@ -142,6 +142,18 @@ h1, h2, h3, .serif {
   width: auto;
   max-width: 100%;
 }
+.brand .wordmark {
+  display: inline-block;
+  font-family: "Mencken Std", Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  font-style: normal;
+  font-size: 36px;
+  line-height: 1;
+  color: var(--lime);
+  letter-spacing: -0.01em;
+  padding-bottom: 4px;
+  border-bottom: 4px solid var(--lime);
+}
 
 .nav {
   display: flex;
@@ -514,6 +526,7 @@ h1, h2, h3, .serif {
     gap: 16px;
   }
   .brand img { height: 22px; }
+  .brand .wordmark { font-size: 20px; padding-bottom: 2px; border-bottom-width: 2px; }
   .nav { flex-direction: row; gap: 4px; }
   .sidebar-footer { display: none; }
   .content { padding: 14px; }

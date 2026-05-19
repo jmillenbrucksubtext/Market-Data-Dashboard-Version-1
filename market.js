@@ -30,7 +30,11 @@ let CAMPUSES = [];
 let LOGOS = new Map();   // market_key → logo filename (e.g., "14.png")
 let propSortState = { col: "prelease", dir: "desc" };
 let map = null;
-let propertyMarkers = new Map();  // property_key → leaflet marker
+let mapComps = null;  // Leaflet instance for the Comps tab map
+let propertyMarkers = new Map();  // market map: property_key → leaflet marker
+let propertyMarkersComps = new Map();  // comps map: property_key → leaflet marker
+let compSelection = new Set();  // property_keys currently checked on Comps tab
+let compCharts = {};  // canvas id → Chart instance
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
@@ -78,6 +82,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindPropertySort();
   renderLegend();
   renderPerformance();
+  bindTabs();
+  // Comp charts are hidden under the Comps tab on load; size will be 0
+  // until the tab is shown, so we re-render via bindTabs. Build once now so
+  // selection state is wired up.
+  renderCompCharts();
 
   // Wait for Leaflet to load (deferred script)
   if (typeof L === "undefined") {
@@ -158,9 +167,13 @@ function perfBaseOpts({ valueFmt }) {
 function renderPerformance() {
   if (typeof Chart === "undefined") return;
   if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
-  // Populate the section-level legend label with the actual market name.
-  const legendAnchor = document.getElementById("perf-legend-anchor");
-  if (legendAnchor) legendAnchor.textContent = MARKET.anchor_university || "This market";
+  // Each chart's top-right mini-legend has its own anchor-label span. Stamp
+  // the market name into every one so they read "<Anchor University>" /
+  // "Subtext-30 avg" instead of "This market" / "Subtext-30 avg".
+  const anchorName = MARKET.anchor_university || "This market";
+  document.querySelectorAll(".perf-legend-anchor-label").forEach((el) => {
+    el.textContent = anchorName;
+  });
 
   /* ---- Multi-year time series: rent, rent growth, occupancy, prelease ---- */
   // For each year, this market's value vs the Subtext-30 average for that same year.
@@ -661,16 +674,39 @@ function renderQualifiers() {
     pct == null ? "na" : pct >= 80 ? "good" : pct >= 60 ? "warn" : "bad";
 
   const naCount = q.results.filter((r) => r.status === "na").length;
+  // `passes` is a weighted credit total — rent_growth_3yr awards 1/3 per
+  // trailing year that cleared 3%. Render as an integer when the total is
+  // whole, otherwise to one decimal place.
+  const passesNum = typeof q.passes === "number" ? q.passes : 0;
+  const passesDisplay = Number.isInteger(passesNum) ? passesNum : passesNum.toFixed(1);
   summaryEl.textContent =
-    `${q.passes} of ${q.evaluable} evaluable qualifiers passing` +
+    `${passesDisplay} of ${q.evaluable} evaluable qualifiers passing` +
     (naCount > 0 ? ` · ${naCount} pending data` : "");
 
   listEl.innerHTML = q.results.map((r) => {
-    const tier = r.tier || r.status;  // backwards compat
+    // Binary scorecard: pass / fail / na. Older data may carry tier='warn'
+    // — collapse anything that isn't a clean pass/na to 'fail'.
+    let state = r.status || "fail";
+    if (state !== "pass" && state !== "na") state = "fail";
+    // Multi-year qualifiers (e.g. rent_growth_3yr) carry a per-year
+    // breakdown — render each year as its own colored chip instead of one
+    // aggregate value.
+    let actualHtml;
+    if (Array.isArray(r.breakdown) && r.breakdown.length) {
+      actualHtml = r.breakdown.map((b) => {
+        const cls = b.passed ? "pass" : "fail";
+        return `<div class="qual-yoy-line qual-yoy-line-${cls}">
+                  <span class="qual-yoy-line-year">${escapeHtml(b.label)}:</span>
+                  <span class="qual-yoy-line-val">${escapeHtml(b.yoy_display)}</span>
+                </div>`;
+      }).join("");
+    } else {
+      actualHtml = `<span class="qual-actual-${state}">${escapeHtml(r.actual_display)}</span>`;
+    }
     return `
-      <li class="qual-row qual-${tier}">
+      <li class="qual-row qual-${state}">
         <div class="qual-label">${escapeHtml(r.label)}</div>
-        <div class="qual-actual qual-actual-${tier}">${escapeHtml(r.actual_display)}</div>
+        <div class="qual-actual">${actualHtml}</div>
       </li>`;
   }).join("");
 }
@@ -678,7 +714,9 @@ function renderQualifiers() {
 /* ----- Properties table -------------------------------------- */
 
 function bindPropertySort() {
-  document.querySelectorAll("#properties thead th").forEach((th) => {
+  // Both Market and Comps tabs have their own <table class="properties-table">
+  // — wire sort headers on each one to a shared sort state.
+  document.querySelectorAll(".properties-table thead th").forEach((th) => {
     th.addEventListener("click", () => {
       const col = th.dataset.sort;
       if (propSortState.col === col) {
@@ -693,24 +731,70 @@ function bindPropertySort() {
 }
 
 function renderProperties() {
-  const tbody = document.querySelector("#properties tbody");
-  document.querySelectorAll("#properties thead th").forEach((th) => {
+  const compSet = PROPERTIES.filter((p) => p.is_comp_set);
+
+  // First render initializes selection to all comps. Subsequent renders
+  // (sort changes etc.) preserve user selection.
+  if (compSelection.size === 0 && compSet.length > 0) {
+    compSet.forEach((p) => compSelection.add(p.property_key));
+  }
+
+  renderPropertyTable({
+    tableId: "properties-all",
+    countId: "prop-count-all",
+    rows: PROPERTIES,
+    emptyMsg: "No purpose-built properties listed for this market.",
+    label: "purpose-built propert",
+  });
+  renderPropertyTable({
+    tableId: "properties-comps",
+    countId: "prop-count-comps",
+    rows: compSet,
+    emptyMsg: "No comp-set properties — no walkable stable/lease-up properties on file.",
+    label: "comp-set propert",
+    selectable: true,
+  });
+  bindCompSelectButtons();
+}
+
+function bindCompSelectButtons() {
+  document.querySelectorAll("[data-comps-select]").forEach((btn) => {
+    if (btn.dataset.boundOnce) return;
+    btn.dataset.boundOnce = "1";
+    btn.addEventListener("click", () => {
+      const compSet = PROPERTIES.filter((p) => p.is_comp_set);
+      compSelection.clear();
+      if (btn.dataset.compsSelect === "all") {
+        compSet.forEach((p) => compSelection.add(p.property_key));
+      }
+      renderProperties();
+      renderCompCharts();
+    });
+  });
+}
+
+function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, selectable = false }) {
+  const table = document.getElementById(tableId);
+  if (!table) return;
+  const tbody = table.querySelector("tbody");
+  table.querySelectorAll("thead th").forEach((th) => {
     th.classList.remove("sorted-asc", "sorted-desc");
     if (th.dataset.sort === propSortState.col) {
       th.classList.add(propSortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
     }
   });
 
-  if (PROPERTIES.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="11" class="empty-state">
-      No purpose-built properties listed for this market.</td></tr>`;
-    document.getElementById("prop-count").textContent = "0 properties";
+  const colspan = selectable ? 11 : 10;
+  const countEl = document.getElementById(countId);
+  if (source.length === 0) {
+    tbody.innerHTML = `<tr><td colspan="${colspan}" class="empty-state">${emptyMsg}</td></tr>`;
+    if (countEl) countEl.textContent = `0 ${label}ies`;
     return;
   }
 
   const { col, dir } = propSortState;
   const sign = dir === "asc" ? 1 : -1;
-  const rows = PROPERTIES.slice().sort((a, b) => {
+  const rows = source.slice().sort((a, b) => {
     const av = a[col], bv = b[col];
     if (av == null && bv == null) return 0;
     if (av == null) return 1;
@@ -720,8 +804,16 @@ function renderProperties() {
     return String(av).localeCompare(String(bv)) * sign;
   });
 
-  tbody.innerHTML = rows.map((p) => `
+  tbody.innerHTML = rows.map((p) => {
+    const checkboxCell = selectable
+      ? `<td class="comp-select-cell">
+           <input type="checkbox" class="comp-select-cb" data-pk="${p.property_key}"
+             ${compSelection.has(p.property_key) ? "checked" : ""}>
+         </td>`
+      : "";
+    return `
     <tr data-pk="${p.property_key}">
+      ${checkboxCell}
       <td class="property-cell">
         ${escapeHtml(p.property_name || "(unnamed)")}
         <span class="city-state">${escapeHtml(p.street1 || "")}</span>
@@ -735,21 +827,41 @@ function renderProperties() {
       <td class="num">${p.avg_rent_per_sf != null ? "$" + fmtNum(p.avg_rent_per_sf, 2) : "—"}</td>
       <td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">—</span>'}</td>
       <td class="num">${fmtNum(p.milesToClosestCampus, 1)}</td>
-    </tr>
-  `).join("");
+    </tr>`;
+  }).join("");
+
+  if (selectable) {
+    // Checkbox flips selection state and re-renders the charts. Clicking the
+    // checkbox itself shouldn't trigger the row-navigate handler below.
+    tbody.querySelectorAll(".comp-select-cb").forEach((cb) => {
+      cb.addEventListener("click", (e) => e.stopPropagation());
+      cb.addEventListener("change", () => {
+        const pk = Number(cb.dataset.pk);
+        if (cb.checked) compSelection.add(pk); else compSelection.delete(pk);
+        // Highlight selected pin on the comps map and refresh charts.
+        renderCompCharts();
+      });
+    });
+  }
 
   // Row click → property detail page.
   // Shift-click keeps the previous behavior: pan + highlight in place.
   tbody.querySelectorAll("tr").forEach((tr) => {
     tr.addEventListener("click", (e) => {
+      // Clicks on the checkbox cell shouldn't navigate.
+      if (e.target.closest(".comp-select-cell")) return;
       const pk = Number(tr.dataset.pk);
       if (e.shiftKey) {
-        const marker = propertyMarkers.get(pk);
-        if (marker && map) {
-          map.setView(marker.getLatLng(), Math.max(map.getZoom(), 13), { animate: true });
+        // Pan the appropriate map — comps map when on Comps tab, market map otherwise.
+        const onComps = !!tr.closest('[data-panel="comps"]');
+        const targetMap = onComps ? mapComps : map;
+        const store = onComps ? propertyMarkersComps : propertyMarkers;
+        const marker = store.get(pk);
+        if (marker && targetMap) {
+          targetMap.setView(marker.getLatLng(), Math.max(targetMap.getZoom(), 13), { animate: true });
           marker.openPopup();
         }
-        document.querySelectorAll("#properties tr.selected").forEach((r) => r.classList.remove("selected"));
+        document.querySelectorAll(".properties-table tr.selected").forEach((r) => r.classList.remove("selected"));
         tr.classList.add("selected");
         return;
       }
@@ -757,8 +869,38 @@ function renderProperties() {
     });
   });
 
-  document.getElementById("prop-count").textContent =
-    `${rows.length} purpose-built propert${rows.length === 1 ? "y" : "ies"}`;
+  if (countEl) countEl.textContent = `${rows.length} ${label}${rows.length === 1 ? "y" : "ies"}`;
+}
+
+/* ----- Tabs (Market / Comps) --------------------------------- */
+
+function bindTabs() {
+  const tabs = document.querySelectorAll(".market-tab");
+  const panels = document.querySelectorAll(".market-tab-panel");
+  tabs.forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const target = tab.dataset.tab;
+      tabs.forEach((t) => {
+        const on = t.dataset.tab === target;
+        t.classList.toggle("active", on);
+        t.setAttribute("aria-selected", on ? "true" : "false");
+      });
+      panels.forEach((p) => {
+        p.hidden = p.dataset.panel !== target;
+      });
+      // Leaflet and Chart.js sniff their container's size on init, so a
+      // chart created while its tab is hidden renders at 0×0. Lazy-init or
+      // invalidateSize whenever a tab becomes visible.
+      if (target === "market") {
+        if (map) map.invalidateSize();
+      } else if (target === "comps") {
+        renderCompsMap().then(() => {
+          if (mapComps) mapComps.invalidateSize();
+        });
+        renderCompCharts();
+      }
+    });
+  });
 }
 
 /* ----- Map (Leaflet) ----------------------------------------- */
@@ -893,33 +1035,51 @@ function campusMarkerIcon(isAnchor, marketKey) {
 }
 
 async function renderMap() {
+  map = await buildMap({
+    containerId: "map",
+    propertyFilter: () => true,
+    markerStore: propertyMarkers,
+  });
+}
+
+// Lazy-init for the Comps tab map. Leaflet renders to 0×0 if the container
+// is hidden when the map is created, so the Comps map is built the first
+// time that tab is shown (see bindTabs()).
+async function renderCompsMap() {
+  if (mapComps) return;
+  mapComps = await buildMap({
+    containerId: "map-comps",
+    propertyFilter: (p) => p.is_comp_set,
+    markerStore: propertyMarkersComps,
+  });
+}
+
+async function buildMap({ containerId, propertyFilter, markerStore }) {
+  const container = document.getElementById(containerId);
+  if (!container) return null;
   if (typeof L === "undefined") {
-    document.getElementById("map").innerHTML =
-      `<div class="empty-state">Map library failed to load.</div>`;
-    return;
+    container.innerHTML = `<div class="empty-state">Map library failed to load.</div>`;
+    return null;
   }
 
-  // Collect everything that has lat/long
   const propsWithCoords = PROPERTIES.filter(
-    (p) => p.latitude != null && p.longitude != null,
+    (p) => p.latitude != null && p.longitude != null && propertyFilter(p),
   );
   const allCampuses = CAMPUSES.filter(
     (c) => c.campus_lat != null && c.campus_lng != null,
   );
 
   if (propsWithCoords.length === 0 && allCampuses.length === 0) {
-    document.getElementById("map").innerHTML =
-      `<div class="empty-state">No geocoded properties or campuses for this market.</div>`;
-    return;
+    container.innerHTML = `<div class="empty-state">No geocoded properties or campuses for this market.</div>`;
+    return null;
   }
 
-  // Anchor university = the school whose name matches MARKET.anchor_university
   const anchor = allCampuses.find((c) => c.university_name === MARKET.anchor_university)
               || allCampuses[0];
   const startLat = anchor ? anchor.campus_lat : propsWithCoords[0].latitude;
   const startLng = anchor ? anchor.campus_lng : propsWithCoords[0].longitude;
 
-  map = L.map("map", {
+  const mapInst = L.map(containerId, {
     center: [startLat, startLng],
     zoom: 12,
     scrollWheelZoom: true,
@@ -949,16 +1109,12 @@ async function renderMap() {
       attribution: "© OSM · © CARTO", subdomains: "abcd", maxZoom: 19, noWrap: true,
     }),
   };
-  // Default to Satellite for visual richness
-  baseLayers.Satellite.addTo(map);
-  L.control.layers(baseLayers, null, { position: "topright", collapsed: true }).addTo(map);
-  addFullscreenControl(map);
+  baseLayers.Satellite.addTo(mapInst);
+  L.control.layers(baseLayers, null, { position: "topright", collapsed: true }).addTo(mapInst);
+  addFullscreenControl(mapInst);
 
-  // Bounds collector for auto-fit
   const allLatLngs = [];
 
-  // Campus boundary polygon (red shaded outline, like the reference screenshot).
-  // Loads if the GeoJSON file exists for this market_key; silent otherwise.
   try {
     const gjRes = await fetch(`assets/campus-boundaries/${MARKET.market_key}.geojson`, { cache: "no-cache" });
     if (gjRes.ok) {
@@ -972,8 +1128,7 @@ async function renderMap() {
           fillOpacity: 0.18,
         },
         interactive: false,
-      }).addTo(map);
-      // Include the polygon in the auto-fit bounds
+      }).addTo(mapInst);
       const b = layer.getBounds();
       if (b.isValid()) {
         allLatLngs.push([b.getNorth(), b.getEast()]);
@@ -982,40 +1137,538 @@ async function renderMap() {
     }
   } catch { /* missing boundary file is fine */ }
 
-  // Campus markers
+  const POPUP_OPTS = { className: "market-popup-wrapper", maxWidth: 280, minWidth: 240, closeButton: true, autoPan: true };
+
   allCampuses.forEach((c) => {
     const isAnchor = c.university_name === MARKET.anchor_university;
-    const m = L.marker([c.campus_lat, c.campus_lng], {
+    const marker = L.marker([c.campus_lat, c.campus_lng], {
       icon: campusMarkerIcon(isAnchor, MARKET.market_key),
       zIndexOffset: isAnchor ? 1000 : 500,
-    }).addTo(map);
-    m.bindPopup(`
-      <strong>${escapeHtml(c.university_name)}</strong><br>
-      IPEDS total enrollment: ${fmtInt(c.total_enrollment)} (${c.enrollment_year || "—"})
-      ${isAnchor ? '<br><em>Anchor university</em>' : ""}
-    `);
+    }).addTo(mapInst);
+    marker.bindPopup(`
+      <div class="map-popup">
+        <div class="map-popup-head">
+          <div class="map-popup-eyebrow">${isAnchor ? "Anchor university" : "University"}</div>
+          <div class="map-popup-title">${escapeHtml(c.university_name)}</div>
+        </div>
+        <div class="map-popup-body">
+          <div class="map-popup-row">
+            <span class="map-popup-row-label">IPEDS enrollment</span>
+            <span class="map-popup-row-value">${fmtInt(c.total_enrollment)}<span class="map-popup-row-sub">${c.enrollment_year ? ` · ${c.enrollment_year}` : ""}</span></span>
+          </div>
+        </div>
+      </div>
+    `, POPUP_OPTS);
     allLatLngs.push([c.campus_lat, c.campus_lng]);
   });
 
-  // Property markers
+  const phaseLabels = {
+    "stable": "Stabilized",
+    "lease up": "Lease-up",
+    "under construction": "Under construction",
+    "planned": "Planned",
+  };
+
   propsWithCoords.forEach((p) => {
-    const m = L.marker([p.latitude, p.longitude], {
+    const marker = L.marker([p.latitude, p.longitude], {
       icon: propMarkerIcon(p),
-    }).addTo(map);
-    m.bindPopup(`
-      <strong>${escapeHtml(p.property_name || "(unnamed)")}</strong><br>
-      ${escapeHtml(p.street1 || "")}<br>
-      Beds: ${fmtInt(p.beds)} · Built ${fmtYear(p.yearBuilt)}<br>
-      Occupancy: ${fmtPct(p.occupancy)} · Pre-lease: ${fmtPct(p.prelease)}<br>
-      Avg rent: ${fmtUsd(p.avg_rent)} · ${fmtNum(p.milesToClosestCampus, 1)} mi to campus<br>
-      <a href="property.html?id=${p.property_key}" class="popup-link">View floor plans →</a>
-    `);
-    propertyMarkers.set(p.property_key, m);
+    }).addTo(mapInst);
+    const phaseText = phaseLabels[p.phase] || (p.phase ? p.phase : "");
+    const phaseSlug = (p.phase || "").replace(/\s+/g, "-").toLowerCase();
+    marker.bindPopup(`
+      <div class="map-popup">
+        <div class="map-popup-head">
+          <div class="map-popup-eyebrow-row">
+            ${phaseText ? `<span class="map-popup-phase map-popup-phase-${phaseSlug}">${escapeHtml(phaseText)}</span>` : ""}
+          </div>
+          <div class="map-popup-title">${escapeHtml(p.property_name || "(unnamed)")}</div>
+          ${p.street1 ? `<div class="map-popup-address">${escapeHtml(p.street1)}</div>` : ""}
+        </div>
+        <div class="map-popup-stats">
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">Beds</div>
+            <div class="map-popup-stat-value">${fmtInt(p.beds)}</div>
+          </div>
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">Built</div>
+            <div class="map-popup-stat-value">${fmtYear(p.yearBuilt)}</div>
+          </div>
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">To campus</div>
+            <div class="map-popup-stat-value">${fmtNum(p.milesToClosestCampus, 1)}<span class="map-popup-stat-unit">mi</span></div>
+          </div>
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">Avg rent</div>
+            <div class="map-popup-stat-value">${fmtUsd(p.avg_rent)}</div>
+          </div>
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">Occupancy</div>
+            <div class="map-popup-stat-value">${fmtPct(p.occupancy)}</div>
+          </div>
+          <div class="map-popup-stat">
+            <div class="map-popup-stat-label">Pre-lease</div>
+            <div class="map-popup-stat-value">${fmtPct(p.prelease)}</div>
+          </div>
+        </div>
+        <a href="property.html?id=${p.property_key}" class="map-popup-link">
+          View floor plans
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M13 5l7 7-7 7"/></svg>
+        </a>
+      </div>
+    `, POPUP_OPTS);
+    markerStore.set(p.property_key, marker);
     allLatLngs.push([p.latitude, p.longitude]);
   });
 
-  // Auto-fit to bounds (or stay zoomed on anchor if just one point)
   if (allLatLngs.length > 1) {
-    map.fitBounds(allLatLngs, { padding: [40, 40], maxZoom: 14 });
+    mapInst.fitBounds(allLatLngs, { padding: [40, 40], maxZoom: 14 });
   }
+  return mapInst;
+}
+
+/* ----- Comp-set comparison charts ---------------------------- */
+// Multi-year line charts: bed-weighted aggregate across selected comps per
+// year vs the market history line. property_history is populated by
+// load_property_history.py (pulls anchored annual snapshots from
+// dbo.PlanReports). Updates whenever selection changes.
+
+function weightedAvg(props, valueKey) {
+  let num = 0, denom = 0;
+  props.forEach((p) => {
+    const v = p[valueKey];
+    const w = p.beds;
+    if (v == null || w == null) return;
+    num += Number(v) * Number(w);
+    denom += Number(w);
+  });
+  return denom > 0 ? num / denom : null;
+}
+
+// Bed-weighted aggregate of `valueKey` across a list of property_history
+// rows. `rows` is an array of {property_key, year_, ...metrics, beds}.
+function weightedAvgRows(rows, valueKey) {
+  let num = 0, denom = 0;
+  rows.forEach((r) => {
+    const v = r[valueKey];
+    const w = r.beds;
+    if (v == null || w == null) return;
+    num += Number(v) * Number(w);
+    denom += Number(w);
+  });
+  return denom > 0 ? num / denom : null;
+}
+
+// For each year, bed-weighted aggregate across selected comps' property_history
+// rows. Returns [{year, value}, ...].
+function compYearlySeries(selectedKeys, valueKey) {
+  const ph = DATA.tables.property_history || [];
+  const filtered = ph.filter((r) => selectedKeys.has(r.property_key));
+  const byYear = {};
+  filtered.forEach((r) => {
+    const y = Number(r.year_);
+    (byYear[y] = byYear[y] || []).push(r);
+  });
+  return Object.keys(byYear)
+    .map(Number)
+    .sort((a, b) => a - b)
+    .map((y) => ({ year: y, value: weightedAvgRows(byYear[y], valueKey) }));
+}
+
+// Market history series for the same metric (already aggregated per market
+// in market_history). `marketKey` is MARKET.market_key. Field name differs
+// per metric — pass the key in market_history.
+function marketYearlySeries(marketKey, valueKey) {
+  const mh = DATA.tables.market_history || [];
+  return mh
+    .filter((r) => r.market_key === marketKey && r[valueKey] != null)
+    .map((r) => ({ year: Number(r.year_), value: Number(r[valueKey]) }))
+    .sort((a, b) => a.year - b.year);
+}
+
+function renderCompCharts() {
+  renderCompDetailTables();
+  const selected = PROPERTIES.filter((p) => p.is_comp_set && compSelection.has(p.property_key));
+  const totalBeds = selected.reduce((s, p) => s + (p.beds || 0), 0);
+  const selectedKeys = new Set(selected.map((p) => p.property_key));
+  const summary = document.getElementById("comp-perf-summary");
+  if (summary) {
+    summary.textContent = selected.length === 0
+      ? "No comps selected. Tick a checkbox above to populate the charts."
+      : `${selected.length} comp${selected.length === 1 ? "" : "s"} selected · `
+        + `${totalBeds.toLocaleString()} beds (bed-weighted aggregate · 2020–latest snapshot)`;
+  }
+
+  const mkKey = MARKET.market_key;
+  const fmtUsdInt = (v) => "$" + Math.round(v).toLocaleString();
+  const fmtUsdCents = (v) => "$" + v.toFixed(2);
+  const fmtPctVal = (v) => (v * 100).toFixed(1) + "%";
+
+  drawCompLine("comp-perf-rent",
+    compYearlySeries(selectedKeys, "avg_rent_per_bed"),
+    marketYearlySeries(mkKey, "avg_rent_per_bed"),
+    { yFmt: fmtUsdInt });
+  drawCompLine("comp-perf-rent-sf",
+    compYearlySeries(selectedKeys, "avg_rent_per_sf"),
+    marketYearlySeries(mkKey, "avg_rent_per_sf"),
+    { yFmt: fmtUsdCents });
+  drawCompLine("comp-perf-occupancy",
+    compYearlySeries(selectedKeys, "occupancy"),
+    marketYearlySeries(mkKey, "occupancy"),
+    { yFmt: fmtPctVal, isPct: true });
+  drawCompLine("comp-perf-prelease",
+    compYearlySeries(selectedKeys, "prelease"),
+    marketYearlySeries(mkKey, "prelease"),
+    { yFmt: fmtPctVal, isPct: true });
+}
+
+const COMP_LINE_COLOR_COMP   = "#a95818";   // rust — comp aggregate
+const COMP_LINE_COLOR_MARKET = "#16352e";   // everest — market
+
+function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false } = {}) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas || typeof Chart === "undefined") return;
+  if (compCharts[canvasId]) compCharts[canvasId].destroy();
+
+  // Union of years across both series so the x-axis is consistent.
+  const yearSet = new Set();
+  compSeries.forEach((d) => yearSet.add(d.year));
+  marketSeries.forEach((d) => yearSet.add(d.year));
+  const years = [...yearSet].sort((a, b) => a - b);
+  const compByYear = Object.fromEntries(compSeries.map((d) => [d.year, d.value]));
+  const marketByYear = Object.fromEntries(marketSeries.map((d) => [d.year, d.value]));
+
+  const compData = years.map((y) => compByYear[y] ?? null);
+  const marketData = years.map((y) => marketByYear[y] ?? null);
+
+  compCharts[canvasId] = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: [
+        {
+          label: "Comps",
+          data: compData,
+          borderColor: COMP_LINE_COLOR_COMP,
+          backgroundColor: COMP_LINE_COLOR_COMP,
+          borderWidth: 2.5,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          tension: 0.25,
+          spanGaps: true,
+        },
+        {
+          label: "Market",
+          data: marketData,
+          borderColor: COMP_LINE_COLOR_MARKET,
+          backgroundColor: COMP_LINE_COLOR_MARKET,
+          borderWidth: 2,
+          borderDash: [5, 4],
+          pointRadius: 2.5,
+          pointHoverRadius: 5,
+          tension: 0.25,
+          spanGaps: true,
+        },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          display: true,
+          position: "bottom",
+          labels: { font: { size: 11 }, boxWidth: 18, padding: 10, usePointStyle: true },
+        },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y == null ? "—" : yFmt(ctx.parsed.y)}`,
+          },
+        },
+        datalabels: { display: false },
+      },
+      scales: {
+        x: {
+          ticks: { color: "#5a544f", font: { size: 11 } },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: false,
+          ...(isPct ? { max: 1 } : {}),
+          ticks: {
+            color: "#5a544f",
+            callback: (v) => yFmt(v),
+            font: { size: 11 },
+          },
+          grid: { color: "rgba(0,0,0,0.05)" },
+        },
+      },
+      interaction: { mode: "index", intersect: false },
+    },
+  });
+}
+
+/* ----- Comp-set per-year detail tables ----------------------- */
+// Four Excel-style tables driven by property_history, scoped to the
+// selected comps: Rates, Rent Growth (YoY), Pre-lease, Occupancy. Footer
+// rows show bed-weighted aggregates plus YoY/2-Yr/3-Yr growth.
+
+const MONTH_NAMES = [
+  "January", "February", "March", "April", "May", "June",
+  "July", "August", "September", "October", "November", "December",
+];
+
+function renderCompDetailTables() {
+  const selected = PROPERTIES.filter((p) => p.is_comp_set && compSelection.has(p.property_key));
+  const selectedKeys = new Set(selected.map((p) => p.property_key));
+  const propsByKey = new Map(selected.map((p) => [p.property_key, p]));
+
+  const ph = (DATA.tables.property_history || []).filter((r) => selectedKeys.has(r.property_key));
+
+  // Years across the comp pool, sorted ascending. Limit to the most recent
+  // 5 to keep tables readable; users can pull the SQL refresh for the rest.
+  const yearSet = new Set(ph.map((r) => Number(r.year_)));
+  const years = [...yearSet].sort((a, b) => a - b).slice(-5);
+
+  // Anchor month — pull from any property_history row to label the
+  // prelease / occupancy tables ("Pre-lease (May)"). Falls back to ''.
+  let anchorMonth = "";
+  if (ph.length > 0) {
+    const iso = ph[0].data_as_of;
+    if (typeof iso === "string" && iso.length >= 7) {
+      const m = Number(iso.slice(5, 7));
+      if (m >= 1 && m <= 12) anchorMonth = MONTH_NAMES[m - 1];
+    }
+  }
+  const titleEl1 = document.getElementById("comp-table-prelease-title");
+  const titleEl2 = document.getElementById("comp-table-occupancy-title");
+  if (titleEl1) titleEl1.textContent = anchorMonth ? `Pre-lease (${anchorMonth})` : "Pre-lease";
+  if (titleEl2) titleEl2.textContent = anchorMonth ? `Occupancy (${anchorMonth})` : "Occupancy";
+
+  if (selected.length === 0) {
+    ["comp-table-rates", "comp-table-rent-growth", "comp-table-prelease", "comp-table-occupancy"].forEach((id) => {
+      const el = document.getElementById(id);
+      if (el) el.innerHTML = `<thead><tr><th>—</th></tr></thead><tbody><tr><td class="empty-state">No comps selected.</td></tr></tbody>`;
+    });
+    return;
+  }
+
+  // Build {property_key: {year: row}} lookup for quick access.
+  const lookup = {};
+  ph.forEach((r) => {
+    const k = r.property_key;
+    const y = Number(r.year_);
+    (lookup[k] = lookup[k] || {})[y] = r;
+  });
+
+  // ---- Rates table -----------------------------------------
+  renderRatesTable("comp-table-rates", selected, propsByKey, lookup, years);
+
+  // ---- Rent Growth table -----------------------------------
+  renderRentGrowthTable("comp-table-rent-growth", selected, propsByKey, lookup, years);
+
+  // ---- Prelease & Occupancy tables -------------------------
+  renderPctTable("comp-table-prelease", selected, propsByKey, lookup, years, "prelease");
+  renderPctTable("comp-table-occupancy", selected, propsByKey, lookup, years, "occupancy");
+}
+
+function _bedWeighted(rows, field) {
+  let num = 0, den = 0;
+  rows.forEach((r) => {
+    const v = r && r[field];
+    const w = r && r.beds;
+    if (v == null || w == null) return;
+    num += Number(v) * Number(w);
+    den += Number(w);
+  });
+  return den > 0 ? num / den : null;
+}
+
+function _growth(curr, prev) {
+  if (curr == null || prev == null || prev === 0) return null;
+  return (curr - prev) / prev;
+}
+
+function _fmtUsd(v) {
+  return v == null ? "" : "$" + Math.round(v).toLocaleString();
+}
+function _fmtPct1(v) {
+  return v == null ? "" : (v * 100).toFixed(1) + "%";
+}
+function _fmtPct0(v) {
+  return v == null ? "" : Math.round(v * 100) + "%";
+}
+function _signedPct1(v) {
+  if (v == null) return "";
+  return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+}
+
+function _growthClass(v) {
+  if (v == null) return "";
+  return v >= 0 ? "growth-up" : "growth-down";
+}
+
+function renderRatesTable(id, selected, propsByKey, lookup, years) {
+  const table = document.getElementById(id);
+  if (!table) return;
+  const head = `
+    <thead>
+      <tr>
+        <th class="property-cell">Property</th>
+        ${years.map((y) => `<th class="num">${y}</th>`).join("")}
+      </tr>
+    </thead>`;
+  const bodyRows = selected.map((p) => {
+    return `<tr>
+      <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${years.map((y) => {
+        const r = lookup[p.property_key]?.[y];
+        return `<td class="num">${_fmtUsd(r?.avg_rent_per_bed)}</td>`;
+      }).join("")}
+    </tr>`;
+  }).join("");
+
+  // Footer: bed-weighted Avg Rent + growth rows
+  const avgByYear = {};
+  years.forEach((y) => {
+    const rows = selected.map((p) => lookup[p.property_key]?.[y]).filter(Boolean);
+    avgByYear[y] = _bedWeighted(rows, "avg_rent_per_bed");
+  });
+  const yoyRow = years.map((y, i) => {
+    if (i === 0) return `<td class="num"></td>`;
+    const g = _growth(avgByYear[y], avgByYear[years[i - 1]]);
+    return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+  }).join("");
+  const twoYrRow = years.map((y, i) => {
+    if (i < 2) return `<td class="num"></td>`;
+    const g = _growth(avgByYear[y], avgByYear[years[i - 2]]);
+    return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+  }).join("");
+  const threeYrRow = years.map((y, i) => {
+    if (i < 3) return `<td class="num"></td>`;
+    const g = _growth(avgByYear[y], avgByYear[years[i - 3]]);
+    return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+  }).join("");
+
+  const foot = `
+    <tfoot>
+      <tr class="agg-row">
+        <td class="property-cell">Avg Rent</td>
+        ${years.map((y) => `<td class="num">${_fmtUsd(avgByYear[y])}</td>`).join("")}
+      </tr>
+      <tr class="growth-row">
+        <td class="property-cell">YoY Growth</td>
+        ${yoyRow}
+      </tr>
+      <tr class="growth-row">
+        <td class="property-cell">2-Yr Growth</td>
+        ${twoYrRow}
+      </tr>
+      <tr class="growth-row">
+        <td class="property-cell">3-Yr Growth</td>
+        ${threeYrRow}
+      </tr>
+    </tfoot>`;
+
+  table.innerHTML = head + `<tbody>${bodyRows}</tbody>` + foot;
+}
+
+function renderRentGrowthTable(id, selected, propsByKey, lookup, years) {
+  const table = document.getElementById(id);
+  if (!table) return;
+  const head = `
+    <thead>
+      <tr>
+        <th class="property-cell">Property</th>
+        ${years.map((y) => `<th class="num">${y}</th>`).join("")}
+      </tr>
+    </thead>`;
+  // Per-property YoY growth per year (first year blank — no prior).
+  // Track each year's collected growths to average in the footer.
+  const yearGrowths = Object.fromEntries(years.map((y) => [y, []]));
+  const bodyRows = selected.map((p) => {
+    const cells = years.map((y, i) => {
+      if (i === 0) return `<td class="num"></td>`;
+      const curr = lookup[p.property_key]?.[y]?.avg_rent_per_bed;
+      const prev = lookup[p.property_key]?.[years[i - 1]]?.avg_rent_per_bed;
+      const g = _growth(curr, prev);
+      if (g != null) yearGrowths[y].push(g);
+      return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+    }).join("");
+    return `<tr>
+      <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${cells}
+    </tr>`;
+  }).join("");
+
+  const avgRow = years.map((y, i) => {
+    if (i === 0) return `<td class="num"></td>`;
+    const gs = yearGrowths[y];
+    if (gs.length === 0) return `<td class="num"></td>`;
+    const avg = gs.reduce((s, x) => s + x, 0) / gs.length;
+    return `<td class="num ${_growthClass(avg)}">${_signedPct1(avg)}</td>`;
+  }).join("");
+
+  table.innerHTML = head
+    + `<tbody>${bodyRows}</tbody>`
+    + `<tfoot>
+        <tr class="agg-row">
+          <td class="property-cell">Average Growth</td>
+          ${avgRow}
+        </tr>
+      </tfoot>`;
+}
+
+function renderPctTable(id, selected, propsByKey, lookup, years, field) {
+  const table = document.getElementById(id);
+  if (!table) return;
+  const head = `
+    <thead>
+      <tr>
+        <th class="property-cell">Property</th>
+        ${years.map((y) => `<th class="num">${y}</th>`).join("")}
+      </tr>
+    </thead>`;
+  const bodyRows = selected.map((p) => {
+    return `<tr>
+      <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${years.map((y) => {
+        const r = lookup[p.property_key]?.[y];
+        return `<td class="num">${_fmtPct0(r?.[field])}</td>`;
+      }).join("")}
+    </tr>`;
+  }).join("");
+
+  const avgByYear = {};
+  years.forEach((y) => {
+    const rows = selected.map((p) => lookup[p.property_key]?.[y]).filter(Boolean);
+    avgByYear[y] = _bedWeighted(rows, field);
+  });
+  const yoyRow = years.map((y, i) => {
+    if (i === 0) return `<td class="num"></td>`;
+    const g = _growth(avgByYear[y], avgByYear[years[i - 1]]);
+    return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+  }).join("");
+  const twoYrRow = years.map((y, i) => {
+    if (i < 2) return `<td class="num"></td>`;
+    const g = _growth(avgByYear[y], avgByYear[years[i - 2]]);
+    return `<td class="num ${_growthClass(g)}">${_signedPct1(g)}</td>`;
+  }).join("");
+
+  const aggLabel = field === "prelease" ? "Average Pre-lease" : "Average Occupancy";
+  table.innerHTML = head
+    + `<tbody>${bodyRows}</tbody>`
+    + `<tfoot>
+        <tr class="agg-row">
+          <td class="property-cell">${aggLabel}</td>
+          ${years.map((y) => `<td class="num">${_fmtPct1(avgByYear[y])}</td>`).join("")}
+        </tr>
+        <tr class="growth-row">
+          <td class="property-cell">YoY Growth</td>
+          ${yoyRow}
+        </tr>
+        <tr class="growth-row">
+          <td class="property-cell">2-Yr Growth</td>
+          ${twoYrRow}
+        </tr>
+      </tfoot>`;
 }

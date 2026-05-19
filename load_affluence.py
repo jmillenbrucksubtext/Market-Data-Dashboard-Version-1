@@ -181,20 +181,14 @@ def _income_qualifier_result(affluence_row: dict | None) -> dict:
         }
     inc = float(affluence_row["mean_origin_income"])
     threshold = INCOME_QUALIFIER_THRESHOLD
-    margin = 5_000
     passed = inc > threshold
-    if inc > threshold + margin:
-        tier = "pass"
-    elif inc < threshold - margin:
-        tier = "fail"
-    else:
-        tier = "warn"
+    status = "pass" if passed else "fail"
     return {
         **base,
         "actual_display": f"${inc:,.0f}",
         "actual": inc,
-        "status": "pass" if passed else "fail",
-        "tier": tier,
+        "status": status,
+        "tier": status,
         "explanation": (
             f"mean origin household income across {int(n):,} students "
             f"(migration data, {affluence_row.get('data_as_of', 'unknown window')})"
@@ -268,23 +262,17 @@ def _prelease_yoy_qualifier_result(yoy: dict | None) -> dict:
         }
     delta = yoy["delta"]
     threshold = PRELEASE_YOY_THRESHOLD
-    margin = PRELEASE_YOY_MARGIN
     passed = delta >= threshold
-    if delta > threshold + margin:
-        tier = "pass"
-    elif delta < threshold - margin:
-        tier = "fail"
-    else:
-        tier = "warn"
+    status = "pass" if passed else "fail"
     sign = "+" if delta >= 0 else ""
     cur_pct = yoy["current_prelease"] * 100
     prior_pct = yoy["prior_prelease"] * 100
     return {
         **base,
-        "actual_display": f"{sign}{delta * 100:.1f} pp",
+        "actual_display": f"{sign}{delta * 100:.1f}%",
         "actual": delta,
-        "status": "pass" if passed else "fail",
-        "tier": tier,
+        "status": status,
+        "tier": status,
         "explanation": (
             f"week {yoy['current_week']} of cycle {yoy['current_cycle']}: "
             f"{cur_pct:.1f}% vs {prior_pct:.1f}% same week in "
@@ -315,25 +303,47 @@ def patch_prelease_yoy_qualifier(payload: dict) -> int:
                 break
         if not replaced:
             results.append(new_res)
-        evaluable = [r for r in results if r.get("status") != "na"]
-        passes = sum(1 for r in evaluable if r.get("status") == "pass")
         q["results"] = results
-        q["evaluable"] = len(evaluable)
-        q["passes"] = passes
-        q["score_pct"] = (passes / len(evaluable)) if evaluable else None
+        recompute_rollup(q)
     return converted
 
 
+def credit_fraction(result: dict) -> float | None:
+    """Per-qualifier credit ∈ [0,1] used for the weighted scorecard rollup.
+    Binary qualifiers are 0 or 1; qualifiers carrying a per-component
+    `breakdown` list (e.g. rent_growth_3yr — one component per trailing
+    year) award fractional credit equal to the share of components passing.
+    NA qualifiers return None so the caller can exclude them."""
+    if result.get("status") == "na":
+        return None
+    breakdown = result.get("breakdown")
+    if isinstance(breakdown, list) and breakdown:
+        passed = sum(1 for b in breakdown if b.get("passed"))
+        return passed / len(breakdown)
+    return 1.0 if result.get("status") == "pass" else 0.0
+
+
+def recompute_rollup(q: dict) -> None:
+    """Recompute evaluable / passes / score_pct on a market_qualifiers row
+    using weighted credit. `passes` becomes a float when any qualifier
+    carries partial credit; the UI rounds for display."""
+    results = q.get("results") or []
+    evaluable = [r for r in results if r.get("status") != "na"]
+    credits = [credit_fraction(r) for r in evaluable]
+    weighted = sum(c for c in credits if c is not None)
+    q["evaluable"] = len(evaluable)
+    q["passes"] = weighted
+    q["score_pct"] = (weighted / len(evaluable)) if evaluable else None
+
+
 def _tier(actual, threshold, margin, direction):
+    # Binary: tier always matches status. The historical pass/warn/fail
+    # gradient was retired (see [[project-qualifier-patchers]]).
     if direction == "above":
-        if actual > threshold + margin: return "pass"
-        if actual < threshold - margin: return "fail"
-        return "warn"
+        return "pass" if actual > threshold else "fail"
     if direction == "below":
-        if actual <= threshold - margin: return "pass"
-        if actual > threshold + margin: return "fail"
-        return "warn"
-    return "warn"
+        return "pass" if actual <= threshold else "fail"
+    return "fail"
 
 
 def _fte_yoy_qualifier_result(fte_row: dict | None) -> dict:
@@ -353,14 +363,19 @@ def _fte_yoy_qualifier_result(fte_row: dict | None) -> dict:
     yoy = float(yoy)
     cur = int(fte_row["current_fte"])
     prior = int(fte_row["prior_year_fte"])
+    prior_snap = (fte_row.get("prior_year_snapshot") or "")[:10]
     sign = "+" if yoy >= 0 else ""
+    status = "pass" if yoy > 0 else "fail"
     return {
         **base,
         "actual_display": f"{sign}{yoy * 100:.1f}%",
         "actual": yoy,
-        "status": "pass" if yoy > 0 else "fail",
-        "tier": _tier(yoy, 0.0, 0.005, "above"),
-        "explanation": f"current FTE {cur:,} vs {prior:,} a year ago",
+        "status": status,
+        "tier": status,
+        "explanation": (
+            f"current FTE {cur:,} vs {prior:,} as of {prior_snap} "
+            "(most recent snapshot with a different value)"
+        ),
     }
 
 
@@ -423,12 +438,8 @@ def patch_fte_qualifiers(payload: dict) -> dict[str, int]:
             if not replaced:
                 results.append(new_res)
         # Recompute roll-up since two results just changed.
-        evaluable = [r for r in results if r.get("status") != "na"]
-        passes = sum(1 for r in evaluable if r.get("status") == "pass")
         q["results"] = results
-        q["evaluable"] = len(evaluable)
-        q["passes"] = passes
-        q["score_pct"] = (passes / len(evaluable)) if evaluable else None
+        recompute_rollup(q)
     return counts
 
 
@@ -455,12 +466,8 @@ def patch_income_qualifier(payload: dict, affluence_rows: list[dict]) -> int:
         if not replaced:
             results.append(new_res)
         # Recompute roll-up counters since one result just changed.
-        evaluable = [r for r in results if r.get("status") != "na"]
-        passes = sum(1 for r in evaluable if r.get("status") == "pass")
         q["results"] = results
-        q["evaluable"] = len(evaluable)
-        q["passes"] = passes
-        q["score_pct"] = (passes / len(evaluable)) if evaluable else None
+        recompute_rollup(q)
     return converted
 
 

@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Subtext — Dictionary</title>
+  <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
+  <link rel="stylesheet" href="style.css?v=25">
+</head>
+<body>
+  <div class="app">
+
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="wordmark">SubHouse</span>
+      </div>
+
+      <nav class="nav">
+        <a class="nav-item" href="index.html#industry">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 17V11"/><path d="M12 17V7"/><path d="M17 17v-4"/></svg>
+          Industry
+        </a>
+        <a class="nav-item" href="index.html#sources">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
+          Sources
+        </a>
+        <a class="nav-item active" href="dictionary.html">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M4 4v12"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
+          Dictionary
+        </a>
+      </nav>
+
+      <div class="sidebar-footer">
+        <div class="avatar">JM</div>
+        <div class="name">Subtext Team</div>
+      </div>
+    </aside>
+
+    <div class="main">
+
+      <header class="topbar">
+        <a class="back-link" href="index.html#industry">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M15 18l-6-6 6-6"/></svg>
+          Back to Industry
+        </a>
+      </header>
+
+      <div class="content">
+
+        <div class="page-header">
+          <h1>Data Dictionary</h1>
+          <p class="market-subtitle">Every formula, KPI, chart, and qualifier on the dashboard — what it measures and how it's computed.</p>
+        </div>
+
+        <nav class="dictionary-toc">
+          <a href="#market-kpis">Market KPIs</a>
+          <a href="#market-charts">Market Performance Charts</a>
+          <a href="#qualifiers">Subtext Qualifier Scorecard</a>
+          <a href="#compset">Comp-set Definition</a>
+          <a href="#comp-charts">Comp-set Performance Charts</a>
+          <a href="#industry">Industry Tab</a>
+          <a href="#sources">Source Tables</a>
+        </nav>
+
+        <!-- ============ MARKET KPIS ============ -->
+        <section class="card dict-section" id="market-kpis">
+          <header class="card-header"><div>
+            <h2>Market KPIs (top of market detail page)</h2>
+            <p>Nine tiles that summarise a market's current snapshot.</p>
+          </div></header>
+          <div class="card-body">
+            <dl class="dict-list">
+
+              <dt>Existing Beds</dt>
+              <dd>Count of purpose-built student-housing beds in the market at the latest snapshot. <code>scorecard.existing_beds</code> = sum of <code>dbo.MarketReports.beds_purpose_built</code> on the latest <code>snapshot_date</code> per market.</dd>
+
+              <dt>Pipeline Beds</dt>
+              <dd>Lease-up + under-construction + planned beds. <code>scorecard.beds_pipeline_total</code> = <code>beds_lease_up + beds_under_construction + beds_planned</code> from MarketReports.</dd>
+
+              <dt>Penetration</dt>
+              <dd>Purpose-built supply relative to anchor enrollment. <code>penetration_ratio = existing_beds / enr_full_time</code>. Higher = more PBSH supply per student.</dd>
+
+              <dt>FTE Enrollment</dt>
+              <dd>Full-time-equivalent enrollment at the anchor university. <code>scorecard.enr_full_time</code> ← <code>dbo.MarketReports.enr_full_time</code> (sourced from IPEDS, refreshed annually per school).</dd>
+
+              <dt>Avg Rent / Bed</dt>
+              <dd>Bed-weighted average effective rent across the market's properties at the latest snapshot. <code>scorecard.avg_rent_per_bed</code> ← <code>dbo.MarketReports.rate_avg</code>.</dd>
+
+              <dt>Rent YoY</dt>
+              <dd>Year-over-year change in <code>avg_rent_per_bed</code> from <code>market_history</code>, comparing the latest snapshot to the same calendar day one year prior.</dd>
+
+              <dt>Occupancy</dt>
+              <dd>Bed-weighted occupancy at the latest snapshot. <code>scorecard.occupancy</code> ← <code>dbo.MarketReports.occupancy</code>.</dd>
+
+              <dt>Pre-lease</dt>
+              <dd>Bed-weighted pre-lease at the latest snapshot. <code>scorecard.prelease</code> ← <code>dbo.MarketReports.prelease</code>.</dd>
+
+              <dt>Mean Origin Income</dt>
+              <dd>Average household income of the census tracts incoming students migrated from. Computed in <code>load_affluence.py</code> from monthly Migration CSVs (<code>Affluence Data/MigrationAllRents*.csv</code>) joined to IPEDS → market_key crosswalk. Pooled over two reference months for stability.</dd>
+
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============ MARKET CHARTS ============ -->
+        <section class="card dict-section" id="market-charts">
+          <header class="card-header"><div>
+            <h2>Market Performance Charts</h2>
+            <p>Multi-year time-series benchmarked against the Subtext-30 average. Each year is anchored to the same month/day as the latest snapshot so YoY is apples-to-apples.</p>
+          </div></header>
+          <div class="card-body">
+            <dl class="dict-list">
+
+              <dt>Market Rent</dt>
+              <dd>Line chart of <code>market_history.avg_rent_per_bed</code> over years (anchored). Solid rust = this market; dashed everest = bed-weighted average of all Subtext-30 markets at the same anchor.</dd>
+
+              <dt>Market Rent Growth</dt>
+              <dd>YoY % change derived from the same series: <code>(rent_t − rent_{t-1}) / rent_{t-1}</code>. First year shows no value (no prior).</dd>
+
+              <dt>Market Occupancy</dt>
+              <dd><code>market_history.occupancy</code> over years (anchored). Same dual-line treatment.</dd>
+
+              <dt>Market Pre-lease</dt>
+              <dd><code>market_history.prelease</code> over years (anchored).</dd>
+
+              <dt>Penetration Ratio</dt>
+              <dd>For each year: <code>existing_beds / enr_full_time</code> at the anchored snapshot.</dd>
+
+              <dt>Bed Supply: Existing + Pipeline</dt>
+              <dd>Stacked bars per year: existing, lease-up, under-construction, planned. From <code>market_history</code> bed columns.</dd>
+
+              <dt>Pre-leasing Velocity by Cycle</dt>
+              <dd>Lines from <code>prelease_velocity</code> table — one line per leasing cycle, x-axis = week-of-cycle, y-axis = bed-weighted prelease %. Shows how this year's pace stacks against prior cycles week-by-week.</dd>
+
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============ QUALIFIERS ============ -->
+        <section class="card dict-section" id="qualifiers">
+          <header class="card-header"><div>
+            <h2>Subtext Qualifier Scorecard</h2>
+            <p>Eleven pass/fail rules on each market. Aggregate score = bed-weighted credit / count(evaluable) — qualifiers with a per-component breakdown (rent_growth_3yr) award fractional credit per sub-component.</p>
+          </div></header>
+          <div class="card-body">
+            <table class="dict-table">
+              <thead><tr><th>Qualifier</th><th>Pass when…</th><th>Source</th></tr></thead>
+              <tbody>
+                <tr><td>Nominal market rent above $900</td><td><code>scorecard.avg_rent_per_bed &gt; $900</code></td><td>MarketReports.rate_avg</td></tr>
+                <tr><td>Comp-set rent above $1,000</td><td>bed-weighted avg of <code>avg_rent</code> across comp-set members &gt; $1,000</td><td>Properties (filtered by <code>is_comp_set</code>)</td></tr>
+                <tr><td>FTE enrollment above 15,000</td><td><code>scorecard.enr_full_time &gt; 15,000</code></td><td>MarketReports.enr_full_time</td></tr>
+                <tr><td>Market occupancy above 90%</td><td><code>scorecard.occupancy &gt; 0.90</code></td><td>MarketReports.occupancy</td></tr>
+                <tr><td>FTE growth since 2022 above 3%</td><td><code>(current_fte − baseline_2022_fte) / baseline_2022_fte &gt; 0.03</code></td><td>fte_history (anchored to ~Jan 2022)</td></tr>
+                <tr><td>FTE growth YoY positive</td><td><code>(current_fte − prior_fte) / prior_fte &gt; 0</code>. <strong>Prior is the most recent snapshot whose <code>enr_full_time</code> differs from current</strong>, not literal T-1yr — sidesteps IPEDS publish cadence.</td><td>fte_history</td></tr>
+                <tr><td>YoY rent growth ≥3% for trailing 3 years</td><td><strong>All three</strong> trailing YoY rates ≥ 0.03. <strong>Partial credit:</strong> each year contributes 1/3 to the scorecard regardless of whether the qualifier as a whole passes (so 2/3 years pass = 0.667 credit toward the 1/11 slot).</td><td>market_history.avg_rent_per_bed</td></tr>
+                <tr><td>Market prelease not lagging prior year by &gt;5%</td><td>same-week-of-cycle delta this year vs prior cycle ≥ −0.05</td><td>prelease_velocity</td></tr>
+                <tr><td>Pipeline ≤ 10% of existing supply</td><td><code>beds_pipeline_total / existing_beds ≤ 0.10</code></td><td>MarketReports</td></tr>
+                <tr><td>Uncaptured demand within 1 mile above 30%</td><td><code>1 − (Σ beds in PBSH properties with milesToClosestCampus ≤ 1) / enr_full_time &gt; 0.30</code></td><td>Properties + MarketReports.enr_full_time</td></tr>
+                <tr><td>Avg income of median zipcodes above $85K</td><td><code>mean_origin_income &gt; $85,000</code></td><td>Migration CSV (see load_affluence.py)</td></tr>
+              </tbody>
+            </table>
+            <p class="dict-note">
+              <strong>Score formula.</strong> For each qualifier, a <code>credit_fraction ∈ [0,1]</code>: binary qualifiers are 0 or 1; rent_growth_3yr awards <code>years_passed / 3</code>. NA qualifiers are excluded.
+              <code>score_pct = sum(credit_fraction) / count(evaluable)</code>. Badge tier: ≥ 80% green, 60–80% amber, &lt; 60% red.
+            </p>
+            <p class="dict-note">
+              <strong>Per-row colour.</strong> Each scorecard row is strictly pass (green) / fail (red) / NA (grey). The previous “warn” middle band was retired — partial credit lives only in the aggregate, not the row state.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ COMP-SET ============ -->
+        <section class="card dict-section" id="compset">
+          <header class="card-header"><div>
+            <h2>Comp-set Definition</h2>
+            <p>Which properties count as the "comp set" for each market. Computed in <code>load_comp_set.py</code> and stamped onto every property as <code>is_comp_set</code>.</p>
+          </div></header>
+          <div class="card-body">
+            <dl class="dict-list">
+              <dt>Eligibility pool</dt>
+              <dd><code>phase ∈ {stable, lease up}</code> AND <code>milesToClosestCampus ≤ 1.0</code></dd>
+              <dt>Comp-set members (within pool — union)</dt>
+              <dd>
+                <strong>(a)</strong> Built ≥ 2020 (<code>yearBuilt ≥ 2020</code>), or<br>
+                <strong>(b)</strong> Top 5 by <code>avg_rent</code> (rent per bed) within the walkable pool, regardless of vintage.
+              </dd>
+              <dt>Why the OR rescue</dt>
+              <dd>~112 of 279 markets have zero pool properties built in 2020+. The top-5-by-rent rule guarantees every market with at least one walkable PBSH gets a comp-set, so the rent_compset qualifier never goes NA for that reason alone.</dd>
+              <dt>Knobs (top of load_comp_set.py)</dt>
+              <dd><code>COMP_SET_MILES = 1.0</code> · <code>COMP_SET_VINTAGE = 2020</code> · <code>COMP_SET_TOPN = 5</code> · <code>COMP_SET_PHASES = {'stable', 'lease up'}</code></dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============ COMP CHARTS ============ -->
+        <section class="card dict-section" id="comp-charts">
+          <header class="card-header"><div>
+            <h2>Comp-set Performance Charts</h2>
+            <p>Multi-year line charts on the Comps tab. Show the bed-weighted aggregate across the comps you have checked vs the broader market.</p>
+          </div></header>
+          <div class="card-body">
+            <p class="dict-note">
+              For each year and metric, the <strong>Comps line</strong> is the bed-weighted average across selected comps' historical snapshots:
+              <code>Σ(value × beds) / Σ(beds)</code> over rows in <code>property_history</code> for that (property_key, year) pair.
+              The <strong>Market line</strong> is the same anchored market value from <code>market_history</code>. Toggling checkboxes recomputes the comps line live.
+            </p>
+            <dl class="dict-list">
+              <dt>Avg Rent / Bed</dt>
+              <dd>Comps: bed-weighted <code>property_history.avg_rent_per_bed</code>. Market: <code>market_history.avg_rent_per_bed</code>.</dd>
+              <dt>Rent / SF</dt>
+              <dd>Comps: bed-weighted <code>property_history.avg_rent_per_sf</code>. Market: same field from market_history (when populated).</dd>
+              <dt>Occupancy</dt>
+              <dd>Bed-weighted <code>property_history.occupancy</code> vs <code>market_history.occupancy</code>.</dd>
+              <dt>Pre-lease</dt>
+              <dd>Bed-weighted <code>property_history.prelease</code> vs <code>market_history.prelease</code>.</dd>
+            </dl>
+            <p class="dict-note">
+              <strong>Historical anchor.</strong> Each year picks the snapshot closest to the latest-snapshot calendar day (e.g., 2026-05-09 vs 2025-05-10 vs 2024-05-11 …). At property level this is aggregated from <code>dbo.PlanReports</code> via <code>load_property_history.py</code> — bed-weighted across plans within each property snapshot.
+            </p>
+          </div>
+        </section>
+
+        <!-- ============ INDUSTRY ============ -->
+        <section class="card dict-section" id="industry">
+          <header class="card-header"><div>
+            <h2>Industry Tab</h2>
+            <p>The national overview on <code>index.html</code>.</p>
+          </div></header>
+          <div class="card-body">
+            <dl class="dict-list">
+              <dt>Industry map</dt>
+              <dd>One pin per market at the anchor university. Pin colour = qualifier-score tier (≥ 80% green, 60–80% amber, &lt; 60% red, NA grey). Pin size scales with <code>existing_beds</code>. Toggle controls filter to Subtext-30 only or Power-4 conference markets.</dd>
+              <dt>Industry scorecard (top-30 table)</dt>
+              <dd>Markets ranked by current rent. Columns: rent, beds, FTE, occupancy, prelease, qualifier mini-badge (small percentage pill, same tier scheme as the map). The ★ flag shows whether any of the market's universities is in the Subtext-30 list.</dd>
+              <dt>Rent / Occupancy / Pre-lease ladders</dt>
+              <dd>Bar charts ranking the Subtext-30 markets on a single metric. Bars coloured by Subtext-30 membership.</dd>
+            </dl>
+          </div>
+        </section>
+
+        <!-- ============ SOURCES ============ -->
+        <section class="card dict-section" id="sources">
+          <header class="card-header"><div>
+            <h2>Source Tables</h2>
+            <p>Where each table in <code>data.json</code> comes from.</p>
+          </div></header>
+          <div class="card-body">
+            <table class="dict-table">
+              <thead><tr><th>Table</th><th>Source</th><th>Refresh path</th></tr></thead>
+              <tbody>
+                <tr><td><code>scorecard</code></td><td>dbo.MarketReports + dbo.Markets (latest snapshot per market)</td><td>export-data.py</td></tr>
+                <tr><td><code>properties</code></td><td>dbo.Properties (purpose-built only, non-shadow) + plan-level aggregates</td><td>export-data.py</td></tr>
+                <tr><td><code>market_history</code></td><td>dbo.MarketReports, anchored annual snapshots 2020+</td><td>export-data.py</td></tr>
+                <tr><td><code>property_history</code></td><td>dbo.PlanReports, bed-weighted anchored annual snapshots</td><td>load_property_history.py · export-data.py</td></tr>
+                <tr><td><code>prelease_velocity</code></td><td>dbo.MarketReports, weekly snapshots within each leasing cycle</td><td>export-data.py</td></tr>
+                <tr><td><code>fte_history</code></td><td>dbo.MarketReports, anchored to latest snapshot + most-recent-change prior snapshot + 2022 baseline</td><td>load_fte_history.py · export-data.py</td></tr>
+                <tr><td><code>market_affluence</code></td><td>MigrationAllRents*.csv (local) joined to IPEDS → market_key crosswalk</td><td>load_affluence.py · export-data.py</td></tr>
+                <tr><td><code>market_qualifiers</code></td><td>Computed from the above tables; per-row pass/fail + aggregated score_pct</td><td>compute_qualifiers in export-data.py + the patcher family</td></tr>
+                <tr><td><code>plans</code></td><td>dbo.Plans (floor plans tied to properties)</td><td>export-data.py</td></tr>
+                <tr><td><code>campus_locations</code></td><td>dbo.Schools_Denormal + IPEDS_CH_Crosswalk</td><td>export-data.py</td></tr>
+                <tr><td><code>market_analysis_schedule</code></td><td>Market Analysis Schedule.xlsx on OneDrive (analyst initials, IC dates, decisions)</td><td>export-data.py (Excel reader)</td></tr>
+              </tbody>
+            </table>
+            <p class="dict-note">
+              <strong>Refresh cadence.</strong> Full SQL refresh runs Mondays 6:00 AM via the <code>"Subtext Dashboard Weekly Refresh"</code> Windows Scheduled Task → <code>weekly-refresh.ps1</code> → <code>export-data.py</code>, then commits + pushes to <code>origin/main</code>. Patchers can be run independently to update a single table without a full refresh.
+            </p>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </div>
+</body>
+</html>

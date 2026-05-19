@@ -222,6 +222,12 @@ QUERIES: dict[str, str] = {
                    ON  mr.market_key    = latest.market_key
                   AND mr.snapshot_date = latest.max_snap
         ),
+        -- Anchor "prior" to the most recent snapshot whose enr_full_time
+        -- DIFFERS from current. This sidesteps IPEDS publish cadence: if a
+        -- school's FTE didn't change in the last 12 months, the weekly
+        -- MarketReports rows all carry the same value forward and a literal
+        -- T-1yr lookup would always return current_fte. Compare-to-last-change
+        -- always finds a real prior cohort.
         prior_yr AS (
             SELECT
                 cs.market_key,
@@ -229,14 +235,14 @@ QUERIES: dict[str, str] = {
                 mr.enr_full_time         AS prior_yr_fte,
                 ROW_NUMBER() OVER (
                     PARTITION BY cs.market_key
-                    ORDER BY ABS(DATEDIFF(DAY, DATEADD(YEAR, -1, cs.current_date_), mr.snapshot_date))
+                    ORDER BY mr.snapshot_date DESC
                 ) AS rn
             FROM current_snap cs
             JOIN dbo.MarketReports mr
                    ON  mr.market_key     = cs.market_key
                   AND mr.enr_full_time  IS NOT NULL
-                  AND mr.snapshot_date BETWEEN DATEADD(DAY, -540, cs.current_date_)
-                                           AND DATEADD(DAY, -180, cs.current_date_)
+                  AND mr.enr_full_time  <> cs.current_fte
+                  AND mr.snapshot_date  <  cs.current_date_
         ),
         y2022 AS (
             SELECT
@@ -537,6 +543,64 @@ QUERIES: dict[str, str] = {
         "beds_planned, beds_pipeline AS beds_pipeline_total "
         "FROM a WHERE rn = 1 ORDER BY market_key, yr"
     ),
+    # property_history: per-property annual anchored snapshot pulled from
+    # dbo.PlanReports. Bed-weighted across plans within each property for
+    # rate, rate_per_sf, occupancy, prelease. Drives the comp-set
+    # time-series charts on market.html. See load_property_history.py for
+    # the standalone equivalent.
+    "property_history": """
+        WITH la AS (
+            SELECT MONTH(MAX(snapshot_date)) AS mo, DAY(MAX(snapshot_date)) AS dy
+            FROM dbo.PlanReports WHERE property_key IS NOT NULL
+        ),
+        snaps AS (
+            SELECT DISTINCT pr.property_key, pr.snapshot_date,
+                            YEAR(pr.snapshot_date) AS yr
+            FROM dbo.PlanReports pr
+            WHERE pr.property_key IS NOT NULL AND YEAR(pr.snapshot_date) >= 2020
+        ),
+        anchored AS (
+            SELECT s.property_key, s.snapshot_date, s.yr,
+                ROW_NUMBER() OVER (
+                    PARTITION BY s.property_key, s.yr
+                    ORDER BY ABS(DATEDIFF(DAY, s.snapshot_date,
+                                DATEFROMPARTS(s.yr, la.mo,
+                                  CASE WHEN la.dy > DAY(EOMONTH(DATEFROMPARTS(s.yr, la.mo, 1)))
+                                       THEN DAY(EOMONTH(DATEFROMPARTS(s.yr, la.mo, 1)))
+                                       ELSE la.dy END)))
+                ) AS rn
+            FROM snaps s CROSS JOIN la
+        ),
+        chosen AS (
+            SELECT property_key, yr, snapshot_date FROM anchored WHERE rn = 1
+        )
+        SELECT
+            pr.property_key,
+            c.yr AS year_,
+            c.snapshot_date AS data_as_of,
+            CASE WHEN SUM(pr.beds_purpose_built) > 0
+                 THEN SUM(pr.rate * pr.beds_purpose_built)
+                      / NULLIF(SUM(pr.beds_purpose_built), 0)
+            END AS avg_rent_per_bed,
+            CASE WHEN SUM(pr.beds_purpose_built) > 0
+                 THEN SUM(pr.rate_per_sf * pr.beds_purpose_built)
+                      / NULLIF(SUM(pr.beds_purpose_built), 0)
+            END AS avg_rent_per_sf,
+            CASE WHEN SUM(pr.beds_purpose_built) > 0
+                 THEN SUM(pr.occupancy * pr.beds_purpose_built)
+                      / NULLIF(SUM(pr.beds_purpose_built), 0)
+            END AS occupancy,
+            CASE WHEN SUM(pr.beds_purpose_built) > 0
+                 THEN SUM(pr.prelease * pr.beds_purpose_built)
+                      / NULLIF(SUM(pr.beds_purpose_built), 0)
+            END AS prelease,
+            SUM(pr.beds_purpose_built) AS beds
+        FROM chosen c
+        JOIN dbo.PlanReports pr
+               ON pr.property_key = c.property_key AND pr.snapshot_date = c.snapshot_date
+        GROUP BY pr.property_key, c.yr, c.snapshot_date
+        ORDER BY pr.property_key, c.yr
+    """,
 }
 
 
@@ -698,34 +762,31 @@ def _na(qid, label, threshold_display, reason="Phase 2 — data not yet loaded")
 
 
 def _tier(actual, threshold, margin, direction):
-    """Return one of: 'pass' | 'warn' | 'fail' based on how far the actual
-    value is from the threshold. `margin` defines the borderline window.
-    direction: 'above' (pass if actual > threshold) or 'below' (pass if ≤)."""
+    """Binary tier: returns the same pass/fail as status. The historical
+    'warn' middle band was retired — the scorecard now treats each
+    qualifier as a clean pass or fail."""
     if direction == "above":
-        if actual > threshold + margin: return "pass"
-        if actual < threshold - margin: return "fail"
-        return "warn"
+        return "pass" if actual > threshold else "fail"
     if direction == "below":
-        if actual <= threshold - margin: return "pass"
-        if actual > threshold + margin: return "fail"
-        return "warn"
-    return "warn"
+        return "pass" if actual <= threshold else "fail"
+    return "fail"
 
 
 def _result(qid, label, threshold_display, actual, actual_display,
             threshold, margin, direction, explanation):
-    """Compute pass/fail status AND a pass/warn/fail tier for visual coloring."""
+    """Compute pass/fail status. `margin` is accepted for backwards
+    compatibility with old call sites but is no longer used."""
     if direction == "above":
         passed = actual > threshold
     else:  # "below"
         passed = actual <= threshold
-    tier = _tier(actual, threshold, margin, direction)
+    status = "pass" if passed else "fail"
     return {
         "id": qid, "label": label,
         "threshold_display": threshold_display,
         "actual_display": actual_display, "actual": actual,
-        "status": "pass" if passed else "fail",
-        "tier": tier,
+        "status": status,
+        "tier": status,
         "explanation": explanation,
     }
 
@@ -745,17 +806,25 @@ def _q_rent_market(market, _props_by_market):
 
 
 def _q_rent_compset(market, props_by_market):
+    # Comp-set is computed centrally before evaluators run (see main()) and
+    # each market dict carries `comp_set_keys`. Filter the property list down
+    # to that set, then average rent.
     mk = market["market_key"]
-    rents = [p["avg_rent"] for p in props_by_market.get(mk, []) if p.get("avg_rent")]
+    comp_keys = market.get("comp_set_keys") or set()
+    rents = [
+        p["avg_rent"]
+        for p in props_by_market.get(mk, [])
+        if p.get("property_key") in comp_keys and p.get("avg_rent")
+    ]
     if not rents:
         return _na("rent_compset", "Comp-set rent above $1,000", "> $1,000",
-                   "no comp properties with rent")
+                   "no comp-set properties with rent")
     avg = sum(rents) / len(rents)
     return _result(
         "rent_compset", "Comp-set rent above $1,000", "> $1,000",
         actual=avg, actual_display=f"${avg:,.0f}",
         threshold=1000, margin=100, direction="above",
-        explanation=f"average across {len(rents)} comp properties",
+        explanation=f"average across {len(rents)} comp-set properties",
     )
 
 
@@ -826,21 +895,59 @@ def _q_fte_growth_yoy(market, _props_by_market):
     fte_hist = market.get("fte_history")
     if not fte_hist or fte_hist.get("yoy_fte_growth") is None:
         return _na("fte_growth_yoy", "FTE growth YoY positive", "> 0% YoY",
-                   "no prior-year FTE snapshot")
+                   "no prior FTE snapshot with a different value")
     yoy = float(fte_hist["yoy_fte_growth"])
     sign = "+" if yoy >= 0 else ""
+    prior_snap = (fte_hist.get("prior_year_snapshot") or "")[:10]
     return _result(
         "fte_growth_yoy", "FTE growth YoY positive", "> 0% YoY",
         actual=yoy, actual_display=f"{sign}{yoy * 100:.1f}%",
         threshold=0.0, margin=0.005, direction="above",
         explanation=(
             f"current FTE {int(fte_hist['current_fte']):,} vs "
-            f"{int(fte_hist['prior_year_fte']):,} a year ago"
+            f"{int(fte_hist['prior_year_fte']):,} as of {prior_snap} "
+            "(most recent snapshot with a different value)"
         ),
     )
 
-def _q_rent_growth_3yr(_m, _p):
-    return _na("rent_growth_3yr", "YoY rent growth ≥3% for trailing 3 years", "≥ 3% for 3 trailing years")
+def _q_rent_growth_3yr(market, _props_by_market):
+    # Pull all available years of avg_rent_per_bed from market_history, take
+    # the latest four to derive three trailing YoY rates, and require each to
+    # be ≥ 3%.
+    hist = market.get("market_history_rows") or []
+    by_year = {int(r["year_"]): r.get("avg_rent_per_bed") for r in hist
+               if r.get("avg_rent_per_bed") is not None
+               and float(r["avg_rent_per_bed"]) > 0}
+    if len(by_year) < 4:
+        return _na("rent_growth_3yr", "YoY rent growth ≥3% for trailing 3 years",
+                   "≥ 3% for 3 trailing years",
+                   f"only {len(by_year)} years of non-zero rent history (need 4)")
+    years = sorted(by_year.keys())[-4:]
+    rents = [float(by_year[y]) for y in years]
+    yoys = [(rents[i] - rents[i - 1]) / rents[i - 1] for i in (1, 2, 3)]
+    worst = min(yoys)
+    breakdown = [
+        {
+            "label": f"{years[i - 1]}-{years[i]}",
+            "year_from": years[i - 1],
+            "year_to": years[i],
+            "yoy": y,
+            "yoy_display": f"{y * 100:+.1f}%",
+            "passed": bool(y >= 0.03),
+        }
+        for i, y in zip((1, 2, 3), yoys)
+    ]
+    detail = " · ".join(f"{b['year_from']}→{b['year_to']}: {b['yoy_display']}" for b in breakdown)
+    res = _result(
+        "rent_growth_3yr", "YoY rent growth ≥3% for trailing 3 years",
+        "≥ 3% for 3 trailing years",
+        actual=worst,
+        actual_display=" · ".join(b["yoy_display"] for b in breakdown),
+        threshold=0.03, margin=0.005, direction="above",
+        explanation=detail,
+    )
+    res["breakdown"] = breakdown
+    return res
 
 def _q_prelease_vs_prior(market, _props_by_market):
     yoy = market.get("prelease_yoy")
@@ -853,7 +960,7 @@ def _q_prelease_vs_prior(market, _props_by_market):
     prior_pct = yoy["prior_prelease"] * 100
     return _result(
         "prelease_lag", "Market prelease not lagging prior year by >5%", "delta ≥ −5%",
-        actual=delta, actual_display=f"{sign}{delta * 100:.1f} pp",
+        actual=delta, actual_display=f"{sign}{delta * 100:.1f}%",
         threshold=-0.05, margin=0.01, direction="above",
         explanation=(
             f"week {yoy['current_week']} of cycle {yoy['current_cycle']}: "
@@ -862,8 +969,35 @@ def _q_prelease_vs_prior(market, _props_by_market):
         ),
     )
 
-def _q_uncaptured_demand(_m, _p):
-    return _na("uncaptured_1mi", "Uncaptured demand within 1 mile above 30%", "> 30%")
+def _q_uncaptured_demand(market, props_by_market):
+    # Approximate uncaptured demand near campus as the share of FTE not yet
+    # served by purpose-built supply within 1 mile of campus.
+    #   beds_1mi   = sum of beds in properties with milesToClosestCampus ≤ 1
+    #   captured   = beds_1mi / FTE
+    #   uncaptured = 1 - captured
+    # Markets with high uncaptured demand still have room for new PBSH supply.
+    fte = market.get("enr_full_time")
+    if not fte:
+        return _na("uncaptured_1mi", "Uncaptured demand within 1 mile above 30%",
+                   "> 30%", "no FTE on file")
+    mk = market["market_key"]
+    near = [p for p in props_by_market.get(mk, [])
+            if p.get("milesToClosestCampus") is not None
+            and float(p["milesToClosestCampus"]) <= 1.0
+            and p.get("beds")]
+    beds_1mi = sum(int(p["beds"]) for p in near)
+    captured = beds_1mi / float(fte)
+    uncaptured = 1.0 - captured
+    return _result(
+        "uncaptured_1mi", "Uncaptured demand within 1 mile above 30%", "> 30%",
+        actual=uncaptured, actual_display=f"{uncaptured * 100:.1f}%",
+        threshold=0.30, margin=0.02, direction="above",
+        explanation=(
+            f"{beds_1mi:,} PBSH beds within 1 mi of campus "
+            f"({len(near)} props) vs {int(fte):,} FTE — "
+            f"capture rate {captured * 100:.1f}%"
+        ),
+    )
 
 def _q_income(market, _props_by_market):
     inc = market.get("mean_origin_income")
@@ -920,6 +1054,19 @@ def compute_qualifiers(tables: dict) -> list[dict]:
     fte_history_by_market = {
         r["market_key"]: r for r in tables.get("fte_history", [])
     }
+    # Multi-year rent + supply snapshots, grouped by market for the
+    # rent_growth_3yr qualifier.
+    market_history_by_market: dict = {}
+    for r in tables.get("market_history", []):
+        market_history_by_market.setdefault(r["market_key"], []).append(r)
+
+    # Comp-set membership per market (see load_comp_set.py for definition).
+    from load_comp_set import build_comp_set_keys
+    comp_keys_by_market = build_comp_set_keys(by_market)
+    # Also stamp is_comp_set onto each property row so the UI / table can
+    # show comp-set membership.
+    for p in props:
+        p["is_comp_set"] = p.get("property_key") in comp_keys_by_market.get(p["market_key"], set())
 
     out: list[dict] = []
     for market in sc:
@@ -930,17 +1077,19 @@ def compute_qualifiers(tables: dict) -> list[dict]:
             m["affluence_n_students"] = a.get("n_students")
         m["prelease_yoy"] = prelease_yoy_by_market.get(m["market_key"])
         m["fte_history"] = fte_history_by_market.get(m["market_key"])
+        m["market_history_rows"] = market_history_by_market.get(m["market_key"], [])
+        m["comp_set_keys"] = comp_keys_by_market.get(m["market_key"], set())
         results = [ev(m, by_market) for ev in QUALIFIER_EVALUATORS]
-        evaluable = [r for r in results if r["status"] != "na"]
-        passes = sum(1 for r in evaluable if r["status"] == "pass")
-        out.append({
+        q = {
             "market_key": m["market_key"],
             "results": results,
-            "passes": passes,
-            "evaluable": len(evaluable),
             "total": len(results),
-            "score_pct": (passes / len(evaluable)) if evaluable else None,
-        })
+        }
+        # Weighted rollup — qualifiers with a `breakdown` list (e.g.
+        # rent_growth_3yr) award fractional credit. See load_affluence.py.
+        from load_affluence import recompute_rollup
+        recompute_rollup(q)
+        out.append(q)
     placeholders = sum(1 for r in out[0]["results"] if r["status"] == "na") if out else 0
     print(f"  market_qualifiers computed for {len(out)} markets "
           f"({len(QUALIFIER_EVALUATORS) - placeholders} live, {placeholders} placeholders)")

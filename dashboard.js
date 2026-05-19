@@ -91,7 +91,9 @@ let DATA = null;
 let LABELS = new Map(); // market_key → {anchor_university, city, state_abbr, is_subtext30}
 let ANCHOR_COORDS = new Map(); // market_key → {lat, lng}
 let activeMarketKey = null;
-let sortState = { col: "penetration_ratio", dir: "asc" };
+// Default sort: best qualifier score on top. NA scores fall to the bottom
+// of the desc sort because the comparator below pushes nulls last.
+let sortState = { col: "qualifier_score", dir: "desc" };
 let charts = {};
 
 // National map state

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=17">
+  <link rel="stylesheet" href="style.css?v=27">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -27,6 +27,10 @@
         <a class="nav-item" href="index.html#sources">
           <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
           Sources
+        </a>
+        <a class="nav-item" href="dictionary.html">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M4 4v12"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
+          Dictionary
         </a>
       </nav>
 
@@ -65,9 +69,18 @@
             <span id="s30-badge" class="s30-badge" style="display:none;">★ Subtext-30 focus market</span>
           </div>
 
+          <!-- Tabs: Market (KPIs, charts, map) | Comps (map + comp-set table + per-comp charts) -->
+          <nav class="market-tabs" role="tablist">
+            <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
+            <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
+          </nav>
+
           <!-- Two-column layout: main content + sticky qualifier sidebar -->
           <div class="market-grid">
           <div class="market-main">
+
+          <!-- ============ MARKET TAB ============ -->
+          <div class="market-tab-panel" data-panel="market">
 
           <!-- KPI strip (9 cards, wraps to 2 rows on smaller screens) -->
           <div class="kpi-row kpi-row-9">
@@ -118,53 +131,7 @@
             </div>
           </div>
 
-          <!-- Market Performance — deck-style charts benchmarked vs Subtext-30 avg -->
-          <section class="card performance-section">
-            <header class="card-header">
-              <div>
-                <h2>Market Performance</h2>
-                <p>This market vs the Subtext-30 average. Each year is anchored to the same calendar date as the latest snapshot for apples-to-apples year-over-year.</p>
-              </div>
-              <div class="perf-legend">
-                <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span id="perf-legend-anchor">This market</span></span>
-                <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="perf-grid">
-                <figure class="perf-chart perf-chart-wide">
-                  <figcaption class="perf-title">Market Rent</figcaption>
-                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-rent"></canvas></div>
-                </figure>
-                <figure class="perf-chart perf-chart-wide">
-                  <figcaption class="perf-title">Market Rent Growth</figcaption>
-                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-rent-growth"></canvas></div>
-                </figure>
-                <figure class="perf-chart perf-chart-wide">
-                  <figcaption class="perf-title">Market Occupancy</figcaption>
-                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-occupancy"></canvas></div>
-                </figure>
-                <figure class="perf-chart perf-chart-wide">
-                  <figcaption class="perf-title">Market Pre-lease</figcaption>
-                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-prelease"></canvas></div>
-                </figure>
-                <figure class="perf-chart">
-                  <figcaption class="perf-title">Penetration Ratio</figcaption>
-                  <div class="perf-chart-wrap"><canvas id="perf-penetration"></canvas></div>
-                </figure>
-                <figure class="perf-chart">
-                  <figcaption class="perf-title">Bed Supply: Existing + Pipeline</figcaption>
-                  <div class="perf-chart-wrap"><canvas id="perf-supply"></canvas></div>
-                </figure>
-                <figure class="perf-chart perf-chart-wide">
-                  <figcaption class="perf-title">Pre-leasing Velocity by Cycle</figcaption>
-                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-velocity"></canvas></div>
-                </figure>
-              </div>
-            </div>
-          </section>
-
-          <!-- Map -->
+          <!-- Map (sits between the KPI strip and the performance charts) -->
           <section class="card">
             <header class="card-header">
               <div>
@@ -206,16 +173,98 @@
             </div>
           </section>
 
-          <!-- Property list -->
+          <!-- Market Performance — deck-style charts benchmarked vs Subtext-30 avg.
+               Per-chart legend lives in each .perf-title (top right of the bubble),
+               not the section header — see .perf-title-legend in style.css. -->
+          <section class="card performance-section">
+            <header class="card-header">
+              <div>
+                <h2>Market Performance</h2>
+                <p>This market vs the Subtext-30 average. Each year is anchored to the same calendar date as the latest snapshot for apples-to-apples year-over-year.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="perf-grid">
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Market Rent</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span class="perf-legend-anchor-label">This market</span></span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-rent"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Market Rent Growth</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span class="perf-legend-anchor-label">This market</span></span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-rent-growth"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Market Occupancy</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span class="perf-legend-anchor-label">This market</span></span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-occupancy"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Market Pre-lease</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span class="perf-legend-anchor-label">This market</span></span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-prelease"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Penetration Ratio</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span><span class="perf-legend-anchor-label">This market</span></span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30 avg</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-penetration"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Bed Supply: Existing + Pipeline</span>
+                    <span class="perf-title-legend perf-title-legend-supply"></span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="perf-supply"></canvas></div>
+                </figure>
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Pre-leasing Velocity by Cycle</span>
+                    <span class="perf-title-legend perf-title-legend-velocity"></span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="perf-velocity"></canvas></div>
+                </figure>
+              </div>
+            </div>
+          </section>
+
+          <!-- All purpose-built properties in the market — sits under the map
+               on the Market tab. The Comps tab below has a sibling table
+               filtered to comp-set members only. -->
           <section class="card">
             <header class="card-header">
               <div>
-                <h2>Comp Properties</h2>
-                <p id="prop-count">—</p>
+                <h2>Market Properties</h2>
+                <p id="prop-count-all">—</p>
               </div>
             </header>
             <div class="table-wrap">
-              <table id="properties">
+              <table id="properties-all" class="properties-table">
                 <thead>
                   <tr>
                     <th data-sort="property_name">Property</th>
@@ -234,6 +283,169 @@
               </table>
             </div>
           </section>
+
+          </div> <!-- /.market-tab-panel[market] -->
+
+          <!-- ============ COMPS TAB ============ -->
+          <div class="market-tab-panel" data-panel="comps" hidden>
+
+          <!-- Comp-set map: same Leaflet base as the market map but pins
+               restricted to comp-set members only -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Comp-set Map</h2>
+                <p>Only comp-set properties are pinned. Click a row below to highlight it on the map.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="map-with-legend">
+                <div id="map-comps" class="map-wrap"></div>
+                <div class="map-legend">
+                  <div class="legend-section">
+                    <div class="legend-row">
+                      <span class="legend-line"></span>
+                      <span>Campus boundary</span>
+                    </div>
+                  </div>
+                  <div class="legend-section">
+                    <div class="legend-section-title">Phase</div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="stable"></span>
+                      <span>Stabilized</span>
+                    </div>
+                    <div class="legend-row">
+                      <span class="legend-shape" data-phase="lease up"></span>
+                      <span>Lease Up</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Comp-set Properties</h2>
+                <p id="prop-count-comps">—</p>
+              </div>
+              <div class="comps-table-actions">
+                <button type="button" class="comps-select-btn" data-comps-select="all">Select all</button>
+                <button type="button" class="comps-select-btn" data-comps-select="none">Clear</button>
+              </div>
+            </header>
+            <div class="table-wrap">
+              <table id="properties-comps" class="properties-table properties-table-selectable">
+                <thead>
+                  <tr>
+                    <th class="comp-select-col" aria-label="Select comps"></th>
+                    <th data-sort="property_name">Property</th>
+                    <th data-sort="phase">Phase</th>
+                    <th data-sort="beds" data-type="num">Beds</th>
+                    <th data-sort="yearBuilt" data-type="num">Year Built</th>
+                    <th data-sort="occupancy" data-type="num">Occupancy</th>
+                    <th data-sort="prelease" data-type="num">Pre-Lease</th>
+                    <th data-sort="avg_rent" data-type="num">Avg Rent</th>
+                    <th data-sort="avg_rent_per_sf" data-type="num">Rent / SF</th>
+                    <th data-sort="hasConcessions">Concessions</th>
+                    <th data-sort="milesToClosestCampus" data-type="num">Mi to Campus</th>
+                  </tr>
+                </thead>
+                <tbody></tbody>
+              </table>
+            </div>
+          </section>
+
+          <!-- Per-comp comparison charts: one bar per selected comp.
+               No per-property time series exists in data.json — current
+               snapshot values only. -->
+          <section class="card performance-section">
+            <header class="card-header">
+              <div>
+                <h2>Comp-set Performance</h2>
+                <p id="comp-perf-summary">Bar per selected comp · click checkboxes above to filter</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="perf-grid">
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Avg Rent / Bed</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Comps</span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Market</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="comp-perf-rent"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Rent / SF</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Comps</span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Market</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="comp-perf-rent-sf"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Occupancy</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Comps</span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Market</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="comp-perf-occupancy"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Pre-lease</span>
+                    <span class="perf-title-legend">
+                      <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Comps</span>
+                      <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Market</span>
+                    </span>
+                  </figcaption>
+                  <div class="perf-chart-wrap"><canvas id="comp-perf-prelease"></canvas></div>
+                </figure>
+              </div>
+            </div>
+          </section>
+
+          <!-- Four per-year detail tables: rates, rent growth, prelease,
+               occupancy. Driven by property_history, scoped to the
+               selected comps. -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Competitive Set Detail Tables</h2>
+                <p id="comp-tables-summary">Annual snapshots, anchored to the latest snapshot's month/day. Bed-weighted aggregates in the footer rows.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="comp-tables-grid">
+                <div class="comp-table-card">
+                  <div class="comp-table-title">Rates</div>
+                  <div class="table-wrap"><table id="comp-table-rates" class="comp-detail-table"></table></div>
+                </div>
+                <div class="comp-table-card">
+                  <div class="comp-table-title">Rent Growth (YoY)</div>
+                  <div class="table-wrap"><table id="comp-table-rent-growth" class="comp-detail-table"></table></div>
+                </div>
+                <div class="comp-table-card">
+                  <div class="comp-table-title" id="comp-table-prelease-title">Pre-lease</div>
+                  <div class="table-wrap"><table id="comp-table-prelease" class="comp-detail-table"></table></div>
+                </div>
+                <div class="comp-table-card">
+                  <div class="comp-table-title" id="comp-table-occupancy-title">Occupancy</div>
+                  <div class="table-wrap"><table id="comp-table-occupancy" class="comp-detail-table"></table></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          </div> <!-- /.market-tab-panel[comps] -->
 
           <footer class="page-footer">
             <p>
@@ -269,6 +481,6 @@
     </div>
   </div>
 
-  <script src="market.js?v=11" defer></script>
+  <script src="market.js?v=23" defer></script>
 </body>
 </html>

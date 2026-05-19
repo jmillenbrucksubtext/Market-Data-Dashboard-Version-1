@@ -53,6 +53,11 @@ WITH current_snap AS (
            ON  mr.market_key    = latest.market_key
           AND mr.snapshot_date = latest.max_snap
 ),
+-- Anchor "prior" to the most recent snapshot whose enr_full_time DIFFERS
+-- from current. IPEDS publishes annually per school, so the literal T-1yr
+-- snapshot frequently still carries the prior cohort's number — comparing
+-- to it returns 0% even when enrollment really did change. Compare-to-
+-- last-change always lands on a meaningfully different cohort.
 prior_yr AS (
     SELECT
         cs.market_key,
@@ -60,14 +65,14 @@ prior_yr AS (
         mr.enr_full_time         AS prior_yr_fte,
         ROW_NUMBER() OVER (
             PARTITION BY cs.market_key
-            ORDER BY ABS(DATEDIFF(DAY, DATEADD(YEAR, -1, cs.current_date_), mr.snapshot_date))
+            ORDER BY mr.snapshot_date DESC
         ) AS rn
     FROM current_snap cs
     JOIN dbo.MarketReports mr
            ON  mr.market_key     = cs.market_key
           AND mr.enr_full_time  IS NOT NULL
-          AND mr.snapshot_date BETWEEN DATEADD(DAY, -540, cs.current_date_)
-                                   AND DATEADD(DAY, -180, cs.current_date_)
+          AND mr.enr_full_time  <> cs.current_fte
+          AND mr.snapshot_date  <  cs.current_date_
 ),
 y2022 AS (
     SELECT

@@ -1023,34 +1023,84 @@ h1, h2, h3, .serif {
 
 .perf-grid {
   display: grid;
+  /* Steady 2-column layout — each chart gets meaningful width and lives in
+     its own card-style "bubble" (see .perf-chart below). Time-series
+     panels that benefit from horizontal room can opt into spanning both
+     columns with .perf-chart-wide. */
   grid-template-columns: 1fr 1fr;
-  gap: 14px 18px;
+  gap: 18px;
 }
+/* Each chart is a self-contained card: white background, soft border,
+   internal padding. Mirrors the College House "every chart in its own
+   bubble" treatment. */
 .perf-chart {
   margin: 0;
   display: flex;
   flex-direction: column;
   min-width: 0;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: 8px;
+  padding: 16px 18px 14px;
 }
 .perf-chart-wide { grid-column: 1 / -1; }
 .perf-title {
   font-family: "Mencken Std", Georgia, "Times New Roman", serif;
-  font-size: 15px;
+  font-size: 16px;
   font-weight: 700;
   color: var(--slate);
-  text-align: center;
-  border-bottom: 1.5px solid var(--slate);
-  padding-bottom: 4px;
-  margin-bottom: 8px;
-  letter-spacing: 0.01em;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 14px;
+  padding-bottom: 10px;
+  margin: 0 0 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  letter-spacing: 0.005em;
+}
+.perf-title-text {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+/* Per-chart legend in the top-right of each chart bubble. Replaces the
+   section-level legend that used to live in the Market Performance header. */
+.perf-title-legend {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+}
+.perf-title-legend .perf-legend-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  margin: 0;
+}
+.perf-title-legend .swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  display: inline-block;
 }
 .perf-chart-wrap {
   position: relative;
-  height: 170px;
+  height: 240px;
 }
-.perf-chart-wrap-tall { height: 190px; }
-@media (max-width: 720px) {
+.perf-chart-wrap-tall { height: 280px; }
+/* The performance card holds the grid; let its body be transparent so the
+   inner chart bubbles read as standalone cards on the beige background. */
+.performance-section { background: transparent; border: none; box-shadow: none; }
+.performance-section > .card-header { padding-left: 0; padding-right: 0; }
+.performance-section > .card-body { padding: 0; }
+@media (max-width: 900px) {
   .perf-grid { grid-template-columns: 1fr; }
+  .perf-chart-wide { grid-column: auto; }
   .performance-section .card-header { flex-direction: column; }
 }
 
@@ -1075,14 +1125,172 @@ h1, h2, h3, .serif {
   box-shadow: 0 2px 4px rgba(43, 40, 37, 0.08);
 }
 .leaflet-popup.market-popup-wrapper .leaflet-popup-close-button {
-  top: 6px;
-  right: 8px;
-  color: var(--slate-50);
-  font-size: 20px;
-  font-weight: 400;
+  top: 10px;
+  right: 12px;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--beige);
+  color: var(--slate-70);
+  font: 600 16px/22px "Pragmatica", sans-serif;
+  text-align: center;
+  transition: background 0.15s, color 0.15s;
+  padding: 0;
 }
 .leaflet-popup.market-popup-wrapper .leaflet-popup-close-button:hover {
+  background: var(--slate);
+  color: var(--surface);
+}
+
+/* Map popup content — property & campus pins on the market and competitive
+   set maps. Mirrors the chart-bubble visual language (white card, thin
+   border, brand typography) instead of the default Leaflet plain-text look. */
+.map-popup {
+  font-family: "Pragmatica", sans-serif;
   color: var(--slate);
+  width: 256px;
+}
+.map-popup-head {
+  padding: 14px 16px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.map-popup-eyebrow,
+.map-popup-eyebrow-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+  margin-bottom: 6px;
+  min-height: 16px;
+}
+.map-popup-title {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--slate);
+  line-height: 1.15;
+  letter-spacing: -0.005em;
+  /* leave room for the close button */
+  padding-right: 28px;
+}
+.map-popup-address {
+  font-size: 12px;
+  color: var(--slate-70);
+  margin-top: 4px;
+  line-height: 1.35;
+}
+
+/* Pill that tags the property's phase — coloured per phase. */
+.map-popup-phase {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 3px;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  background: var(--slate-15);
+  color: var(--slate);
+}
+.map-popup-phase-stable           { background: var(--good-soft); color: var(--good); }
+.map-popup-phase-lease-up         { background: var(--lime-soft);  color: var(--everest); }
+.map-popup-phase-under-construction { background: var(--bad-soft);  color: var(--bad); }
+.map-popup-phase-planned          { background: var(--slate-15);   color: var(--slate-70); }
+
+/* Comp-set membership marker, matches the table COMP pill. */
+.map-popup-comp {
+  display: inline-block;
+  padding: 2px 7px;
+  border-radius: 3px;
+  background: var(--lime-soft);
+  color: var(--everest);
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+}
+
+/* Optional row for a label / value pair (e.g. campus IPEDS enrollment). */
+.map-popup-body { padding: 12px 16px; }
+.map-popup-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+}
+.map-popup-row-label {
+  font-size: 11.5px;
+  font-weight: 600;
+  color: var(--slate-70);
+}
+.map-popup-row-value {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--slate);
+}
+.map-popup-row-sub {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--slate-50);
+  margin-left: 4px;
+}
+
+/* 3-column stats grid — six metrics on each property popup. */
+.map-popup-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px 14px;
+  padding: 12px 16px 14px;
+}
+.map-popup-stat-label {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+  margin-bottom: 2px;
+}
+.map-popup-stat-value {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  color: var(--slate);
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.005em;
+}
+.map-popup-stat-unit {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  color: var(--slate-50);
+  margin-left: 3px;
+  letter-spacing: 0.04em;
+}
+
+/* Footer CTA → opens the property detail page in a new context. */
+.map-popup-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 11px 16px;
+  background: var(--everest);
+  color: var(--surface);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-decoration: none;
+  border-top: 1px solid var(--beige-deep);
+  transition: background 0.15s;
+}
+.map-popup-link:hover {
+  background: var(--slate);
+  color: var(--surface);
 }
 
 .market-popup {
@@ -1332,14 +1540,14 @@ h1, h2, h3, .serif {
 /* Property table customizations -------------------------------- */
 
 /* Shared styling for the comp-properties and floor-plan tables */
-#properties,
+.properties-table,
 #plans {
   width: 100%;
   border-collapse: collapse;
   font-variant-numeric: tabular-nums;
   font-size: 13px;
 }
-#properties thead th,
+.properties-table thead th,
 #plans thead th {
   position: sticky;
   top: 0;
@@ -1357,43 +1565,43 @@ h1, h2, h3, .serif {
   white-space: nowrap;
   z-index: 1;
 }
-#properties thead th:hover,
+.properties-table thead th:hover,
 #plans thead th:hover { color: var(--slate); }
-#properties thead th[data-type="num"],
+.properties-table thead th[data-type="num"],
 #plans thead th[data-type="num"] { text-align: right; }
-#properties thead th.sorted-asc::after,
+.properties-table thead th.sorted-asc::after,
 #plans thead th.sorted-asc::after  { content: " ↑"; color: var(--slate); }
-#properties thead th.sorted-desc::after,
+.properties-table thead th.sorted-desc::after,
 #plans thead th.sorted-desc::after { content: " ↓"; color: var(--slate); }
 
-#properties tbody td,
+.properties-table tbody td,
 #plans tbody td {
   padding: 11px 14px;
   border-bottom: 1px solid var(--beige-deep);
   white-space: nowrap;
   color: var(--slate);
 }
-#properties tbody td.num,
+.properties-table tbody td.num,
 #plans tbody td.num { text-align: right; }
 
-#properties tbody tr,
+.properties-table tbody tr,
 #plans tbody tr { transition: background 0.1s; }
-#properties tbody tr { cursor: pointer; }
-#properties tbody tr:hover,
+.properties-table tbody tr { cursor: pointer; }
+.properties-table tbody tr:hover,
 #plans tbody tr:hover { background: var(--bg); }
-#properties tbody tr.selected,
+.properties-table tbody tr.selected,
 #plans tbody tr.selected {
   background: var(--lime-soft);
   outline: 1.5px solid var(--lime);
   outline-offset: -1px;
 }
 
-#properties td.property-cell,
+.properties-table td.property-cell,
 #plans td.property-cell {
   font-weight: 700;
   min-width: 220px;
 }
-#properties td.property-cell .city-state,
+.properties-table td.property-cell .city-state,
 #plans td.property-cell .city-state {
   display: block;
   font-weight: 400;
@@ -1538,7 +1746,7 @@ h1, h2, h3, .serif {
 .qual-threshold { display: none; }      /* threshold info is in the label now */
 .qual-explanation { display: none; }
 
-/* Right-side stat: actual value, colored by tier (pass / warn / fail / na) */
+/* Right-side stat: actual value, colored by binary status (pass / fail / na) */
 .qual-actual {
   font-family: "Mencken Std", Georgia, serif;
   font-weight: 700;
@@ -1550,9 +1758,237 @@ h1, h2, h3, .serif {
   flex: 0 0 auto;
 }
 .qual-actual-pass { color: var(--good); }
-.qual-actual-warn { color: var(--warn); }
 .qual-actual-fail { color: var(--bad); }
 .qual-actual-na   { color: var(--slate-50); font-weight: 400; }
+
+/* Multi-year YoY rows for the rent_growth_3yr qualifier — stacked vertically,
+   right-aligned to match the column. Pass/fail color matches the binary
+   scorecard convention. */
+.qual-actual:has(.qual-yoy-line) {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+.qual-yoy-line {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 17px;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.25;
+}
+.qual-yoy-line-year {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 17px;
+  color: var(--slate-70);
+}
+.qual-yoy-line-pass .qual-yoy-line-val { color: var(--good); }
+.qual-yoy-line-fail .qual-yoy-line-val { color: var(--bad); }
+
+/* Market detail tab nav — Market | Comps. Sits below the market header,
+   spans the full grid, and acts as a switch for the .market-main panels. */
+.market-tabs {
+  display: flex;
+  gap: 28px;
+  align-items: flex-end;
+  border-bottom: 1px solid var(--beige-deep);
+  margin: 0 0 18px 0;
+  padding: 0 4px;
+}
+.market-tab {
+  appearance: none;
+  background: none;
+  border: none;
+  padding: 10px 2px 12px;
+  margin-bottom: -1px;          /* overlap the bottom border */
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 600;
+  font-size: 15px;
+  color: var(--slate-50);
+  cursor: pointer;
+  letter-spacing: -0.005em;
+  border-bottom: 2px solid transparent;
+  transition: color 0.15s ease, border-color 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.market-tab:hover { color: var(--slate); }
+.market-tab.active {
+  color: var(--slate);
+  border-bottom-color: var(--lime);
+}
+.market-tab-count {
+  display: inline-block;
+  min-width: 22px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: var(--beige-deep);
+  color: var(--slate-70);
+  font-size: 11.5px;
+  font-weight: 700;
+  line-height: 1.4;
+  text-align: center;
+}
+.market-tab.active .market-tab-count {
+  background: var(--lime-soft);
+  color: var(--everest);
+}
+.market-tab-panel[hidden] { display: none; }
+
+/* Competitive Set detail tables (Rates / Rent Growth / Pre-lease /
+   Occupancy). Excel-style: dark header band, soft cream body cells, bold
+   aggregate footer with growth rows. Each table sits in its own card. */
+.comp-tables-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px;
+}
+.comp-table-card {
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: 8px;
+  overflow: hidden;
+}
+.comp-table-title {
+  background: var(--everest);
+  color: var(--surface);
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 14px;
+  text-align: center;
+  padding: 9px 14px;
+  letter-spacing: 0.01em;
+}
+.comp-detail-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.comp-detail-table thead th {
+  background: var(--beige-deep);
+  color: var(--slate);
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.04em;
+  padding: 7px 10px;
+  text-align: right;
+  border-bottom: 1px solid var(--slate-15);
+}
+.comp-detail-table thead th.property-cell { text-align: left; }
+.comp-detail-table tbody td {
+  background: #fbf5d9;
+  color: var(--slate);
+  padding: 6px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.85);
+  text-align: right;
+  white-space: nowrap;
+}
+.comp-detail-table tbody td.property-cell {
+  text-align: left;
+  font-weight: 600;
+  color: var(--slate);
+}
+.comp-detail-table tfoot td {
+  padding: 7px 10px;
+  font-weight: 700;
+  text-align: right;
+  border-top: 1.5px solid var(--slate-15);
+  background: var(--surface);
+}
+.comp-detail-table tfoot td.property-cell {
+  text-align: left;
+  background: var(--surface);
+}
+.comp-detail-table tfoot .agg-row td {
+  background: #f1ecdd;
+  border-top: 1.5px solid var(--slate);
+  color: var(--slate);
+}
+.comp-detail-table tfoot .growth-row td {
+  background: var(--surface);
+  font-size: 11.5px;
+  color: var(--slate-70);
+}
+.comp-detail-table tfoot .growth-row td.property-cell {
+  color: var(--slate);
+  font-weight: 700;
+}
+.comp-detail-table .growth-up { color: var(--good); }
+.comp-detail-table .growth-down { color: var(--bad); }
+
+@media (max-width: 1100px) {
+  .comp-tables-grid { grid-template-columns: 1fr; }
+}
+
+/* Selectable comp table: checkbox column + action buttons */
+.comp-select-col {
+  width: 36px;
+  min-width: 36px;
+  padding-left: 12px !important;
+  padding-right: 0 !important;
+}
+.comp-select-cell {
+  width: 36px;
+  padding-left: 12px !important;
+  padding-right: 0 !important;
+  text-align: center;
+}
+.comp-select-cb {
+  cursor: pointer;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--lime);
+  margin: 0;
+  vertical-align: middle;
+}
+.comps-table-actions {
+  display: inline-flex;
+  gap: 8px;
+}
+.comps-select-btn {
+  appearance: none;
+  background: var(--bg);
+  border: 1px solid var(--beige-deep);
+  border-radius: 5px;
+  padding: 5px 11px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--slate-70);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.comps-select-btn:hover {
+  background: var(--lime-soft);
+  color: var(--everest);
+  border-color: var(--lime);
+}
+
+/* Comp-set membership badge in the properties table */
+.comp-pill {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 6px;
+  border-radius: 3px;
+  background: var(--lime-soft);
+  color: var(--everest);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  cursor: help;
+}
 
 /* Compact qualifier pill used in the Industry scorecard column */
 .qual-mini {

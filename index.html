@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Performance</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=20">
+  <link rel="stylesheet" href="style.css?v=28">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -185,85 +185,78 @@
           </div>
         </section>
 
-        <div class="grid-2">
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Penetration Ratio</h2>
-                <p>Beds per enrolled student. Lower = under-supplied / opportunity. Top 30 lowest.</p>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="penetration-chart"></canvas></div>
+        <!-- Industry charts — bubble pattern shared with the market-detail
+             performance section. Each chart sits in its own card with a
+             title strip and optional top-right legend / control slot. -->
+        <section class="card performance-section industry-charts">
+          <header class="card-header">
+            <div>
+              <h2>National Snapshot</h2>
+              <p>Subtext-30 markets ranked across supply, enrollment, and pricing.</p>
             </div>
-          </section>
+          </header>
+          <div class="card-body">
+            <div class="perf-grid">
 
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Pre-leasing Velocity</h2>
-                <p>Current cycle vs prior cycles. Pick a market.</p>
-              </div>
-              <div class="card-controls">
-                <select id="velocity-market" class="select"></select>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="velocity-chart"></canvas></div>
-            </div>
-          </section>
-        </div>
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Penetration Ratio</span>
+                  <span class="perf-title-sub">Top 30 under-supplied · beds ÷ enrollment</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="penetration-chart"></canvas></div>
+              </figure>
 
-        <div class="grid-2">
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Supply: Existing + Pipeline</h2>
-                <p>Operating beds plus pipeline by stage. Top 30 by total supply.</p>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="supply-chart"></canvas></div>
-            </div>
-          </section>
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Pre-leasing Velocity</span>
+                  <span class="perf-title-controls">
+                    <select id="velocity-market" class="select"></select>
+                  </span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="velocity-chart"></canvas></div>
+              </figure>
 
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Enrollment Growth</h2>
-                <p>5-year CAGR by university (top 30 by enrollment).</p>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap"><canvas id="demand-chart"></canvas></div>
-            </div>
-          </section>
-        </div>
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Supply: Existing + Pipeline</span>
+                  <span class="perf-title-sub">Top 30 by total beds</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="supply-chart"></canvas></div>
+              </figure>
 
-        <div class="grid-2">
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Avg Rent per Bed</h2>
-                <p>Top 30 markets by current rent. Colored by Subtext-30 membership.</p>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap chart-tall"><canvas id="pricing-rent-chart"></canvas></div>
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Enrollment Growth</span>
+                  <span class="perf-title-sub">5-year CAGR · top 30 by enrollment</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="demand-chart"></canvas></div>
+              </figure>
+
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Avg Rent per Bed</span>
+                  <span class="perf-title-legend">
+                    <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30</span>
+                    <span class="perf-legend-item"><span class="swatch swatch-mute"></span>Other</span>
+                  </span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="pricing-rent-chart"></canvas></div>
+              </figure>
+
+              <figure class="perf-chart perf-chart-wide">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Rent YoY Growth</span>
+                  <span class="perf-title-legend">
+                    <span class="perf-legend-item"><span class="swatch swatch-lime"></span>Positive</span>
+                    <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Negative</span>
+                  </span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="pricing-growth-chart"></canvas></div>
+              </figure>
+
             </div>
-          </section>
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Rent YoY Growth</h2>
-                <p>Top 30 markets by YoY rent growth (positive = lime, negative = rust).</p>
-              </div>
-            </header>
-            <div class="card-body">
-              <div class="chart-wrap chart-tall"><canvas id="pricing-growth-chart"></canvas></div>
-            </div>
-          </section>
-        </div>
+          </div>
+        </section>
 
         <footer class="page-footer">
           <p>
@@ -597,6 +590,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=12"></script>
+  <script src="dashboard.js?v=14"></script>
 </body>
 </html>

@@ -1093,6 +1093,86 @@ h1, h2, h3, .serif {
   height: 240px;
 }
 .perf-chart-wrap-tall { height: 280px; }
+/* Extra-tall variant for the long ranked-bar charts (rent ladder etc.)
+   that need vertical room for ~30 category labels. */
+.perf-chart-wrap-xtall { height: 480px; }
+/* Ranked-bar charts that show ~30 categories vertically (Industry tab:
+   penetration, supply, enrollment, rent ladder, rent YoY). With 30 labels
+   on the y-axis we need ~20px per row to keep them legible — 280px
+   crushed them on top of each other (see commit history). */
+.perf-chart-wrap-ranked { height: 640px; }
+
+/* Right-side helpers in .perf-title — sub-text describing the chart and
+   a slot for inline controls (e.g. the market-picker dropdown). */
+.perf-title-sub {
+  flex: 0 0 auto;
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 500;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: var(--slate-50);
+  text-transform: none;
+}
+.perf-title-controls {
+  flex: 0 0 auto;
+}
+.perf-title-controls .select {
+  font-size: 11.5px;
+  padding: 4px 22px 4px 10px;
+  min-width: 140px;
+}
+
+/* Industry-charts grid: same bubbles as the market-detail performance
+   grid; .industry-charts is just a contextual class for any future
+   tweaks specific to the Industry tab. */
+.industry-charts > .card-header { padding-left: 0; padding-right: 0; }
+.industry-charts > .card-body { padding: 0; }
+.industry-charts { background: transparent; border: none; box-shadow: none; }
+
+.swatch-lime { background: var(--lime); }
+.swatch-mute { background: var(--slate-30); }
+
+/* Enrollment History section (Market tab) — line charts with growth-tile
+   header above each canvas. */
+.enr-stat-row {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+}
+.enr-stat {
+  flex: 1 1 0;
+  min-width: 120px;
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  padding: 8px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.enr-stat-label {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+}
+.enr-stat-value {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 18px;
+  letter-spacing: -0.005em;
+  color: var(--slate);
+}
+.enr-stat-value.growth-up { color: var(--good); }
+.enr-stat-value.growth-down { color: var(--bad); }
+.enr-empty {
+  color: var(--slate-70);
+  font-style: italic;
+  font-size: 12px;
+}
 /* The performance card holds the grid; let its body be transparent so the
    inner chart bubbles read as standalone cards on the beige background. */
 .performance-section { background: transparent; border: none; box-shadow: none; }
@@ -2044,4 +2124,310 @@ h1, h2, h3, .serif {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
   font-size: 11px;
   color: var(--slate);
+}
+
+/* =============================================================
+   Dictionary page — sticky TOC + Page → Tab → Component hierarchy
+   ============================================================= */
+
+.dictionary-content { max-width: 1400px; }
+
+.dictionary-header {
+  margin-bottom: 28px;
+}
+.dictionary-header h1 {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 36px;
+  font-weight: 700;
+  line-height: 1.05;
+  color: var(--slate);
+  margin: 0 0 8px;
+}
+.dictionary-header p {
+  margin: 0;
+  font-size: 14px;
+  color: var(--slate-70);
+  max-width: 760px;
+  line-height: 1.5;
+}
+
+.dictionary-layout {
+  display: grid;
+  grid-template-columns: 240px minmax(0, 1fr);
+  gap: 32px;
+  align-items: start;
+}
+
+/* ----- Sticky left TOC ---------------------------------------- */
+.dictionary-toc {
+  position: sticky;
+  top: 78px;
+  align-self: start;
+  max-height: calc(100vh - 96px);
+  overflow-y: auto;
+  padding: 4px 6px 24px 0;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 13px;
+  border-right: 1px solid var(--beige-deep);
+}
+.toc-group {
+  margin-bottom: 18px;
+}
+.toc-group-label {
+  font-size: 10px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.09em;
+  color: var(--slate-50);
+  padding: 0 0 6px;
+  margin-bottom: 4px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.dictionary-toc a {
+  display: block;
+  padding: 5px 10px;
+  margin-left: -4px;
+  color: var(--slate-70);
+  text-decoration: none;
+  border-radius: 4px;
+  border-left: 2px solid transparent;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+  line-height: 1.35;
+}
+.dictionary-toc a:hover {
+  background: var(--beige);
+  color: var(--slate);
+}
+.dictionary-toc a:target,
+.dictionary-toc a.active {
+  color: var(--slate);
+  border-left-color: var(--lime);
+  font-weight: 600;
+}
+
+/* ----- Body: page → tab → item -------------------------------- */
+.dictionary-body {
+  min-width: 0;
+}
+
+/* Each top-level dashboard page (Industry / Market / Property / Reference)
+   gets its own block, separated by a generous rule. */
+.dict-page {
+  padding-top: 8px;
+  margin-bottom: 56px;
+}
+.dict-page + .dict-page {
+  border-top: 1px solid var(--slate-15);
+  padding-top: 40px;
+}
+.dict-page-header {
+  margin-bottom: 24px;
+}
+.dict-page-header h2 {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 26px;
+  font-weight: 700;
+  margin: 8px 0 6px;
+  color: var(--slate);
+  letter-spacing: -0.005em;
+}
+.dict-page-header h2 code {
+  background: none;
+  border: none;
+  padding: 0;
+  font: inherit;
+  font-family: "Mencken Std", Georgia, serif;
+  color: var(--slate-70);
+  font-weight: 400;
+  font-size: 22px;
+}
+.dict-page-header p {
+  margin: 0;
+  color: var(--slate-70);
+  font-size: 13px;
+  max-width: 720px;
+  line-height: 1.5;
+}
+
+/* Coloured chip identifying which top-level page this section belongs to. */
+.dict-page-tag {
+  display: inline-block;
+  padding: 4px 11px;
+  border-radius: 4px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.dict-tag-industry  { background: var(--lime-soft);  color: var(--everest); }
+.dict-tag-market    { background: var(--good-soft);  color: var(--good); }
+.dict-tag-property  { background: var(--bad-soft);   color: var(--bad); }
+.dict-tag-reference { background: var(--slate-15);   color: var(--slate); }
+
+/* Each tab/section inside a page. */
+.dict-tab {
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: 10px;
+  padding: 22px 26px 8px;
+  margin-bottom: 16px;
+}
+.dict-tab-header {
+  margin-bottom: 16px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.dict-tab-header h3 {
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--slate);
+  margin: 8px 0 4px;
+}
+.dict-tab-header p {
+  margin: 0;
+  color: var(--slate-70);
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+/* Tab chip — smaller cousin of the page tag, shows the tab name in the
+   page's color palette so each section is instantly identifiable. */
+.dict-tab-chip {
+  display: inline-block;
+  padding: 3px 9px;
+  border-radius: 3px;
+  background: var(--beige-deep);
+  color: var(--slate);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.dict-chip-market-tab  { background: var(--good-soft); color: var(--good); }
+.dict-chip-compset-tab { background: var(--lime-soft); color: var(--everest); }
+.dict-chip-sidebar     { background: var(--warn-soft); color: var(--warn); }
+
+/* Item-level component — a KPI, chart, or named element on the tab. */
+.dict-item {
+  padding: 14px 0 18px;
+  border-top: 1px dashed var(--beige-deep);
+}
+.dict-item:first-of-type {
+  border-top: none;
+  padding-top: 4px;
+}
+.dict-item h4 {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--slate);
+  margin: 0 0 8px;
+  letter-spacing: -0.005em;
+}
+.dict-item p {
+  margin: 0 0 10px;
+  color: var(--slate);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.dict-item p:last-child { margin-bottom: 0; }
+.dict-item a {
+  color: var(--everest);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.dict-aside {
+  background: var(--beige);
+  border-left: 3px solid var(--slate-30);
+  padding: 10px 14px;
+  font-size: 12px !important;
+  color: var(--slate-70) !important;
+  margin: 10px 0 0;
+  border-radius: 0 4px 4px 0;
+}
+.dict-aside code { background: var(--surface); }
+.dict-aside strong { color: var(--slate); }
+
+.dict-list-bullets {
+  margin: 4px 0 10px;
+  padding-left: 20px;
+  color: var(--slate);
+  font-size: 13px;
+  line-height: 1.55;
+}
+.dict-list-bullets li {
+  margin-bottom: 4px;
+}
+
+/* ----- Formula / fields tables -------------------------------- */
+.dict-fields {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 6px 0 4px;
+  font-size: 12.5px;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  overflow: hidden;
+}
+.dict-fields thead th {
+  background: var(--slate);
+  color: var(--surface);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 8px 12px;
+}
+.dict-fields tbody td {
+  padding: 9px 12px;
+  border-top: 1px solid var(--beige-deep);
+  color: var(--slate);
+  vertical-align: top;
+  line-height: 1.45;
+}
+.dict-fields tbody tr:nth-child(odd) td { background: var(--beige); }
+.dict-fields tbody td:first-child {
+  font-weight: 600;
+  white-space: nowrap;
+  color: var(--slate);
+}
+
+/* The qualifier table has wider Pass column with rich content. */
+.dict-fields-qualifier tbody td:first-child { white-space: normal; }
+.dict-fields-qualifier tbody td:nth-child(2) { min-width: 280px; }
+
+/* Inline state pills used in the scoring-formula explanation. */
+.pill {
+  display: inline-block;
+  padding: 1px 8px;
+  border-radius: 3px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  margin: 0 2px;
+}
+.pill-pass { background: var(--good-soft); color: var(--good); }
+.pill-fail { background: var(--bad-soft);  color: var(--bad); }
+.pill-na   { background: var(--slate-15);  color: var(--slate-70); }
+
+@media (max-width: 1000px) {
+  .dictionary-layout {
+    grid-template-columns: 1fr;
+  }
+  .dictionary-toc {
+    position: static;
+    max-height: none;
+    border-right: none;
+    border-bottom: 1px solid var(--beige-deep);
+    padding-right: 0;
+    margin-bottom: 24px;
+  }
 }

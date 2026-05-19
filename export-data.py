@@ -175,13 +175,63 @@ QUERIES: dict[str, str] = {
         ) em
         WHERE COALESCE(em.Total_Enrollment, sd.enrollmentTotal) > 0
     """,
-    "enrollment_trend": """
+    # Full multi-year enrollment history per university (Total / FTE /
+    # Freshman / etc.) — drives the Enrollment History charts on the
+    # Market tab. Mirrors load_enrollment_history.py. Same dedupe pattern
+    # as enrollment_trend: collapse Enrollments_Manual to one row per
+    # (IPEDS, Year) and dedupe the crosswalk join.
+    "enrollment_history": """
         WITH e AS (
-            SELECT em.IPEDS_ID, em.University, em.Year, em.Total_Enrollment
-            FROM dbo.Enrollments_Manual em
-            WHERE em.Total_Enrollment > 0
+            SELECT IPEDS_ID,
+                   MIN(University)                AS university_name,
+                   Year,
+                   MAX(Total_Enrollment)          AS total_enrollment,
+                   MAX(Full_Time_Enrollment)      AS full_time_enrollment,
+                   MAX(Undergrad_Enrollment)      AS undergrad_enrollment,
+                   MAX(Graduate_Enrollment)       AS graduate_enrollment,
+                   MAX(Freshman_Enrollment)       AS freshman_enrollment
+            FROM dbo.Enrollments_Manual
+            WHERE Total_Enrollment > 0
+            GROUP BY IPEDS_ID, Year
         ),
-        latest AS (SELECT IPEDS_ID, MAX(Year) AS yr_max FROM e GROUP BY IPEDS_ID)
+        cx AS (SELECT DISTINCT IPEDs, marketKey FROM dbo.IPEDS_CH_Crosswalk)
+        SELECT
+            e.IPEDS_ID                AS ipeds_id,
+            e.university_name,
+            cx.marketKey              AS market_key,
+            e.Year                    AS year_,
+            e.total_enrollment,
+            e.full_time_enrollment,
+            e.undergrad_enrollment,
+            e.graduate_enrollment,
+            e.freshman_enrollment
+        FROM e
+        LEFT JOIN cx ON cx.IPEDs = e.IPEDS_ID
+        WHERE e.Year >= 2015
+        ORDER BY e.IPEDS_ID, e.Year
+    """,
+    "enrollment_trend": """
+        -- Per-university 1yr and 5yr enrollment trends. Dedupes at two
+        -- spots that historically fanned out:
+        --   1. Enrollments_Manual sometimes has multiple rows for the same
+        --      (IPEDS_ID, Year) — different totals. We collapse with MAX so
+        --      one row per (IPEDS, Year).
+        --   2. IPEDS_CH_Crosswalk occasionally has multiple rows for the
+        --      same IPEDS → market mapping. We dedupe via DISTINCT in the
+        --      crosswalk subquery so the LEFT JOIN never doubles output.
+        WITH e AS (
+            SELECT IPEDS_ID,
+                   MIN(University)        AS University,
+                   Year,
+                   MAX(Total_Enrollment)  AS Total_Enrollment
+            FROM dbo.Enrollments_Manual
+            WHERE Total_Enrollment > 0
+            GROUP BY IPEDS_ID, Year
+        ),
+        latest AS (SELECT IPEDS_ID, MAX(Year) AS yr_max FROM e GROUP BY IPEDS_ID),
+        cx_unique AS (
+            SELECT DISTINCT IPEDs, marketKey FROM dbo.IPEDS_CH_Crosswalk
+        )
         SELECT
             cur.IPEDS_ID                                AS ipeds_id,
             cur.University                              AS university_name,
@@ -199,8 +249,8 @@ QUERIES: dict[str, str] = {
         JOIN latest l            ON l.IPEDS_ID = cur.IPEDS_ID AND l.yr_max = cur.Year
         LEFT JOIN e prev1        ON prev1.IPEDS_ID = cur.IPEDS_ID AND prev1.Year = cur.Year - 1
         LEFT JOIN e prev5        ON prev5.IPEDS_ID = cur.IPEDS_ID AND prev5.Year = cur.Year - 5
-        LEFT JOIN dbo.IPEDS_CH_Crosswalk cx ON cx.IPEDs = cur.IPEDS_ID
-        LEFT JOIN dbo.Markets            m  ON m.[Key]  = cx.marketKey
+        LEFT JOIN cx_unique cx   ON cx.IPEDs = cur.IPEDS_ID
+        LEFT JOIN dbo.Markets m  ON m.[Key]  = cx.marketKey
     """,
     # fte_history: per-market full-time enrollment at three points in time —
     # current snapshot, ~1 year prior, and a 2021-22 academic-year baseline.

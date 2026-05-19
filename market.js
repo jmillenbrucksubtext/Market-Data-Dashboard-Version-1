@@ -82,6 +82,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindPropertySort();
   renderLegend();
   renderPerformance();
+  renderEnrollment();
   bindTabs();
   // Comp charts are hidden under the Comps tab on load; size will be 0
   // until the tab is shown, so we re-render via bindTabs. Build once now so
@@ -1404,6 +1405,173 @@ function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false 
       },
       interaction: { mode: "index", intersect: false },
     },
+  });
+}
+
+/* ----- Enrollment History (Market tab) ----------------------- */
+// Three multi-year line charts (FTE / Freshman / Total) for the
+// anchor university, plus YoY / 2-Yr / 3-Yr growth tiles above each
+// chart — Excel-style summary. Sourced from `enrollment_history`,
+// pulled by load_enrollment_history.py.
+
+let enrCharts = {};
+
+function renderEnrollment() {
+  // Find the anchor university's IPEDS id via campus_locations.
+  const anchorCampus = (CAMPUSES || []).find(
+    (c) => c.university_name === MARKET.anchor_university,
+  ) || CAMPUSES[0];
+  const ipeds = anchorCampus?.ipeds_id;
+  const sub = document.getElementById("enr-section-sub");
+  if (sub) {
+    sub.textContent = anchorCampus
+      ? `${anchorCampus.university_name} — Full-time, Freshman, and Total enrollment year-over-year. (Applications source not yet wired.)`
+      : "Anchor university not found in campus_locations.";
+  }
+
+  const series = ((DATA.tables.enrollment_history) || [])
+    .filter((r) => r.ipeds_id === ipeds)
+    .filter((r) => r.year_ != null)
+    .sort((a, b) => Number(a.year_) - Number(b.year_));
+
+  drawEnrollmentChart({
+    canvasId: "enr-chart-fte",
+    statsId: "enr-stats-fte",
+    subId: "enr-fte-sub",
+    series,
+    valueKey: "full_time_enrollment",
+    color: "#a95818",  // rust
+    label: "FTE",
+  });
+  drawEnrollmentChart({
+    canvasId: "enr-chart-freshman",
+    statsId: "enr-stats-freshman",
+    subId: "enr-freshman-sub",
+    series,
+    valueKey: "freshman_enrollment",
+    color: "#16352e",  // everest
+    label: "Freshman",
+  });
+  drawEnrollmentChart({
+    canvasId: "enr-chart-total",
+    statsId: "enr-stats-total",
+    subId: "enr-total-sub",
+    series,
+    valueKey: "total_enrollment",
+    color: "#2b2825",  // slate
+    label: "Total",
+  });
+}
+
+function _enrGrowth(curr, prev) {
+  if (curr == null || prev == null || prev === 0) return null;
+  return (curr - prev) / prev;
+}
+function _enrFmtPct(v) {
+  if (v == null) return "—";
+  return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+}
+
+function drawEnrollmentChart({ canvasId, statsId, subId, series, valueKey, color, label }) {
+  const canvas = document.getElementById(canvasId);
+  const statsEl = document.getElementById(statsId);
+  const subEl = document.getElementById(subId);
+  if (!canvas || typeof Chart === "undefined") return;
+
+  // Keep only rows with the metric populated. Limit to last 8 years so the
+  // x-axis stays legible.
+  const data = series
+    .filter((r) => r[valueKey] != null && r[valueKey] > 0)
+    .slice(-8);
+
+  if (data.length === 0) {
+    if (statsEl) statsEl.innerHTML = `<div class="enr-empty">No ${label.toLowerCase()} history for this university.</div>`;
+    if (subEl) subEl.textContent = "";
+    if (enrCharts[canvasId]) { enrCharts[canvasId].destroy(); enrCharts[canvasId] = null; }
+    return;
+  }
+
+  const years = data.map((r) => Number(r.year_));
+  const values = data.map((r) => Number(r[valueKey]));
+  const latest = values[values.length - 1];
+  const yoy   = values.length >= 2 ? _enrGrowth(latest, values[values.length - 2]) : null;
+  const twoYr = values.length >= 3 ? _enrGrowth(latest, values[values.length - 3]) : null;
+  const threeYr = values.length >= 4 ? _enrGrowth(latest, values[values.length - 4]) : null;
+
+  if (subEl) {
+    subEl.textContent = `Latest: ${latest.toLocaleString()} · ${years[years.length - 1]}`;
+  }
+
+  if (statsEl) {
+    statsEl.innerHTML = `
+      <div class="enr-stat">
+        <span class="enr-stat-label">YoY Growth</span>
+        <span class="enr-stat-value ${yoy != null && yoy >= 0 ? "growth-up" : yoy != null ? "growth-down" : ""}">${_enrFmtPct(yoy)}</span>
+      </div>
+      <div class="enr-stat">
+        <span class="enr-stat-label">2-Yr Growth</span>
+        <span class="enr-stat-value ${twoYr != null && twoYr >= 0 ? "growth-up" : twoYr != null ? "growth-down" : ""}">${_enrFmtPct(twoYr)}</span>
+      </div>
+      <div class="enr-stat">
+        <span class="enr-stat-label">3-Yr Growth</span>
+        <span class="enr-stat-value ${threeYr != null && threeYr >= 0 ? "growth-up" : threeYr != null ? "growth-down" : ""}">${_enrFmtPct(threeYr)}</span>
+      </div>`;
+  }
+
+  if (enrCharts[canvasId]) enrCharts[canvasId].destroy();
+  enrCharts[canvasId] = new Chart(canvas.getContext("2d"), {
+    type: "line",
+    data: {
+      labels: years,
+      datasets: [{
+        data: values,
+        borderColor: color,
+        backgroundColor: color,
+        borderWidth: 2.5,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.2,
+        fill: false,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 22, right: 12, left: 4, bottom: 4 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            label: (ctx) => `${label}: ${Number(ctx.parsed.y).toLocaleString()}`,
+          },
+        },
+        datalabels: {
+          align: "top",
+          anchor: "end",
+          offset: 4,
+          color: "#2b2825",
+          font: { family: "Mencken Std, Georgia, serif", weight: 700, size: 11 },
+          formatter: (v) => v == null ? "" : Number(v).toLocaleString(),
+          clip: false,
+        },
+      },
+      scales: {
+        x: {
+          ticks: { color: "#5a544f", font: { size: 11 } },
+          grid: { display: false },
+        },
+        y: {
+          beginAtZero: false,
+          ticks: {
+            color: "#5a544f",
+            font: { size: 11 },
+            callback: (v) => Number(v).toLocaleString(),
+          },
+          grid: { color: "rgba(0,0,0,0.05)" },
+        },
+      },
+    },
+    plugins: window.ChartDataLabels ? [window.ChartDataLabels] : [],
   });
 }
 

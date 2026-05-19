@@ -615,12 +615,23 @@ function renderSupply(rows) {
 
 function renderDemand(rows) {
   const visibleKeys = new Set(rows.map((r) => r.market_key));
-  const trends = DATA.tables.enrollment_trend
-    .filter((t) => visibleKeys.has(t.market_key))
-    .filter((t) => t.cagr_5yr != null)
-    // Rank by 5-yr CAGR (the metric we're plotting), not by enrollment size.
-    // Show the top 30 fastest-growing schools so the chart actually tells
-    // a "growth" story.
+  // enrollment_trend can fan out: a school with duplicate rows in
+  // dbo.Enrollments_Manual (same IPEDS/Year, different totals) or
+  // duplicate rows in IPEDS_CH_Crosswalk produces multiple chart bars
+  // for one (ipeds, market). Dedupe by (ipeds_id, market_key); when
+  // multiple CAGRs collide for one key keep the one tied to the larger
+  // enrollment (proxy for the real "total" row).
+  const seen = new Map();
+  DATA.tables.enrollment_trend.forEach((t) => {
+    if (!visibleKeys.has(t.market_key)) return;
+    if (t.cagr_5yr == null) return;
+    const key = `${t.ipeds_id}|${t.market_key}`;
+    const prev = seen.get(key);
+    if (!prev || (t.current_enrollment || 0) > (prev.current_enrollment || 0)) {
+      seen.set(key, t);
+    }
+  });
+  const trends = [...seen.values()]
     .sort((a, b) => b.cagr_5yr - a.cagr_5yr)
     .slice(0, 30);
 

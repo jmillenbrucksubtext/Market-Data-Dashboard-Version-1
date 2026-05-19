@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=27">
+  <link rel="stylesheet" href="style.css?v=29">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -253,6 +253,50 @@
             </div>
           </section>
 
+          <!-- Enrollment History — anchor university, multi-year line charts
+               with YoY / 2-Yr / 3-Yr growth call-outs. Sourced from
+               enrollment_history (dbo.Enrollments_Manual). -->
+          <section class="card performance-section enrollment-section">
+            <header class="card-header">
+              <div>
+                <h2>Enrollment History</h2>
+                <p id="enr-section-sub">Anchor university — Full-time, Freshman, and Total enrollment year-over-year.</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="perf-grid">
+
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Full-Time Enrollment</span>
+                    <span class="perf-title-sub" id="enr-fte-sub">—</span>
+                  </figcaption>
+                  <div class="enr-stat-row" id="enr-stats-fte"></div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="enr-chart-fte"></canvas></div>
+                </figure>
+
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Freshman Enrollment</span>
+                    <span class="perf-title-sub" id="enr-freshman-sub">—</span>
+                  </figcaption>
+                  <div class="enr-stat-row" id="enr-stats-freshman"></div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="enr-chart-freshman"></canvas></div>
+                </figure>
+
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Total Enrollment</span>
+                    <span class="perf-title-sub" id="enr-total-sub">—</span>
+                  </figcaption>
+                  <div class="enr-stat-row" id="enr-stats-total"></div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="enr-chart-total"></canvas></div>
+                </figure>
+
+              </div>
+            </div>
+          </section>
+
           <!-- All purpose-built properties in the market — sits under the map
                on the Market tab. The Comps tab below has a sibling table
                filtered to comp-set members only. -->
@@ -481,6 +525,6 @@
     </div>
   </div>
 
-  <script src="market.js?v=23" defer></script>
+  <script src="market.js?v=24" defer></script>
 </body>
 </html>

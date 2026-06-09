@@ -668,6 +668,20 @@ h1, h2, h3, .serif {
   font-weight: 700;
 }
 
+/* Forward-model rank badge in the scorecard */
+.fwd-rank {
+  display: inline-block;
+  min-width: 22px;
+  padding: 2px 7px;
+  border-radius: 999px;
+  background: var(--everest);
+  color: #fff;
+  font-weight: 700;
+  font-size: 12px;
+  text-align: center;
+}
+.muted { color: var(--beige-deep); }
+
 .band-pill {
   display: inline-block;
   padding: 2px 10px;
@@ -772,6 +786,18 @@ h1, h2, h3, .serif {
 
 .view { display: none; }
 .view.active { display: block; }
+
+/* Forward Model — embedded self-contained data-science dashboard. The iframe
+   fills the content area below the sticky topbar and scrolls internally. */
+.forward-frame {
+  display: block;
+  width: 100%;
+  height: calc(100vh - 130px);
+  min-height: 600px;
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius);
+  background: #fff;
+}
 
 /* Sources tab -------------------------------------------------- */
 

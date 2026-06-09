@@ -151,7 +151,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /* ----- View routing ------------------------------------------ */
 
-const VALID_VIEWS = ["industry", "analysis", "sources"];
+const VALID_VIEWS = ["industry", "analysis", "sources", "forward"];
 
 function bindNav() {
   const items = document.querySelectorAll(".nav-item[data-view]");
@@ -412,7 +412,7 @@ function bindUI() {
         sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
       } else {
         sortState.col = col;
-        sortState.dir = th.dataset.type === "num" ? "desc" : "asc";
+        sortState.dir = th.dataset.defaultDir || (th.dataset.type === "num" ? "desc" : "asc");
       }
       renderAll();
     });
@@ -476,7 +476,7 @@ function renderScorecard(rows) {
   });
 
   if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="9" class="empty-state">No markets match the filter.</td></tr>`;
+    tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No markets match the filter.</td></tr>`;
   } else {
     tbody.innerHTML = rows
       .map((r) => {
@@ -494,6 +494,7 @@ function renderScorecard(rows) {
               ${star}${escapeHtml(r.anchor_university || "")}
               <span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span>
             </td>
+            <td class="num">${r.fwd_rank != null ? `<span class="fwd-rank">${r.fwd_rank}</span>` : '<span class="muted">N/A</span>'}</td>
             <td class="num">${qualifierPill(r)}</td>
             <td class="num">${fmtPct(r.penetration_ratio)}</td>
             <td class="num">${fmtInt(r.total_enrollment)}</td>

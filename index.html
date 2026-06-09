@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Performance</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=31">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -26,6 +26,10 @@
         <a class="nav-item active" data-view="industry" href="#industry">
           <svg class="icon" viewBox="0 0 24 24"><path d="M3 3v18h18"/><path d="M7 17V11"/><path d="M12 17V7"/><path d="M17 17v-4"/></svg>
           Industry
+        </a>
+        <a class="nav-item" data-view="forward" href="#forward">
+          <svg class="icon" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
+          Forward Model
         </a>
         <a class="nav-item" data-view="analysis" href="#analysis">
           <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
@@ -174,6 +178,7 @@
               <thead>
                 <tr>
                   <th data-sort="anchor_university">Anchor University</th>
+                  <th data-sort="fwd_rank" data-type="num" data-default-dir="asc" title="Rank in the Forward Looking Model market screener (Forward Model tab)">Fwd<br>Rank</th>
                   <th data-sort="qualifier_score" data-type="num">Qualifier</th>
                   <th data-sort="penetration_ratio" data-type="num">Penetration</th>
                   <th data-sort="total_enrollment" data-type="num">Enrollment</th>
@@ -590,10 +595,20 @@
         </footer>
       </section>
 
+      <!-- ============================================================
+           View: Forward Model (embedded data-science screener)
+           Self-contained HTML produced by the data-science team and
+           dropped in as forward-model.html. Replace that file to update.
+           ============================================================ -->
+      <section id="forward-view" class="view">
+        <iframe class="forward-frame" src="forward-model.html"
+                title="Forward Looking Model — Market Screener" loading="lazy"></iframe>
+      </section>
+
       </div>
     </div>
   </div>
 
-  <script src="dashboard.js?v=15"></script>
+  <script src="dashboard.js?v=18"></script>
 </body>
 </html>

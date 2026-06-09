@@ -55,12 +55,19 @@ $dataBefore = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SH
 
 $env:SQLUSER     = $cred.UserName
 $env:SQLPASSWORD = $cred.GetNetworkCredential().Password
+# Unbuffered (-u / PYTHONUNBUFFERED): stream each line to the log as it happens.
+# Python block-buffers stdout when piped, so without this a process killed
+# mid-run (e.g. the 30-min Task Scheduler limit) flushes nothing and the log
+# shows only the start line — exactly the blind spot we hit before. With it,
+# the log records the last step reached, so a future hang is diagnosable.
+$env:PYTHONUNBUFFERED = "1"
 try {
-    python export-data.py --auth env 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+    python -u export-data.py --auth env 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
     $py = $LASTEXITCODE
 } finally {
-    Remove-Item Env:\SQLUSER     -ErrorAction SilentlyContinue
-    Remove-Item Env:\SQLPASSWORD -ErrorAction SilentlyContinue
+    Remove-Item Env:\SQLUSER         -ErrorAction SilentlyContinue
+    Remove-Item Env:\SQLPASSWORD     -ErrorAction SilentlyContinue
+    Remove-Item Env:\PYTHONUNBUFFERED -ErrorAction SilentlyContinue
 }
 
 if ($py -ne 0) {

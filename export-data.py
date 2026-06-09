@@ -35,6 +35,7 @@ import getpass
 import json
 import os
 import sys
+import threading
 from pathlib import Path
 
 import pyodbc
@@ -724,6 +725,49 @@ SCHEDULE_COLUMNS = {
 }
 
 
+def _prior_table(name: str) -> list[dict]:
+    """Return a table from the existing data.json, or [] if unavailable.
+
+    Used as a graceful fallback when a fresh read can't complete — keeps the
+    last-known data instead of blanking the table on the live site."""
+    try:
+        if OUTPUT.exists():
+            prev = json.loads(OUTPUT.read_text(encoding="utf-8"))
+            return prev.get("tables", {}).get(name, [])
+    except Exception as e:  # noqa: BLE001 — fallback must never raise
+        print(f"  (could not read prior {name} from data.json: {e})")
+    return []
+
+
+def _call_with_timeout(fn, timeout_s: float, fallback):
+    """Run fn() in a daemon thread; if it doesn't finish within timeout_s (or
+    raises), log and return fallback(). Guards against blocking I/O — notably a
+    OneDrive Files-On-Demand placeholder stalling indefinitely on cloud recall,
+    which previously hung the unattended weekly refresh until Task Scheduler
+    killed it at its 30-minute limit."""
+    box: dict = {}
+
+    def worker():
+        try:
+            box["value"] = fn()
+        except Exception as e:  # noqa: BLE001
+            box["error"] = e
+
+    t = threading.Thread(target=worker, name=getattr(fn, "__name__", "worker"), daemon=True)
+    t.start()
+    t.join(timeout_s)
+    if t.is_alive():
+        print(f"  WARNING: {t.name} did not finish within {timeout_s:.0f}s "
+              f"(likely a OneDrive cloud-recall stall) — using last-known data")
+        return fallback()
+    if "error" in box:
+        err = box["error"]
+        print(f"  WARNING: {t.name} failed ({type(err).__name__}: {err}) "
+              f"— using last-known data")
+        return fallback()
+    return box["value"]
+
+
 def read_market_analysis_excel() -> list[dict]:
     """Read the Market Analysis Schedule sheet into a list of row dicts.
 
@@ -1179,7 +1223,15 @@ def main() -> int:
         print(f" {len(rows)} rows")
 
     # --- Read the Market Analysis Schedule Excel (OneDrive synced file) ---
-    payload["tables"]["market_analysis_schedule"] = read_market_analysis_excel()
+    # Guarded with a timeout: the file is a OneDrive Files-On-Demand placeholder,
+    # and an unattended run can stall indefinitely on its cloud recall. On
+    # timeout/error we keep the last-known schedule from the prior data.json so
+    # one stalled read can't blank the table or hang the whole refresh.
+    payload["tables"]["market_analysis_schedule"] = _call_with_timeout(
+        read_market_analysis_excel,
+        120,
+        lambda: _prior_table("market_analysis_schedule"),
+    )
 
     # --- Compute per-market affluence from migration CSV ---
     # Source: ../Affluence Data/MigrationAllRents*.csv (newest file).

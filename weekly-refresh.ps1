@@ -95,6 +95,13 @@ if (-not $Push) {
 # .gitignore excludes .sql-cred.xml and refresh.log; double-check below.
 # Caveat: any work-in-progress edits sitting in the tree at run time will
 # get published. Don't leave broken HTML/JS in the working tree Sunday night.
+# git writes normal status (e.g. "To <url> ... main -> main") to stderr, so we
+# must NOT let stderr alone signal failure. Under $ErrorActionPreference="Stop"
+# a 2>&1 redirect would turn that benign chatter into a terminating error and
+# mislabel every successful push as failed. So we drop to "Continue" for the
+# native git calls and judge success strictly by $LASTEXITCODE.
+$prevEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 try {
     git add -A 2>&1 | Out-Null
 
@@ -105,22 +112,31 @@ try {
     if ($bad) {
         Write-Log "ABORT: secret-looking files were staged: $($bad -join ', ')"
         git reset 2>&1 | Out-Null
+        $ErrorActionPreference = $prevEAP
         exit 3
     }
 
     if (-not $staged) {
         Write-Log "nothing to commit after staging"
         Write-Log "=== weekly-refresh done ==="
+        $ErrorActionPreference = $prevEAP
         exit 0
     }
 
     $stamp = Get-Date -Format "yyyy-MM-dd"
     $fileCount = ($staged | Measure-Object).Count
-    git commit -m "weekly refresh $stamp ($fileCount files)" 2>&1 | Out-Null
+
+    git commit -m "weekly refresh $stamp ($fileCount files)" 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value "git: $_" -Encoding utf8 }
+    if ($LASTEXITCODE -ne 0) { Write-Log "git commit FAILED (exit $LASTEXITCODE); local data.json is still fresh"; $ErrorActionPreference = $prevEAP; exit 4 }
+
     git push origin main 2>&1 | ForEach-Object { Write-Log "git: $_" }
+    if ($LASTEXITCODE -ne 0) { Write-Log "git push FAILED (exit $LASTEXITCODE); commit is local-only, retry next run"; $ErrorActionPreference = $prevEAP; exit 5 }
+
     Write-Log "git push complete ($fileCount files)"
 } catch {
     Write-Log "git step FAILED: $($_.Exception.Message) (local data.json is still fresh)"
+} finally {
+    $ErrorActionPreference = $prevEAP
 }
 
 Write-Log "=== weekly-refresh done ==="

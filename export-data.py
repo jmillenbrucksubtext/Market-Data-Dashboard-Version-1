@@ -34,6 +34,7 @@ import decimal
 import getpass
 import json
 import os
+import re
 import sys
 import threading
 from pathlib import Path
@@ -666,6 +667,89 @@ def to_jsonable(value):
     return value
 
 
+# ============================================================
+# Pursuit markets — Subtext's active "Markets - Pursuing" pipeline
+# ============================================================
+# Source: dbo.ProjectCosts, project_stage = 'Markets - Pursuing', at the latest
+# UpdateDate snapshot (the CRM re-snapshots ~weekly). Each row is a market-level
+# pursuit titled "<University> - <City>[ - P3]". We map each to a dashboard
+# market_key via a city (+state) crosswalk built from the scorecard, then stamp
+# is_pursuit / pursuit_deals onto the scorecard so the Industry-page toggle can
+# filter the map + list. Auto-updates each refresh as the pipeline changes.
+PURSUIT_STAGE = "Markets - Pursuing"
+# University keyword -> state, to disambiguate same-named cities
+# (the pipeline has both "Columbia, MO" (Missouri) and "Columbia, SC" (S. Carolina)).
+_PURSUIT_UNI_STATE = {"missouri": "MO", "south carolina": "SC"}
+# City aliases where the CRM's city label differs from dbo.Markets.city.
+# Storrs is the village UConn sits in; the dashboard files it under Mansfield, CT.
+_PURSUIT_CITY_ALIAS = {"storrs": "mansfield"}
+
+
+def _parse_pursuit_title(title: str) -> tuple[str, str]:
+    """From a '<University> - <City>[ - P3]' pursuit title, return (university, city)."""
+    t = re.sub(r"\s*-\s*P3\s*$", "", (title or "").strip(), flags=re.I)
+    if " - " in t:
+        uni, city = t.rsplit(" - ", 1)
+        return uni.strip(), city.strip()
+    return t, t
+
+
+def compute_pursuit_markets(cur, scorecard: list[dict]) -> dict[int, int]:
+    """Return {market_key: pursuit_deal_count} for markets in 'Markets - Pursuing'.
+
+    Non-university entries (e.g. 'Dallas / Fort Worth') and any title that
+    doesn't resolve to a tracked market are logged and skipped — non-fatal, so a
+    pipeline hiccup never blocks the weekly refresh."""
+    by_city_state: dict[tuple[str, str], int] = {}
+    by_city: dict[str, int] = {}
+    for r in scorecard:
+        c = (r.get("city") or "").strip().lower()
+        st = (r.get("state_abbr") or "").strip().upper()
+        if not c:
+            continue
+        by_city_state[(c, st)] = r["market_key"]
+        by_city.setdefault(c, r["market_key"])
+
+    try:
+        cur.execute(
+            "SELECT MAX(UpdateDate) FROM dbo.ProjectCosts WHERE project_stage = ?",
+            PURSUIT_STAGE)
+        max_date = cur.fetchone()[0]
+        if max_date is None:
+            print("  pursuit_markets: no 'Markets - Pursuing' rows (skipping)")
+            return {}
+        cur.execute(
+            "SELECT title FROM dbo.ProjectCosts "
+            "WHERE project_stage = ? AND UpdateDate = ?", PURSUIT_STAGE, max_date)
+        titles = [r[0] for r in cur.fetchall() if r[0]]
+    except pyodbc.Error as e:
+        print(f"  pursuit_markets SKIPPED (query failed: {e})")
+        return {}
+
+    counts: dict[int, int] = {}
+    unmatched: list[str] = []
+    for title in titles:
+        uni, city = _parse_pursuit_title(title)
+        key = _PURSUIT_CITY_ALIAS.get(city.lower(), city.lower())
+        st = next((s for kw, s in _PURSUIT_UNI_STATE.items() if kw in uni.lower()), None)
+        mk = by_city_state.get((key, st)) if st else None
+        if mk is None:
+            mk = by_city.get(key)
+        if mk is None:
+            unmatched.append(title)
+            continue
+        counts[mk] = counts.get(mk, 0) + 1
+
+    snap = str(max_date)[:10]
+    print(f"  pursuit_markets: {len(titles)} '{PURSUIT_STAGE}' rows "
+          f"({snap}) -> {len(counts)} dashboard markets")
+    if unmatched:
+        # Surface new/unmapped pursuits so an alias can be added next refresh.
+        print(f"    {len(unmatched)} unmatched (no tracked market): "
+              + "; ".join(unmatched))
+    return counts
+
+
 def connect(auth: str = "aad"):
     drivers = sorted(
         [d for d in pyodbc.drivers() if d.startswith("ODBC Driver")],
@@ -1221,6 +1305,15 @@ def main() -> int:
         ]
         payload["tables"][name] = rows
         print(f" {len(rows)} rows")
+
+    # --- Flag pursuit markets (Subtext's 'Markets - Pursuing' pipeline) ---
+    # Stamp is_pursuit / pursuit_deals onto the scorecard so the Industry-page
+    # "Pursuit markets" toggle can filter the map + list off a single field.
+    pursuit_counts = compute_pursuit_markets(cur, payload["tables"]["scorecard"])
+    for r in payload["tables"]["scorecard"]:
+        n = pursuit_counts.get(r["market_key"], 0)
+        r["is_pursuit"] = 1 if n else 0
+        r["pursuit_deals"] = n
 
     # --- Read the Market Analysis Schedule Excel (OneDrive synced file) ---
     # Guarded with a timeout: the file is a OneDrive Files-On-Demand placeholder,

@@ -307,6 +307,7 @@ function visibleScorecardRows() {
   const q = document.getElementById("market-filter").value.trim().toLowerCase();
   const subtext30 = document.getElementById("subtext30-only").checked;
   const power4 = document.getElementById("power4-only").checked;
+  const pursuit = document.getElementById("pursuit-only").checked;
 
   if (q) {
     rows = rows.filter((r) =>
@@ -320,6 +321,9 @@ function visibleScorecardRows() {
   }
   if (power4) {
     rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
+  }
+  if (pursuit) {
+    rows = rows.filter((r) => r.is_pursuit === 1);
   }
 
   // Attach yoy_rent_growth from rent_yoy
@@ -378,6 +382,26 @@ function bindUI() {
   const p4Label = document.getElementById("power4-toggle-label");
   p4.addEventListener("change", () => {
     p4Label.classList.toggle("active", p4.checked);
+    renderAll();
+  });
+
+  // Pursuit markets — Subtext's active "Markets - Pursuing" pipeline.
+  const pursuit = document.getElementById("pursuit-only");
+  const pursuitLabel = document.getElementById("pursuit-toggle-label");
+  // Surface the total in the toggle label so the count is visible even when off.
+  const pursuitTotal = DATA.tables.scorecard.filter((r) => r.is_pursuit === 1).length;
+  if (pursuitTotal) {
+    pursuitLabel.querySelector("span").textContent = `Pursuit markets (${pursuitTotal})`;
+  }
+  pursuit.addEventListener("change", () => {
+    pursuitLabel.classList.toggle("active", pursuit.checked);
+    // Pursuit is a curated cross-cut that includes non-Subtext-30 markets, so
+    // AND-ing it with the focus filters (Subtext-30 is on by default) would hide
+    // most of them. Clear those filters when pursuit is switched on.
+    if (pursuit.checked) {
+      if (cb.checked) { cb.checked = false; label.classList.remove("active"); }
+      if (p4.checked) { p4.checked = false; p4Label.classList.remove("active"); }
+    }
     renderAll();
   });
 

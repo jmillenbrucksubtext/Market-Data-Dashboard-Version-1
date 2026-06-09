@@ -293,6 +293,14 @@ h1, h2, h3, .serif {
   color: var(--slate);
   font-weight: 700;
 }
+/* Pursuit markets is a distinct lens (the active deal pipeline), not a focus
+   subset — give it an everest-green active state so it reads differently. */
+.subtext-toggle-pursuit input { accent-color: var(--everest); }
+.subtext-toggle-pursuit.active {
+  background: var(--everest);
+  border-color: var(--everest);
+  color: #fff;
+}
 
 /* Subtext Dispatch ticker — sits in the topbar between .search and
    .topbar-right on the Industry view only. Click anywhere → dispatch site

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Performance</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=29">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -66,13 +66,17 @@
         </a>
 
         <div class="topbar-right">
-          <label class="subtext-toggle active" id="subtext-toggle-label">
-            <input type="checkbox" id="subtext30-only" checked>
+          <label class="subtext-toggle" id="subtext-toggle-label">
+            <input type="checkbox" id="subtext30-only">
             <span>Subtext-30 only</span>
           </label>
           <label class="subtext-toggle" id="power4-toggle-label" title="SEC · Big Ten · Big 12 · ACC anchor schools">
             <input type="checkbox" id="power4-only">
             <span>Power 4 only</span>
+          </label>
+          <label class="subtext-toggle subtext-toggle-pursuit active" id="pursuit-toggle-label" title="Markets in Subtext's active 'Markets - Pursuing' pipeline (ProjectCosts, refreshed weekly)">
+            <input type="checkbox" id="pursuit-only" checked>
+            <span>Pursuit markets</span>
           </label>
           <span class="freshness">
             <span>Data as of</span>
@@ -590,6 +594,6 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=14"></script>
+  <script src="dashboard.js?v=15"></script>
 </body>
 </html>

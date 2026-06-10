@@ -490,6 +490,11 @@ function deltaSpan(v) {
 
 function renderHeader() {
   document.getElementById("market-name").textContent = MARKET.anchor_university;
+  const reportLink = document.getElementById("report-link");
+  if (reportLink) {
+    reportLink.href = `market-report.html?id=${MARKET.market_key}`;
+    reportLink.style.display = "";
+  }
   const region = MARKET.region ? ` · ${MARKET.region}` : "";
   document.getElementById("market-subtitle").textContent =
     `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}`;

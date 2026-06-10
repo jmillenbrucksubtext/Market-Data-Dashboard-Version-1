@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=36">
+  <link rel="stylesheet" href="style.css?v=37">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -49,6 +49,10 @@
         </a>
 
         <div class="topbar-right">
+          <a id="report-link" class="report-btn" href="#" target="_blank" rel="noopener" style="display:none;">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M9 13h6M9 17h6"/></svg>
+            Market Report
+          </a>
           <span class="freshness">
             <span>Data as of</span>
             <span class="value" id="data-as-of">—</span>
@@ -520,7 +524,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=29" defer></script>
+  <script src="market.js?v=30" defer></script>
   <script src="comp-map.js?v=6" defer></script>
   <script src="chart-download.js?v=3" defer></script>
 </body>

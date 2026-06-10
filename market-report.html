@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market Snapshot — Subtext</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+  @font-face {
+    font-family: "Pragmatica";
+    src: url("assets/fonts/Pragmatica-Book.otf") format("opentype");
+    font-weight: 400; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Pragmatica";
+    src: url("assets/fonts/Pragmatica-Bold.otf") format("opentype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+  @font-face {
+    font-family: "Mencken Std";
+    src: url("assets/fonts/MenckenStd-Bold.otf") format("opentype");
+    font-weight: 700; font-style: normal; font-display: swap;
+  }
+
+  :root {
+    --slate: #2b2825; --slate-70: #5a544f; --slate-50: #837c75;
+    --slate-30: #b6b1ab; --everest: #16352e; --birch: #a95818;
+    --beige: #f7f1e3; --beige-deep: #ede5cf; --lime: #c1d100;
+    --warn: #c79830; --good-soft: #d8e3df; --bad-soft: #f0d9c4;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: "Pragmatica", -apple-system, "Segoe UI", sans-serif;
+    font-size: 10.5px;
+    color: var(--slate);
+    background: #d8d4ce;
+    font-variant-numeric: tabular-nums;
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  .sheet {
+    width: 8.5in;
+    min-height: 11in;
+    margin: 18px auto;
+    padding: 0.5in 0.55in;
+    background: #fff;
+    box-shadow: 0 4px 18px rgba(43, 40, 37, 0.25);
+    display: flex;
+    flex-direction: column;
+  }
+
+  @page { size: letter; margin: 0; }
+  @media print {
+    body { background: #fff; }
+    .sheet { margin: 0; box-shadow: none; page-break-after: always; }
+    .sheet:last-of-type { page-break-after: avoid; }
+    .print-btn, #report-loading { display: none !important; }
+  }
+
+  .print-btn {
+    position: fixed; top: 14px; right: 16px; z-index: 10;
+    background: var(--everest); color: #fff; border: none;
+    border-radius: 999px; padding: 10px 20px;
+    font: 700 13px "Pragmatica", sans-serif; cursor: pointer;
+    box-shadow: 0 3px 10px rgba(43, 40, 37, 0.35);
+  }
+  .print-btn:hover { background: var(--slate); }
+
+  /* ── Report header ── */
+  .rep-head {
+    display: flex; justify-content: space-between; align-items: flex-end;
+    border-bottom: 3px solid var(--everest);
+    padding-bottom: 10px; margin-bottom: 14px;
+  }
+  .rep-eyebrow {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.18em;
+    text-transform: uppercase; color: var(--birch); margin-bottom: 4px;
+  }
+  .rep-title {
+    font-family: "Mencken Std", Georgia, serif;
+    font-size: 26px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1;
+  }
+  .rep-sub { font-size: 11px; color: var(--slate-70); margin-top: 3px; }
+  .rep-meta { text-align: right; font-size: 9.5px; color: var(--slate-50); }
+  .rep-meta .chips { margin-bottom: 5px; }
+  .chip {
+    display: inline-block; border-radius: 999px; padding: 3px 10px;
+    font-size: 9px; font-weight: 700; letter-spacing: 0.04em; margin-left: 5px;
+  }
+  .chip-s30 { background: var(--lime); color: var(--slate); }
+  .chip-rank { background: var(--beige-deep); color: var(--slate-70); }
+
+  /* ── Section titles ── */
+  .sec {
+    font-family: "Mencken Std", Georgia, serif;
+    font-size: 14px; font-weight: 700;
+    border-bottom: 1px solid var(--beige-deep);
+    padding-bottom: 4px; margin: 14px 0 8px;
+  }
+  .sec:first-of-type { margin-top: 0; }
+
+  /* ── KPI grid ── */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
+  .kpi {
+    background: var(--beige); border: 1px solid var(--beige-deep);
+    border-radius: 6px; padding: 7px 9px;
+  }
+  .kpi-label {
+    font-size: 7.5px; font-weight: 700; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--slate-50);
+  }
+  .kpi-value { font-size: 16px; font-weight: 700; margin-top: 2px; }
+  .kpi-sub { font-size: 8px; color: var(--slate-50); margin-top: 1px; }
+  .kpi-up { color: var(--everest); }
+  .kpi-down { color: var(--birch); }
+
+  /* ── Qualifier scorecard ── */
+  .qual-wrap { display: flex; gap: 12px; align-items: stretch; }
+  .qual-score {
+    flex: 0 0 110px; background: var(--everest); color: #fff;
+    border-radius: 6px; display: flex; flex-direction: column;
+    align-items: center; justify-content: center; padding: 10px;
+  }
+  .qual-score .pct { font-family: "Mencken Std", Georgia, serif; font-size: 30px; font-weight: 700; }
+  .qual-score .lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.8; text-align: center; margin-top: 3px; }
+  .qual-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
+  .qual-row {
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 8px; padding: 3px 0; border-bottom: 1px dotted var(--beige-deep);
+    font-size: 9.5px;
+  }
+  .qual-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-right: 6px; }
+  .dot-pass { background: var(--everest); }
+  .dot-fail { background: var(--birch); }
+  .dot-warn { background: var(--warn); }
+  .dot-na   { background: var(--slate-30); }
+  .qual-row .ql { flex: 1; display: flex; align-items: center; color: var(--slate-70); }
+  .qual-row .qv { font-weight: 700; white-space: nowrap; }
+
+  /* ── Charts ── */
+  .charts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .chart-card {
+    border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px 6px;
+  }
+  .chart-card h4 {
+    font-size: 9px; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--slate-70); margin-bottom: 4px;
+  }
+  .chart-box { position: relative; height: 132px; }
+  .chart-box-tall { height: 150px; }
+
+  /* ── Pipeline band ── */
+  .pipe-band { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+
+  /* ── Comp table ── */
+  table { width: 100%; border-collapse: collapse; font-size: 9px; }
+  thead th {
+    background: var(--everest); color: #fff; font-weight: 700;
+    padding: 5px 7px; text-align: right; font-size: 8px;
+    letter-spacing: 0.05em; text-transform: uppercase;
+  }
+  thead th:first-child { text-align: left; }
+  tbody td {
+    padding: 4px 7px; text-align: right;
+    border-bottom: 1px solid var(--beige-deep); color: var(--slate-70);
+  }
+  tbody td:first-child { text-align: left; font-weight: 700; color: var(--slate); }
+  tbody tr:nth-child(even) td { background: var(--beige); }
+  tfoot td {
+    padding: 5px 7px; text-align: right; font-weight: 700;
+    border-top: 2px solid var(--slate); background: var(--beige-deep);
+  }
+  tfoot td:first-child { text-align: left; }
+
+  .foot {
+    margin-top: auto; padding-top: 10px;
+    border-top: 1px solid var(--beige-deep);
+    display: flex; justify-content: space-between;
+    font-size: 8px; color: var(--slate-50);
+  }
+
+  #report-loading { text-align: center; padding: 60px; color: var(--slate-70); font-size: 14px; }
+</style>
+</head>
+<body>
+
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+<div id="report-loading">Building market snapshot…</div>
+<div id="report-root"></div>
+
+<script>
+"use strict";
+
+const C = {
+  slate: "#2b2825", slate70: "#5a544f", slate30: "#b6b1ab",
+  everest: "#16352e", birch: "#a95818", lime: "#c1d100", warn: "#c79830",
+};
+
+const fmtInt = (v) => v == null ? "—" : Math.round(v).toLocaleString("en-US");
+const fmtUsd = (v) => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
+const fmtPct1 = (v) => v == null ? "—" : (v * 100).toFixed(1) + "%";
+const fmtSigned = (v) => v == null ? "—" : (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
+
+document.addEventListener("DOMContentLoaded", async () => {
+  const marketKey = Number(new URLSearchParams(location.search).get("id"));
+  if (!marketKey) return fail("No market specified — open this page from a market's Report button.");
+
+  let DATA;
+  try {
+    const res = await fetch("data.json", { cache: "no-cache" });
+    if (!res.ok) throw new Error("HTTP " + res.status);
+    DATA = await res.json();
+  } catch (e) {
+    return fail("Couldn't load data.json — " + e);
+  }
+
+  const T = DATA.tables;
+  const M = T.scorecard.find((r) => r.market_key === marketKey);
+  if (!M) return fail("Market " + marketKey + " not found.");
+
+  document.title = M.anchor_university + " — Market Snapshot — Subtext";
+
+  const quals = (T.market_qualifiers || []).find((r) => r.market_key === marketKey);
+  const history = (T.market_history || []).filter((r) => r.market_key === marketKey)
+    .sort((a, b) => a.year_ - b.year_);
+  const aff = (T.market_affluence || []).find((r) => r.market_key === marketKey);
+  const props = (T.properties || []).filter((p) => p.market_key === marketKey);
+  const comps = props.filter((p) => p.is_comp_set)
+    .sort((a, b) => (b.yearBuilt ?? -1) - (a.yearBuilt ?? -1));
+
+  // Subtext-30 benchmark per year: simple mean across S30 markets
+  const s30Keys = new Set(T.scorecard.filter((r) => r.is_subtext30).map((r) => r.market_key));
+  const benchByYear = {};
+  (T.market_history || []).forEach((r) => {
+    if (!s30Keys.has(r.market_key)) return;
+    (benchByYear[r.year_] = benchByYear[r.year_] || []).push(r);
+  });
+  const bench = (field) => Object.keys(benchByYear).map(Number).sort((a, b) => a - b)
+    .map((y) => {
+      const vals = benchByYear[y].map((r) => r[field]).filter((v) => v != null);
+      return { year: y, value: vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null };
+    });
+
+  // Anchor university enrollment history: pick the market's largest school
+  const ehAll = (T.enrollment_history || []).filter((r) => r.market_key === marketKey);
+  const byIpeds = {};
+  ehAll.forEach((r) => (byIpeds[r.ipeds_id] = byIpeds[r.ipeds_id] || []).push(r));
+  let anchorRows = [];
+  let best = -1;
+  Object.values(byIpeds).forEach((rows) => {
+    const latest = rows.reduce((a, b) => (a.year_ > b.year_ ? a : b));
+    if ((latest.total_enrollment || 0) > best) { best = latest.total_enrollment || 0; anchorRows = rows; }
+  });
+  anchorRows.sort((a, b) => a.year_ - b.year_);
+
+  // Rent YoY from history
+  const last = history[history.length - 1];
+  const prev = history[history.length - 2];
+  const rentYoy = last && prev && prev.avg_rent_per_bed > 0
+    ? last.avg_rent_per_bed / prev.avg_rent_per_bed - 1 : null;
+
+  const asOf = M.data_as_of ? new Date(M.data_as_of) : new Date();
+  const asOfText = asOf.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
+  const pipePct = M.existing_beds > 0 ? M.beds_pipeline_total / M.existing_beds : null;
+
+  const kpis = [
+    { l: "Existing Beds", v: fmtInt(M.existing_beds), s: "purpose-built" },
+    { l: "Pipeline Beds", v: fmtInt(M.beds_pipeline_total), s: pipePct != null ? fmtPct1(pipePct) + " of existing" : "" },
+    { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment" },
+    { l: "FTE Enrollment", v: fmtInt(M.enr_full_time), s: "current year" },
+    { l: "Total Enrollment", v: fmtInt(M.total_enrollment), s: "current year" },
+    { l: "Avg Rent / Bed", v: fmtUsd(M.avg_rent_per_bed), s: "latest snapshot" },
+    { l: "Rent YoY", v: fmtSigned(rentYoy), s: prev ? `${prev.year_} → ${last.year_}` : "", cls: rentYoy == null ? "" : rentYoy >= 0 ? "kpi-up" : "kpi-down" },
+    { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted" },
+    { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
+    { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "—", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data" },
+  ];
+
+  const qualRows = quals ? quals.results.map((r) => {
+    const tier = (r.tier || r.status || "na").toLowerCase();
+    const dot = tier.startsWith("pass") ? "dot-pass" : tier.startsWith("fail") ? "dot-fail"
+      : tier.startsWith("warn") || tier.startsWith("near") ? "dot-warn" : "dot-na";
+    return `<div class="qual-row">
+      <span class="ql"><span class="dot ${dot}"></span>${esc(r.label)}</span>
+      <span class="qv">${esc(r.actual_display ?? "—")}</span>
+    </div>`;
+  }).join("") : "";
+  const scorePct = quals && quals.evaluable > 0 ? Math.round((quals.passes / quals.evaluable) * 100) : null;
+
+  const compRows = comps.slice(0, 14).map((p) => `
+    <tr>
+      <td>${esc(p.property_name || "(unnamed)")}</td>
+      <td>${p.yearBuilt ?? "—"}</td>
+      <td>${fmtInt(p.beds)}</td>
+      <td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "—"}</td>
+      <td>${p.avg_rent > 0 ? fmtUsd(p.avg_rent) : "—"}</td>
+      <td>${p.avg_rent_per_sf > 0 ? "$" + p.avg_rent_per_sf.toFixed(2) : "—"}</td>
+      <td>${fmtPct1(p.occupancy)}</td>
+      <td>${fmtPct1(p.prelease)}</td>
+    </tr>`).join("");
+
+  const wAvg = (key) => {
+    let n = 0, d = 0;
+    comps.forEach((p) => { if (p[key] != null && p.beds) { n += p[key] * p.beds; d += p.beds; } });
+    return d > 0 ? n / d : null;
+  };
+  const totBeds = comps.reduce((s, p) => s + (p.beds || 0), 0);
+
+  document.getElementById("report-root").innerHTML = `
+  <div class="sheet">
+    <div class="rep-head">
+      <div>
+        <div class="rep-eyebrow">Subtext Living · Market Snapshot</div>
+        <div class="rep-title">${esc(M.anchor_university)}</div>
+        <div class="rep-sub">${esc(M.city)}, ${esc(M.state_abbr)}${M.region ? " · " + esc(M.region) : ""}</div>
+      </div>
+      <div class="rep-meta">
+        <div class="chips">
+          ${M.is_subtext30 ? '<span class="chip chip-s30">★ Subtext-30</span>' : ""}
+          ${M.fwd_rank ? `<span class="chip chip-rank">Forward rank #${M.fwd_rank}</span>` : ""}
+        </div>
+        <div>Data as of ${asOfText}</div>
+      </div>
+    </div>
+
+    <div class="sec">Key Metrics</div>
+    <div class="kpis">
+      ${kpis.map((k) => `
+        <div class="kpi">
+          <div class="kpi-label">${k.l}</div>
+          <div class="kpi-value ${k.cls || ""}">${k.v}</div>
+          <div class="kpi-sub">${k.s}</div>
+        </div>`).join("")}
+    </div>
+
+    ${quals ? `
+    <div class="sec">Subtext Qualifier Scorecard</div>
+    <div class="qual-wrap">
+      <div class="qual-score">
+        <div class="pct">${scorePct != null ? scorePct + "%" : "—"}</div>
+        <div class="lbl">${quals.passes.toFixed(1)} of ${quals.evaluable} qualifiers passing</div>
+      </div>
+      <div class="qual-grid">${qualRows}</div>
+    </div>` : ""}
+
+    <div class="sec">Market Performance vs Subtext-30</div>
+    <div class="charts2">
+      <div class="chart-card">
+        <h4>Avg Rent per Bed</h4>
+        <div class="chart-box"><canvas id="ch-rent"></canvas></div>
+      </div>
+      <div class="chart-card">
+        <h4>Pre-lease</h4>
+        <div class="chart-box"><canvas id="ch-prelease"></canvas></div>
+      </div>
+    </div>
+
+    <div class="foot">
+      <span>Subtext Living — Market Snapshot · ${esc(M.anchor_university)}</span>
+      <span>Page 1 of 2</span>
+    </div>
+  </div>
+
+  <div class="sheet">
+    <div class="sec">Supply Pipeline</div>
+    <div class="pipe-band">
+      <div class="kpi"><div class="kpi-label">Existing</div><div class="kpi-value">${fmtInt(M.existing_beds)}</div><div class="kpi-sub">stabilized beds</div></div>
+      <div class="kpi"><div class="kpi-label">Lease-up</div><div class="kpi-value">${fmtInt(M.beds_lease_up)}</div><div class="kpi-sub">delivering now</div></div>
+      <div class="kpi"><div class="kpi-label">Under Construction</div><div class="kpi-value">${fmtInt(M.beds_under_construction)}</div><div class="kpi-sub">≈ 6–24 months</div></div>
+      <div class="kpi"><div class="kpi-label">Planned</div><div class="kpi-value">${fmtInt(M.beds_planned)}</div><div class="kpi-sub">permitted / announced</div></div>
+    </div>
+
+    ${anchorRows.length ? `
+    <div class="sec">Enrollment Trend — ${esc(anchorRows[0].university_name)}</div>
+    <div class="chart-card">
+      <div class="chart-box chart-box-tall"><canvas id="ch-enr"></canvas></div>
+    </div>` : ""}
+
+    <div class="sec">Competitive Set${comps.length > 14 ? ` (top 14 of ${comps.length} by year built)` : ""}</div>
+    <table>
+      <thead><tr>
+        <th>Property</th><th>Built</th><th>Beds</th><th>Mi</th>
+        <th>Avg Rent</th><th>Rent/SF</th><th>Occupancy</th><th>Pre-lease</th>
+      </tr></thead>
+      <tbody>${compRows || '<tr><td colspan="8">No comp-set properties on file.</td></tr>'}</tbody>
+      ${comps.length ? `<tfoot><tr>
+        <td>Bed-weighted aggregate · ${comps.length} comps</td>
+        <td></td><td>${fmtInt(totBeds)}</td><td></td>
+        <td>${fmtUsd(wAvg("avg_rent"))}</td>
+        <td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "—"}</td>
+        <td>${fmtPct1(wAvg("occupancy"))}</td>
+        <td>${fmtPct1(wAvg("prelease"))}</td>
+      </tr></tfoot>` : ""}
+    </table>
+
+    <div class="foot">
+      <span>Generated ${new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" })} · Source: Subtext market dashboard · data as of ${asOfText}</span>
+      <span>Page 2 of 2</span>
+    </div>
+  </div>`;
+
+  document.getElementById("report-loading").style.display = "none";
+
+  // ── Charts ──
+  const lineOpts = (fmt, isPct) => ({
+    responsive: true, maintainAspectRatio: false, animation: false,
+    devicePixelRatio: 2,
+    plugins: {
+      legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 14, padding: 6, usePointStyle: true } },
+      tooltip: { enabled: false },
+    },
+    scales: {
+      x: { ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } },
+      y: {
+        beginAtZero: false, ...(isPct ? { max: 1 } : {}),
+        ticks: { color: C.slate70, font: { size: 8 }, callback: fmt },
+        grid: { color: "rgba(0,0,0,0.05)" },
+      },
+    },
+  });
+
+  function drawVsBench(canvasId, field, fmt, isPct) {
+    const el = document.getElementById(canvasId);
+    if (!el || typeof Chart === "undefined") return;
+    const mine = history.map((r) => ({ year: r.year_, value: r[field] }));
+    const b = bench(field);
+    const years = [...new Set([...mine.map((d) => d.year), ...b.map((d) => d.year)])].sort((x, y) => x - y);
+    const mv = Object.fromEntries(mine.map((d) => [d.year, d.value]));
+    const bv = Object.fromEntries(b.map((d) => [d.year, d.value]));
+    new Chart(el.getContext("2d"), {
+      type: "line",
+      data: {
+        labels: years,
+        datasets: [
+          { label: "This market", data: years.map((y) => mv[y] ?? null), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
+          { label: "Subtext-30 avg", data: years.map((y) => bv[y] ?? null), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true },
+        ],
+      },
+      options: lineOpts(fmt, isPct),
+    });
+  }
+
+  drawVsBench("ch-rent", "avg_rent_per_bed", (v) => "$" + Math.round(v).toLocaleString(), false);
+  drawVsBench("ch-prelease", "prelease", (v) => Math.round(v * 100) + "%", true);
+
+  if (anchorRows.length) {
+    const el = document.getElementById("ch-enr");
+    if (el && typeof Chart !== "undefined") {
+      new Chart(el.getContext("2d"), {
+        type: "line",
+        data: {
+          labels: anchorRows.map((r) => r.year_),
+          datasets: [
+            { label: "Total enrollment", data: anchorRows.map((r) => r.total_enrollment), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
+            { label: "Full-time", data: anchorRows.map((r) => r.full_time_enrollment), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
+            { label: "Freshman", data: anchorRows.map((r) => r.freshman_enrollment), borderColor: C.warn, backgroundColor: C.warn, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true },
+          ],
+        },
+        options: lineOpts((v) => Math.round(v / 1000) + "k", false),
+      });
+    }
+  }
+});
+
+function fail(msg) {
+  document.getElementById("report-loading").textContent = msg;
+}
+</script>
+</body>
+</html>

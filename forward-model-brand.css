@@ -1,0 +1,110 @@
+/* =============================================================
+   Subtext brand re-skin for forward-model.html.
+   forward-model.html is a self-contained drop-in produced by the
+   data-science team and replaced wholesale on updates — so the brand
+   overrides live here, outside it, and dashboard.js injects this
+   stylesheet into the iframe after it loads. Selectors mirror the
+   embedded ones; loading after them wins the cascade.
+   ============================================================= */
+
+@font-face {
+  font-family: "Pragmatica";
+  src: url("assets/fonts/Pragmatica-Book.otf") format("opentype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Pragmatica";
+  src: url("assets/fonts/Pragmatica-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Mencken Std";
+  src: url("assets/fonts/MenckenStd-Bold.otf") format("opentype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+body {
+  font-family: "Pragmatica", -apple-system, "Segoe UI", sans-serif;
+  background: #f7f1e3;             /* beige */
+  color: #2b2825;                  /* slate */
+  font-variant-numeric: tabular-nums;
+}
+
+/* Header */
+.header { border-left-color: #16352e; }
+.header h1 {
+  font-family: "Mencken Std", Georgia, "Times New Roman", serif;
+  color: #2b2825;
+  letter-spacing: -0.01em;
+}
+.header p { color: #5a544f; }
+
+/* Forecast legend pill: amber → brand warn gold */
+.fcast-legend {
+  background: #f4e9d0;
+  border-color: #c79830;
+  color: #7d5a18;
+}
+.fcast-legend .dot { background: #c79830; }
+
+/* Definition callouts */
+.callout {
+  border-color: #ede5cf;
+  border-left-color: #16352e;
+}
+.callout .abbr { color: #16352e; }
+.callout .def { color: #5a544f; }
+
+/* Table chrome: corporate blue → everest green */
+.table-wrap {
+  border-color: #ede5cf;
+  box-shadow: 0 2px 4px rgba(43, 40, 37, 0.06), 0 1px 2px rgba(43, 40, 37, 0.04);
+}
+thead tr { background: #16352e; }
+thead th.fcast-col { background: #0d231e; }
+tbody tr { border-bottom-color: #f3eee0; }
+tbody tr:nth-child(even) { background: #faf6ec; }
+tbody tr:hover { background: #f3eee0; }
+td { color: #3a3633; border-right-color: #f3eee0; }
+td.left { color: #2b2825; }
+
+/* Rank badges */
+.rank-forward { background: #16352e; }
+.rank-current { background: #ede5cf; color: #3a3633; }
+
+/* Change badges: green/red → everest/birch status pair */
+.change-up   { background: #d8e3df; color: #16352e; }
+.change-down { background: #f0d9c4; color: #a95818; }
+.change-flat { background: #ede5cf; color: #5a544f; }
+
+/* Metric + tag coloring */
+.metric-hi  { color: #16352e; }
+.metric-lo  { color: #a95818; }
+.metric-mid { color: #3a3633; }
+.tag-strong { background: #d8e3df; color: #16352e; }
+.tag-weak   { background: #f0d9c4; color: #a95818; }
+
+/* Tabs */
+.tab-btn {
+  font-family: "Pragmatica", sans-serif;
+  border-color: #ede5cf;
+  background: #ede5cf;
+  color: #3a3633;
+}
+.tab-btn.active { background: #16352e; color: #fff; border-color: #16352e; }
+.tab-btn:not(.active):hover { background: #e2d9c2; }
+
+/* Weighting tab */
+.w-pos  { color: #16352e; }
+.w-neg  { color: #a95818; }
+.w-zero { color: #5a544f; }
+.flag-yes { background: #16352e; }
+.flag-no  { background: #ede5cf; color: #837c75; }
+
+.footer { color: #837c75; }

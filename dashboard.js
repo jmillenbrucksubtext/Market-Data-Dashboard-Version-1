@@ -1220,3 +1220,25 @@ function renderAll() {
   renderAnalysisFilter();
   renderAnalysis();
 }
+
+/* ----- Forward Model iframe re-skin --------------------------- */
+// forward-model.html is a generated drop-in that gets replaced wholesale,
+// so the Subtext branding is injected from outside: append the override
+// stylesheet into the iframe document each time it (re)loads.
+(function brandForwardModel() {
+  const frame = document.querySelector(".forward-frame");
+  if (!frame) return;
+  const inject = () => {
+    try {
+      const doc = frame.contentDocument;
+      if (!doc || !doc.head || doc.getElementById("fwd-brand-css")) return;
+      const link = doc.createElement("link");
+      link.id = "fwd-brand-css";
+      link.rel = "stylesheet";
+      link.href = "forward-model-brand.css?v=1";
+      doc.head.appendChild(link);
+    } catch { /* same-origin, so this shouldn't throw */ }
+  };
+  frame.addEventListener("load", inject);
+  inject();  // covers the already-loaded case
+})();

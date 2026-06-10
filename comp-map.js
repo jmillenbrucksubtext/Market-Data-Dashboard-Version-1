@@ -60,6 +60,7 @@
   var state = {
     basemap: "satellite",
     rings: true,           // 0.5/1/2-mile rings around the anchor campus
+    compact: false,        // true = callouts show name + address only
     view: null,            // { z, originX, originY }
     base: null,            // offscreen canvas: tiles + boundary
     baseSig: null,
@@ -205,6 +206,10 @@
   function fmtInt(v) { return v == null ? "—" : Math.round(v).toLocaleString("en-US"); }
 
   function calloutContent(p) {
+    // Compact mode for crowded markets: name + address only
+    if (state.compact) {
+      return { title: p.property_name || "(unnamed)", sub: p.street1 || "", lines: [] };
+    }
     var phase = (p.phase || "").toLowerCase();
     var pipeline = phase === "under construction" || phase === "planned";
     var lines = [
@@ -836,6 +841,13 @@
       basemapSel.addEventListener("change", function () {
         state.basemap = basemapSel.value;
         state.baseSig = null;
+        refresh();
+      });
+    }
+    var statsCb = document.getElementById("comp-map-stats");
+    if (statsCb) {
+      statsCb.addEventListener("change", function () {
+        state.compact = !statsCb.checked;
         refresh();
       });
     }

@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Market Snapshot — Subtext</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="comp-map.js?v=6" defer></script>
 <style>
   @font-face {
     font-family: "Pragmatica";
@@ -54,7 +55,12 @@
   @page { size: letter; margin: 0; }
   @media print {
     body { background: #fff; }
-    .sheet { margin: 0; box-shadow: none; page-break-after: always; }
+    .sheet {
+      margin: 0; box-shadow: none; page-break-after: always;
+      /* Hard height so sub-pixel rounding can never spill a sheet onto a
+         third page; anything past the bottom is clipped instead. */
+      min-height: 0; height: 10.98in; overflow: hidden;
+    }
     .sheet:last-of-type { page-break-after: avoid; }
     .print-btn, #report-loading { display: none !important; }
   }
@@ -141,6 +147,13 @@
 
   /* ── Charts ── */
   .charts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .map-img {
+    display: block; width: auto; max-width: 100%;
+    max-height: 4.75in;  /* keeps supply band + map + comp table on one sheet */
+    margin: 0 auto;
+    border: 1px solid var(--beige-deep); border-radius: 6px;
+    background: var(--beige); min-height: 1in;
+  }
   .chart-card {
     border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px 6px;
   }
@@ -189,6 +202,10 @@
 <button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
 <div id="report-loading">Building market snapshot…</div>
 <div id="report-root"></div>
+<!-- Off-screen render target for comp-map.js; the finished map is copied
+     into the report as an <img>. -->
+<canvas id="comp-map-canvas" width="2800" height="2000"
+        style="position:absolute; left:-99999px; top:0;"></canvas>
 
 <script>
 "use strict";
@@ -290,7 +307,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }).join("") : "";
   const scorePct = quals && quals.evaluable > 0 ? Math.round((quals.passes / quals.evaluable) * 100) : null;
 
-  const compRows = comps.slice(0, 14).map((p) => `
+  const compRows = comps.slice(0, 12).map((p) => `
     <tr>
       <td>${esc(p.property_name || "(unnamed)")}</td>
       <td>${p.yearBuilt ?? "—"}</td>
@@ -358,6 +375,12 @@ document.addEventListener("DOMContentLoaded", async () => {
       </div>
     </div>
 
+    ${anchorRows.length ? `
+    <div class="sec">Enrollment Trend — ${esc(anchorRows[0].university_name)}</div>
+    <div class="chart-card">
+      <div class="chart-box"><canvas id="ch-enr"></canvas></div>
+    </div>` : ""}
+
     <div class="foot">
       <span>Subtext Living — Market Snapshot · ${esc(M.anchor_university)}</span>
       <span>Page 1 of 2</span>
@@ -373,13 +396,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="kpi"><div class="kpi-label">Planned</div><div class="kpi-value">${fmtInt(M.beds_planned)}</div><div class="kpi-sub">permitted / announced</div></div>
     </div>
 
-    ${anchorRows.length ? `
-    <div class="sec">Enrollment Trend — ${esc(anchorRows[0].university_name)}</div>
-    <div class="chart-card">
-      <div class="chart-box chart-box-tall"><canvas id="ch-enr"></canvas></div>
-    </div>` : ""}
+    <div class="sec">Competitive Set Map</div>
+    <img id="report-comp-map" class="map-img" alt="Competitive set map (rendering…)">
 
-    <div class="sec">Competitive Set${comps.length > 14 ? ` (top 14 of ${comps.length} by year built)` : ""}</div>
+    <div class="sec">Competitive Set${comps.length > 12 ? ` (top 12 of ${comps.length} by year built)` : ""}</div>
     <table>
       <thead><tr>
         <th>Property</th><th>Built</th><th>Beds</th><th>Mi</th>
@@ -445,6 +465,32 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   drawVsBench("ch-rent", "avg_rent_per_bed", (v) => "$" + Math.round(v).toLocaleString(), false);
   drawVsBench("ch-prelease", "prelease", (v) => Math.round(v * 100) + "%", true);
+
+  // ── Competitive Set Map — rendered by comp-map.js into the off-screen
+  // canvas, then copied into the report as an image. comp-map.js reads
+  // these globals (normally provided by market.js).
+  window.MARKET = M;
+  window.PROPERTIES = props;
+  window.CAMPUSES = (T.campus_locations || []).filter((c) => c.market_key === marketKey);
+  window.compSelection = new Set(comps.map((p) => p.property_key));
+  const PHASE_STYLES = {
+    "stable":             { shape: "diamond",  color: "#16352e", label: "Stabilized" },
+    "lease up":           { shape: "square",   color: "#c1d100", label: "Lease Up" },
+    "under construction": { shape: "triangle", color: "#a95818", label: "Under Construction" },
+    "planned":            { shape: "pentagon", color: "#5a544f", label: "Planned" },
+  };
+  window.phaseStyle = (phase) =>
+    PHASE_STYLES[(phase || "").toLowerCase()] || { shape: "circle", color: "#b6b1ab", label: "Unknown" };
+
+  (async () => {
+    try {
+      if (!window.CompMap || comps.length === 0) return;
+      await window.CompMap.refresh();
+      const mapCanvas = document.getElementById("comp-map-canvas");
+      const img = document.getElementById("report-comp-map");
+      if (mapCanvas && img) img.src = mapCanvas.toDataURL("image/png");
+    } catch (e) { /* map is optional — leave the placeholder */ }
+  })();
 
   if (anchorRows.length) {
     const el = document.getElementById("ch-enr");

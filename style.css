@@ -1245,10 +1245,19 @@ h1, h2, h3, .serif {
   background: var(--slate);
   border-color: var(--slate);
 }
+/* Scale the displayed map to fit the viewport height so the whole map is
+   visible without scrolling; the canvas itself stays 2800×2000 so the
+   downloaded PNG remains print-crisp. */
+.comp-map-stage {
+  display: flex;
+  justify-content: center;
+}
 .comp-map-stage canvas {
   display: block;
-  width: 100%;
+  width: auto;
   height: auto;
+  max-width: 100%;
+  max-height: 72vh;
   border: 1px solid var(--beige-deep);
   border-radius: var(--radius);
   background: var(--bg);

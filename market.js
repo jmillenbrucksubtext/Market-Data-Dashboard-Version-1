@@ -37,6 +37,7 @@ let propSortStates = {
 let map = null;
 let propertyMarkers = new Map();  // market map: property_key → leaflet marker
 let compSelection = new Set();  // property_keys currently checked on Comps tab
+let compSelectionInit = false;  // defaults applied once; user edits persist after
 let compCharts = {};  // canvas id → Chart instance
 
 document.addEventListener("DOMContentLoaded", async () => {
@@ -745,10 +746,12 @@ function bindPropertySort() {
 function renderProperties() {
   const compSet = PROPERTIES.filter((p) => p.is_comp_set);
 
-  // First render initializes selection to all comps. Subsequent renders
-  // (sort changes etc.) preserve user selection.
-  if (compSelection.size === 0 && compSet.length > 0) {
+  // First render defaults the selection to the standard comp set. After
+  // that, user edits (including a deliberate Clear) persist across
+  // re-renders such as sort changes.
+  if (!compSelectionInit) {
     compSet.forEach((p) => compSelection.add(p.property_key));
+    compSelectionInit = true;
   }
 
   renderPropertyTable({
@@ -758,15 +761,25 @@ function renderProperties() {
     emptyMsg: "No purpose-built properties listed for this market.",
     label: "purpose-built propert",
   });
+  // Every property in the market is selectable as a comp; the standard
+  // comp set (walkable + built ≥2020 or top-rent) is just the default.
   renderPropertyTable({
     tableId: "properties-comps",
     countId: "prop-count-comps",
-    rows: compSet,
-    emptyMsg: "No comp-set properties — no walkable stable/lease-up properties on file.",
-    label: "comp-set propert",
+    rows: PROPERTIES,
+    emptyMsg: "No purpose-built properties listed for this market.",
+    label: "propert",
     selectable: true,
   });
   bindCompSelectButtons();
+}
+
+function updateCompCountLabel() {
+  const countEl = document.getElementById("prop-count-comps");
+  if (countEl) {
+    countEl.textContent =
+      `${compSelection.size} of ${PROPERTIES.length} properties selected as comps`;
+  }
 }
 
 function bindCompSelectButtons() {
@@ -774,10 +787,12 @@ function bindCompSelectButtons() {
     if (btn.dataset.boundOnce) return;
     btn.dataset.boundOnce = "1";
     btn.addEventListener("click", () => {
-      const compSet = PROPERTIES.filter((p) => p.is_comp_set);
       compSelection.clear();
       if (btn.dataset.compsSelect === "all") {
-        compSet.forEach((p) => compSelection.add(p.property_key));
+        PROPERTIES.forEach((p) => compSelection.add(p.property_key));
+      } else if (btn.dataset.compsSelect === "default") {
+        PROPERTIES.filter((p) => p.is_comp_set)
+          .forEach((p) => compSelection.add(p.property_key));
       }
       renderProperties();
       renderCompCharts();
@@ -828,7 +843,9 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
     <tr data-pk="${p.property_key}">
       ${checkboxCell}
       <td class="property-cell">
-        ${escapeHtml(p.property_name || "(unnamed)")}
+        ${escapeHtml(p.property_name || "(unnamed)")}${selectable && p.is_comp_set
+          ? ' <span class="comp-pill" title="In the standard comp set">Comp</span>'
+          : ""}
         <span class="city-state">${escapeHtml(p.street1 || "")}</span>
       </td>
       <td>${phasePill(p.phase)}</td>
@@ -851,6 +868,7 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
       cb.addEventListener("change", () => {
         const pk = Number(cb.dataset.pk);
         if (cb.checked) compSelection.add(pk); else compSelection.delete(pk);
+        updateCompCountLabel();
         // Highlight selected pin on the comps map and refresh charts.
         renderCompCharts();
       });
@@ -881,7 +899,11 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
     });
   });
 
-  if (countEl) countEl.textContent = `${rows.length} ${label}${rows.length === 1 ? "y" : "ies"}`;
+  if (selectable) {
+    updateCompCountLabel();
+  } else if (countEl) {
+    countEl.textContent = `${rows.length} ${label}${rows.length === 1 ? "y" : "ies"}`;
+  }
 }
 
 /* ----- Tabs (Market / Comps) --------------------------------- */
@@ -1284,7 +1306,7 @@ function marketYearlySeries(marketKey, valueKey) {
 
 function renderCompCharts() {
   renderCompDetailTables();
-  const selected = PROPERTIES.filter((p) => p.is_comp_set && compSelection.has(p.property_key));
+  const selected = PROPERTIES.filter((p) => compSelection.has(p.property_key));
   const totalBeds = selected.reduce((s, p) => s + (p.beds || 0), 0);
   const selectedKeys = new Set(selected.map((p) => p.property_key));
   const summary = document.getElementById("comp-perf-summary");
@@ -1588,7 +1610,7 @@ function renderCompDetailTables() {
   // Rows ordered by year built, newest first — matches the comp-set
   // properties table's default sort.
   const selected = PROPERTIES
-    .filter((p) => p.is_comp_set && compSelection.has(p.property_key))
+    .filter((p) => compSelection.has(p.property_key))
     .sort((a, b) => (b.yearBuilt ?? -Infinity) - (a.yearBuilt ?? -Infinity));
   const selectedKeys = new Set(selected.map((p) => p.property_key));
   const propsByKey = new Map(selected.map((p) => [p.property_key, p]));

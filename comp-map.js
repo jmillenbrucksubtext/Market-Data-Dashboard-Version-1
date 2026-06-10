@@ -702,11 +702,11 @@
     if (!canvas || typeof PROPERTIES === "undefined" || !MARKET) return;
 
     var selected = PROPERTIES.filter(function (p) {
-      return p.is_comp_set && compSelection.has(p.property_key) &&
+      return compSelection.has(p.property_key) &&
              p.latitude != null && p.longitude != null;
     });
     var skipped = PROPERTIES.filter(function (p) {
-      return p.is_comp_set && compSelection.has(p.property_key) &&
+      return compSelection.has(p.property_key) &&
              (p.latitude == null || p.longitude == null);
     }).length;
 

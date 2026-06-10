@@ -812,7 +812,9 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
     }
   });
 
-  const colspan = selectable ? 11 : 10;
+  // Both tables land on 10 columns: the selectable comp table swaps the
+  // Concessions column for the checkbox column.
+  const colspan = 10;
   const countEl = document.getElementById(countId);
   if (source.length === 0) {
     tbody.innerHTML = `<tr><td colspan="${colspan}" class="empty-state">${emptyMsg}</td></tr>`;
@@ -855,7 +857,7 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
       <td class="num">${fmtPct(p.prelease)}</td>
       <td class="num">${fmtUsd(p.avg_rent)}</td>
       <td class="num">${p.avg_rent_per_sf != null ? "$" + fmtNum(p.avg_rent_per_sf, 2) : "—"}</td>
-      <td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">—</span>'}</td>
+      ${selectable ? "" : `<td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">—</span>'}</td>`}
       <td class="num">${fmtNum(p.milesToClosestCampus, 1)}</td>
     </tr>`;
   }).join("");

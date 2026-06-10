@@ -115,42 +115,150 @@
     link.click();
   }
 
-  /* ----- Table → CSV downloads (Competitive Set tab) ------------- */
+  /* ----- Table to PNG downloads (Competitive Set tab) ------------
+     The table is redrawn onto a canvas in the dashboard's card style:
+     everest title band, beige header row, the detail tables' butter
+     body tint, bold footer with growth coloring. */
 
-  function tableToCsv(table) {
-    var lines = [];
-    table.querySelectorAll("tr").forEach(function (tr) {
-      if (tr.querySelector(".empty-state")) return;
-      var cells = [];
-      tr.querySelectorAll("th, td").forEach(function (cell) {
-        // The checkbox column is a UI control, not data
-        if (cell.classList.contains("comp-select-cell") ||
-            cell.classList.contains("comp-select-col")) return;
-        var text = cell.textContent.replace(/\s+/g, " ").trim();
-        cells.push('"' + text.replace(/"/g, '""') + '"');
+  function tableRows(table) {
+    var rows = [];
+    ["thead", "tbody", "tfoot"].forEach(function (sec) {
+      var el = table.querySelector(sec);
+      if (!el) return;
+      el.querySelectorAll("tr").forEach(function (tr) {
+        if (tr.querySelector(".empty-state")) return;
+        var cells = [];
+        tr.querySelectorAll("th, td").forEach(function (cell) {
+          // The checkbox column is a UI control, not data
+          if (cell.classList.contains("comp-select-cell") ||
+              cell.classList.contains("comp-select-col")) return;
+          cells.push({
+            text: cell.textContent.replace(/\s+/g, " ").trim(),
+            span: Math.max(1, Number(cell.getAttribute("colspan")) || 1),
+            up: cell.classList.contains("growth-up"),
+            down: cell.classList.contains("growth-down"),
+          });
+        });
+        if (cells.length) rows.push({ section: sec, agg: tr.classList.contains("agg-row"), cells: cells });
       });
-      if (cells.length) lines.push(cells.join(","));
     });
-    return "\uFEFF" + lines.join("\r\n");  // BOM so Excel reads UTF-8
+    return rows;
   }
 
-  function downloadCsv(table, title) {
-    var blob = new Blob([tableToCsv(table)], { type: "text/csv;charset=utf-8" });
+  function downloadTablePng(table, title) {
+    var rows = tableRows(table);
+    if (rows.length === 0) return;
+    var S = 2;  // render at 2x for crispness
+    var padX = 12 * S, rowH = 32 * S, bandH = 50 * S, margin = 20 * S;
+    var fonts = {
+      head: "700 " + 11 * S + "px 'Pragmatica', sans-serif",
+      body: "400 " + 12 * S + "px 'Pragmatica', sans-serif",
+      bodyBold: "700 " + 12 * S + "px 'Pragmatica', sans-serif",
+      band: "700 " + 17 * S + "px 'Mencken Std', Georgia, serif",
+      bandSub: "600 " + 10 * S + "px 'Pragmatica', sans-serif",
+    };
+
+    var meas = document.createElement("canvas").getContext("2d");
+    var nCols = 0;
+    rows.forEach(function (r) {
+      var n = 0;
+      r.cells.forEach(function (c) { n += c.span; });
+      nCols = Math.max(nCols, n);
+    });
+    var colW = new Array(nCols).fill(44 * S);
+    rows.forEach(function (r) {
+      var ci = 0;
+      r.cells.forEach(function (c) {
+        if (c.span === 1) {
+          meas.font = r.section === "thead" ? fonts.head
+            : (r.section === "tfoot" || ci === 0) ? fonts.bodyBold : fonts.body;
+          var w = Math.min(meas.measureText(c.text).width + padX * 2, 480 * S);
+          colW[ci] = Math.max(colW[ci], w);
+        }
+        ci += c.span;
+      });
+    });
+    var tableW = colW.reduce(function (a, b) { return a + b; }, 0);
+
+    var out = document.createElement("canvas");
+    out.width = tableW + margin * 2;
+    out.height = bandH + rows.length * rowH + margin * 2;
+    var ctx = out.getContext("2d");
+
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, out.width, out.height);
+
+    // Title band — everest, white serif title, market name on the right
+    ctx.fillStyle = "#16352e";
+    ctx.fillRect(margin, margin, tableW, bandH);
+    ctx.fillStyle = "#ffffff";
+    ctx.font = fonts.band;
+    ctx.fillText(title, margin + padX, margin + bandH / 2 + 6 * S);
+    var marketEl = document.getElementById("market-name");
+    var market = marketEl ? marketEl.textContent.trim() : "";
+    if (market && market !== "—") {
+      ctx.font = fonts.bandSub;
+      ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
+      var mw = ctx.measureText(market.toUpperCase()).width;
+      ctx.fillText(market.toUpperCase(), margin + tableW - padX - mw, margin + bandH / 2 + 4 * S);
+    }
+
+    var y = margin + bandH;
+    rows.forEach(function (r) {
+      ctx.fillStyle = r.section === "thead" ? "#ede5cf"
+        : r.section === "tfoot" ? (r.agg ? "#f1ecdd" : "#ffffff")
+        : "#fbf5d9";
+      ctx.fillRect(margin, y, tableW, rowH);
+      if (r.section === "tbody") {
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
+        ctx.lineWidth = S;
+        ctx.beginPath();
+        ctx.moveTo(margin, y + rowH);
+        ctx.lineTo(margin + tableW, y + rowH);
+        ctx.stroke();
+      }
+      if (r.section === "tfoot" && r.agg) {
+        ctx.strokeStyle = "#2b2825";
+        ctx.lineWidth = 1.5 * S;
+        ctx.beginPath();
+        ctx.moveTo(margin, y);
+        ctx.lineTo(margin + tableW, y);
+        ctx.stroke();
+      }
+
+      var x = margin, ci = 0;
+      var baseline = y + rowH / 2 + 4.5 * S;
+      r.cells.forEach(function (c) {
+        var w = 0;
+        for (var k = 0; k < c.span; k++) w += colW[ci + k] || 0;
+        var left = ci === 0;  // first column (and colspan labels) read left
+        ctx.font = r.section === "thead" ? fonts.head
+          : (r.section === "tfoot" || left) ? fonts.bodyBold : fonts.body;
+        ctx.fillStyle = c.up ? "#16352e" : c.down ? "#a95818"
+          : (r.section === "tfoot" && !r.agg && !left) ? "#5a544f" : "#2b2825";
+        var maxW = w - padX * 2;
+        var tw = Math.min(ctx.measureText(c.text).width, maxW);
+        ctx.fillText(c.text, left ? x + padX : x + w - padX - tw, baseline, maxW);
+        x += w;
+        ci += c.span;
+      });
+      y += rowH;
+    });
+
     var link = document.createElement("a");
-    link.download = pagePrefix() + slug(title) + "-" + todayStamp() + ".csv";
-    link.href = URL.createObjectURL(blob);
+    link.download = pagePrefix() + slug(title) + "-" + todayStamp() + ".png";
+    link.href = out.toDataURL("image/png");
     link.click();
-    setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
   }
 
   function makeTableBtn(table, getTitle) {
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "chart-dl-btn table-dl-btn";
-    btn.title = "Download table as CSV";
-    btn.setAttribute("aria-label", "Download table as CSV");
+    btn.title = "Download table as image";
+    btn.setAttribute("aria-label", "Download table as image");
     btn.innerHTML = ICON;
-    btn.addEventListener("click", function () { downloadCsv(table, getTitle()); });
+    btn.addEventListener("click", function () { downloadTablePng(table, getTitle()); });
     return btn;
   }
 

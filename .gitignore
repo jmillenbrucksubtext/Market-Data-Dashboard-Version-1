@@ -33,3 +33,7 @@ desktop.ini
 
 # Schema-discovery sidecars (errors per failed CSV)
 b.schema/output/*.error.txt
+
+# Local-only easter eggs / experiments. The weekly refresh pushes with
+# `git add -A`, so anything meant to stay off the live site must be ignored.
+*.local.js

@@ -26,3 +26,6 @@ venv/
 
 # Project docs (also not served)
 README.md
+
+# Local-only easter eggs / experiments (also gitignored)
+*.local.js

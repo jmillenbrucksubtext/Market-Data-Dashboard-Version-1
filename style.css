@@ -100,6 +100,24 @@ html, body {
 /* All numerals tabular for clean alignment in tables/charts */
 body { font-variant-numeric: tabular-nums; }
 
+/* =============================================================
+   Laptop fit - the layout is designed for a ~1600px-wide desktop
+   viewport. On smaller screens (laptops, especially Windows ones
+   running 125-150% display scaling) we zoom the whole page down in
+   steps so the effective layout width stays near the design width
+   and the full dashboard fits on screen. Media queries always
+   evaluate against the REAL viewport, so the column-collapse
+   breakpoints further down are expressed in real px too (original
+   effective breakpoint x the zoom factor active at that width).
+   Below 760px (phones) zoom returns to 1 and the mobile stacking
+   rules take over.
+   ============================================================= */
+@media screen and (min-width: 761px) and (max-width: 1550px) { body { zoom: 0.95; } }
+@media screen and (min-width: 761px) and (max-width: 1450px) { body { zoom: 0.88; } }
+@media screen and (min-width: 761px) and (max-width: 1350px) { body { zoom: 0.82; } }
+@media screen and (min-width: 761px) and (max-width: 1250px) { body { zoom: 0.75; } }
+@media screen and (min-width: 761px) and (max-width: 1150px) { body { zoom: 0.70; } }
+
 /* Headings use the serif masterbrand face */
 h1, h2, h3, .serif {
   font-family: "Mencken Std", Georgia, "Times New Roman", serif;
@@ -519,7 +537,7 @@ h1, h2, h3, .serif {
   margin-bottom: 16px;
 }
 
-@media (max-width: 1100px) {
+@media (max-width: 770px) { /* effective 1100px under 0.70 zoom */
   .kpi-row { grid-template-columns: repeat(2, 1fr); }
   .grid-2 { grid-template-columns: 1fr; }
 }
@@ -951,7 +969,7 @@ h1, h2, h3, .serif {
 }
 .market-sidebar .card { margin-bottom: 0; }
 
-@media (max-width: 1100px) {
+@media (max-width: 770px) { /* effective 1100px under 0.70 zoom */
   .market-grid {
     grid-template-columns: minmax(0, 1fr);
   }
@@ -988,22 +1006,22 @@ h1, h2, h3, .serif {
 .kpi-row-6 {
   grid-template-columns: repeat(6, 1fr);
 }
-@media (max-width: 1300px) { .kpi-row-6 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 910px) { .kpi-row-6 { grid-template-columns: repeat(3, 1fr); } } /* effective 1300px */
 @media (max-width: 760px)  { .kpi-row-6 { grid-template-columns: repeat(2, 1fr); } }
 
 .kpi-row-7 {
   grid-template-columns: repeat(7, 1fr);
 }
-@media (max-width: 1500px) { .kpi-row-7 { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 1100px) { .kpi-row-7 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 1050px) { .kpi-row-7 { grid-template-columns: repeat(4, 1fr); } } /* effective 1500px */
+@media (max-width: 770px)  { .kpi-row-7 { grid-template-columns: repeat(3, 1fr); } } /* effective 1100px */
 @media (max-width: 760px)  { .kpi-row-7 { grid-template-columns: repeat(2, 1fr); } }
 
 /* 9-card layout wraps to 2 rows (5+4) on most screens. */
 .kpi-row-9 {
   grid-template-columns: repeat(5, 1fr);
 }
-@media (max-width: 1300px) { .kpi-row-9 { grid-template-columns: repeat(4, 1fr); } }
-@media (max-width: 1000px) { .kpi-row-9 { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 910px) { .kpi-row-9 { grid-template-columns: repeat(4, 1fr); } } /* effective 1300px */
+@media (max-width: 760px) { .kpi-row-9 { grid-template-columns: repeat(3, 1fr); } } /* effective 1000px */
 @media (max-width: 760px)  { .kpi-row-9 { grid-template-columns: repeat(2, 1fr); } }
 
 /* Map ---------------------------------------------------------- */
@@ -1322,7 +1340,7 @@ h1, h2, h3, .serif {
 .performance-section { background: transparent; border: none; box-shadow: none; }
 .performance-section > .card-header { padding-left: 0; padding-right: 0; }
 .performance-section > .card-body { padding: 0; }
-@media (max-width: 900px) {
+@media (max-width: 760px) { /* effective 900px under 0.70 zoom */
   .perf-grid { grid-template-columns: 1fr; }
   .perf-chart-wide { grid-column: auto; }
   .performance-section .card-header { flex-direction: column; }
@@ -2150,7 +2168,7 @@ h1, h2, h3, .serif {
 .comp-detail-table .growth-up { color: var(--good); }
 .comp-detail-table .growth-down { color: var(--bad); }
 
-@media (max-width: 1100px) {
+@media (max-width: 770px) { /* effective 1100px under 0.70 zoom */
   .comp-tables-grid { grid-template-columns: 1fr; }
 }
 
@@ -2578,7 +2596,7 @@ h1, h2, h3, .serif {
 .pill-fail { background: var(--bad-soft);  color: var(--bad); }
 .pill-na   { background: var(--slate-15);  color: var(--slate-70); }
 
-@media (max-width: 1000px) {
+@media (max-width: 760px) { /* effective 1000px under 0.70 zoom */
   .dictionary-layout {
     grid-template-columns: 1fr;
   }

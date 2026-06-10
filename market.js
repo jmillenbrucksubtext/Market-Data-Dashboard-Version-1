@@ -1601,10 +1601,20 @@ function renderCompDetailTables() {
       if (m >= 1 && m <= 12) anchorMonth = MONTH_NAMES[m - 1];
     }
   }
-  const titleEl1 = document.getElementById("comp-table-prelease-title");
-  const titleEl2 = document.getElementById("comp-table-occupancy-title");
-  if (titleEl1) titleEl1.textContent = anchorMonth ? `Pre-lease (${anchorMonth})` : "Pre-lease";
-  if (titleEl2) titleEl2.textContent = anchorMonth ? `Occupancy (${anchorMonth})` : "Occupancy";
+  // Replace only the text node — chart-download.js appends a CSV download
+  // button into these title bands, and textContent would wipe it.
+  const setTitleText = (el, text) => {
+    if (!el) return;
+    if (el.firstChild && el.firstChild.nodeType === Node.TEXT_NODE) {
+      el.firstChild.nodeValue = text;
+    } else {
+      el.insertBefore(document.createTextNode(text), el.firstChild);
+    }
+  };
+  setTitleText(document.getElementById("comp-table-prelease-title"),
+    anchorMonth ? `Pre-lease (${anchorMonth})` : "Pre-lease");
+  setTitleText(document.getElementById("comp-table-occupancy-title"),
+    anchorMonth ? `Occupancy (${anchorMonth})` : "Occupancy");
 
   if (selected.length === 0) {
     ["comp-table-rates", "comp-table-rent-growth", "comp-table-prelease", "comp-table-occupancy"].forEach((id) => {

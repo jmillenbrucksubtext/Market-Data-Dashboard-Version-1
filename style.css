@@ -1181,6 +1181,22 @@ h1, h2, h3, .serif {
 .chart-dl-btn svg { display: block; }
 @media print { .chart-dl-btn { display: none; } }
 
+/* Table CSV download buttons. Inside the comp detail tables' green title
+   band the icon inverts to stay legible. */
+.comp-table-title { position: relative; }
+.comp-table-title .table-dl-btn {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: rgba(255, 255, 255, 0.65);
+}
+.comp-table-title .table-dl-btn:hover {
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+}
+.comps-table-actions .table-dl-btn { align-self: center; }
+
 /* Comp Map Generator (Comps tab) -------------------------------- */
 .comp-map-actions {
   display: flex;

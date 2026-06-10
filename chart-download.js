@@ -115,6 +115,64 @@
     link.click();
   }
 
+  /* ----- Table → CSV downloads (Competitive Set tab) ------------- */
+
+  function tableToCsv(table) {
+    var lines = [];
+    table.querySelectorAll("tr").forEach(function (tr) {
+      if (tr.querySelector(".empty-state")) return;
+      var cells = [];
+      tr.querySelectorAll("th, td").forEach(function (cell) {
+        // The checkbox column is a UI control, not data
+        if (cell.classList.contains("comp-select-cell") ||
+            cell.classList.contains("comp-select-col")) return;
+        var text = cell.textContent.replace(/\s+/g, " ").trim();
+        cells.push('"' + text.replace(/"/g, '""') + '"');
+      });
+      if (cells.length) lines.push(cells.join(","));
+    });
+    return "\uFEFF" + lines.join("\r\n");  // BOM so Excel reads UTF-8
+  }
+
+  function downloadCsv(table, title) {
+    var blob = new Blob([tableToCsv(table)], { type: "text/csv;charset=utf-8" });
+    var link = document.createElement("a");
+    link.download = pagePrefix() + slug(title) + "-" + todayStamp() + ".csv";
+    link.href = URL.createObjectURL(blob);
+    link.click();
+    setTimeout(function () { URL.revokeObjectURL(link.href); }, 5000);
+  }
+
+  function makeTableBtn(table, getTitle) {
+    var btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "chart-dl-btn table-dl-btn";
+    btn.title = "Download table as CSV";
+    btn.setAttribute("aria-label", "Download table as CSV");
+    btn.innerHTML = ICON;
+    btn.addEventListener("click", function () { downloadCsv(table, getTitle()); });
+    return btn;
+  }
+
+  function attachTables() {
+    // Comp-set Properties: button joins the Select all / Clear actions
+    var actions = document.querySelector(".comps-table-actions");
+    var propsTable = document.getElementById("properties-comps");
+    if (actions && propsTable && !actions.querySelector(".table-dl-btn")) {
+      actions.appendChild(makeTableBtn(propsTable, function () { return "Comp-set Properties"; }));
+    }
+    // The four detail tables: button in each card's green title band.
+    // Titles are read at click time — some update with the data year.
+    document.querySelectorAll(".comp-table-card").forEach(function (card) {
+      var titleEl = card.querySelector(".comp-table-title");
+      var table = card.querySelector("table");
+      if (!titleEl || !table || titleEl.querySelector(".table-dl-btn")) return;
+      titleEl.appendChild(makeTableBtn(table, function () {
+        return titleEl.textContent.trim();
+      }));
+    });
+  }
+
   function attach() {
     document.querySelectorAll("figure.perf-chart").forEach(function (figure) {
       var caption = figure.querySelector(".perf-title");
@@ -129,6 +187,7 @@
       btn.addEventListener("click", function () { exportChart(figure); });
       caption.appendChild(btn);
     });
+    attachTables();
   }
 
   if (document.readyState === "loading") {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=37">
+  <link rel="stylesheet" href="style.css?v=38">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -345,7 +345,7 @@
             <header class="card-header">
               <div>
                 <h2>Competitive Set Map</h2>
-                <p id="comp-map-summary">Maps the comps selected in the table below. Drag a callout to reposition it, then download.</p>
+                <p id="comp-map-summary">Maps the comps selected in the table below. Zoom with +/−, drag the map to pan, drag callouts to reposition, then download.</p>
               </div>
               <div class="comp-map-actions">
                 <label class="comp-map-toggle" title="Untick to shrink callouts to name + address only"><input type="checkbox" id="comp-map-stats" checked> Property stats</label>
@@ -356,6 +356,11 @@
                   <option value="street">Street</option>
                   <option value="light">Light</option>
                 </select>
+                <span class="comp-map-zoom-group" role="group" aria-label="Zoom">
+                  <button type="button" class="comps-select-btn comp-map-zoom-btn" id="comp-map-zoom-out" title="Zoom out">−</button>
+                  <button type="button" class="comps-select-btn comp-map-zoom-btn" id="comp-map-zoom-in" title="Zoom in">+</button>
+                  <button type="button" class="comps-select-btn" id="comp-map-zoom-home" title="Reset zoom and centering">Reset view</button>
+                </span>
                 <button type="button" class="comps-select-btn" id="comp-map-reset">Reset layout</button>
                 <button type="button" class="comps-select-btn comp-map-download-btn" id="comp-map-download">Download PNG</button>
               </div>
@@ -526,7 +531,7 @@
   </div>
 
   <script src="market.js?v=31" defer></script>
-  <script src="comp-map.js?v=7" defer></script>
+  <script src="comp-map.js?v=8" defer></script>
   <script src="chart-download.js?v=3" defer></script>
 </body>
 </html>

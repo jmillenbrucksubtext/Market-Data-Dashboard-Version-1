@@ -2190,6 +2190,20 @@ h1, h2, h3, .serif {
   border-color: var(--lime);
 }
 
+/* Zoom controls on the Competitive Set Map */
+.comp-map-zoom-group {
+  display: inline-flex;
+  gap: 4px;
+  align-items: center;
+}
+.comp-map-zoom-btn {
+  min-width: 30px;
+  padding: 5px 0;
+  font-size: 14px;
+  line-height: 1;
+  text-align: center;
+}
+
 /* Comp-set membership badge in the properties table */
 .comp-pill {
   display: inline-block;

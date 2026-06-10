@@ -61,6 +61,9 @@
     basemap: "satellite",
     rings: true,           // 0.5/1/2-mile rings around the anchor campus
     compact: false,        // true = callouts show name + address only
+    zoomDelta: 0,          // user zoom steps relative to the auto-fit zoom
+    center: null,          // {lat, lng} pan override; null = auto-fit center
+    panDrag: null,         // transient background drag {sx, sy, dx, dy}
     view: null,            // { z, originX, originY }
     base: null,            // offscreen canvas: tiles + boundary
     baseSig: null,
@@ -86,6 +89,11 @@
     s = Math.min(Math.max(s, -0.9999), 0.9999);
     return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * TILE * Math.pow(2, z);
   }
+  function unprojectLng(x, z) { return (x / (TILE * Math.pow(2, z))) * 360 - 180; }
+  function unprojectLat(y, z) {
+    var n = Math.PI - (2 * Math.PI * y) / (TILE * Math.pow(2, z));
+    return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
 
   function computeView(latLngs) {
     var latN = -90, latS = 90, lngW = 180, lngE = -180;
@@ -101,8 +109,19 @@
       if (spanX <= fitW && spanY <= fitH) break;
       z--;
     }
-    var cx = (worldX(lngW, z) + worldX(lngE, z)) / 2;
-    var cy = (worldY(latN, z) + worldY(latS, z)) / 2;
+    // User zoom steps apply on top of the auto-fit zoom. Markers and
+    // callouts are drawn at fixed pixel sizes, so zooming only rescales
+    // the basemap underneath them.
+    var maxZ = TILE_SOURCES[state.basemap].maxZoom;
+    z = Math.min(Math.max(z + state.zoomDelta, 3), maxZ);
+    var cx, cy;
+    if (state.center) {
+      cx = worldX(state.center.lng, z);
+      cy = worldY(state.center.lat, z);
+    } else {
+      cx = (worldX(lngW, z) + worldX(lngE, z)) / 2;
+      cy = (worldY(latN, z) + worldY(latS, z)) / 2;
+    }
     return { z: z, originX: cx - W / 2, originY: cy - H / 2 };
   }
 
@@ -649,6 +668,16 @@
     }
     if (!state.base) return;  // tiles still loading; draw() re-runs when done
 
+    // During a background pan drag, shift the whole composition live and
+    // re-fetch tiles for the new center on release.
+    var pd = state.panDrag;
+    if (pd) {
+      ctx.fillStyle = "#f7f1e3";
+      ctx.fillRect(0, 0, W, H);
+      ctx.save();
+      ctx.translate(pd.dx, pd.dy);
+    }
+
     ctx.drawImage(state.base, 0, 0);
 
     if (state.rings) drawRings(ctx);
@@ -690,6 +719,8 @@
       if (rect) drawCallout(ctx, p, rect);
     });
 
+    if (pd) ctx.restore();
+
     drawTitleCard(ctx);
     drawLegend(ctx);
     drawAttribution(ctx);
@@ -716,7 +747,7 @@
         ? "No comps selected. Tick checkboxes in the table above to populate the map."
         : selected.length + " comp" + (selected.length === 1 ? "" : "s") + " mapped" +
           (skipped ? " · " + skipped + " missing coordinates" : "") +
-          " · drag a callout to reposition it";
+          " · drag a callout to reposition · drag the map to pan";
     }
 
     state.props = selected;
@@ -788,8 +819,21 @@
           return;
         }
       }
+      // No callout under the pointer → drag the map itself to pan
+      if (state.props.length === 0 || !state.base) return;
+      state.panDrag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0 };
+      canvas.classList.add("dragging");
+      canvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
     });
     canvas.addEventListener("pointermove", function (e) {
+      if (state.panDrag) {
+        var pp = canvasPoint(canvas, e);
+        state.panDrag.dx = pp.x - state.panDrag.sx;
+        state.panDrag.dy = pp.y - state.panDrag.sy;
+        draw();
+        return;
+      }
       if (!state.drag) return;
       var pt = canvasPoint(canvas, e);
       var rect = state.placements.get(state.drag.pk);
@@ -801,6 +845,31 @@
       draw();
     });
     function endDrag(e) {
+      if (state.panDrag) {
+        var pd = state.panDrag;
+        state.panDrag = null;
+        canvas.classList.remove("dragging");
+        if (e.pointerId != null && canvas.hasPointerCapture(e.pointerId)) {
+          canvas.releasePointerCapture(e.pointerId);
+        }
+        if (pd.dx || pd.dy) {
+          // Commit: new center where the drag left it, then re-fetch tiles.
+          // Manually-placed callouts ride along with the map.
+          var z = state.view.z;
+          state.center = {
+            lat: unprojectLat(state.view.originY + H / 2 - pd.dy, z),
+            lng: unprojectLng(state.view.originX + W / 2 - pd.dx, z),
+          };
+          state.placements.forEach(function (r) {
+            r.x += pd.dx; r.y += pd.dy;
+            clampRect(r);
+          });
+          refresh();
+        } else {
+          draw();
+        }
+        return;
+      }
       if (!state.drag) return;
       state.drag = null;
       canvas.classList.remove("dragging");
@@ -863,6 +932,28 @@
     if (resetBtn) {
       resetBtn.addEventListener("click", function () {
         state.placements = new Map();
+        refresh();
+      });
+    }
+
+    // Zoom steps re-render the basemap at a new tile zoom; markers and
+    // callouts are fixed-pixel so they never scale with the zoom level.
+    function nudgeZoom(d) {
+      var next = Math.min(4, Math.max(-4, state.zoomDelta + d));
+      if (next === state.zoomDelta) return;
+      state.zoomDelta = next;
+      refresh();
+    }
+    var zoomIn = document.getElementById("comp-map-zoom-in");
+    var zoomOut = document.getElementById("comp-map-zoom-out");
+    var zoomHome = document.getElementById("comp-map-zoom-home");
+    if (zoomIn) zoomIn.addEventListener("click", function () { nudgeZoom(1); });
+    if (zoomOut) zoomOut.addEventListener("click", function () { nudgeZoom(-1); });
+    if (zoomHome) {
+      zoomHome.addEventListener("click", function () {
+        if (state.zoomDelta === 0 && !state.center) return;
+        state.zoomDelta = 0;
+        state.center = null;
         refresh();
       });
     }

@@ -1580,7 +1580,11 @@ const MONTH_NAMES = [
 ];
 
 function renderCompDetailTables() {
-  const selected = PROPERTIES.filter((p) => p.is_comp_set && compSelection.has(p.property_key));
+  // Rows ordered by year built, newest first — matches the comp-set
+  // properties table's default sort.
+  const selected = PROPERTIES
+    .filter((p) => p.is_comp_set && compSelection.has(p.property_key))
+    .sort((a, b) => (b.yearBuilt ?? -Infinity) - (a.yearBuilt ?? -Infinity));
   const selectedKeys = new Set(selected.map((p) => p.property_key));
   const propsByKey = new Map(selected.map((p) => [p.property_key, p]));
 

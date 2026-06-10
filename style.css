@@ -2042,9 +2042,11 @@ h1, h2, h3, .serif {
 /* Competitive Set detail tables (Rates / Rent Growth / Pre-lease /
    Occupancy). Excel-style: dark header band, soft cream body cells, bold
    aggregate footer with growth rows. Each table sits in its own card. */
+/* Stacked full-width cards (was a 2-up grid with horizontal scrollbars) —
+   the whole table should be visible without scrolling sideways. */
 .comp-tables-grid {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 18px;
 }
 .comp-table-card {

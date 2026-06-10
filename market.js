@@ -1679,6 +1679,17 @@ function _growthClass(v) {
   return v >= 0 ? "growth-up" : "growth-down";
 }
 
+// Shared property-attribute columns (Built / Mi to Campus / Beds) shown on
+// every comp detail table, between the property name and the year columns.
+const COMP_META_HEAD = `<th class="num">Built</th><th class="num">Mi to Campus</th><th class="num">Beds</th>`;
+const COMP_META_COLS = 3;
+
+function compMetaCells(p) {
+  return `<td class="num">${fmtYear(p.yearBuilt)}</td>`
+       + `<td class="num">${fmtNum(p.milesToClosestCampus, 1)}</td>`
+       + `<td class="num">${fmtInt(p.beds)}</td>`;
+}
+
 function renderRatesTable(id, selected, propsByKey, lookup, years) {
   const table = document.getElementById(id);
   if (!table) return;
@@ -1686,12 +1697,14 @@ function renderRatesTable(id, selected, propsByKey, lookup, years) {
     <thead>
       <tr>
         <th class="property-cell">Property</th>
+        ${COMP_META_HEAD}
         ${years.map((y) => `<th class="num">${y}</th>`).join("")}
       </tr>
     </thead>`;
   const bodyRows = selected.map((p) => {
     return `<tr>
       <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${compMetaCells(p)}
       ${years.map((y) => {
         const r = lookup[p.property_key]?.[y];
         return `<td class="num">${_fmtUsd(r?.avg_rent_per_bed)}</td>`;
@@ -1724,19 +1737,19 @@ function renderRatesTable(id, selected, propsByKey, lookup, years) {
   const foot = `
     <tfoot>
       <tr class="agg-row">
-        <td class="property-cell">Avg Rent</td>
+        <td class="property-cell" colspan="${1 + COMP_META_COLS}">Avg Rent</td>
         ${years.map((y) => `<td class="num">${_fmtUsd(avgByYear[y])}</td>`).join("")}
       </tr>
       <tr class="growth-row">
-        <td class="property-cell">YoY Growth</td>
+        <td class="property-cell" colspan="${1 + COMP_META_COLS}">YoY Growth</td>
         ${yoyRow}
       </tr>
       <tr class="growth-row">
-        <td class="property-cell">2-Yr Growth</td>
+        <td class="property-cell" colspan="${1 + COMP_META_COLS}">2-Yr Growth</td>
         ${twoYrRow}
       </tr>
       <tr class="growth-row">
-        <td class="property-cell">3-Yr Growth</td>
+        <td class="property-cell" colspan="${1 + COMP_META_COLS}">3-Yr Growth</td>
         ${threeYrRow}
       </tr>
     </tfoot>`;
@@ -1751,6 +1764,7 @@ function renderRentGrowthTable(id, selected, propsByKey, lookup, years) {
     <thead>
       <tr>
         <th class="property-cell">Property</th>
+        ${COMP_META_HEAD}
         ${years.map((y) => `<th class="num">${y}</th>`).join("")}
       </tr>
     </thead>`;
@@ -1768,6 +1782,7 @@ function renderRentGrowthTable(id, selected, propsByKey, lookup, years) {
     }).join("");
     return `<tr>
       <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${compMetaCells(p)}
       ${cells}
     </tr>`;
   }).join("");
@@ -1784,7 +1799,7 @@ function renderRentGrowthTable(id, selected, propsByKey, lookup, years) {
     + `<tbody>${bodyRows}</tbody>`
     + `<tfoot>
         <tr class="agg-row">
-          <td class="property-cell">Average Growth</td>
+          <td class="property-cell" colspan="${1 + COMP_META_COLS}">Average Growth</td>
           ${avgRow}
         </tr>
       </tfoot>`;
@@ -1797,12 +1812,14 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
     <thead>
       <tr>
         <th class="property-cell">Property</th>
+        ${COMP_META_HEAD}
         ${years.map((y) => `<th class="num">${y}</th>`).join("")}
       </tr>
     </thead>`;
   const bodyRows = selected.map((p) => {
     return `<tr>
       <td class="property-cell">${escapeHtml(p.property_name || "(unnamed)")}</td>
+      ${compMetaCells(p)}
       ${years.map((y) => {
         const r = lookup[p.property_key]?.[y];
         return `<td class="num">${_fmtPct0(r?.[field])}</td>`;
@@ -1831,15 +1848,15 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
     + `<tbody>${bodyRows}</tbody>`
     + `<tfoot>
         <tr class="agg-row">
-          <td class="property-cell">${aggLabel}</td>
+          <td class="property-cell" colspan="${1 + COMP_META_COLS}">${aggLabel}</td>
           ${years.map((y) => `<td class="num">${_fmtPct1(avgByYear[y])}</td>`).join("")}
         </tr>
         <tr class="growth-row">
-          <td class="property-cell">YoY Growth</td>
+          <td class="property-cell" colspan="${1 + COMP_META_COLS}">YoY Growth</td>
           ${yoyRow}
         </tr>
         <tr class="growth-row">
-          <td class="property-cell">2-Yr Growth</td>
+          <td class="property-cell" colspan="${1 + COMP_META_COLS}">2-Yr Growth</td>
           ${twoYrRow}
         </tr>
       </tfoot>`;

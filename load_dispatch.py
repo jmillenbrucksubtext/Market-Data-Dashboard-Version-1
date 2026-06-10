@@ -34,6 +34,7 @@ def _strip_tags(s: str) -> str:
     """Drop inline tags and collapse whitespace inside a headline."""
     s = re.sub(r"<[^>]+>", "", s)
     s = html.unescape(s)
+    s = s.replace("—", "-")  # house style: no em dashes in UI text
     return re.sub(r"\s+", " ", s).strip()
 
 
@@ -50,14 +51,14 @@ def fetch_dispatch_headlines(url: str = DISPATCH_URL) -> dict:
             raise RuntimeError(f"dispatch returned HTTP {r.status}")
         body = r.read().decode("utf-8", errors="replace")
 
-    # Title looks like "The Subtext Dispatch — May 18, 2026"; pull the date
+    # Title looks like "The Subtext Dispatch - May 18, 2026"; pull the date
     # half if present so the dashboard can show an issue label.
     issue = ""
     m = re.search(r"<title[^>]*>\s*([^<]+?)\s*</title>", body, re.I)
     if m:
         t = _strip_tags(m.group(1))
         # Keep only the part after the em dash if there is one.
-        for sep in (" — ", " – ", " - "):
+        for sep in (" - ", " – ", " - "):
             if sep in t:
                 issue = t.split(sep, 1)[1].strip()
                 break

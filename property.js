@@ -1,5 +1,5 @@
 /* =============================================================
-   Subtext Living — Property detail page
+   Subtext Living - Property detail page
    URL: property.html?id=<property_key>
    Reads:
      data.json         core (properties, scorecard, campus_locations)
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
   } catch (err) {
-    return showError(`Couldn't load data.json — ${err}`);
+    return showError(`Couldn't load data.json - ${err}`);
   }
 
   PROP = DATA.tables.properties.find((p) => p.property_key === propertyKey);
@@ -115,23 +115,23 @@ function setBackLink() {
 }
 
 function fmtPct(v, digits = 1) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return (v * 100).toFixed(digits) + "%";
 }
 function fmtInt(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_INT.format(Math.round(v));
 }
 function fmtUsd(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_USD.format(v);
 }
 function fmtNum(v, digits = 1) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return Number(v).toFixed(digits);
 }
 function fmtYear(v) {
-  if (v == null || isNaN(v) || v < 1800) return "—";
+  if (v == null || isNaN(v) || v < 1800) return "-";
   return String(v);
 }
 function escapeHtml(s) {
@@ -144,7 +144,7 @@ function escapeHtml(s) {
 
 function renderHeader() {
   document.getElementById("prop-name").textContent = PROP.property_name || "(unnamed)";
-  document.title = `${PROP.property_name || "Property"} — Subtext`;
+  document.title = `SubHouse - ${PROP.property_name || "Property"}`;
 
   const addr = [PROP.street1, PROP.city, PROP.state].filter(Boolean).join(", ");
   const marketName = MARKET ? MARKET.anchor_university : "";
@@ -165,14 +165,14 @@ function renderHeader() {
 function renderKpis() {
   document.getElementById("kpi-beds").textContent = fmtInt(PROP.beds);
   document.getElementById("kpi-units-sub").textContent =
-    PROP.units ? `${fmtInt(PROP.units)} units` : "—";
+    PROP.units ? `${fmtInt(PROP.units)} units` : "-";
 
   document.getElementById("kpi-year").textContent = fmtYear(PROP.yearBuilt);
   if (PROP.yearBuilt) {
     const age = new Date().getFullYear() - PROP.yearBuilt;
     document.getElementById("kpi-age-sub").textContent = `${age} yr${age === 1 ? "" : "s"} old`;
   } else {
-    document.getElementById("kpi-age-sub").textContent = "—";
+    document.getElementById("kpi-age-sub").textContent = "-";
   }
 
   document.getElementById("kpi-occ").textContent = fmtPct(PROP.occupancy);
@@ -180,14 +180,14 @@ function renderKpis() {
 
   document.getElementById("kpi-rent").textContent = fmtUsd(PROP.avg_rent);
   document.getElementById("kpi-rent-sub").textContent =
-    PROP.avg_rent_per_sf != null ? `$${fmtNum(PROP.avg_rent_per_sf, 2)}/SF` : "—";
+    PROP.avg_rent_per_sf != null ? `$${fmtNum(PROP.avg_rent_per_sf, 2)}/SF` : "-";
 
   document.getElementById("kpi-dist").textContent =
-    PROP.milesToClosestCampus != null ? `${fmtNum(PROP.milesToClosestCampus, 1)} mi` : "—";
+    PROP.milesToClosestCampus != null ? `${fmtNum(PROP.milesToClosestCampus, 1)} mi` : "-";
   document.getElementById("kpi-google-sub").textContent =
     PROP.currentGoogleReviewAvg != null
       ? `Google ★ ${fmtNum(PROP.currentGoogleReviewAvg, 1)} (${fmtInt(PROP.google_review_count)} reviews)`
-      : "—";
+      : "-";
 }
 
 /* ----- Plans table ------------------------------------------ */
@@ -291,7 +291,7 @@ function renderPlans() {
   tbody.innerHTML = rows.map((p) => {
     const concessionsCell = p.has_concessions
       ? `<span class="band-pill band-Balanced" title="${escapeHtml(p.concessions_notes || "")}">${p.concessions_value != null ? fmtUsd(p.concessions_value) : "Yes"}</span>`
-      : '<span class="delta flat">—</span>';
+      : '<span class="delta flat">-</span>';
     return `
       <tr>
         <td class="property-cell">
@@ -302,7 +302,7 @@ function renderPlans() {
         <td class="num">${fmtNum(p.bathrooms, 1)}</td>
         <td class="num">${fmtInt(p.area_sf)}</td>
         <td class="num">${fmtUsd(p.rate)}</td>
-        <td class="num">${p.rate_per_sf != null ? "$" + fmtNum(p.rate_per_sf, 2) : "—"}</td>
+        <td class="num">${p.rate_per_sf != null ? "$" + fmtNum(p.rate_per_sf, 2) : "-"}</td>
         <td class="num">${fmtPct(p.prelease)}</td>
         <td class="num">${fmtPct(p.occupancy)}</td>
         <td>${concessionsCell}</td>
@@ -385,7 +385,7 @@ async function renderMap() {
       attribution: "© OSM · © CARTO", subdomains: "abcd", maxZoom: 19, noWrap: true,
     }),
   };
-  // Default to Satellite for property view — visually richest at building scale
+  // Default to Satellite for property view - visually richest at building scale
   baseLayers.Satellite.addTo(map);
   L.control.layers(baseLayers, null, { position: "topright", collapsed: true }).addTo(map);
   addFullscreenControl(map);

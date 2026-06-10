@@ -1,8 +1,8 @@
 """
 load_property_history.py
 ------------------------
-Pull per-property annual snapshots from dbo.PlanReports — bed-weighted
-rate, rate_per_sf, occupancy, prelease — anchored to the same calendar
+Pull per-property annual snapshots from dbo.PlanReports - bed-weighted
+rate, rate_per_sf, occupancy, prelease - anchored to the same calendar
 date pattern (latest snapshot's month/day) so YoY comparison is
 apples-to-apples. Writes a new `property_history` table into data.json
 that powers the Comp-set Performance time-series charts on market.html.
@@ -12,7 +12,7 @@ Auth modes match load_fte_history.py: --auth aad | sql | env.
 Re-running is safe: it replaces `tables.property_history` in place.
 
 Pattern: this is one of the [[project-qualifier-patchers]] family of slim
-SQL→data.json patchers — see the memory note for context. SQL query is
+SQL→data.json patchers - see the memory note for context. SQL query is
 also mirrored into export-data.py so the next full refresh produces the
 same result.
 """
@@ -148,7 +148,7 @@ def main() -> int:
 
     cn = connect(args.auth)
     cur = cn.cursor()
-    print("Running property_history query (this is heavy — ~6.6M-row scan)...")
+    print("Running property_history query (this is heavy - ~6.6M-row scan)...")
     cur.execute(PROPERTY_HISTORY_SQL)
     cols = [c[0] for c in cur.description]
     rows = [

@@ -1,5 +1,5 @@
 /* =============================================================
-   Subtext Living — Market Data Dashboard
+   Subtext Living - Market Data Dashboard
    Restyled to the Subtext masterbrand: Mencken Std serif + Pragmatica
    sans, beige background, slate gray text, lime green accent.
    ============================================================= */
@@ -67,7 +67,7 @@
   --surface:      #ffffff;
   --bg:           var(--beige);
 
-  /* Status — derived from the masterbrand palette */
+  /* Status - derived from the masterbrand palette */
   --good:         var(--everest);
   --good-soft:    #d8e3df;
   --bad:          var(--birch);
@@ -294,7 +294,7 @@ h1, h2, h3, .serif {
   font-weight: 700;
 }
 /* Pursuit markets is a distinct lens (the active deal pipeline), not a focus
-   subset — give it an everest-green active state so it reads differently. */
+   subset - give it an everest-green active state so it reads differently. */
 .subtext-toggle-pursuit input { accent-color: var(--everest); }
 .subtext-toggle-pursuit.active {
   background: var(--everest);
@@ -302,7 +302,7 @@ h1, h2, h3, .serif {
   color: #fff;
 }
 
-/* Subtext Dispatch ticker — sits in the topbar between .search and
+/* Subtext Dispatch ticker - sits in the topbar between .search and
    .topbar-right on the Industry view only. Click anywhere → dispatch site
    in a new tab. Hover pauses the scroll so users can read a headline. */
 .dispatch-ticker {
@@ -553,7 +553,7 @@ h1, h2, h3, .serif {
   border: 1px solid var(--beige-deep);
   overflow: hidden;
   position: relative;
-  isolation: isolate;          /* new stacking context — Leaflet controls can't escape */
+  isolation: isolate;          /* new stacking context - Leaflet controls can't escape */
   contain: layout paint;
 }
 .industry-map-card { margin-bottom: 20px; }
@@ -787,7 +787,7 @@ h1, h2, h3, .serif {
 .view { display: none; }
 .view.active { display: block; }
 
-/* Forward Model — embedded self-contained data-science dashboard. The iframe
+/* Forward Model - embedded self-contained data-science dashboard. The iframe
    fills the content area below the sticky topbar and scrolls internally. */
 .forward-frame {
   display: block;
@@ -1022,7 +1022,7 @@ h1, h2, h3, .serif {
   font-family: "Pragmatica", sans-serif;
   font-size: 13px;
 }
-/* Market Performance — deck-style charts on market.html ------- */
+/* Market Performance - deck-style charts on market.html ------- */
 .performance-section .card-body { padding-top: 4px; }
 .performance-section .card-header { align-items: flex-start; gap: 16px; }
 
@@ -1057,7 +1057,7 @@ h1, h2, h3, .serif {
 
 .perf-grid {
   display: grid;
-  /* Steady 2-column layout — each chart gets meaningful width and lives in
+  /* Steady 2-column layout - each chart gets meaningful width and lives in
      its own card-style "bubble" (see .perf-chart below). Time-series
      panels that benefit from horizontal room can opt into spanning both
      columns with .perf-chart-wide. */
@@ -1132,11 +1132,11 @@ h1, h2, h3, .serif {
 .perf-chart-wrap-xtall { height: 480px; }
 /* Ranked-bar charts that show ~30 categories vertically (Industry tab:
    penetration, supply, enrollment, rent ladder, rent YoY). With 30 labels
-   on the y-axis we need ~20px per row to keep them legible — 280px
+   on the y-axis we need ~20px per row to keep them legible - 280px
    crushed them on top of each other (see commit history). */
 .perf-chart-wrap-ranked { height: 640px; }
 
-/* Right-side helpers in .perf-title — sub-text describing the chart and
+/* Right-side helpers in .perf-title - sub-text describing the chart and
    a slot for inline controls (e.g. the market-picker dropdown). */
 .perf-title-sub {
   flex: 0 0 auto;
@@ -1276,7 +1276,7 @@ h1, h2, h3, .serif {
 .swatch-lime { background: var(--lime); }
 .swatch-mute { background: var(--slate-30); }
 
-/* Enrollment History section (Market tab) — line charts with growth-tile
+/* Enrollment History section (Market tab) - line charts with growth-tile
    header above each canvas. */
 .enr-stat-row {
   display: flex;
@@ -1366,7 +1366,7 @@ h1, h2, h3, .serif {
   color: var(--surface);
 }
 
-/* Map popup content — property & campus pins on the market and competitive
+/* Map popup content - property & campus pins on the market and competitive
    set maps. Mirrors the chart-bubble visual language (white card, thin
    border, brand typography) instead of the default Leaflet plain-text look. */
 .map-popup {
@@ -1408,7 +1408,7 @@ h1, h2, h3, .serif {
   line-height: 1.35;
 }
 
-/* Pill that tags the property's phase — coloured per phase. */
+/* Pill that tags the property's phase - coloured per phase. */
 .map-popup-phase {
   display: inline-block;
   padding: 2px 7px;
@@ -1463,7 +1463,7 @@ h1, h2, h3, .serif {
   margin-left: 4px;
 }
 
-/* 3-column stats grid — six metrics on each property popup. */
+/* 3-column stats grid - six metrics on each property popup. */
 .map-popup-stats {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1985,7 +1985,7 @@ h1, h2, h3, .serif {
 .qual-actual-fail { color: var(--bad); }
 .qual-actual-na   { color: var(--slate-50); font-weight: 400; }
 
-/* Multi-year YoY rows for the rent_growth_3yr qualifier — stacked vertically,
+/* Multi-year YoY rows for the rent_growth_3yr qualifier - stacked vertically,
    right-aligned to match the column. Pass/fail color matches the binary
    scorecard convention. */
 .qual-actual:has(.qual-yoy-line) {
@@ -2014,7 +2014,7 @@ h1, h2, h3, .serif {
 .qual-yoy-line-pass .qual-yoy-line-val { color: var(--good); }
 .qual-yoy-line-fail .qual-yoy-line-val { color: var(--bad); }
 
-/* Market detail tab nav — Market | Comps. Sits below the market header,
+/* Market detail tab nav - Market | Comps. Sits below the market header,
    spans the full grid, and acts as a switch for the .market-main panels. */
 .market-tabs {
   display: flex;
@@ -2068,7 +2068,7 @@ h1, h2, h3, .serif {
 /* Competitive Set detail tables (Rates / Rent Growth / Pre-lease /
    Occupancy). Excel-style: dark header band, soft cream body cells, bold
    aggregate footer with growth rows. Each table sits in its own card. */
-/* Stacked full-width cards (was a 2-up grid with horizontal scrollbars) —
+/* Stacked full-width cards (was a 2-up grid with horizontal scrollbars) -
    the whole table should be visible without scrolling sideways. */
 .comp-tables-grid {
   display: grid;
@@ -2245,7 +2245,7 @@ h1, h2, h3, .serif {
 .qual-mini-bad  { background: var(--bad-soft);  color: var(--bad); }
 .qual-mini-na   { background: var(--slate-15); color: var(--slate-70); font-weight: 400; }
 
-/* Phase pill — colored by phase, used in properties table */
+/* Phase pill - colored by phase, used in properties table */
 .phase-pill {
   display: inline-flex;
   align-items: center;
@@ -2287,7 +2287,7 @@ h1, h2, h3, .serif {
 }
 
 /* =============================================================
-   Dictionary page — sticky TOC + Page → Tab → Component hierarchy
+   Dictionary page - sticky TOC + Page → Tab → Component hierarchy
    ============================================================= */
 
 .dictionary-content { max-width: 1400px; }
@@ -2452,7 +2452,7 @@ h1, h2, h3, .serif {
   line-height: 1.5;
 }
 
-/* Tab chip — smaller cousin of the page tag, shows the tab name in the
+/* Tab chip - smaller cousin of the page tag, shows the tab name in the
    page's color palette so each section is instantly identifiable. */
 .dict-tab-chip {
   display: inline-block;
@@ -2470,7 +2470,7 @@ h1, h2, h3, .serif {
 .dict-chip-compset-tab { background: var(--lime-soft); color: var(--everest); }
 .dict-chip-sidebar     { background: var(--warn-soft); color: var(--warn); }
 
-/* Item-level component — a KPI, chart, or named element on the tab. */
+/* Item-level component - a KPI, chart, or named element on the tab. */
 .dict-item {
   padding: 14px 0 18px;
   border-top: 1px dashed var(--beige-deep);

@@ -7,7 +7,7 @@ in data.json so the comp-properties table on each market page picks up
 real prelease values.
 
 Why: dbo.Properties.prelease is null for ~99.7% of rows; dbo.PlanReports
-has 6.6M rows of plan-level prelease history — the actual source. This
+has 6.6M rows of plan-level prelease history - the actual source. This
 script aggregates the latest snapshot per property up to property level,
 weighted by beds_purpose_built.
 
@@ -114,7 +114,7 @@ def main() -> int:
         description="Refresh property-level prelease from PlanReports.")
     parser.add_argument(
         "--auth", choices=["aad", "integrated", "sql", "env"], default="aad",
-        help="Auth mode (default: aad — Azure AD interactive).",
+        help="Auth mode (default: aad - Azure AD interactive).",
     )
     args = parser.parse_args()
 

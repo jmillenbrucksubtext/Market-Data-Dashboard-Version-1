@@ -1,7 +1,7 @@
 /* =============================================================
    Subtext brand re-skin for forward-model.html.
    forward-model.html is a self-contained drop-in produced by the
-   data-science team and replaced wholesale on updates — so the brand
+   data-science team and replaced wholesale on updates - so the brand
    overrides live here, outside it, and dashboard.js injects this
    stylesheet into the iframe after it loads. Selectors mirror the
    embedded ones; loading after them wins the cascade.

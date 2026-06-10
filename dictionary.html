@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subtext — Dictionary</title>
+  <title>SubHouse - Dictionary</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=28">
+  <link rel="stylesheet" href="style.css?v=40">
 </head>
 <body>
   <div class="app">
@@ -49,7 +49,7 @@
 
         <header class="dictionary-header">
           <h1>Data Dictionary</h1>
-          <p>Every KPI, chart, table, and formula on the dashboard — organised by the page and tab it appears on, so you can find an item and trace its math.</p>
+          <p>Every KPI, chart, table, and formula on the dashboard - organised by the page and tab it appears on, so you can find an item and trace its math.</p>
         </header>
 
         <div class="dictionary-layout">
@@ -106,7 +106,7 @@
 
                 <article class="dict-item">
                   <h4>Market scorecard table</h4>
-                  <p>One row per market. Defaults to sort by <strong>Qualifier score (descending)</strong> — top of the list = best-performing markets. NA scores fall to the bottom. Click any column header to re-sort.</p>
+                  <p>One row per market. Defaults to sort by <strong>Qualifier score (descending)</strong> - top of the list = best-performing markets. NA scores fall to the bottom. Click any column header to re-sort.</p>
                   <table class="dict-fields">
                     <thead><tr><th>Column</th><th>Formula</th></tr></thead>
                     <tbody>
@@ -114,7 +114,7 @@
                       <tr><td>Avg rent / bed</td><td><code>MarketReports.rate_avg</code> at the latest snapshot</td></tr>
                       <tr><td>Occupancy</td><td><code>MarketReports.occupancy</code> at the latest snapshot</td></tr>
                       <tr><td>Pre-lease</td><td><code>MarketReports.prelease</code> at the latest snapshot</td></tr>
-                      <tr><td>Qualifier</td><td>Aggregate score pill — see <a href="#scoring-formula">Scoring formula</a></td></tr>
+                      <tr><td>Qualifier</td><td>Aggregate score pill - see <a href="#scoring-formula">Scoring formula</a></td></tr>
                       <tr><td>★ Subtext-30 flag</td><td>True if any anchor university for the market is in the Subtext-30 list</td></tr>
                     </tbody>
                   </table>
@@ -130,7 +130,7 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip">Analysis tab</span>
                   <h3>Analysis tab</h3>
-                  <p>Internal pipeline tracker — analyst initials, IC dates, decisions.</p>
+                  <p>Internal pipeline tracker - analyst initials, IC dates, decisions.</p>
                 </header>
                 <article class="dict-item">
                   <h4>Schedule table</h4>
@@ -174,11 +174,11 @@
                       <tr><td>Pipeline Beds</td><td><code>beds_lease_up + beds_under_construction + beds_planned</code></td></tr>
                       <tr><td>Penetration</td><td><code>existing_beds / enr_full_time</code></td></tr>
                       <tr><td>FTE Enrollment</td><td><code>MarketReports.enr_full_time</code> (IPEDS, refreshed annually per school)</td></tr>
-                      <tr><td>Avg Rent / Bed</td><td><code>MarketReports.rate_avg</code> — bed-weighted across plans</td></tr>
+                      <tr><td>Avg Rent / Bed</td><td><code>MarketReports.rate_avg</code> - bed-weighted across plans</td></tr>
                       <tr><td>Rent YoY</td><td><code>(rent_t − rent_{t−1}) / rent_{t−1}</code> from <code>market_history</code></td></tr>
                       <tr><td>Occupancy</td><td><code>MarketReports.occupancy</code></td></tr>
                       <tr><td>Pre-lease</td><td><code>MarketReports.prelease</code></td></tr>
-                      <tr><td>Mean Origin Income</td><td>Avg household income of census tracts students migrated from — computed in <code>load_affluence.py</code></td></tr>
+                      <tr><td>Mean Origin Income</td><td>Avg household income of census tracts students migrated from - computed in <code>load_affluence.py</code></td></tr>
                     </tbody>
                   </table>
                 </article>
@@ -200,7 +200,7 @@
                       <tr><td>Market Pre-lease</td><td><code>market_history.prelease</code></td></tr>
                       <tr><td>Penetration Ratio</td><td><code>existing_beds / enr_full_time</code> per anchored year</td></tr>
                       <tr><td>Bed Supply: Existing + Pipeline</td><td>Stacked bars: existing + lease-up + under-construction + planned per year</td></tr>
-                      <tr><td>Pre-leasing Velocity by Cycle</td><td><code>prelease_velocity</code> — one line per cycle, x = week-of-cycle, y = bed-weighted prelease %</td></tr>
+                      <tr><td>Pre-leasing Velocity by Cycle</td><td><code>prelease_velocity</code> - one line per cycle, x = week-of-cycle, y = bed-weighted prelease %</td></tr>
                     </tbody>
                   </table>
                 </article>
@@ -231,7 +231,7 @@
 
                 <article class="dict-item">
                   <h4>Comp-set Performance charts</h4>
-                  <p>Multi-year line charts. <strong>Solid rust line</strong> = bed-weighted aggregate across <em>selected</em> comps; <strong>dashed everest line</strong> = market value from <code>market_history</code>. For each (year, comp), data comes from <code>property_history</code> — bed-weighted across plans within each property.</p>
+                  <p>Multi-year line charts. <strong>Solid rust line</strong> = bed-weighted aggregate across <em>selected</em> comps; <strong>dashed everest line</strong> = market value from <code>market_history</code>. For each (year, comp), data comes from <code>property_history</code> - bed-weighted across plans within each property.</p>
                   <table class="dict-fields">
                     <thead><tr><th>Chart</th><th>Comps series</th><th>Market series</th></tr></thead>
                     <tbody>
@@ -256,7 +256,7 @@
                       <tr><td>Occupancy (anchor month)</td><td><code>property_history.occupancy</code></td><td>Bed-weighted Average Occupancy · YoY · 2-Yr growth</td></tr>
                     </tbody>
                   </table>
-                  <p class="dict-aside">YoY / 2-Yr / 3-Yr growth in the footer is <strong>cumulative</strong> relative change vs the aggregate N years prior — not annualised. 2-Yr 2025 = <code>(2025 − 2023) / 2023</code>.</p>
+                  <p class="dict-aside">YoY / 2-Yr / 3-Yr growth in the footer is <strong>cumulative</strong> relative change vs the aggregate N years prior - not annualised. 2-Yr 2025 = <code>(2025 − 2023) / 2023</code>.</p>
                 </article>
               </section>
 
@@ -264,7 +264,7 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip dict-chip-sidebar">Sidebar (both tabs)</span>
                   <h3>Subtext Qualifier Scorecard</h3>
-                  <p>Eleven pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> — partial credit on multi-year qualifiers.</p>
+                  <p>Eleven pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> - partial credit on multi-year qualifiers.</p>
                 </header>
 
                 <article class="dict-item">
@@ -276,7 +276,7 @@
                       <tr><td>FTE enrollment above 15,000</td><td><code>enr_full_time &gt; 15,000</code></td><td>MarketReports.enr_full_time</td></tr>
                       <tr><td>Market occupancy above 90%</td><td><code>occupancy &gt; 0.90</code></td><td>MarketReports.occupancy</td></tr>
                       <tr><td>FTE growth since 2022 above 3%</td><td><code>(current_fte − baseline_2022_fte) / baseline_2022_fte &gt; 0.03</code></td><td>fte_history</td></tr>
-                      <tr><td>FTE growth YoY positive</td><td><code>(current_fte − prior_fte) / prior_fte &gt; 0</code>. <strong>Prior = most recent snapshot whose enr_full_time differs from current</strong>, not literal T-1yr — sidesteps IPEDS publish cadence.</td><td>fte_history</td></tr>
+                      <tr><td>FTE growth YoY positive</td><td><code>(current_fte − prior_fte) / prior_fte &gt; 0</code>. <strong>Prior = most recent snapshot whose enr_full_time differs from current</strong>, not literal T-1yr - sidesteps IPEDS publish cadence.</td><td>fte_history</td></tr>
                       <tr><td>YoY rent growth ≥3% for trailing 3 years</td><td><strong>All three</strong> trailing YoY rates ≥ 3%. <strong>Partial credit:</strong> each year contributes 1/3 of the qualifier's 1/11 weight.</td><td>market_history.avg_rent_per_bed</td></tr>
                       <tr><td>Market prelease not lagging prior year by &gt;5%</td><td>Same-week-of-cycle delta this year vs prior cycle ≥ −0.05</td><td>prelease_velocity</td></tr>
                       <tr><td>Pipeline ≤ 10% of existing supply</td><td><code>beds_pipeline_total / existing_beds ≤ 0.10</code></td><td>MarketReports</td></tr>
@@ -299,7 +299,7 @@
               <section class="dict-tab" id="property-page">
                 <article class="dict-item">
                   <h4>Floor plans table</h4>
-                  <p>One row per floor plan from <code>plans/&lt;property_key&gt;.json</code> — bed/bath/sf, rate, occupancy, pre-lease. Lazy-loaded on page open.</p>
+                  <p>One row per floor plan from <code>plans/&lt;property_key&gt;.json</code> - bed/bath/sf, rate, occupancy, pre-lease. Lazy-loaded on page open.</p>
                 </article>
               </section>
             </section>
@@ -321,7 +321,7 @@
                   <p>Each qualifier has a <code>credit_fraction ∈ [0, 1]</code>:</p>
                   <ul class="dict-list-bullets">
                     <li>Binary qualifiers (10 of 11): 0 or 1.</li>
-                    <li>Multi-component qualifiers with a <code>breakdown</code> list (rent_growth_3yr): <code>passing_components / total_components</code> — e.g. 2 of 3 trailing years ≥ 3% → 0.667 credit.</li>
+                    <li>Multi-component qualifiers with a <code>breakdown</code> list (rent_growth_3yr): <code>passing_components / total_components</code> - e.g. 2 of 3 trailing years ≥ 3% → 0.667 credit.</li>
                     <li>NA qualifiers are excluded entirely.</li>
                   </ul>
                   <p><strong>Per-market score</strong>: <code>sum(credit_fraction) / count(evaluable)</code>.</p>
@@ -333,11 +333,11 @@
               <section class="dict-tab" id="compset-rule">
                 <header class="dict-tab-header">
                   <h3>Comp-set rule</h3>
-                  <p>Which properties count as comps in a market — drives the Competitive Set tab and the comp-rent qualifier.</p>
+                  <p>Which properties count as comps in a market - drives the Competitive Set tab and the comp-rent qualifier.</p>
                 </header>
                 <article class="dict-item">
                   <p><strong>Eligibility pool:</strong> <code>phase ∈ {stable, lease up}</code> AND <code>milesToClosestCampus ≤ 1.0</code></p>
-                  <p><strong>Comp-set member (within pool — union):</strong></p>
+                  <p><strong>Comp-set member (within pool - union):</strong></p>
                   <ul class="dict-list-bullets">
                     <li>(a) Built ≥ 2020 (<code>yearBuilt ≥ 2020</code>), or</li>
                     <li>(b) Top 5 by <code>avg_rent</code> within the pool, regardless of vintage.</li>
@@ -353,7 +353,7 @@
                   <p>Why every "annual" value lines up to the same calendar day.</p>
                 </header>
                 <article class="dict-item">
-                  <p>The dataset has weekly snapshots, not yearly. For multi-year comparisons we pick one snapshot per (entity, year) — the one whose <code>snapshot_date</code> is closest to <em>the latest snapshot's month/day</em>. So if the latest pull is 2026-05-09, the 2025 anchor is the row closest to 2025-05-09, the 2024 anchor closest to 2024-05-09, etc.</p>
+                  <p>The dataset has weekly snapshots, not yearly. For multi-year comparisons we pick one snapshot per (entity, year) - the one whose <code>snapshot_date</code> is closest to <em>the latest snapshot's month/day</em>. So if the latest pull is 2026-05-09, the 2025 anchor is the row closest to 2025-05-09, the 2024 anchor closest to 2024-05-09, etc.</p>
                   <p class="dict-aside">Used in <code>market_history</code>, <code>property_history</code>, and the rent_growth_3yr qualifier. The anchor moves automatically as the weekly refresh advances "latest".</p>
                 </article>
               </section>
@@ -372,7 +372,7 @@
                       <tr><td><code>market_history</code></td><td>dbo.MarketReports, anchored annual snapshots 2020+</td><td>export-data.py</td></tr>
                       <tr><td><code>property_history</code></td><td>dbo.PlanReports, bed-weighted anchored annual snapshots</td><td>load_property_history.py · export-data.py</td></tr>
                       <tr><td><code>prelease_velocity</code></td><td>dbo.MarketReports, weekly snapshots within each leasing cycle</td><td>export-data.py</td></tr>
-                      <tr><td><code>fte_history</code></td><td>dbo.MarketReports — latest + most-recent-change prior + 2022 baseline</td><td>load_fte_history.py · export-data.py</td></tr>
+                      <tr><td><code>fte_history</code></td><td>dbo.MarketReports - latest + most-recent-change prior + 2022 baseline</td><td>load_fte_history.py · export-data.py</td></tr>
                       <tr><td><code>market_affluence</code></td><td>MigrationAllRents*.csv (local) joined to IPEDS → market_key crosswalk</td><td>load_affluence.py · export-data.py</td></tr>
                       <tr><td><code>market_qualifiers</code></td><td>Computed from the above; per-row pass/fail + aggregate score_pct</td><td>compute_qualifiers + patcher family</td></tr>
                       <tr><td><code>plans</code></td><td>dbo.Plans (floor plans tied to properties)</td><td>export-data.py</td></tr>

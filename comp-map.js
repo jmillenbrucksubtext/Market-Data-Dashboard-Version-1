@@ -1,5 +1,5 @@
 /* =============================================================
-   Comp Map Generator — Comps tab of market.html.
+   Comp Map Generator - Comps tab of market.html.
    Renders the comps selected in the Comp-set Properties table onto a
    static map canvas styled like the deck "Comps & Pipeline" maps:
    basemap tiles + campus boundary + phase-shaped markers + white
@@ -222,7 +222,7 @@
   };
   var LINE_H = 34, TITLE_H = 40, SUB_H = 30, BOX_PAD = 22;
 
-  function fmtInt(v) { return v == null ? "—" : Math.round(v).toLocaleString("en-US"); }
+  function fmtInt(v) { return v == null ? "-" : Math.round(v).toLocaleString("en-US"); }
 
   function calloutContent(p) {
     // Compact mode for crowded markets: name + address only
@@ -234,7 +234,7 @@
     var lines = [
       { label: "Status", value: phaseStyle(p.phase).label },
       { label: "Beds", value: fmtInt(p.beds) },
-      { label: pipeline ? "Expected Delivery" : "Year Built", value: p.yearBuilt || "—" },
+      { label: pipeline ? "Expected Delivery" : "Year Built", value: p.yearBuilt || "-" },
     ];
     if (!pipeline && p.avg_rent > 0) lines.push({ label: "Avg Rent / Bed", value: "$" + fmtInt(p.avg_rent) });
     if (p.milesToClosestCampus != null) {
@@ -377,7 +377,7 @@
             if (dist < bestDist) { bestDist = dist; bestCell = cell; }
           }
         }
-        // Truly nowhere left — accept overlap near the marker.
+        // Truly nowhere left - accept overlap near the marker.
         rect = bestCell || { x: Math.min(Math.max(p.px.x + 40, EDGE), W - EDGE - p.box.w),
                              y: Math.min(Math.max(p.px.y + 40, EDGE), H - EDGE - p.box.h),
                              w: p.box.w, h: p.box.h };
@@ -433,7 +433,7 @@
   }
 
   /* Point where the segment from the rect center to (px, py) crosses the
-     rect border — the leader line starts there. */
+     rect border - the leader line starts there. */
   function rectEdgePoint(r, px, py) {
     var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
     var dx = px - cx, dy = py - cy;
@@ -662,7 +662,7 @@
       ctx.fillStyle = "#837c75";
       ctx.font = "400 36px 'Pragmatica', sans-serif";
       ctx.textAlign = "center";
-      ctx.fillText("No comps selected — tick a checkbox in the table above.", W / 2, H / 2);
+      ctx.fillText("No comps selected - tick a checkbox in the table above.", W / 2, H / 2);
       ctx.textAlign = "left";
       return;
     }
@@ -699,7 +699,7 @@
       ctx.strokeStyle = color;
       ctx.lineWidth = 5;
       ctx.stroke();
-      // Open ring around the marker, like the deck maps — white casing too
+      // Open ring around the marker, like the deck maps - white casing too
       ctx.beginPath();
       ctx.arc(p.px.x, p.px.y, 21, 0, Math.PI * 2);
       ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";

@@ -5,14 +5,14 @@ Connects to StudentResearch, runs the 9 dashboard queries, and writes a
 single data.json that the static site consumes.
 
 Run modes:
-  Local — Azure AD interactive (PREFERRED, no password in shell history):
+  Local - Azure AD interactive (PREFERRED, no password in shell history):
       python export-data.py            # defaults to --auth aad
       python export-data.py --auth aad
 
-  Local — SQL login, prompted via getpass (not echoed, not in argv):
+  Local - SQL login, prompted via getpass (not echoed, not in argv):
       python export-data.py --auth sql
 
-  CI / scripted — env vars (GitHub Actions cron, see .github/workflows/refresh.yml):
+  CI / scripted - env vars (GitHub Actions cron, see .github/workflows/refresh.yml):
       set SQLUSER=...   set SQLPASSWORD=...
       python export-data.py --auth env
 
@@ -23,7 +23,7 @@ Inputs:
   ODBC Driver 18 for SQL Server installed.
 
 Output:
-  ./data.json  — one document with metadata + a key per metric table.
+  ./data.json  - one document with metadata + a key per metric table.
 """
 
 from __future__ import annotations
@@ -178,7 +178,7 @@ QUERIES: dict[str, str] = {
         WHERE COALESCE(em.Total_Enrollment, sd.enrollmentTotal) > 0
     """,
     # Full multi-year enrollment history per university (Total / FTE /
-    # Freshman / etc.) — drives the Enrollment History charts on the
+    # Freshman / etc.) - drives the Enrollment History charts on the
     # Market tab. Mirrors load_enrollment_history.py. Same dedupe pattern
     # as enrollment_trend: collapse Enrollments_Manual to one row per
     # (IPEDS, Year) and dedupe the crosswalk join.
@@ -216,7 +216,7 @@ QUERIES: dict[str, str] = {
         -- Per-university 1yr and 5yr enrollment trends. Dedupes at two
         -- spots that historically fanned out:
         --   1. Enrollments_Manual sometimes has multiple rows for the same
-        --      (IPEDS_ID, Year) — different totals. We collapse with MAX so
+        --      (IPEDS_ID, Year) - different totals. We collapse with MAX so
         --      one row per (IPEDS, Year).
         --   2. IPEDS_CH_Crosswalk occasionally has multiple rows for the
         --      same IPEDS → market mapping. We dedupe via DISTINCT in the
@@ -254,7 +254,7 @@ QUERIES: dict[str, str] = {
         LEFT JOIN cx_unique cx   ON cx.IPEDs = cur.IPEDS_ID
         LEFT JOIN dbo.Markets m  ON m.[Key]  = cx.marketKey
     """,
-    # fte_history: per-market full-time enrollment at three points in time —
+    # fte_history: per-market full-time enrollment at three points in time -
     # current snapshot, ~1 year prior, and a 2021-22 academic-year baseline.
     # Drives the FTE YoY KPI tile and the two FTE qualifiers
     # ("FTE growth YoY positive", "FTE growth since 2022 above 3%").
@@ -412,7 +412,7 @@ QUERIES: dict[str, str] = {
         plan_agg AS (
             -- Bed-weighted prelease from plan-level data at the latest snapshot.
             -- PlanReports.prelease coverage is ~6.6M rows vs Properties.prelease
-            -- which is null for ~99.7% of rows — this is the actual source.
+            -- which is null for ~99.7% of rows - this is the actual source.
             SELECT
                 pr.property_key,
                 SUM(CAST(pr.prelease AS DECIMAL(18,6)) * pr.beds_purpose_built)
@@ -521,7 +521,7 @@ QUERIES: dict[str, str] = {
     #
     # total_enrollment / enr_full_time come from the CURRENT academic year in
     # Enrollments_Manual (summed across the market's mapped universities,
-    # each at its own latest reported year), NOT from MarketReports — the
+    # each at its own latest reported year), NOT from MarketReports - the
     # snapshot columns there carry last year's IPEDS cohort forward (per data
     # science, 2026-06). MarketReports remains the fallback for markets with
     # no Enrollments_Manual coverage.
@@ -724,7 +724,7 @@ def to_jsonable(value):
 
 
 # ============================================================
-# Pursuit markets — Subtext's active "Markets - Pursuing" pipeline
+# Pursuit markets - Subtext's active "Markets - Pursuing" pipeline
 # ============================================================
 # Source: dbo.ProjectCosts, project_stage = 'Markets - Pursuing', at the latest
 # UpdateDate snapshot (the CRM re-snapshots ~weekly). Each row is a market-level
@@ -754,7 +754,7 @@ def compute_pursuit_markets(cur, scorecard: list[dict]) -> dict[int, int]:
     """Return {market_key: pursuit_deal_count} for markets in 'Markets - Pursuing'.
 
     Non-university entries (e.g. 'Dallas / Fort Worth') and any title that
-    doesn't resolve to a tracked market are logged and skipped — non-fatal, so a
+    doesn't resolve to a tracked market are logged and skipped - non-fatal, so a
     pipeline hiccup never blocks the weekly refresh."""
     by_city_state: dict[tuple[str, str], int] = {}
     by_city: dict[str, int] = {}
@@ -807,7 +807,7 @@ def compute_pursuit_markets(cur, scorecard: list[dict]) -> dict[int, int]:
 
 
 # ============================================================
-# Forward Looking Model — rank per market (from forward-model.html)
+# Forward Looking Model - rank per market (from forward-model.html)
 # ============================================================
 # The data-science team drops a self-contained forward-model.html into this
 # folder (embedded on the Industry page as the "Forward Model" view). We parse
@@ -816,7 +816,7 @@ def compute_pursuit_markets(cur, scorecard: list[dict]) -> dict[int, int]:
 # HTML updates the column automatically.
 FORWARD_HTML = Path(__file__).parent / "forward-model.html"
 # Screener names that are shorter/variant than the dashboard's anchor name, or
-# ambiguous across multiple campuses — map to the intended flagship. Values are
+# ambiguous across multiple campuses - map to the intended flagship. Values are
 # canonical anchor names (resolved through the scorecard, so no hard-coded keys).
 _FORWARD_ALIAS = {
     "pennsylvania state university": "Penn State",
@@ -939,7 +939,7 @@ EXCEL_PATH = Path(
 )
 
 # Map the Schedule sheet's row-2 headers to clean JSON keys.
-# Two columns share the label "Decision" — we disambiguate by position.
+# Two columns share the label "Decision" - we disambiguate by position.
 SCHEDULE_COLUMNS = {
     2: "market_type",            # col B
     3: "market_name",            # col C ("New Market Review")
@@ -957,20 +957,20 @@ SCHEDULE_COLUMNS = {
 def _prior_table(name: str) -> list[dict]:
     """Return a table from the existing data.json, or [] if unavailable.
 
-    Used as a graceful fallback when a fresh read can't complete — keeps the
+    Used as a graceful fallback when a fresh read can't complete - keeps the
     last-known data instead of blanking the table on the live site."""
     try:
         if OUTPUT.exists():
             prev = json.loads(OUTPUT.read_text(encoding="utf-8"))
             return prev.get("tables", {}).get(name, [])
-    except Exception as e:  # noqa: BLE001 — fallback must never raise
+    except Exception as e:  # noqa: BLE001 - fallback must never raise
         print(f"  (could not read prior {name} from data.json: {e})")
     return []
 
 
 def _call_with_timeout(fn, timeout_s: float, fallback):
     """Run fn() in a daemon thread; if it doesn't finish within timeout_s (or
-    raises), log and return fallback(). Guards against blocking I/O — notably a
+    raises), log and return fallback(). Guards against blocking I/O - notably a
     OneDrive Files-On-Demand placeholder stalling indefinitely on cloud recall,
     which previously hung the unattended weekly refresh until Task Scheduler
     killed it at its 30-minute limit."""
@@ -987,12 +987,12 @@ def _call_with_timeout(fn, timeout_s: float, fallback):
     t.join(timeout_s)
     if t.is_alive():
         print(f"  WARNING: {t.name} did not finish within {timeout_s:.0f}s "
-              f"(likely a OneDrive cloud-recall stall) — using last-known data")
+              f"(likely a OneDrive cloud-recall stall) - using last-known data")
         return fallback()
     if "error" in box:
         err = box["error"]
         print(f"  WARNING: {t.name} failed ({type(err).__name__}: {err}) "
-              f"— using last-known data")
+              f"- using last-known data")
         return fallback()
     return box["value"]
 
@@ -1005,12 +1005,12 @@ def read_market_analysis_excel() -> list[dict]:
     column A blank. We attach the most-recent section header as `category` on
     every data row that follows.
 
-    Missing file is non-fatal — returns []."""
+    Missing file is non-fatal - returns []."""
     if not EXCEL_PATH.exists():
         print(f"  Excel not found at {EXCEL_PATH} (skipping)")
         return []
     try:
-        import openpyxl  # local import — only needed if file is present
+        import openpyxl  # local import - only needed if file is present
     except ImportError:
         print("  openpyxl not installed (skipping Excel)")
         return []
@@ -1075,18 +1075,18 @@ def read_market_analysis_excel() -> list[dict]:
 # Phase-2 evaluators return status="na" until we wire their data source.
 # ============================================================
 
-def _na(qid, label, threshold_display, reason="Phase 2 — data not yet loaded"):
+def _na(qid, label, threshold_display, reason="Phase 2 - data not yet loaded"):
     return {
         "id": qid, "label": label,
         "threshold_display": threshold_display,
-        "actual_display": "—", "actual": None,
+        "actual_display": "-", "actual": None,
         "status": "na", "tier": "na", "explanation": reason,
     }
 
 
 def _tier(actual, threshold, margin, direction):
     """Binary tier: returns the same pass/fail as status. The historical
-    'warn' middle band was retired — the scorecard now treats each
+    'warn' middle band was retired - the scorecard now treats each
     qualifier as a clean pass or fail."""
     if direction == "above":
         return "pass" if actual > threshold else "fail"
@@ -1317,7 +1317,7 @@ def _q_uncaptured_demand(market, props_by_market):
         threshold=0.30, margin=0.02, direction="above",
         explanation=(
             f"{beds_1mi:,} PBSH beds within 1 mi of campus "
-            f"({len(near)} props) vs {int(fte):,} FTE — "
+            f"({len(near)} props) vs {int(fte):,} FTE - "
             f"capture rate {captured * 100:.1f}%"
         ),
     )
@@ -1408,7 +1408,7 @@ def compute_qualifiers(tables: dict) -> list[dict]:
             "results": results,
             "total": len(results),
         }
-        # Weighted rollup — qualifiers with a `breakdown` list (e.g.
+        # Weighted rollup - qualifiers with a `breakdown` list (e.g.
         # rent_growth_3yr) award fractional credit. See load_affluence.py.
         from load_affluence import recompute_rollup
         recompute_rollup(q)
@@ -1425,7 +1425,7 @@ def main() -> int:
         "--auth",
         choices=["aad", "integrated", "sql", "env"],
         default="aad",
-        help="Auth mode (default: aad — Azure AD interactive). "
+        help="Auth mode (default: aad - Azure AD interactive). "
              "'integrated' uses Windows AAD silently; "
              "'sql' prompts via getpass; 'env' reads SQLUSER/SQLPASSWORD.",
     )

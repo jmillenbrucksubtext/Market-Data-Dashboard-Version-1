@@ -1,5 +1,5 @@
 /* =============================================================
-   Subtext Living — Market Detail page
+   Subtext Living - Market Detail page
    URL pattern: market.html?id=<market_key>
    Reads data.json, renders the market's KPIs, property list, and map.
    ============================================================= */
@@ -52,10 +52,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!res.ok) throw new Error(`HTTP ${res.status}`);
     DATA = await res.json();
   } catch (err) {
-    return showError(`Couldn't load data.json — ${err}`);
+    return showError(`Couldn't load data.json - ${err}`);
   }
 
-  // Optional: load campus logo manifest. Missing manifest is fine — every
+  // Optional: load campus logo manifest. Missing manifest is fine - every
   // market just falls back to the SVG building pin.
   try {
     const mRes = await fetch("assets/campus-logos/_manifest.json", { cache: "no-cache" });
@@ -103,8 +103,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 /* ----- Market Performance (deck-style charts) ---------------- */
 
 const PERF = {
-  anchorColor:  "#a95818",   // rust / birch — anchor market
-  benchColor:   "#16352e",   // everest — Subtext-30 average
+  anchorColor:  "#a95818",   // rust / birch - anchor market
+  benchColor:   "#16352e",   // everest - Subtext-30 average
   pipeColors: {
     existing:           "#2b2825",  // slate
     lease_up:           "#16352e",  // everest
@@ -190,7 +190,7 @@ function renderPerformance() {
     .sort((a, b) => a.year_ - b.year_);
   const years = myHistory.map((r) => r.year_);
 
-  // Treat 0 as missing for these metrics — a real student-housing market
+  // Treat 0 as missing for these metrics - a real student-housing market
   // never has $0 rent or 0% occupancy/prelease; zeros mean "market not yet
   // tracked at this snapshot."
   const cleanZero = (v) => (v == null || v === 0) ? null : Number(v);
@@ -234,7 +234,7 @@ function renderPerformance() {
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : valueFmt(c.parsed.y)}` } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : valueFmt(c.parsed.y)}` } },
           datalabels: {
             anchor: "end", align: "end", offset: 2, clip: false,
             font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
@@ -286,7 +286,7 @@ function renderPerformance() {
         maintainAspectRatio: false,
         plugins: {
           legend: { display: false },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "—" : c.parsed.y.toFixed(1) + "%"}` } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : c.parsed.y.toFixed(1) + "%"}` } },
           datalabels: {
             anchor: (c) => c.dataset.data[c.dataIndex] != null && c.dataset.data[c.dataIndex] >= 0 ? "end" : "start",
             align:  (c) => c.dataset.data[c.dataIndex] != null && c.dataset.data[c.dataIndex] >= 0 ? "end" : "start",
@@ -324,7 +324,7 @@ function renderPerformance() {
           barPercentage: 0.9,
         }],
       },
-      options: perfBaseOpts({ valueFmt: (v) => v == null ? "—" : fmtPct(v, 1) }),
+      options: perfBaseOpts({ valueFmt: (v) => v == null ? "-" : fmtPct(v, 1) }),
     });
   }
 
@@ -456,23 +456,23 @@ function setFreshness() {
 }
 
 function fmtPct(v, digits = 1) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return (v * 100).toFixed(digits) + "%";
 }
 function fmtInt(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_INT.format(Math.round(v));
 }
 function fmtUsd(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_USD.format(v);
 }
 function fmtNum(v, digits = 1) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return Number(v).toFixed(digits);
 }
 function fmtYear(v) {
-  if (v == null || isNaN(v) || v < 1800) return "—";
+  if (v == null || isNaN(v) || v < 1800) return "-";
   return String(v);
 }
 function escapeHtml(s) {
@@ -481,7 +481,7 @@ function escapeHtml(s) {
   }[c]));
 }
 function deltaSpan(v) {
-  if (v == null) return `<span class="delta flat">—</span>`;
+  if (v == null) return `<span class="delta flat">-</span>`;
   const cls = v > 0.005 ? "up" : v < -0.005 ? "down" : "flat";
   const arr = v > 0.005 ? "▲" : v < -0.005 ? "▼" : "";
   return `<span class="delta ${cls}"><span class="arrow">${arr}</span>${fmtPct(v)}</span>`;
@@ -500,7 +500,7 @@ function renderHeader() {
   document.getElementById("market-subtitle").textContent =
     `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}`;
 
-  document.title = `${MARKET.anchor_university} — Subtext`;
+  document.title = `SubHouse - ${MARKET.anchor_university}`;
 
   if (MARKET.is_subtext30 === 1) {
     document.getElementById("s30-badge").style.display = "inline-flex";
@@ -519,7 +519,7 @@ function renderKpis() {
   if (MARKET.beds_lease_up) pipParts.push(`${fmtInt(MARKET.beds_lease_up)} lease-up`);
   if (MARKET.beds_under_construction) pipParts.push(`${fmtInt(MARKET.beds_under_construction)} U/C`);
   if (MARKET.beds_planned) pipParts.push(`${fmtInt(MARKET.beds_planned)} planned`);
-  document.getElementById("kpi-pipeline-sub").textContent = pipParts.join(" · ") || "—";
+  document.getElementById("kpi-pipeline-sub").textContent = pipParts.join(" · ") || "-";
 
   document.getElementById("kpi-pen").textContent = fmtPct(MARKET.penetration_ratio);
   const bandColor = MARKET.penetration_ratio == null ? C.slate70
@@ -527,7 +527,7 @@ function renderKpis() {
     : MARKET.penetration_ratio > 0.55 ? C.bad
     : C.warn;
   document.getElementById("kpi-pen").style.color = bandColor;
-  const band = MARKET.penetration_ratio == null ? "—"
+  const band = MARKET.penetration_ratio == null ? "-"
     : MARKET.penetration_ratio < 0.30 ? "Under-supplied"
     : MARKET.penetration_ratio > 0.55 ? "Over-supplied"
     : "Balanced";
@@ -547,7 +547,7 @@ function renderKpis() {
 
   // YoY preference order:
   //   1. fte_history.yoy_fte_growth (true FTE YoY from MarketReports history)
-  //   2. enrollment_trend.yoy_change (total-enrollment YoY — proxy when FTE
+  //   2. enrollment_trend.yoy_change (total-enrollment YoY - proxy when FTE
   //      history isn't loaded)
   let yoyPct = null;
   let yoyLabel = "YoY";   // "FTE YoY" when real FTE; "total YoY" when proxy
@@ -594,7 +594,7 @@ function renderKpis() {
   document.getElementById("kpi-rent").textContent = fmtUsd(MARKET.avg_rent_per_bed);
   document.getElementById("kpi-rent-sub").textContent = "bed-weighted average";
 
-  // Rent YoY — pull from rent_yoy table; render in big KPI style with color
+  // Rent YoY - pull from rent_yoy table; render in big KPI style with color
   const yoy = DATA.tables.rent_yoy.find((r) => r.market_key === MARKET.market_key);
   const yoyEl = document.getElementById("kpi-rent-yoy");
   if (yoy && yoy.yoy_rent_growth != null) {
@@ -607,11 +607,11 @@ function renderKpis() {
       `vs ${new Date(yoy.prior_snapshot).getFullYear()}`;
   } else {
     yoyEl.className = "kpi-value";
-    yoyEl.textContent = "—";
+    yoyEl.textContent = "-";
     document.getElementById("kpi-rent-yoy-sub").textContent = "no prior-year data";
   }
 
-  // Occupancy — bed-weighted from MarketReports
+  // Occupancy - bed-weighted from MarketReports
   const occEl = document.getElementById("kpi-occupancy");
   const occSub = document.getElementById("kpi-occupancy-sub");
   if (MARKET.occupancy != null) {
@@ -622,11 +622,11 @@ function renderKpis() {
     occSub.textContent = "bed-weighted";
   } else {
     occEl.className = "kpi-value";
-    occEl.textContent = "—";
+    occEl.textContent = "-";
     occSub.textContent = "no occupancy on file";
   }
 
-  // Pre-lease — latest cycle from MarketReports
+  // Pre-lease - latest cycle from MarketReports
   const preEl = document.getElementById("kpi-prelease");
   const preSub = document.getElementById("kpi-prelease-sub");
   if (MARKET.prelease != null) {
@@ -637,11 +637,11 @@ function renderKpis() {
     preSub.textContent = "latest cycle";
   } else {
     preEl.className = "kpi-value";
-    preEl.textContent = "—";
+    preEl.textContent = "-";
     preSub.textContent = "no prelease on file";
   }
 
-  // Affluence — mean origin household income of incoming students.
+  // Affluence - mean origin household income of incoming students.
   const aff = (DATA.tables.market_affluence || [])
     .find((r) => r.market_key === MARKET.market_key);
   const affEl = document.getElementById("kpi-affluence");
@@ -654,10 +654,10 @@ function renderKpis() {
       : `mean origin income · ${aff.data_as_of}`;
   } else if (aff && aff.n_students > 0) {
     affEl.textContent = aff.mean_origin_income != null
-      ? fmtUsd(aff.mean_origin_income) : "—";
+      ? fmtUsd(aff.mean_origin_income) : "-";
     affSub.textContent = `low sample · n=${fmtInt(aff.n_students)}`;
   } else {
-    affEl.textContent = "—";
+    affEl.textContent = "-";
     affSub.textContent = "no migration data";
   }
 }
@@ -674,17 +674,17 @@ function renderQualifiers() {
   if (!q) {
     summaryEl.textContent = "No qualifier data for this market.";
     listEl.innerHTML = "";
-    badgeEl.textContent = "—";
+    badgeEl.textContent = "-";
     return;
   }
 
   const pct = q.score_pct == null ? null : Math.round(q.score_pct * 100);
-  badgeEl.textContent = pct == null ? "—" : `${pct}%`;
+  badgeEl.textContent = pct == null ? "-" : `${pct}%`;
   badgeEl.dataset.tier =
     pct == null ? "na" : pct >= 80 ? "good" : pct >= 60 ? "warn" : "bad";
 
   const naCount = q.results.filter((r) => r.status === "na").length;
-  // `passes` is a weighted credit total — rent_growth_3yr awards 1/3 per
+  // `passes` is a weighted credit total - rent_growth_3yr awards 1/3 per
   // trailing year that cleared 3%. Render as an integer when the total is
   // whole, otherwise to one decimal place.
   const passesNum = typeof q.passes === "number" ? q.passes : 0;
@@ -695,11 +695,11 @@ function renderQualifiers() {
 
   listEl.innerHTML = q.results.map((r) => {
     // Binary scorecard: pass / fail / na. Older data may carry tier='warn'
-    // — collapse anything that isn't a clean pass/na to 'fail'.
+    // - collapse anything that isn't a clean pass/na to 'fail'.
     let state = r.status || "fail";
     if (state !== "pass" && state !== "na") state = "fail";
     // Multi-year qualifiers (e.g. rent_growth_3yr) carry a per-year
-    // breakdown — render each year as its own colored chip instead of one
+    // breakdown - render each year as its own colored chip instead of one
     // aggregate value.
     let actualHtml;
     if (Array.isArray(r.breakdown) && r.breakdown.length) {
@@ -725,7 +725,7 @@ function renderQualifiers() {
 
 function bindPropertySort() {
   // Both Market and Comps tabs have their own <table class="properties-table">
-  // — each table's headers drive its own sort state.
+  // - each table's headers drive its own sort state.
   document.querySelectorAll(".properties-table thead th").forEach((th) => {
     th.addEventListener("click", () => {
       const tableId = th.closest("table").id;
@@ -856,8 +856,8 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
       <td class="num">${fmtPct(p.occupancy)}</td>
       <td class="num">${fmtPct(p.prelease)}</td>
       <td class="num">${fmtUsd(p.avg_rent)}</td>
-      <td class="num">${p.avg_rent_per_sf != null ? "$" + fmtNum(p.avg_rent_per_sf, 2) : "—"}</td>
-      ${selectable ? "" : `<td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">—</span>'}</td>`}
+      <td class="num">${p.avg_rent_per_sf != null ? "$" + fmtNum(p.avg_rent_per_sf, 2) : "-"}</td>
+      ${selectable ? "" : `<td>${p.hasConcessions ? '<span class="band-pill band-Balanced">Yes</span>' : '<span class="delta flat">-</span>'}</td>`}
       <td class="num">${fmtNum(p.milesToClosestCampus, 1)}</td>
     </tr>`;
   }).join("");
@@ -885,7 +885,7 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
       if (e.target.closest(".comp-select-cell")) return;
       const pk = Number(tr.dataset.pk);
       if (e.shiftKey) {
-        // Pan the market map (Market tab only — the Comps tab map is the
+        // Pan the market map (Market tab only - the Comps tab map is the
         // static Comp Map Generator, which doesn't pan).
         const onComps = !!tr.closest('[data-panel="comps"]');
         const marker = onComps ? null : propertyMarkers.get(pk);
@@ -1023,7 +1023,7 @@ function renderLegend() {
 }
 
 function phasePill(phase) {
-  if (!phase) return `<span class="phase-pill phase-unknown">—</span>`;
+  if (!phase) return `<span class="phase-pill phase-unknown">-</span>`;
   const s = phaseStyle(phase);
   const slug = (phase || "").toLowerCase().replace(/\s+/g, "-");
   return `<span class="phase-pill phase-${slug}" style="--phase-color:${s.color}">
@@ -1297,7 +1297,7 @@ function compYearlySeries(selectedKeys, valueKey) {
 
 // Market history series for the same metric (already aggregated per market
 // in market_history). `marketKey` is MARKET.market_key. Field name differs
-// per metric — pass the key in market_history.
+// per metric - pass the key in market_history.
 function marketYearlySeries(marketKey, valueKey) {
   const mh = DATA.tables.market_history || [];
   return mh
@@ -1345,8 +1345,8 @@ function renderCompCharts() {
   if (window.CompMap) window.CompMap.refresh();
 }
 
-const COMP_LINE_COLOR_COMP   = "#a95818";   // rust — comp aggregate
-const COMP_LINE_COLOR_MARKET = "#16352e";   // everest — market
+const COMP_LINE_COLOR_COMP   = "#a95818";   // rust - comp aggregate
+const COMP_LINE_COLOR_MARKET = "#16352e";   // everest - market
 
 function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false } = {}) {
   const canvas = document.getElementById(canvasId);
@@ -1405,7 +1405,7 @@ function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false 
         },
         tooltip: {
           callbacks: {
-            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y == null ? "—" : yFmt(ctx.parsed.y)}`,
+            label: (ctx) => `${ctx.dataset.label}: ${ctx.parsed.y == null ? "-" : yFmt(ctx.parsed.y)}`,
           },
         },
         datalabels: { display: false },
@@ -1434,7 +1434,7 @@ function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false 
 /* ----- Enrollment History (Market tab) ----------------------- */
 // Three multi-year line charts (FTE / Freshman / Total) for the
 // anchor university, plus YoY / 2-Yr / 3-Yr growth tiles above each
-// chart — Excel-style summary. Sourced from `enrollment_history`,
+// chart - Excel-style summary. Sourced from `enrollment_history`,
 // pulled by load_enrollment_history.py.
 
 let enrCharts = {};
@@ -1448,7 +1448,7 @@ function renderEnrollment() {
   const sub = document.getElementById("enr-section-sub");
   if (sub) {
     sub.textContent = anchorCampus
-      ? `${anchorCampus.university_name} — Full-time, Freshman, and Total enrollment year-over-year. (Applications source not yet wired.)`
+      ? `${anchorCampus.university_name} - Full-time, Freshman, and Total enrollment year-over-year. (Applications source not yet wired.)`
       : "Anchor university not found in campus_locations.";
   }
 
@@ -1491,7 +1491,7 @@ function _enrGrowth(curr, prev) {
   return (curr - prev) / prev;
 }
 function _enrFmtPct(v) {
-  if (v == null) return "—";
+  if (v == null) return "-";
   return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
 }
 
@@ -1609,7 +1609,7 @@ const MONTH_NAMES = [
 ];
 
 function renderCompDetailTables() {
-  // Rows ordered by year built, newest first — matches the comp-set
+  // Rows ordered by year built, newest first - matches the comp-set
   // properties table's default sort.
   const selected = PROPERTIES
     .filter((p) => compSelection.has(p.property_key))
@@ -1624,7 +1624,7 @@ function renderCompDetailTables() {
   const yearSet = new Set(ph.map((r) => Number(r.year_)));
   const years = [...yearSet].sort((a, b) => a - b).slice(-5);
 
-  // Anchor month — pull from any property_history row to label the
+  // Anchor month - pull from any property_history row to label the
   // prelease / occupancy tables ("Pre-lease (May)"). Falls back to ''.
   let anchorMonth = "";
   if (ph.length > 0) {
@@ -1634,7 +1634,7 @@ function renderCompDetailTables() {
       if (m >= 1 && m <= 12) anchorMonth = MONTH_NAMES[m - 1];
     }
   }
-  // Replace only the text node — chart-download.js appends a CSV download
+  // Replace only the text node - chart-download.js appends a CSV download
   // button into these title bands, and textContent would wipe it.
   const setTitleText = (el, text) => {
     if (!el) return;
@@ -1652,7 +1652,7 @@ function renderCompDetailTables() {
   if (selected.length === 0) {
     ["comp-table-rates", "comp-table-rent-growth", "comp-table-prelease", "comp-table-occupancy"].forEach((id) => {
       const el = document.getElementById(id);
-      if (el) el.innerHTML = `<thead><tr><th>—</th></tr></thead><tbody><tr><td class="empty-state">No comps selected.</td></tr></tbody>`;
+      if (el) el.innerHTML = `<thead><tr><th>-</th></tr></thead><tbody><tr><td class="empty-state">No comps selected.</td></tr></tbody>`;
     });
     return;
   }
@@ -1801,7 +1801,7 @@ function renderRentGrowthTable(id, selected, propsByKey, lookup, years) {
         ${years.map((y) => `<th class="num">${y}</th>`).join("")}
       </tr>
     </thead>`;
-  // Per-property YoY growth per year (first year blank — no prior).
+  // Per-property YoY growth per year (first year blank - no prior).
   // Track each year's collected growths to average in the footer.
   const yearGrowths = Object.fromEntries(years.map((y) => [y, []]));
   const bodyRows = selected.map((p) => {

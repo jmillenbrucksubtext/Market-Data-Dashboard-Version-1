@@ -7,7 +7,7 @@ new `fte_history` table, and refreshes the two FTE qualifiers
 (fte_growth_yoy, fte_growth_2022) so the Subtext Qualifier Scorecard moves
 them from N/A to live pass/fail.
 
-This is a slim subset of export-data.py — runs in ~30s vs the full pipeline.
+This is a slim subset of export-data.py - runs in ~30s vs the full pipeline.
 Use it when you want to refresh just FTE without re-running every query.
 
 Run:
@@ -55,7 +55,7 @@ WITH current_snap AS (
 ),
 -- Anchor "prior" to the most recent snapshot whose enr_full_time DIFFERS
 -- from current. IPEDS publishes annually per school, so the literal T-1yr
--- snapshot frequently still carries the prior cohort's number — comparing
+-- snapshot frequently still carries the prior cohort's number - comparing
 -- to it returns 0% even when enrollment really did change. Compare-to-
 -- last-change always lands on a meaningfully different cohort.
 prior_yr AS (
@@ -165,7 +165,7 @@ def main() -> int:
     parser = argparse.ArgumentParser(description="Refresh fte_history from Azure SQL.")
     parser.add_argument(
         "--auth", choices=["aad", "sql", "env"], default="aad",
-        help="Auth mode (default: aad — Azure AD interactive).",
+        help="Auth mode (default: aad - Azure AD interactive).",
     )
     args = parser.parse_args()
 

@@ -1,5 +1,5 @@
 /* =============================================================
-   Subtext Living — Market Data Dashboard (client)
+   Subtext Living - Market Data Dashboard (client)
    Reads data.json (produced by export-data.py) and renders the
    College-House-style market dashboard.
    ============================================================= */
@@ -112,7 +112,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     DATA = await res.json();
   } catch (err) {
     document.body.innerHTML =
-      `<div class="empty-state">Couldn't load data.json — ${err}</div>`;
+      `<div class="empty-state">Couldn't load data.json - ${err}</div>`;
     return;
   }
 
@@ -207,11 +207,13 @@ function buildDispatchTicker() {
 
   if (h.url) ticker.href = h.url;
   ticker.title = h.issue
-    ? `The Subtext Dispatch — ${h.issue} (click to open)`
+    ? `The Subtext Dispatch - ${h.issue} (click to open)`
     : "The Subtext Dispatch (click to open)";
 
-  // Features first, then briefs — same order as the dispatch page.
-  const items = [...(h.features || []), ...(h.briefs || [])];
+  // Features first, then briefs - same order as the dispatch page.
+  // House style: no em dashes, even in fetched headline copy.
+  const items = [...(h.features || []), ...(h.briefs || [])]
+    .map((t) => String(t).replace(/—/g, "-"));
 
   // Build a single run, then duplicate it inside the track so the
   // CSS translateX(-50%) loop is seamless.
@@ -256,26 +258,26 @@ function setFreshness() {
 }
 
 function fmtPct(v, digits = 1) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return (v * 100).toFixed(digits) + "%";
 }
 function fmtInt(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_INT.format(Math.round(v));
 }
 function fmtUsd(v) {
-  if (v == null || isNaN(v)) return "—";
+  if (v == null || isNaN(v)) return "-";
   return NUM_FMT_USD.format(v);
 }
 function deltaSpan(v) {
-  if (v == null) return `<span class="delta flat">—</span>`;
+  if (v == null) return `<span class="delta flat">-</span>`;
   const cls = v > 0.005 ? "up" : v < -0.005 ? "down" : "flat";
   const arr = v > 0.005 ? "▲" : v < -0.005 ? "▼" : "";
   return `<span class="delta ${cls}"><span class="arrow">${arr}</span>${fmtPct(v)}</span>`;
 }
 
 function qualifierPill(row) {
-  if (row.qualifier_score == null) return `<span class="qual-mini qual-mini-na">—</span>`;
+  if (row.qualifier_score == null) return `<span class="qual-mini qual-mini-na">-</span>`;
   const pct = Math.round(row.qualifier_score * 100);
   const tier = pct >= 80 ? "good" : pct >= 60 ? "warn" : "bad";
   const label = `${row.qualifier_passes}/${row.qualifier_evaluable}`;
@@ -334,7 +336,7 @@ function visibleScorecardRows() {
   const qualByKey = new Map(
     (DATA.tables.market_qualifiers || []).map((q) => [q.market_key, q]),
   );
-  // Attach affluence (mean origin income) — null when sample is too small
+  // Attach affluence (mean origin income) - null when sample is too small
   const AFF_MIN_N = 100;
   const affByKey = new Map(
     (DATA.tables.market_affluence || []).map((a) => [a.market_key, a]),
@@ -385,7 +387,7 @@ function bindUI() {
     renderAll();
   });
 
-  // Pursuit markets — Subtext's active "Markets - Pursuing" pipeline.
+  // Pursuit markets - Subtext's active "Markets - Pursuing" pipeline.
   const pursuit = document.getElementById("pursuit-only");
   const pursuitLabel = document.getElementById("pursuit-toggle-label");
   // Surface the total in the toggle label so the count is visible even when off.
@@ -437,14 +439,14 @@ function renderKpis(rows) {
   document.getElementById("kpi-beds").textContent = fmtInt(beds);
   const avgBeds = rows.length ? beds / rows.length : 0;
   document.getElementById("kpi-beds-sub").textContent =
-    rows.length ? `${fmtInt(avgBeds)} avg per market` : "—";
+    rows.length ? `${fmtInt(avgBeds)} avg per market` : "-";
 
   // Pipeline beds total
   const pipe = rows.reduce((a, r) => a + (r.beds_pipeline_total || 0), 0);
   document.getElementById("kpi-pipeline").textContent = fmtInt(pipe);
   const pipePct = beds > 0 ? (pipe / beds) : null;
   document.getElementById("kpi-pipeline-sub").textContent =
-    pipePct != null ? `${fmtPct(pipePct, 0)} of existing supply` : "—";
+    pipePct != null ? `${fmtPct(pipePct, 0)} of existing supply` : "-";
 
   // Bed-weighted average rent
   let rentSum = 0, weight = 0;
@@ -457,9 +459,9 @@ function renderKpis(rows) {
   const avgRent = weight > 0 ? rentSum / weight : null;
   document.getElementById("kpi-rent").textContent = fmtUsd(avgRent);
   document.getElementById("kpi-rent-sub").textContent =
-    weight > 0 ? `weighted by ${fmtInt(weight)} beds` : "—";
+    weight > 0 ? `weighted by ${fmtInt(weight)} beds` : "-";
 
-  // page subtitle — element optional (was removed from layout)
+  // page subtitle - element optional (was removed from layout)
   const mc = document.getElementById("market-count");
   if (mc) mc.textContent = fmtInt(totalMarkets);
 }
@@ -535,7 +537,7 @@ if (typeof Chart !== "undefined" && window.ChartDataLabels) {
   Chart.register(window.ChartDataLabels);
 }
 
-/* Shared chart defaults — deck language: no gridlines, bold Pragmatica
+/* Shared chart defaults - deck language: no gridlines, bold Pragmatica
    ticks, no chart-level legend (cards already have headers). */
 const CHART_FONT = "Pragmatica, sans-serif";
 function deckCleanScale(axisOpts = {}) {
@@ -815,7 +817,7 @@ function renderRentGrowth(rows) {
 function renderVelocity() {
   const select = document.getElementById("velocity-market");
   if (select.options.length === 0) {
-    // List markets that have prelease data — labeled by anchor university.
+    // List markets that have prelease data - labeled by anchor university.
     const present = [...new Set(DATA.tables.prelease_velocity.map((r) => r.market_key))];
     const items = present
       .map((k) => ({ key: k, label: shortLabel(k) }))
@@ -930,7 +932,7 @@ function renderIndustryMap() {
   const el = document.getElementById("industry-map");
   if (!el) return;
   if (typeof L === "undefined") {
-    // Leaflet still loading — try again once page load finishes
+    // Leaflet still loading - try again once page load finishes
     window.addEventListener("load", renderIndustryMap, { once: true });
     return;
   }
@@ -944,7 +946,7 @@ function renderIndustryMap() {
       maxBoundsViscosity: 1,
     }).setView([39.5, -98.5], 4);
 
-    // Multiple basemap options — switch via the layer control in the corner.
+    // Multiple basemap options - switch via the layer control in the corner.
     // noWrap: true stops tiles from repeating horizontally at low zooms.
     const baseLayers = {
       "Terrain": L.tileLayer(
@@ -971,7 +973,7 @@ function renderIndustryMap() {
     // Default to Satellite for visual richness
     baseLayers.Satellite.addTo(industryMap);
 
-    // State outlines overlay — non-interactive, thin contrasting stroke so it
+    // State outlines overlay - non-interactive, thin contrasting stroke so it
     // reads on the satellite basemap without obscuring it. Falls back silently
     // if the GeoJSON file is missing.
     const stateOutlines = L.layerGroup();
@@ -1025,10 +1027,10 @@ function renderIndustryMap() {
       fillOpacity: 0.92,
     });
     const scorePct = r.qualifier_score == null
-      ? "—"
+      ? "-"
       : `${Math.round(r.qualifier_score * 100)}%`;
-    const beds = r.existing_beds != null ? fmtInt(r.existing_beds) : "—";
-    const rent = r.avg_rent_per_bed != null ? fmtUsd(r.avg_rent_per_bed) : "—";
+    const beds = r.existing_beds != null ? fmtInt(r.existing_beds) : "-";
+    const rent = r.avg_rent_per_bed != null ? fmtUsd(r.avg_rent_per_bed) : "-";
     const accent = pinColor(r.qualifier_score);
     marker.bindPopup(`
       <div class="market-popup" style="--popup-accent:${accent}">
@@ -1136,7 +1138,7 @@ function renderAnalysisFilter() {
 }
 
 function fmtDateShort(s) {
-  if (!s) return "—";
+  if (!s) return "-";
   const d = new Date(s);
   if (isNaN(d.getTime())) return String(s);
   return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
@@ -1175,17 +1177,17 @@ function renderAnalysis() {
 
   tbody.innerHTML = rows.map((r) => `
     <tr>
-      <td class="analysis-section">${escapeHtml(r.category || "—")}</td>
-      <td>${escapeHtml(r.market_type || "—")}</td>
-      <td class="market-cell">${escapeHtml(r.market_name || "—")}</td>
-      <td class="num">${escapeHtml(r.analyst || "—")}</td>
+      <td class="analysis-section">${escapeHtml(r.category || "-")}</td>
+      <td>${escapeHtml(r.market_type || "-")}</td>
+      <td class="market-cell">${escapeHtml(r.market_name || "-")}</td>
+      <td class="num">${escapeHtml(r.analyst || "-")}</td>
       <td>${escapeHtml(fmtDateShort(r.initial_analysis_date))}</td>
-      <td>${escapeHtml(r.initial_decision || "—")}</td>
+      <td>${escapeHtml(r.initial_decision || "-")}</td>
       <td>${escapeHtml(fmtDateShort(r.ic_date))}</td>
-      <td>${escapeHtml(r.ic_decision || "—")}</td>
-      <td>${escapeHtml(r.status || "—")}</td>
-      <td class="num">${escapeHtml(String(r.est_sites ?? "—"))}</td>
-      <td class="notes-cell" title="${escapeHtml(r.notes || "")}">${escapeHtml(r.notes || "—")}</td>
+      <td>${escapeHtml(r.ic_decision || "-")}</td>
+      <td>${escapeHtml(r.status || "-")}</td>
+      <td class="num">${escapeHtml(String(r.est_sites ?? "-"))}</td>
+      <td class="notes-cell" title="${escapeHtml(r.notes || "")}">${escapeHtml(r.notes || "-")}</td>
     </tr>
   `).join("");
 }

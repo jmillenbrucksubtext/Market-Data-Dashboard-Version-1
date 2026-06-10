@@ -1,6 +1,6 @@
 """
 Patch the rent_growth_3yr and uncaptured_1mi qualifiers in data.json from
-data already present in the file — no SQL refresh required.
+data already present in the file - no SQL refresh required.
 
   rent_growth_3yr  → reads tables.market_history (avg_rent_per_bed by year),
                      pass if each of the last 3 trailing YoY rates is ≥ 3%.
@@ -44,7 +44,7 @@ def _rent_growth_result(history_rows: list[dict]) -> dict:
     if len(by_year) < 4:
         return {
             **base,
-            "actual_display": "—", "actual": None,
+            "actual_display": "-", "actual": None,
             "status": "na", "tier": "na",
             "explanation": f"only {len(by_year)} years of non-zero rent history (need 4)",
         }
@@ -86,7 +86,7 @@ def _uncaptured_result(fte, props: list[dict]) -> dict:
     if not fte:
         return {
             **base,
-            "actual_display": "—", "actual": None,
+            "actual_display": "-", "actual": None,
             "status": "na", "tier": "na",
             "explanation": "no FTE on file",
         }
@@ -108,7 +108,7 @@ def _uncaptured_result(fte, props: list[dict]) -> dict:
         "tier": status,
         "explanation": (
             f"{beds_1mi:,} PBSH beds within 1 mi of campus "
-            f"({len(near)} props) vs {int(fte):,} FTE — "
+            f"({len(near)} props) vs {int(fte):,} FTE - "
             f"capture rate {captured * 100:.1f}%"
         ),
     }

@@ -3,9 +3,9 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Subtext — Market Performance</title>
+  <title>SubHouse - Market Dashboard</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=32">
+  <link rel="stylesheet" href="style.css?v=40">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -84,7 +84,7 @@
           </label>
           <span class="freshness">
             <span>Data as of</span>
-            <span class="value" id="data-as-of">—</span>
+            <span class="value" id="data-as-of">-</span>
           </span>
         </div>
       </header>
@@ -144,23 +144,23 @@
         <div class="kpi-row" id="kpi-row">
           <div class="kpi">
             <div class="kpi-label">Markets Tracked</div>
-            <div class="kpi-value" id="kpi-markets">—</div>
-            <div class="kpi-sub" id="kpi-markets-sub">—</div>
+            <div class="kpi-value" id="kpi-markets">-</div>
+            <div class="kpi-sub" id="kpi-markets-sub">-</div>
           </div>
           <div class="kpi">
             <div class="kpi-label">Total Existing Beds</div>
-            <div class="kpi-value" id="kpi-beds">—</div>
-            <div class="kpi-sub" id="kpi-beds-sub">—</div>
+            <div class="kpi-value" id="kpi-beds">-</div>
+            <div class="kpi-sub" id="kpi-beds-sub">-</div>
           </div>
           <div class="kpi">
             <div class="kpi-label">Pipeline Beds</div>
-            <div class="kpi-value" id="kpi-pipeline">—</div>
-            <div class="kpi-sub" id="kpi-pipeline-sub">—</div>
+            <div class="kpi-value" id="kpi-pipeline">-</div>
+            <div class="kpi-sub" id="kpi-pipeline-sub">-</div>
           </div>
           <div class="kpi">
             <div class="kpi-label">Bed-Weighted Avg Rent</div>
-            <div class="kpi-value" id="kpi-rent">—</div>
-            <div class="kpi-sub" id="kpi-rent-sub">—</div>
+            <div class="kpi-value" id="kpi-rent">-</div>
+            <div class="kpi-sub" id="kpi-rent-sub">-</div>
           </div>
         </div>
 
@@ -172,7 +172,7 @@
               <p>One row per market. Click any column to sort. Click a row to select it.</p>
             </div>
           </header>
-          <div class="result-count" id="result-count">—</div>
+          <div class="result-count" id="result-count">-</div>
           <div class="table-wrap">
             <table id="scorecard">
               <thead>
@@ -194,7 +194,7 @@
           </div>
         </section>
 
-        <!-- Industry charts — bubble pattern shared with the market-detail
+        <!-- Industry charts - bubble pattern shared with the market-detail
              performance section. Each chart sits in its own card with a
              title strip and optional top-right legend / control slot. -->
         <section class="card performance-section industry-charts">
@@ -534,7 +534,7 @@
                   <td><em>derived from</em> <code>MarketReports.snapshot_date</code></td>
                   <td>
                     <code>CASE WHEN MONTH(snapshot_date) ≤ 8 THEN YEAR(snapshot_date) ELSE YEAR(snapshot_date)+1 END</code>
-                    — i.e. the year of the next August move-in.
+                    - i.e. the year of the next August move-in.
                   </td>
                 </tr>
                 <tr>
@@ -602,14 +602,14 @@
            ============================================================ -->
       <section id="forward-view" class="view">
         <iframe class="forward-frame" src="forward-model.html"
-                title="Forward Looking Model — Market Screener" loading="lazy"></iframe>
+                title="Forward Looking Model - Market Screener" loading="lazy"></iframe>
       </section>
 
       </div>
     </div>
   </div>
 
-  <script src="dashboard.js?v=19"></script>
-  <script src="chart-download.js?v=3"></script>
+  <script src="dashboard.js?v=20"></script>
+  <script src="chart-download.js?v=4"></script>
 </body>
 </html>

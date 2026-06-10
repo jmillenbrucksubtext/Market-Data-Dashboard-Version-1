@@ -1,6 +1,6 @@
 """
 Stamp per-market comp-set membership onto each property row in data.json
-and refresh the comp-set rent qualifier. Pure data.json patcher — no SQL.
+and refresh the comp-set rent qualifier. Pure data.json patcher - no SQL.
 
 Comp-set definition (per market):
     Eligibility pool:
@@ -36,7 +36,7 @@ COMP_SET_VINTAGE = 2020
 COMP_SET_TOPN = 5
 COMP_SET_PHASES = {"stable", "lease up"}
 
-RENT_COMPSET_THRESHOLD = 1000   # $/bed — pass if comp-set avg rent > this
+RENT_COMPSET_THRESHOLD = 1000   # $/bed - pass if comp-set avg rent > this
 
 
 def _eligible(p: dict) -> bool:
@@ -80,7 +80,7 @@ def _rent_compset_qualifier_result(comp_props: list[dict]) -> dict:
     if not rents:
         return {
             **base,
-            "actual_display": "—", "actual": None,
+            "actual_display": "-", "actual": None,
             "status": "na", "tier": "na",
             "explanation": "no comp-set properties with rent",
         }

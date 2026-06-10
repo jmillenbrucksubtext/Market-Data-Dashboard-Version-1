@@ -6,7 +6,7 @@ dbo.Enrollments_Manual joined to the IPEDS → market crosswalk and writes
 an `enrollment_history` table into data.json. Used by the Enrollment
 History charts on the Market tab (FTE, Freshman, Total).
 
-dbo.Enrollments_Manual has duplicate (IPEDS, Year) rows in places — we
+dbo.Enrollments_Manual has duplicate (IPEDS, Year) rows in places - we
 collapse with MAX(...) so one row per (IPEDS, Year). IPEDS_CH_Crosswalk
 likewise has duplicate IPEDS↔market rows; deduped via DISTINCT.
 

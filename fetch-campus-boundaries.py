@@ -67,7 +67,7 @@ def overpass_query(lat: float, lng: float) -> dict:
                 return json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             if e.code in (429, 504) and attempt < MAX_RETRIES - 1:
-                print(f"   {e.code} — sleeping {backoff:.0f}s")
+                print(f"   {e.code} - sleeping {backoff:.0f}s")
                 time.sleep(backoff)
                 backoff *= 2
                 continue
@@ -214,8 +214,8 @@ def best_element(elements: list[dict], university: str, lat: float, lng: float) 
     Scoring:
       +10  per identifying keyword from the university name that appears in
            the OSM feature's `name` tag (case-insensitive)
-      + 2  relation (vs way) — multipolygons usually mean a whole campus
-      + log(area) — bigger polygons preferred among equally-named candidates
+      + 2  relation (vs way) - multipolygons usually mean a whole campus
+      + log(area) - bigger polygons preferred among equally-named candidates
     """
     import math
 
@@ -293,7 +293,7 @@ def fetch_campus(market_key: int, university: str, lat: float, lng: float) -> di
         feature["geometry"] = {"type": "MultiPolygon", "coordinates": polys}
 
     out_path.write_text(json.dumps(feature), encoding="utf-8")
-    print(f"   wrote {out_path.name} ({out_path.stat().st_size / 1024:.0f} KB) — matched OSM {best['type']}/{best['id']}")
+    print(f"   wrote {out_path.name} ({out_path.stat().st_size / 1024:.0f} KB) - matched OSM {best['type']}/{best['id']}")
     return {
         "market_key": market_key,
         "university": university,
@@ -354,7 +354,7 @@ def main() -> int:
     for market_key, name, lat, lng in anchors:
         entry = fetch_campus(market_key, name, lat, lng)
         manifest_by_key[market_key] = entry
-        # Only sleep between actual Overpass hits — cached entries return instantly.
+        # Only sleep between actual Overpass hits - cached entries return instantly.
         if entry["status"] == "ok":
             time.sleep(REQUEST_GAP)
 

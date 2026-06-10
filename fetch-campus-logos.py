@@ -9,7 +9,7 @@ Wikipedia API flow per school:
   2. Fetch original image URL: /w/api.php?action=query&prop=pageimages&piprop=original&titles=<title>
   3. Download the image.
 
-Already-fetched files are skipped — re-running is safe and cheap.
+Already-fetched files are skipped - re-running is safe and cheap.
 A manifest is written to assets/campus-logos/_manifest.json.
 
 Run:
@@ -56,7 +56,7 @@ def http_json(url: str) -> dict:
                 return json.loads(r.read().decode("utf-8"))
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < MAX_RETRIES - 1:
-                print(f"   429 — sleeping {backoff:.0f}s")
+                print(f"   429 - sleeping {backoff:.0f}s")
                 time.sleep(backoff)
                 backoff *= 2
                 continue
@@ -73,7 +73,7 @@ def http_bytes(url: str) -> bytes:
                 return r.read()
         except urllib.error.HTTPError as e:
             if e.code == 429 and attempt < MAX_RETRIES - 1:
-                print(f"   429 — sleeping {backoff:.0f}s")
+                print(f"   429 - sleeping {backoff:.0f}s")
                 time.sleep(backoff)
                 backoff *= 2
                 continue
@@ -247,7 +247,7 @@ def main() -> int:
     print(f"{scope} markets to process: {len(targets)}")
     OUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Resume support — if a logo already exists for a market_key, skip fetch.
+    # Resume support - if a logo already exists for a market_key, skip fetch.
     existing = {p.stem: p for p in OUT_DIR.glob("*") if p.is_file() and p.name != "_manifest.json"}
 
     # Preserve existing manifest entries so a partial re-run keeps prior results.
@@ -262,7 +262,7 @@ def main() -> int:
     manifest_by_key: dict[int, dict] = dict(existing_manifest)
     for market_key, name in targets:
         if str(market_key) in existing:
-            print(f"[{market_key}] {name} — already fetched ({existing[str(market_key)].name})")
+            print(f"[{market_key}] {name} - already fetched ({existing[str(market_key)].name})")
             manifest_by_key[market_key] = {
                 "market_key": market_key, "university": name,
                 "file": existing[str(market_key)].name, "status": "ok_existing",

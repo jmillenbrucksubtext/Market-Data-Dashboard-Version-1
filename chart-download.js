@@ -31,7 +31,7 @@
   function pagePrefix() {
     var el = document.getElementById("market-name");
     var name = el ? el.textContent.trim() : "";
-    return name && name !== "—" ? slug(name) + "-" : "";
+    return name && name !== "-" ? slug(name) + "-" : "";
   }
 
   function legendItems(figcaption) {
@@ -188,7 +188,7 @@
     ctx.fillStyle = "#ffffff";
     ctx.fillRect(0, 0, out.width, out.height);
 
-    // Title band — everest, white serif title, market name on the right
+    // Title band - everest, white serif title, market name on the right
     ctx.fillStyle = "#16352e";
     ctx.fillRect(margin, margin, tableW, bandH);
     ctx.fillStyle = "#ffffff";
@@ -196,7 +196,7 @@
     ctx.fillText(title, margin + padX, margin + bandH / 2 + 6 * S);
     var marketEl = document.getElementById("market-name");
     var market = marketEl ? marketEl.textContent.trim() : "";
-    if (market && market !== "—") {
+    if (market && market !== "-") {
       ctx.font = fonts.bandSub;
       ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
       var mw = ctx.measureText(market.toUpperCase()).width;
@@ -270,7 +270,7 @@
       actions.appendChild(makeTableBtn(propsTable, function () { return "Comp-set Properties"; }));
     }
     // The four detail tables: button in each card's green title band.
-    // Titles are read at click time — some update with the data year.
+    // Titles are read at click time - some update with the data year.
     document.querySelectorAll(".comp-table-card").forEach(function (card) {
       var titleEl = card.querySelector(".comp-table-title");
       var table = card.querySelector("table");

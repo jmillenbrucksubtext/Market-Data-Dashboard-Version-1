@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Market Snapshot — Subtext</title>
+<title>SubHouse - Market Snapshot</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-<script src="comp-map.js?v=8" defer></script>
+<script src="comp-map.js?v=9" defer></script>
 <style>
   @font-face {
     font-family: "Pragmatica";
@@ -215,15 +215,15 @@ const C = {
   everest: "#16352e", birch: "#a95818", lime: "#c1d100", warn: "#c79830",
 };
 
-const fmtInt = (v) => v == null ? "—" : Math.round(v).toLocaleString("en-US");
-const fmtUsd = (v) => v == null ? "—" : "$" + Math.round(v).toLocaleString("en-US");
-const fmtPct1 = (v) => v == null ? "—" : (v * 100).toFixed(1) + "%";
-const fmtSigned = (v) => v == null ? "—" : (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
+const fmtInt = (v) => v == null ? "-" : Math.round(v).toLocaleString("en-US");
+const fmtUsd = (v) => v == null ? "-" : "$" + Math.round(v).toLocaleString("en-US");
+const fmtPct1 = (v) => v == null ? "-" : (v * 100).toFixed(1) + "%";
+const fmtSigned = (v) => v == null ? "-" : (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
 const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 
 document.addEventListener("DOMContentLoaded", async () => {
   const marketKey = Number(new URLSearchParams(location.search).get("id"));
-  if (!marketKey) return fail("No market specified — open this page from a market's Report button.");
+  if (!marketKey) return fail("No market specified - open this page from a market's Report button.");
 
   let DATA;
   try {
@@ -231,14 +231,14 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!res.ok) throw new Error("HTTP " + res.status);
     DATA = await res.json();
   } catch (e) {
-    return fail("Couldn't load data.json — " + e);
+    return fail("Couldn't load data.json - " + e);
   }
 
   const T = DATA.tables;
   const M = T.scorecard.find((r) => r.market_key === marketKey);
   if (!M) return fail("Market " + marketKey + " not found.");
 
-  document.title = M.anchor_university + " — Market Snapshot — Subtext";
+  document.title = "SubHouse - " + M.anchor_university + " Market Snapshot";
 
   const quals = (T.market_qualifiers || []).find((r) => r.market_key === marketKey);
   const history = (T.market_history || []).filter((r) => r.market_key === marketKey)
@@ -293,7 +293,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     { l: "Rent YoY", v: fmtSigned(rentYoy), s: prev ? `${prev.year_} → ${last.year_}` : "", cls: rentYoy == null ? "" : rentYoy >= 0 ? "kpi-up" : "kpi-down" },
     { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted" },
     { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
-    { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "—", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data" },
+    { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "-", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data" },
   ];
 
   const qualRows = quals ? quals.results.map((r) => {
@@ -302,7 +302,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       : tier.startsWith("warn") || tier.startsWith("near") ? "dot-warn" : "dot-na";
     return `<div class="qual-row">
       <span class="ql"><span class="dot ${dot}"></span>${esc(r.label)}</span>
-      <span class="qv">${esc(r.actual_display ?? "—")}</span>
+      <span class="qv">${esc(r.actual_display ?? "-")}</span>
     </div>`;
   }).join("") : "";
   const scorePct = quals && quals.evaluable > 0 ? Math.round((quals.passes / quals.evaluable) * 100) : null;
@@ -310,11 +310,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   const compRows = comps.slice(0, 12).map((p) => `
     <tr>
       <td>${esc(p.property_name || "(unnamed)")}</td>
-      <td>${p.yearBuilt ?? "—"}</td>
+      <td>${p.yearBuilt ?? "-"}</td>
       <td>${fmtInt(p.beds)}</td>
-      <td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "—"}</td>
-      <td>${p.avg_rent > 0 ? fmtUsd(p.avg_rent) : "—"}</td>
-      <td>${p.avg_rent_per_sf > 0 ? "$" + p.avg_rent_per_sf.toFixed(2) : "—"}</td>
+      <td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "-"}</td>
+      <td>${p.avg_rent > 0 ? fmtUsd(p.avg_rent) : "-"}</td>
+      <td>${p.avg_rent_per_sf > 0 ? "$" + p.avg_rent_per_sf.toFixed(2) : "-"}</td>
       <td>${fmtPct1(p.occupancy)}</td>
       <td>${fmtPct1(p.prelease)}</td>
     </tr>`).join("");
@@ -357,7 +357,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     <div class="sec">Subtext Qualifier Scorecard</div>
     <div class="qual-wrap">
       <div class="qual-score">
-        <div class="pct">${scorePct != null ? scorePct + "%" : "—"}</div>
+        <div class="pct">${scorePct != null ? scorePct + "%" : "-"}</div>
         <div class="lbl">${quals.passes.toFixed(1)} of ${quals.evaluable} qualifiers passing</div>
       </div>
       <div class="qual-grid">${qualRows}</div>
@@ -376,13 +376,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     </div>
 
     ${anchorRows.length ? `
-    <div class="sec">Enrollment Trend — ${esc(anchorRows[0].university_name)}</div>
+    <div class="sec">Enrollment Trend - ${esc(anchorRows[0].university_name)}</div>
     <div class="chart-card">
       <div class="chart-box"><canvas id="ch-enr"></canvas></div>
     </div>` : ""}
 
     <div class="foot">
-      <span>Subtext Living — Market Snapshot · ${esc(M.anchor_university)}</span>
+      <span>Subtext Living - Market Snapshot · ${esc(M.anchor_university)}</span>
       <span>Page 1 of 2</span>
     </div>
   </div>
@@ -410,7 +410,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         <td>Bed-weighted aggregate · ${comps.length} comps</td>
         <td></td><td>${fmtInt(totBeds)}</td><td></td>
         <td>${fmtUsd(wAvg("avg_rent"))}</td>
-        <td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "—"}</td>
+        <td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "-"}</td>
         <td>${fmtPct1(wAvg("occupancy"))}</td>
         <td>${fmtPct1(wAvg("prelease"))}</td>
       </tr></tfoot>` : ""}
@@ -466,7 +466,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   drawVsBench("ch-rent", "avg_rent_per_bed", (v) => "$" + Math.round(v).toLocaleString(), false);
   drawVsBench("ch-prelease", "prelease", (v) => Math.round(v * 100) + "%", true);
 
-  // ── Competitive Set Map — rendered by comp-map.js into the off-screen
+  // ── Competitive Set Map - rendered by comp-map.js into the off-screen
   // canvas, then copied into the report as an image. comp-map.js reads
   // these globals (normally provided by market.js).
   window.MARKET = M;
@@ -489,7 +489,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       const mapCanvas = document.getElementById("comp-map-canvas");
       const img = document.getElementById("report-comp-map");
       if (mapCanvas && img) img.src = mapCanvas.toDataURL("image/png");
-    } catch (e) { /* map is optional — leave the placeholder */ }
+    } catch (e) { /* map is optional - leave the placeholder */ }
   })();
 
   if (anchorRows.length) {

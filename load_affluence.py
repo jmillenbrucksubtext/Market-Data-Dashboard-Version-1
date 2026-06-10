@@ -163,7 +163,7 @@ def _income_qualifier_result(affluence_row: dict | None) -> dict:
     if not affluence_row or affluence_row.get("mean_origin_income") is None:
         return {
             **base,
-            "actual_display": "—",
+            "actual_display": "-",
             "actual": None,
             "status": "na",
             "tier": "na",
@@ -173,7 +173,7 @@ def _income_qualifier_result(affluence_row: dict | None) -> dict:
     if n < INCOME_QUALIFIER_MIN_N:
         return {
             **base,
-            "actual_display": "—",
+            "actual_display": "-",
             "actual": None,
             "status": "na",
             "tier": "na",
@@ -254,7 +254,7 @@ def _prelease_yoy_qualifier_result(yoy: dict | None) -> dict:
     if not yoy:
         return {
             **base,
-            "actual_display": "—",
+            "actual_display": "-",
             "actual": None,
             "status": "na",
             "tier": "na",
@@ -311,7 +311,7 @@ def patch_prelease_yoy_qualifier(payload: dict) -> int:
 def credit_fraction(result: dict) -> float | None:
     """Per-qualifier credit ∈ [0,1] used for the weighted scorecard rollup.
     Binary qualifiers are 0 or 1; qualifiers carrying a per-component
-    `breakdown` list (e.g. rent_growth_3yr — one component per trailing
+    `breakdown` list (e.g. rent_growth_3yr - one component per trailing
     year) award fractional credit equal to the share of components passing.
     NA qualifiers return None so the caller can exclude them."""
     if result.get("status") == "na":
@@ -356,7 +356,7 @@ def _fte_yoy_qualifier_result(fte_row: dict | None) -> dict:
     if yoy is None:
         return {
             **base,
-            "actual_display": "—", "actual": None,
+            "actual_display": "-", "actual": None,
             "status": "na", "tier": "na",
             "explanation": "no prior-year FTE snapshot",
         }
@@ -389,7 +389,7 @@ def _fte_since_2022_qualifier_result(fte_row: dict | None) -> dict:
     if g is None:
         return {
             **base,
-            "actual_display": "—", "actual": None,
+            "actual_display": "-", "actual": None,
             "status": "na", "tier": "na",
             "explanation": "no 2021-22 FTE baseline",
         }

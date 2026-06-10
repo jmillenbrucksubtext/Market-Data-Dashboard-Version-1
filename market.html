@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Subtext — Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=29">
+  <link rel="stylesheet" href="style.css?v=34">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -333,37 +333,31 @@
           <!-- ============ COMPS TAB ============ -->
           <div class="market-tab-panel" data-panel="comps" hidden>
 
-          <!-- Comp-set map: same Leaflet base as the market map but pins
-               restricted to comp-set members only -->
+          <!-- Comp Map Generator: static deck-style map of the comps
+               selected in the table below — phase markers + callout boxes
+               with leader lines, downloadable as PNG. Rendered by
+               comp-map.js. Replaced the old Leaflet comp-set map. -->
           <section class="card">
             <header class="card-header">
               <div>
-                <h2>Comp-set Map</h2>
-                <p>Only comp-set properties are pinned. Click a row below to highlight it on the map.</p>
+                <h2>Competitive Set Map</h2>
+                <p id="comp-map-summary">Maps the comps selected in the table below. Drag a callout to reposition it, then download.</p>
+              </div>
+              <div class="comp-map-actions">
+                <label class="comp-map-toggle"><input type="checkbox" id="comp-map-rings" checked> Mile rings</label>
+                <select id="comp-map-basemap" class="select" aria-label="Basemap">
+                  <option value="satellite" selected>Satellite</option>
+                  <option value="terrain">Terrain</option>
+                  <option value="street">Street</option>
+                  <option value="light">Light</option>
+                </select>
+                <button type="button" class="comps-select-btn" id="comp-map-reset">Reset layout</button>
+                <button type="button" class="comps-select-btn comp-map-download-btn" id="comp-map-download">Download PNG</button>
               </div>
             </header>
             <div class="card-body">
-              <div class="map-with-legend">
-                <div id="map-comps" class="map-wrap"></div>
-                <div class="map-legend">
-                  <div class="legend-section">
-                    <div class="legend-row">
-                      <span class="legend-line"></span>
-                      <span>Campus boundary</span>
-                    </div>
-                  </div>
-                  <div class="legend-section">
-                    <div class="legend-section-title">Phase</div>
-                    <div class="legend-row">
-                      <span class="legend-shape" data-phase="stable"></span>
-                      <span>Stabilized</span>
-                    </div>
-                    <div class="legend-row">
-                      <span class="legend-shape" data-phase="lease up"></span>
-                      <span>Lease Up</span>
-                    </div>
-                  </div>
-                </div>
+              <div class="comp-map-stage">
+                <canvas id="comp-map-canvas" width="2800" height="2000"></canvas>
               </div>
             </div>
           </section>
@@ -525,6 +519,8 @@
     </div>
   </div>
 
-  <script src="market.js?v=24" defer></script>
+  <script src="market.js?v=26" defer></script>
+  <script src="comp-map.js?v=5" defer></script>
+  <script src="chart-download.js?v=1" defer></script>
 </body>
 </html>

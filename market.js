@@ -28,11 +28,14 @@ let MARKET = null;
 let PROPERTIES = [];
 let CAMPUSES = [];
 let LOGOS = new Map();   // market_key → logo filename (e.g., "14.png")
-let propSortState = { col: "prelease", dir: "desc" };
+// Per-table sort state: the comp-set table defaults to year built
+// (newest first); the all-properties table keeps pre-lease.
+let propSortStates = {
+  "properties-all":   { col: "prelease",  dir: "desc" },
+  "properties-comps": { col: "yearBuilt", dir: "desc" },
+};
 let map = null;
-let mapComps = null;  // Leaflet instance for the Comps tab map
 let propertyMarkers = new Map();  // market map: property_key → leaflet marker
-let propertyMarkersComps = new Map();  // comps map: property_key → leaflet marker
 let compSelection = new Set();  // property_keys currently checked on Comps tab
 let compCharts = {};  // canvas id → Chart instance
 
@@ -716,15 +719,18 @@ function renderQualifiers() {
 
 function bindPropertySort() {
   // Both Market and Comps tabs have their own <table class="properties-table">
-  // — wire sort headers on each one to a shared sort state.
+  // — each table's headers drive its own sort state.
   document.querySelectorAll(".properties-table thead th").forEach((th) => {
     th.addEventListener("click", () => {
+      const tableId = th.closest("table").id;
+      const sortState = propSortStates[tableId];
+      if (!sortState) return;
       const col = th.dataset.sort;
-      if (propSortState.col === col) {
-        propSortState.dir = propSortState.dir === "asc" ? "desc" : "asc";
+      if (sortState.col === col) {
+        sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
       } else {
-        propSortState.col = col;
-        propSortState.dir = th.dataset.type === "num" ? "desc" : "asc";
+        sortState.col = col;
+        sortState.dir = th.dataset.type === "num" ? "desc" : "asc";
       }
       renderProperties();
     });
@@ -777,11 +783,12 @@ function bindCompSelectButtons() {
 function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, selectable = false }) {
   const table = document.getElementById(tableId);
   if (!table) return;
+  const sortState = propSortStates[tableId] || { col: "prelease", dir: "desc" };
   const tbody = table.querySelector("tbody");
   table.querySelectorAll("thead th").forEach((th) => {
     th.classList.remove("sorted-asc", "sorted-desc");
-    if (th.dataset.sort === propSortState.col) {
-      th.classList.add(propSortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
+    if (th.dataset.sort === sortState.col) {
+      th.classList.add(sortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
     }
   });
 
@@ -793,7 +800,7 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
     return;
   }
 
-  const { col, dir } = propSortState;
+  const { col, dir } = sortState;
   const sign = dir === "asc" ? 1 : -1;
   const rows = source.slice().sort((a, b) => {
     const av = a[col], bv = b[col];
@@ -853,13 +860,12 @@ function renderPropertyTable({ tableId, countId, rows: source, emptyMsg, label, 
       if (e.target.closest(".comp-select-cell")) return;
       const pk = Number(tr.dataset.pk);
       if (e.shiftKey) {
-        // Pan the appropriate map — comps map when on Comps tab, market map otherwise.
+        // Pan the market map (Market tab only — the Comps tab map is the
+        // static Comp Map Generator, which doesn't pan).
         const onComps = !!tr.closest('[data-panel="comps"]');
-        const targetMap = onComps ? mapComps : map;
-        const store = onComps ? propertyMarkersComps : propertyMarkers;
-        const marker = store.get(pk);
-        if (marker && targetMap) {
-          targetMap.setView(marker.getLatLng(), Math.max(targetMap.getZoom(), 13), { animate: true });
+        const marker = onComps ? null : propertyMarkers.get(pk);
+        if (marker && map) {
+          map.setView(marker.getLatLng(), Math.max(map.getZoom(), 13), { animate: true });
           marker.openPopup();
         }
         document.querySelectorAll(".properties-table tr.selected").forEach((r) => r.classList.remove("selected"));
@@ -895,9 +901,6 @@ function bindTabs() {
       if (target === "market") {
         if (map) map.invalidateSize();
       } else if (target === "comps") {
-        renderCompsMap().then(() => {
-          if (mapComps) mapComps.invalidateSize();
-        });
         renderCompCharts();
       }
     });
@@ -1040,18 +1043,6 @@ async function renderMap() {
     containerId: "map",
     propertyFilter: () => true,
     markerStore: propertyMarkers,
-  });
-}
-
-// Lazy-init for the Comps tab map. Leaflet renders to 0×0 if the container
-// is hidden when the map is created, so the Comps map is built the first
-// time that tab is shown (see bindTabs()).
-async function renderCompsMap() {
-  if (mapComps) return;
-  mapComps = await buildMap({
-    containerId: "map-comps",
-    propertyFilter: (p) => p.is_comp_set,
-    markerStore: propertyMarkersComps,
   });
 }
 
@@ -1320,6 +1311,9 @@ function renderCompCharts() {
     compYearlySeries(selectedKeys, "prelease"),
     marketYearlySeries(mkKey, "prelease"),
     { yFmt: fmtPctVal, isPct: true });
+
+  // Comp Map Generator (comp-map.js) tracks the same selection.
+  if (window.CompMap) window.CompMap.refresh();
 }
 
 const COMP_LINE_COLOR_COMP   = "#a95818";   // rust — comp aggregate

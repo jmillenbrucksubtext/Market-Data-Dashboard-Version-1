@@ -56,12 +56,17 @@
     },
   };
 
+  /* callout cats get named boxes; icon cats get themed location badges
+     (no names) - a Greek temple for Greek life, a martini glass for
+     nightlife, a bed for residence halls. Venues whose badges would
+     overlap merge into one badge with a count chip. */
   var CATS = [
     { key: "academic",  label: "Academic buildings",    color: "#16352e", mode: "callout", cap: 8 },
     { key: "landmark",  label: "Monuments + landmarks", color: "#a95818", mode: "callout", cap: 5 },
     { key: "athletics", label: "Athletics",             color: "#8c1d18", mode: "callout", cap: 5 },
-    { key: "greek",     label: "Greek life",            color: "#6d4aa0", mode: "zone" },
-    { key: "nightlife", label: "Nightlife",             color: "#c79830", mode: "zone" },
+    { key: "residence", label: "Residence halls",       color: "#38618c", mode: "icon", glyph: "bed" },
+    { key: "greek",     label: "Greek life",            color: "#6d4aa0", mode: "icon", glyph: "temple" },
+    { key: "nightlife", label: "Nightlife",             color: "#c79830", mode: "icon", glyph: "martini" },
   ];
   function catOf(key) { return CATS.find(function (c) { return c.key === key; }); }
 
@@ -69,7 +74,7 @@
     school: null,
     candidates: new Map(),  // cat key -> ranked candidate pois (each with .id)
     selected: new Set(),    // poi ids currently shown as call-outs
-    zones: new Map(),       // cat key -> [{venues, hull}]
+    venues: new Map(),      // icon cat key -> venue pois
     hiddenCats: new Set(),
     basemap: "satellite",
     zoomDelta: 0,
@@ -99,13 +104,12 @@
     return out;
   }
 
-  function activeZones() {
+  function activeVenueCats() {
     var out = [];
     CATS.forEach(function (cat) {
-      if (cat.mode !== "zone" || state.hiddenCats.has(cat.key)) return;
-      (state.zones.get(cat.key) || []).forEach(function (z) {
-        out.push({ cat: cat, venues: z.venues, hull: z.hull });
-      });
+      if (cat.mode !== "icon" || state.hiddenCats.has(cat.key)) return;
+      var venues = state.venues.get(cat.key) || [];
+      if (venues.length) out.push({ cat: cat, venues: venues });
     });
     return out;
   }
@@ -384,56 +388,142 @@
 
   /* ----- Drawing -------------------------------------------------- */
 
-  function drawZones(ctx) {
-    activeZones().forEach(function (z) {
-      var color = z.cat.color;
-      var pts = (z.hull || z.venues.map(function (v) { return [v.lat, v.lng]; }))
-        .map(function (ll) { return project(ll[0], ll[1]); });
+  /* ----- venue icon badges (Greek life / nightlife / res halls) --- */
 
-      ctx.save();
-      ctx.beginPath();
-      if (z.hull && pts.length >= 3) {
-        pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
-        ctx.closePath();
-      } else {
-        // singleton / tiny cluster: a simple disc around the centroid
-        var cx = pts.reduce(function (s, p) { return s + p.x; }, 0) / pts.length;
-        var cy = pts.reduce(function (s, p) { return s + p.y; }, 0) / pts.length;
-        var mpp = (156543.03392 * Math.cos((z.venues[0].lat * Math.PI) / 180)) / Math.pow(2, state.view.z);
-        ctx.arc(cx, cy, 130 / mpp, 0, Math.PI * 2);
-      }
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.18;
-      ctx.fill();
-      ctx.globalAlpha = 0.9;
-      ctx.setLineDash([16, 10]);
-      ctx.strokeStyle = color;
-      ctx.lineWidth = 5;
-      ctx.stroke();
-      ctx.restore();
+  var BADGE_R = 21;         // badge circle radius
+  var BADGE_MERGE_PX = 46;  // badges closer than this merge into one
 
-      // pill label at the centroid
-      var lx = pts.reduce(function (s, p) { return s + p.x; }, 0) / pts.length;
-      var ly = pts.reduce(function (s, p) { return s + p.y; }, 0) / pts.length;
-      var text = z.cat.label + " · " + z.venues.length;
-      ctx.font = "700 22px 'Pragmatica', sans-serif";
-      var tw = ctx.measureText(text).width;
-      var pw = tw + 36, ph = 40, rr = ph / 2;
-      ctx.save();
+  function drawGlyph(ctx, glyph, x, y, color) {
+    ctx.save();
+    ctx.translate(x, y);
+    ctx.fillStyle = color;
+    ctx.strokeStyle = color;
+    ctx.lineCap = "round";
+    if (glyph === "temple") {
+      // pediment
       ctx.beginPath();
-      ctx.moveTo(lx - pw / 2 + rr, ly - ph / 2);
-      ctx.arcTo(lx + pw / 2, ly - ph / 2, lx + pw / 2, ly + ph / 2, rr);
-      ctx.arcTo(lx + pw / 2, ly + ph / 2, lx - pw / 2, ly + ph / 2, rr);
-      ctx.arcTo(lx - pw / 2, ly + ph / 2, lx - pw / 2, ly - ph / 2, rr);
-      ctx.arcTo(lx - pw / 2, ly - ph / 2, lx + pw / 2, ly - ph / 2, rr);
+      ctx.moveTo(0, -12);
+      ctx.lineTo(12, -5);
+      ctx.lineTo(-12, -5);
       ctx.closePath();
-      ctx.fillStyle = color;
-      ctx.globalAlpha = 0.92;
       ctx.fill();
-      ctx.globalAlpha = 1;
+      // columns
+      ctx.lineWidth = 3;
+      [-8, 0, 8].forEach(function (cx) {
+        ctx.beginPath();
+        ctx.moveTo(cx, -2);
+        ctx.lineTo(cx, 8);
+        ctx.stroke();
+      });
+      // base
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(-11, 11);
+      ctx.lineTo(11, 11);
+      ctx.stroke();
+    } else if (glyph === "martini") {
+      // bowl
+      ctx.beginPath();
+      ctx.moveTo(-10, -10);
+      ctx.lineTo(10, -10);
+      ctx.lineTo(0, 1);
+      ctx.closePath();
+      ctx.fill();
+      // stem + foot
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, 1);
+      ctx.lineTo(0, 9);
+      ctx.stroke();
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(-7, 11);
+      ctx.lineTo(7, 11);
+      ctx.stroke();
+      // garnish
+      ctx.beginPath();
+      ctx.arc(6, -13, 3, 0, Math.PI * 2);
+      ctx.fill();
+    } else if (glyph === "bed") {
+      // headboard
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.moveTo(-11, -9);
+      ctx.lineTo(-11, 8);
+      ctx.stroke();
+      // mattress
+      ctx.beginPath();
+      ctx.moveTo(-11, 2);
+      ctx.lineTo(8, 2);
+      ctx.quadraticCurveTo(11, 2, 11, 5);
+      ctx.lineTo(11, 8);
+      ctx.lineTo(-11, 8);
+      ctx.closePath();
+      ctx.fill();
+      // pillow
+      ctx.beginPath();
+      ctx.arc(-6, -1, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      // foot leg
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(11, 8);
+      ctx.lineTo(11, 11);
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
+
+  function drawBadge(ctx, x, y, cat, count) {
+    ctx.save();
+    ctx.shadowColor = "rgba(43, 40, 37, 0.35)";
+    ctx.shadowBlur = 8;
+    ctx.shadowOffsetY = 3;
+    ctx.beginPath();
+    ctx.arc(x, y, BADGE_R, 0, Math.PI * 2);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.97)";
+    ctx.fill();
+    ctx.restore();
+    ctx.beginPath();
+    ctx.arc(x, y, BADGE_R, 0, Math.PI * 2);
+    ctx.strokeStyle = cat.color;
+    ctx.lineWidth = 3.5;
+    ctx.stroke();
+    drawGlyph(ctx, cat.glyph, x, y, cat.color);
+    if (count > 1) {
+      var chipR = 12;
+      var cx = x + BADGE_R - 4, cy = y - BADGE_R + 4;
+      ctx.beginPath();
+      ctx.arc(cx, cy, chipR, 0, Math.PI * 2);
+      ctx.fillStyle = cat.color;
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
       ctx.fillStyle = "#ffffff";
-      ctx.fillText(text, lx - tw / 2, ly + 8);
-      ctx.restore();
+      ctx.font = "700 16px 'Pragmatica', sans-serif";
+      var t = count > 99 ? "99+" : String(count);
+      ctx.fillText(t, cx - ctx.measureText(t).width / 2, cy + 6);
+    }
+  }
+
+  function drawVenueIcons(ctx) {
+    activeVenueCats().forEach(function (vc) {
+      // merge venues whose badges would overlap; the badge sits at the
+      // mean position of its merged venues so a strip reads as one spot
+      var groups = [];
+      vc.venues.forEach(function (v) {
+        var p = project(v.lat, v.lng);
+        if (p.x < -BADGE_R || p.x > W + BADGE_R || p.y < -BADGE_R || p.y > H + BADGE_R) return;
+        var hit = groups.find(function (g) {
+          return Math.hypot(g.x / g.n - p.x, g.y / g.n - p.y) < BADGE_MERGE_PX;
+        });
+        if (hit) { hit.x += p.x; hit.y += p.y; hit.n += 1; }
+        else groups.push({ x: p.x, y: p.y, n: 1 });
+      });
+      groups.forEach(function (g) {
+        drawBadge(ctx, g.x / g.n, g.y / g.n, vc.cat, g.n);
+      });
     });
   }
 
@@ -463,8 +553,8 @@
           return state.selected.has(p.id);
         }).length;
         if (n) entries.push({ type: "dot", color: cat.color, label: cat.label });
-      } else if ((state.zones.get(cat.key) || []).length) {
-        entries.push({ type: "zone", color: cat.color, label: cat.label + " district" });
+      } else if ((state.venues.get(cat.key) || []).length) {
+        entries.push({ type: "badge", color: cat.color, glyph: cat.glyph, cat: cat, label: cat.label });
       }
     });
     if (state.boundary) entries.push({ type: "line", color: "#d32f2f", label: "Campus boundary" });
@@ -508,18 +598,18 @@
         ctx.strokeStyle = "#ffffff";
         ctx.lineWidth = 3;
         ctx.stroke();
-      } else if (e.type === "zone") {
+      } else if (e.type === "badge") {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(ix - 14, iy - 11, 28, 22);
-        ctx.fillStyle = e.color;
-        ctx.globalAlpha = 0.2;
+        ctx.arc(ix, iy, 14, 0, Math.PI * 2);
+        ctx.fillStyle = "#ffffff";
         ctx.fill();
-        ctx.globalAlpha = 0.9;
-        ctx.setLineDash([6, 4]);
         ctx.strokeStyle = e.color;
-        ctx.lineWidth = 3;
+        ctx.lineWidth = 2.5;
         ctx.stroke();
+        ctx.translate(ix, iy);
+        ctx.scale(0.62, 0.62);
+        drawGlyph(ctx, e.glyph, 0, 0, e.color);
         ctx.restore();
       } else {
         ctx.strokeStyle = e.color;
@@ -593,7 +683,7 @@
     }
 
     ctx.drawImage(state.base, 0, 0);
-    drawZones(ctx);
+    drawVenueIcons(ctx);
 
     var items = activeCallouts();
 
@@ -645,14 +735,14 @@
     var items = activeCallouts();
     var latLngs = [[state.school.lat, state.school.lng]];
     items.forEach(function (p) { latLngs.push([p.lat, p.lng]); });
-    activeZones().forEach(function (z) {
-      (z.hull || z.venues.map(function (v) { return [v.lat, v.lng]; }))
-        .forEach(function (ll) { latLngs.push(ll); });
+    var venueCount = 0;
+    activeVenueCats().forEach(function (vc) {
+      venueCount += vc.venues.length;
+      vc.venues.forEach(function (v) { latLngs.push([v.lat, v.lng]); });
     });
 
-    var zoneCount = activeZones().length;
     setUniMapStatus(
-      items.length + " call-outs · " + zoneCount + " shaded district" + (zoneCount === 1 ? "" : "s") +
+      items.length + " call-outs · " + venueCount + " venue icon" + (venueCount === 1 ? "" : "s") +
       " · drag a callout to reposition · drag the map to pan",
     );
 
@@ -689,7 +779,7 @@
     state.school = school;
     state.candidates = new Map();
     state.selected = new Set();
-    state.zones = new Map();
+    state.venues = new Map();
     state.placements = new Map();
     state.center = null;
     state.zoomDelta = 0;
@@ -702,7 +792,12 @@
     fetchCampusPois(school).then(function (pois) {
       if (token !== state.loadToken) return;  // user switched schools mid-fetch
       var byCat = {};
-      pois.forEach(function (p) { (byCat[p.cat] = byCat[p.cat] || []).push(p); });
+      pois.forEach(function (p) {
+        // Dorms ride in the assets as academic (sub building=dormitory);
+        // split them into their own Residence-halls icon category.
+        var cat = p.cat === "academic" && p.sub === "dormitory" ? "residence" : p.cat;
+        (byCat[cat] = byCat[cat] || []).push(p);
+      });
 
       CATS.forEach(function (cat) {
         if (cat.mode === "callout") {
@@ -711,7 +806,7 @@
           state.candidates.set(cat.key, ranked);
           ranked.slice(0, cat.cap).forEach(function (p) { state.selected.add(p.id); });
         } else {
-          state.zones.set(cat.key, buildPoiZones(byCat[cat.key] || []));
+          state.venues.set(cat.key, byCat[cat.key] || []);
         }
       });
 
@@ -735,7 +830,7 @@
           return state.selected.has(p.id);
         }).length;
       } else {
-        count = (state.zones.get(cat.key) || []).reduce(function (n, z) { return n + z.venues.length; }, 0);
+        count = (state.venues.get(cat.key) || []).length;
       }
       return '<label class="uni-poi-toggle">' +
         '<input type="checkbox" data-cat="' + cat.key + '"' + (state.hiddenCats.has(cat.key) ? "" : " checked") + ">" +

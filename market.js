@@ -2216,55 +2216,10 @@ function pickTopPois(list, cap, school) {
     .slice(0, cap);
 }
 
-/* ----- zones: shaded district outlines ------------------------- */
-
 function poiDistM(a, b) {
   const dy = (a.lat - b.lat) * 111320;
   const dx = (a.lng - b.lng) * 111320 * Math.cos(a.lat * Math.PI / 180);
   return Math.hypot(dx, dy);
-}
-
-/* Greedy single-link clustering, then keep clusters of 3+ venues
-   (else the map litters with one-bar circles). If nothing qualifies,
-   keep the largest cluster so small towns still get their district. */
-function buildPoiZones(list, epsM = 280) {
-  const clusters = [];
-  for (const p of list) {
-    const home = clusters.find((c) => c.some((q) => poiDistM(p, q) < epsM));
-    if (home) home.push(p); else clusters.push([p]);
-  }
-  clusters.sort((a, b) => b.length - a.length);
-  let kept = clusters.filter((c) => c.length >= 3);
-  if (!kept.length && clusters.length) kept = [clusters[0]];
-  return kept.map((venues) => ({ venues, hull: expandedHull(venues) }));
-}
-
-/* Monotone-chain convex hull (lng as x, lat as y), padded outward from
-   the centroid so the shading breathes around the venues. */
-function expandedHull(venues, padM = 70) {
-  const pts = venues.map((p) => ({ x: p.lng, y: p.lat }));
-  pts.sort((a, b) => a.x - b.x || a.y - b.y);
-  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
-  const half = (iter) => {
-    const out = [];
-    for (const p of iter) {
-      while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop();
-      out.push(p);
-    }
-    out.pop();
-    return out;
-  };
-  const hull = pts.length >= 3 ? [...half(pts), ...half([...pts].reverse())] : pts;
-  if (hull.length < 3) return null;
-  const cx = hull.reduce((s, p) => s + p.x, 0) / hull.length;
-  const cy = hull.reduce((s, p) => s + p.y, 0) / hull.length;
-  const padLat = padM / 111320;
-  return hull.map((p) => {
-    const dx = p.x - cx, dy = p.y - cy;
-    const len = Math.hypot(dx, dy) || 1;
-    const padLng = padLat / Math.cos(p.y * Math.PI / 180);
-    return [p.y + (dy / len) * padLat, p.x + (dx / len) * padLng];
-  });
 }
 
 /* Greek-letter org names: "Sigma Chi", "Kappa Kappa Gamma", ... */
@@ -2308,7 +2263,8 @@ function classifyPoi(tags) {
       tags.building === "stadium") return "athletics";
   if (/^(monument|memorial)$/.test(tags.historic || "") ||
       /^(attraction|artwork)$/.test(tags.tourism || "")) return "landmark";
-  if (/^(university|college|dormitory)$/.test(tags.building || "") || amenity === "library") return "academic";
+  if (tags.building === "dormitory") return "residence";
+  if (/^(university|college)$/.test(tags.building || "") || amenity === "library") return "academic";
   return null;
 }
 
@@ -2384,8 +2340,8 @@ async function fetchCampusPois(school) {
     return dx * dx + dy * dy;
   };
   const capped = [];
-  for (const cat of POI_CATS) {
-    capped.push(...pois.filter((p) => p.cat === cat.key)
+  for (const cat of new Set(pois.map((p) => p.cat))) {
+    capped.push(...pois.filter((p) => p.cat === cat)
       .sort((a, b) => dist(a) - dist(b))
       .slice(0, POI_CAP_PER_CAT));
   }

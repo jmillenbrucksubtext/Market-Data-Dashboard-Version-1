@@ -104,7 +104,9 @@ def classify(tags: dict) -> str | None:
     if (tags.get("historic") in ("monument", "memorial")
             or tags.get("tourism") in ("attraction", "artwork")):
         return "landmark"
-    if tags.get("building") in ("university", "college", "dormitory") or amenity == "library":
+    if tags.get("building") == "dormitory":
+        return "residence"
+    if tags.get("building") in ("university", "college") or amenity == "library":
         return "academic"
     return None
 

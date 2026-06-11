@@ -1,35 +1,33 @@
 /* LOI-O-MATIC 3000 sidebar ad - links to loi-generator.streamlit.app.
 
-   Aesthetic: 1950s magazine appliance advertisement (Frigidaire energy).
-   Cream paper, mint-and-chrome countertop machine with a big dial, a
-   document going in and a crisp LOI coming out, atomic sparkles, period
-   catalog copy, and a money-back-style "non-binding guarantee" seal.
-   Display type is Alfa Slab One; the script accent is Pacifico. */
+   Aesthetic: modern premium appliance advertisement (Dyson/Miele launch
+   energy). Matte graphite monolith under a showroom spotlight, lime LED
+   touch ring, OLED status strip, a draft feeding in up top and a crisp
+   LOI gliding out below. Wordmark is Space Grotesk; copy is Manrope. */
 (function () {
-  var FONTS = 'https://fonts.googleapis.com/css2?family=Alfa+Slab+One&family=Pacifico&display=swap';
+  var FONTS = 'https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Manrope:wght@300;600&display=swap';
 
   var css = `
 .loi-omatic-ad + .sidebar-footer { margin-top: 0; }
 .loi-omatic-ad {
   margin: auto 12px 0;  /* auto top margin pins the ad stack to the sidebar bottom */
   position: relative;
-  padding: 8px 8px 9px;
+  overflow: hidden;
+  padding: 12px 10px;
   text-align: center;
   user-select: none;
   cursor: pointer;
-  color: #2c2418;
-  background:
-    radial-gradient(circle, rgba(44, 36, 24, 0.08) 1px, transparent 1.5px) 0 0 / 8px 8px,
-    linear-gradient(170deg, #f7f0dd 0%, #f1e7cc 100%);
-  border: 2.5px solid #1f6e63;
-  outline: 1px solid #1f6e63;
-  outline-offset: 2.5px;
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.45);
-  transition: transform 0.35s ease, box-shadow 0.35s ease;
+  color: #e9ebed;
+  background: linear-gradient(180deg, #202327 0%, #121416 100%);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.45);
+  transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
 }
 .loi-omatic-ad:hover {
   transform: translateY(-2px);
-  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.55);
+  border-color: rgba(193, 209, 0, 0.45);
+  box-shadow: 0 14px 28px rgba(0, 0, 0, 0.55);
 }
 
 /* while this ad is visible it pins the stack, so the Memo Chef below it
@@ -37,61 +35,84 @@
 .loi-omatic-ad ~ .memo-chef-ad { margin-top: 5px; }
 
 .loi-omatic-ad .om-name {
-  font-family: "Alfa Slab One", "Rockwell", serif;
+  font-family: "Space Grotesk", "Segoe UI", sans-serif;
+  font-weight: 500;
   white-space: nowrap;
-  font-size: 14px;
-  line-height: 1.05;
-  color: #1f6e63;
-  text-shadow: 1px 1px 0 rgba(44, 36, 24, 0.18);
+  font-size: 13px;
+  line-height: 1.1;
+  letter-spacing: 0.18em;
+  color: #f4f6f7;
 }
-.loi-omatic-ad .om-name sup { font-size: 7px; }
-.loi-omatic-ad svg { display: block; margin: 1px auto 0; }
+.loi-omatic-ad .om-name sup { font-size: 6px; color: #9aa0a6; letter-spacing: 0; }
+.loi-omatic-ad .om-series { color: var(--lime, #c1d100); font-weight: 700; }
+.loi-omatic-ad svg { display: block; margin: 3px auto 0; }
 
-/* the "ding" sparkle over the fresh letter, slow */
-.loi-omatic-ad .om-ding {
+/* the LED touch ring idles through a slow lap */
+.loi-omatic-ad .om-ring {
   transform-box: fill-box;
   transform-origin: center;
-  animation: om-ding 6s ease-in-out infinite;
+  animation: om-ring 9s linear infinite;
 }
-@keyframes om-ding {
-  0%, 82%, 100% { opacity: 0; transform: scale(0.5) rotate(0deg); }
-  90% { opacity: 1; transform: scale(1.15) rotate(20deg); }
+@keyframes om-ring {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
 }
-/* the dial settles on a new setting now and then */
-.loi-omatic-ad .om-needle {
-  transform-box: fill-box;
-  transform-origin: 50% 80%;
-  animation: om-dial 11s ease-in-out infinite;
+
+/* the OLED readout breathes */
+.loi-omatic-ad .om-oled-txt { animation: om-oled 7s ease-in-out infinite; }
+@keyframes om-oled {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
 }
-@keyframes om-dial {
-  0%, 35%, 100% { transform: rotate(-25deg); }
-  45%, 80% { transform: rotate(30deg); }
+
+/* the draft settles into the intake slot */
+.loi-omatic-ad .om-sheet { animation: om-sheet 8s ease-in-out infinite; }
+@keyframes om-sheet {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(2px); }
+}
+
+/* fresh-off-the-line underglow on the finished letter */
+.loi-omatic-ad .om-glow { animation: om-glow 6s ease-in-out infinite; }
+@keyframes om-glow {
+  0%, 100% { opacity: 0.15; }
+  50% { opacity: 0.4; }
 }
 
 .loi-omatic-ad .om-tagline {
-  font-family: Georgia, "Times New Roman", serif;
-  font-style: italic;
-  font-size: 9px;
-  margin-top: 3px;
-  color: #4a3f2c;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 300;
+  font-size: 9.5px;
+  letter-spacing: 0.02em;
+  margin-top: 5px;
+  color: #b9bec3;
+}
+
+.loi-omatic-ad .om-fine {
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 300;
+  font-size: 7px;
+  margin-top: 2px;
+  color: #6f757b;
 }
 
 .loi-omatic-ad .om-cta {
   display: inline-block;
-  margin-top: 6px;
-  padding: 4px 13px 3px;
-  background: #ce3a2e;
-  border: 2px solid #2c2418;
-  box-shadow: 2px 2px 0 #2c2418;
-  font-family: "Alfa Slab One", serif;
+  margin-top: 8px;
+  padding: 5px 16px;
+  border: 1px solid rgba(193, 209, 0, 0.55);
+  border-radius: 999px;
+  font-family: "Manrope", "Segoe UI", sans-serif;
+  font-weight: 600;
   font-size: 8.5px;
-  letter-spacing: 0.06em;
-  color: #f7f0dd;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  letter-spacing: 0.14em;
+  color: var(--lime, #c1d100);
+  background: transparent;
+  transition: background 0.25s ease, color 0.25s ease;
 }
 .loi-omatic-ad:hover .om-cta {
-  transform: translate(1px, 1px);
-  box-shadow: 1px 1px 0 #2c2418;
+  background: var(--lime, #c1d100);
+  color: #121416;
 }
 
 /* hide with the rest of the sidebar furniture on phones; the Memo Chef
@@ -109,67 +130,81 @@
 .loi-omatic-ad.om-hidden ~ .memo-chef-ad { margin-top: auto; }
 `;
 
-  /* The machine: chrome-topped mint cabinet on tapered legs. A messy
-     draft goes in the top slot, the dial swings, three status lamps,
-     and a crisp letter slides out the front with a sparkle. */
+  /* The machine: a matte graphite monolith under a soft spotlight. A
+     draft settles into the brushed intake deck, the lime LED ring idles,
+     the OLED strip reads LOI READY, and the finished letter glides out
+     over a faint underglow. */
   var svg = `
 <svg width="158" height="88" viewBox="0 0 200 112" aria-hidden="true">
   <defs>
-    <linearGradient id="omChrome" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#e9eef0"/>
-      <stop offset="0.5" stop-color="#b7c4c9"/>
-      <stop offset="1" stop-color="#dfe7ea"/>
+    <linearGradient id="omBody" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#34383d"/>
+      <stop offset="0.12" stop-color="#26292d"/>
+      <stop offset="1" stop-color="#191b1e"/>
     </linearGradient>
+    <linearGradient id="omSteel" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#3a3e43"/>
+      <stop offset="0.5" stop-color="#5a5e64"/>
+      <stop offset="1" stop-color="#3a3e43"/>
+    </linearGradient>
+    <radialGradient id="omSpot" cx="0.5" cy="0.25" r="0.75">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.10"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </radialGradient>
   </defs>
-  <!-- period spot-illustration backdrop -->
-  <circle cx="100" cy="58" r="50" fill="#dceee6"/>
-  <!-- atomic sparkles -->
-  <g fill="#ce3a2e">
-    <path d="M30 24 l2 6 6 2 -6 2 -2 6 -2 -6 -6 -2 6 -2 z"/>
-    <path d="M170 78 l1.6 4.8 4.8 1.6 -4.8 1.6 -1.6 4.8 -1.6 -4.8 -4.8 -1.6 4.8 -1.6 z"/>
-  </g>
-  <g stroke="#2c2418" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
-    <!-- messy draft going in -->
-    <g transform="rotate(-14 96 16)">
-      <rect x="88" y="6" width="18" height="22" fill="#fffdf5"/>
-      <path d="M91 11 l12 0 M91 15 l12 0 M91 19 l8 0" stroke-width="1.2" stroke="#8a7a59"/>
+
+  <!-- showroom spotlight -->
+  <rect x="0" y="0" width="200" height="112" fill="url(#omSpot)"/>
+
+  <!-- floor shadow -->
+  <ellipse cx="100" cy="98" rx="52" ry="6" fill="#000" opacity="0.4"/>
+
+  <!-- messy draft settling into the intake -->
+  <g class="om-sheet">
+    <g transform="rotate(-4 99 10)">
+      <rect x="88" y="2" width="22" height="15" rx="1.5" fill="#f5f6f7"/>
+      <path d="M91 6 l16 0 M91 9 l16 0 M91 12 l10 0" stroke="#b6bbc0" stroke-width="1"/>
     </g>
-    <!-- chrome cap -->
-    <rect x="58" y="24" width="84" height="11" rx="5.5" fill="url(#omChrome)"/>
-    <path d="M84 24 l32 0" stroke-width="3.4" stroke="#2c2418"/>
-    <!-- cabinet -->
-    <rect x="54" y="35" width="92" height="56" rx="7" fill="#9fd0bd"/>
-    <path d="M54 50 l92 0" stroke-width="1.6"/>
-    <!-- dial -->
-    <circle cx="86" cy="70" r="13" fill="#fffdf5"/>
-    <path d="M86 59.5 l0 3 M96 70 l-3 0 M86 80.5 l0 -3 M76 70 l3 0" stroke-width="1.4"/>
-    <path class="om-needle" d="M86 70 l0 -8" stroke="#ce3a2e" stroke-width="2.6"/>
-    <circle cx="86" cy="70" r="2" fill="#2c2418" stroke="none"/>
-    <!-- status lamps -->
-    <circle cx="116" cy="62" r="3.2" fill="#ce3a2e"/>
-    <circle cx="127" cy="62" r="3.2" fill="#e8b33c"/>
-    <circle cx="138" cy="62" r="3.2" fill="#5da95d"/>
-    <!-- nameplate -->
-    <rect x="112" y="72" width="30" height="9" rx="2" fill="#fffdf5" stroke-width="1.4"/>
-    <!-- output slot and the fresh LOI -->
-    <path d="M54 84 l-10 0" stroke-width="3"/>
-    <g transform="rotate(8 30 86)">
-      <rect x="16" y="76" width="26" height="19" fill="#fffdf5"/>
-      <text x="29" y="89" text-anchor="middle" font-family="Georgia, serif" font-size="8" font-weight="bold" fill="#1f6e63" stroke="none">LOI</text>
-    </g>
-    <!-- tapered mid-century legs -->
-    <path d="M64 91 l-5 14 M136 91 l5 14" stroke-width="3"/>
-    <path d="M56 105 l8 0 M133 105 l8 0" stroke-width="3"/>
   </g>
-  <!-- ding! -->
-  <path class="om-ding" d="M14 64 l2.4 7 7 2.4 -7 2.4 -2.4 7 -2.4 -7 -7 -2.4 7 -2.4 z" fill="#e8b33c" stroke="#2c2418" stroke-width="1.4"/>
+
+  <!-- brushed top deck with the intake slot -->
+  <rect x="64" y="16" width="72" height="7" rx="3.5" fill="url(#omSteel)"/>
+  <rect x="86" y="18" width="28" height="3" rx="1.5" fill="#0c0d0e"/>
+
+  <!-- monolith body -->
+  <rect x="60" y="23" width="80" height="72" rx="9" fill="url(#omBody)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <path d="M64 30 q-1 30 0 58" stroke="rgba(255,255,255,0.07)" stroke-width="2" fill="none"/>
+
+  <!-- touch dial with idling LED ring -->
+  <circle cx="100" cy="48" r="15" fill="#101214" stroke="#3c4146" stroke-width="1"/>
+  <circle class="om-ring" cx="100" cy="48" r="15" fill="none" stroke="#c1d100" stroke-width="2"
+          stroke-linecap="round" stroke-dasharray="26 68.2"/>
+  <circle cx="100" cy="48" r="2.2" fill="#c1d100"/>
+
+  <!-- status LEDs -->
+  <circle cx="130" cy="30" r="1.6" fill="#c1d100"/>
+  <circle cx="130" cy="36" r="1.6" fill="#3c4146"/>
+
+  <!-- OLED status strip -->
+  <rect x="76" y="68" width="48" height="10" rx="2" fill="#0b0c0d" stroke="#2e3236" stroke-width="1"/>
+  <text class="om-oled-txt" x="100" y="75.2" text-anchor="middle" font-family="Consolas, monospace"
+        font-size="5.4" letter-spacing="1" fill="#c1d100">LOI READY</text>
+
+  <!-- output slot and the finished LOI gliding out -->
+  <rect x="70" y="84" width="60" height="3" rx="1.5" fill="#0c0d0e"/>
+  <ellipse class="om-glow" cx="44" cy="96" rx="22" ry="4" fill="#c1d100" opacity="0.25"/>
+  <g transform="rotate(-3 42 88)">
+    <rect x="28" y="78" width="28" height="19" rx="1.5" fill="#fdfdfb" stroke="#caccc9" stroke-width="0.6"/>
+    <text x="42" y="91" text-anchor="middle" font-family="Georgia, serif" font-size="8" font-weight="bold" fill="#16352e">LOI</text>
+  </g>
 </svg>`;
 
   var html = `
-<div class="om-name">LOI-O-MATIC 3000<sup>&trade;</sup></div>
+<div class="om-name">LOI-O-MATIC <span class="om-series">3000</span><sup>&trade;</sup></div>
 ${svg}
-<div class="om-tagline">"Just add acreage, purchase price, and a dream."</div>
-<div class="om-cta">OPEN THE LOI GENERATOR</div>`;
+<div class="om-tagline">Engineered for non-binding commitment.</div>
+<div class="om-fine">Just add acreage, purchase price, and a dream.</div>
+<div class="om-cta">GENERATE AN LOI</div>`;
 
   function inject() {
     var sidebar = document.querySelector('.sidebar');

@@ -94,13 +94,19 @@
   box-shadow: 1px 1px 0 #2c2418;
 }
 
-/* hide with the rest of the sidebar furniture on phones, and on short
-   screens where two ads plus nav would overflow the sidebar; the Memo
-   Chef takes the pin back */
-@media (max-width: 760px), (max-height: 940px) {
+/* hide with the rest of the sidebar furniture on phones; the Memo Chef
+   takes the pin back */
+@media (max-width: 760px) {
   .loi-omatic-ad { display: none; }
   .loi-omatic-ad ~ .memo-chef-ad { margin-top: auto; }
 }
+
+/* applied by the fit check below when nav plus two ads would overflow the
+   sidebar. A fixed max-height media query can't do this: the laptop-fit
+   zoom in style.css gives the sidebar more effective room than the raw
+   viewport height suggests, so we measure real overflow instead. */
+.loi-omatic-ad.om-hidden { display: none; }
+.loi-omatic-ad.om-hidden ~ .memo-chef-ad { margin-top: auto; }
 `;
 
   /* The machine: chrome-topped mint cabinet on tapered legs. A messy
@@ -187,7 +193,21 @@ ${svg}
     });
     /* sits between the nav and the Memo Chef ad / footer */
     sidebar.insertBefore(ad, sidebar.querySelector('.memo-chef-ad') || sidebar.querySelector('.sidebar-footer'));
+    refit();
   }
+
+  /* Show the ad whenever it actually fits: un-hide, then yield the spot if
+     the sidebar overflows. The +1 forgives sub-pixel rounding under zoom. */
+  function refit() {
+    var sidebar = document.querySelector('.sidebar');
+    var ad = document.querySelector('.loi-omatic-ad');
+    if (!sidebar || !ad) return;
+    ad.classList.remove('om-hidden');
+    if (sidebar.scrollHeight > sidebar.clientHeight + 1) ad.classList.add('om-hidden');
+  }
+
+  window.addEventListener('resize', refit);
+  window.addEventListener('load', refit); /* re-check once fonts settle */
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', inject);

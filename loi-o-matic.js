@@ -125,11 +125,12 @@
   .loi-omatic-ad ~ .memo-chef-ad { margin-top: auto; }
 }
 
-/* applied by the fit check below when the ads would overflow the sidebar.
-   A fixed max-height media query can't do this: the laptop-fit zoom in
-   style.css gives the sidebar more effective room than the raw viewport
-   height suggests, so we measure real overflow instead. The Memo Chef
-   (a coming-soon teaser) yields first; this ad follows if the sidebar is
+/* applied by the fit check below when even scaled-down ads would overflow
+   the sidebar. A fixed max-height media query can't do this: the laptop-fit
+   zoom in style.css gives the sidebar more effective room than the raw
+   viewport height suggests, so we measure real overflow instead. Both ads
+   first shrink together toward a legibility floor; below it the Memo Chef
+   (a coming-soon teaser) hides, and this ad follows if the sidebar is
    still too tight. */
 .loi-omatic-ad.om-hidden,
 .memo-chef-ad.om-hidden { display: none; }
@@ -242,27 +243,47 @@ ${svg}
     refit();
 
     /* the Memo Chef injects after this script; re-run the fit check when it
-       (or anything else) lands in the sidebar. Class toggles inside refit
-       don't retrigger a childList observer, so this can't loop. */
-    new MutationObserver(refit).observe(sidebar, { childList: true });
+       (or anything else) lands in the sidebar. Class and zoom toggles inside
+       refit don't retrigger a childList observer, so this can't loop. */
+    new MutationObserver(scheduleRefit).observe(sidebar, { childList: true });
   }
 
-  /* Show each ad only when everything actually fits: un-hide both, then
-     yield ads until the sidebar stops overflowing - the Memo Chef first,
-     this ad second. The +1 forgives sub-pixel rounding under zoom. */
+  /* Show as much ad as fits. Try both ads together at descending scales
+     (element zoom keeps each card's art intact while it shrinks; the floor
+     keeps the gag legible), then the LOI alone at the same scales, then
+     give up and hide everything. The Memo Chef's stylesheet zoom of 0.82
+     is its baseline, so its inline zoom is 0.82 x the shared factor. The
+     +1 forgives sub-pixel rounding under the page zoom. */
+  var SCALES = [1, 0.93, 0.86, 0.79, 0.72];
   function refit() {
     var sidebar = document.querySelector('.sidebar');
     var ad = document.querySelector('.loi-omatic-ad');
     if (!sidebar || !ad) return;
     var memo = document.querySelector('.memo-chef-ad');
-    function overflowing() { return sidebar.scrollHeight > sidebar.clientHeight + 1; }
+    function fits() { return sidebar.scrollHeight <= sidebar.clientHeight + 1; }
+
     ad.classList.remove('om-hidden');
     if (memo) memo.classList.remove('om-hidden');
-    if (memo && overflowing()) memo.classList.add('om-hidden');
-    if (overflowing()) ad.classList.add('om-hidden');
+    for (var pass = 0; pass < (memo ? 2 : 1); pass++) {
+      if (pass === 1) { memo.classList.add('om-hidden'); memo.style.zoom = ''; }
+      for (var s = 0; s < SCALES.length; s++) {
+        ad.style.zoom = SCALES[s] === 1 ? '' : SCALES[s];
+        if (memo && pass === 0) memo.style.zoom = SCALES[s] === 1 ? '' : 0.82 * SCALES[s];
+        if (fits()) return;
+      }
+    }
+    ad.classList.add('om-hidden');
+    ad.style.zoom = '';
   }
 
-  window.addEventListener('resize', refit);
+  /* coalesce the resize-storm during a window drag into one check a frame */
+  var refitQueued = 0;
+  function scheduleRefit() {
+    cancelAnimationFrame(refitQueued);
+    refitQueued = requestAnimationFrame(refit);
+  }
+
+  window.addEventListener('resize', scheduleRefit);
   window.addEventListener('load', refit); /* re-check once fonts settle */
 
   if (document.readyState === 'loading') {

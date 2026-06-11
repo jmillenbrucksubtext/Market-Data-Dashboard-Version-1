@@ -17,6 +17,9 @@
   margin: auto 10px 14px; /* pins to the sidebar bottom when it's the only ad;
                              the LOI ad's stylesheet overrides this while
                              that ad is visible and pinning the stack itself */
+  flex-shrink: 0;         /* the sidebar is a fixed-height flex column; don't let
+                             it crush the card - the LOI script's fit check hides
+                             whole ads instead when the space runs out */
   zoom: 0.82;             /* keep the gag, surrender the square footage */
   position: relative;
   padding: 9px 10px 8px;

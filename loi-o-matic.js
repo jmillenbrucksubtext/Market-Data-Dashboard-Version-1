@@ -11,6 +11,9 @@
 .loi-omatic-ad + .sidebar-footer { margin-top: 0; }
 .loi-omatic-ad {
   margin: auto 12px 0;  /* auto top margin pins the ad stack to the sidebar bottom */
+  flex-shrink: 0;       /* the sidebar is a fixed-height flex column; without this
+                           it crushes the card instead of letting content overflow,
+                           which mangles the art and blinds the fit check below */
   position: relative;
   overflow: hidden;
   padding: 12px 10px;
@@ -122,12 +125,20 @@
   .loi-omatic-ad ~ .memo-chef-ad { margin-top: auto; }
 }
 
-/* applied by the fit check below when nav plus two ads would overflow the
-   sidebar. A fixed max-height media query can't do this: the laptop-fit
-   zoom in style.css gives the sidebar more effective room than the raw
-   viewport height suggests, so we measure real overflow instead. */
-.loi-omatic-ad.om-hidden { display: none; }
+/* applied by the fit check below when the ads would overflow the sidebar.
+   A fixed max-height media query can't do this: the laptop-fit zoom in
+   style.css gives the sidebar more effective room than the raw viewport
+   height suggests, so we measure real overflow instead. The Memo Chef
+   (a coming-soon teaser) yields first; this ad follows if the sidebar is
+   still too tight. */
+.loi-omatic-ad.om-hidden,
+.memo-chef-ad.om-hidden { display: none; }
 .loi-omatic-ad.om-hidden ~ .memo-chef-ad { margin-top: auto; }
+/* once every ad is gone the footer takes its auto pin back; the ads'
+   adjacent-sibling margin-top:0 rules still match display:none elements
+   and would otherwise strand it mid-sidebar */
+.loi-omatic-ad.om-hidden + .sidebar-footer,
+.loi-omatic-ad.om-hidden ~ .memo-chef-ad.om-hidden + .sidebar-footer { margin-top: auto; }
 `;
 
   /* The machine: a matte graphite monolith under a soft spotlight. A
@@ -229,16 +240,26 @@ ${svg}
     /* sits between the nav and the Memo Chef ad / footer */
     sidebar.insertBefore(ad, sidebar.querySelector('.memo-chef-ad') || sidebar.querySelector('.sidebar-footer'));
     refit();
+
+    /* the Memo Chef injects after this script; re-run the fit check when it
+       (or anything else) lands in the sidebar. Class toggles inside refit
+       don't retrigger a childList observer, so this can't loop. */
+    new MutationObserver(refit).observe(sidebar, { childList: true });
   }
 
-  /* Show the ad whenever it actually fits: un-hide, then yield the spot if
-     the sidebar overflows. The +1 forgives sub-pixel rounding under zoom. */
+  /* Show each ad only when everything actually fits: un-hide both, then
+     yield ads until the sidebar stops overflowing - the Memo Chef first,
+     this ad second. The +1 forgives sub-pixel rounding under zoom. */
   function refit() {
     var sidebar = document.querySelector('.sidebar');
     var ad = document.querySelector('.loi-omatic-ad');
     if (!sidebar || !ad) return;
+    var memo = document.querySelector('.memo-chef-ad');
+    function overflowing() { return sidebar.scrollHeight > sidebar.clientHeight + 1; }
     ad.classList.remove('om-hidden');
-    if (sidebar.scrollHeight > sidebar.clientHeight + 1) ad.classList.add('om-hidden');
+    if (memo) memo.classList.remove('om-hidden');
+    if (memo && overflowing()) memo.classList.add('om-hidden');
+    if (overflowing()) ad.classList.add('om-hidden');
   }
 
   window.addEventListener('resize', refit);

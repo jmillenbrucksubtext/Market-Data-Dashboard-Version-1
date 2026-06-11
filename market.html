@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=44">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -73,10 +73,12 @@
             <span id="s30-badge" class="s30-badge" style="display:none;">★ Subtext-30 focus market</span>
           </div>
 
-          <!-- Tabs: Market (KPIs, charts, map) | Comps (map + comp-set table + per-comp charts) -->
+          <!-- Tabs: Market (KPIs, charts, map) | Comps (map + comp-set table + per-comp charts)
+               | University Information (institutional stats + campus POI map) -->
           <nav class="market-tabs" role="tablist">
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
+            <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
 
           <!-- Two-column layout: main content + sticky qualifier sidebar -->
@@ -495,6 +497,53 @@
 
           </div> <!-- /.market-tab-panel[comps] -->
 
+          <!-- ============ UNIVERSITY INFORMATION TAB ============ -->
+          <div class="market-tab-panel" data-panel="university" hidden>
+
+          <!-- University picker - only shown when the market has more than
+               one tracked campus. Pills built by market.js. -->
+          <div class="uni-picker" id="uni-picker" hidden></div>
+
+          <!-- Headline KPI strip - filled by market.js per selected school -->
+          <div class="kpi-row kpi-row-uni" id="uni-kpis"></div>
+
+          <!-- Institutional statistics - groups built by market.js from
+               university_info (dbo.Schools_Denormal) + enrollment_history
+               (dbo.Enrollments_Manual, the current-year authority). -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>University Statistics</h2>
+                <p id="uni-stats-sub">-</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="uni-stats-grid" id="uni-stats-grid"></div>
+            </div>
+          </section>
+
+          <!-- Campus map - boundary + points of interest pulled live from
+               OpenStreetMap (Overpass API) and cached in the browser.
+               Category toggles built by market.js. -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Campus Map</h2>
+                <p id="uni-map-sub">Academic buildings, landmarks, athletics, Greek life, and nightlife around campus.</p>
+              </div>
+              <div class="uni-map-toggles" id="uni-map-toggles"></div>
+            </header>
+            <div class="card-body">
+              <div id="uni-map" class="map-wrap uni-map-wrap"></div>
+              <p class="uni-map-note">
+                Points of interest from OpenStreetMap via the Overpass API - community-mapped,
+                so coverage varies by campus. Greek houses and nightlife are best-effort matches.
+              </p>
+            </div>
+          </section>
+
+          </div> <!-- /.market-tab-panel[university] -->
+
           <footer class="page-footer">
             <p>
               Source: <code>dbo.Properties</code> (purpose-built only) ·
@@ -529,7 +578,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=33" defer></script>
+  <script src="market.js?v=34" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="chart-download.js?v=4" defer></script>
 </body>

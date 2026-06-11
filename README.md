@@ -34,10 +34,12 @@ and the site reads that file on page load.
 │   ├── fonts/              Mencken Std + Pragmatica (brand fonts)
 │   ├── subtext-*.png       Brand logos
 │   ├── campus-logos/       University logos for the Subtext-30
-│   └── campus-boundaries/  GeoJSON campus footprints (29 universities)
+│   ├── campus-boundaries/  GeoJSON campus footprints (29 universities)
+│   └── campus-pois/        Per-school campus POIs for the University Information tab
 ├── export-data.py          Runs the SQL queries → writes data.json + plans/
 ├── fetch-campus-logos.py   One-off: pulls Wikipedia logos for the Subtext-30
-└── fetch-campus-boundaries.py  One-off: pulls OSM campus polygons
+├── fetch-campus-boundaries.py  One-off: pulls OSM campus polygons
+└── fetch-campus-pois.py    Occasional: bulk-pulls campus POIs from OSM Overpass
 ```
 
 ---

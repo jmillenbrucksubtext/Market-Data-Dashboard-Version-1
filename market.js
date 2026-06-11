@@ -931,9 +931,16 @@ function bindTabs() {
         if (map) map.invalidateSize();
       } else if (target === "comps") {
         renderCompCharts();
+      } else if (target === "university") {
+        renderUniversityTab();
       }
     });
   });
+
+  // Deep link: market.html?id=N#comps or #university opens that tab directly.
+  const hash = location.hash.replace(/^#/, "");
+  const initial = [...tabs].find((t) => t.dataset.tab === hash);
+  if (initial && hash !== "market") initial.click();
 }
 
 /* ----- Map (Leaflet) ----------------------------------------- */
@@ -1894,3 +1901,565 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
         </tr>
       </tfoot>`;
 }
+
+/* ===== University Information tab ============================ */
+/* Institutional stats from `university_info` (dbo.Schools_Denormal,
+   latest CDS/IPEDS year per school) with enrollment headlines from
+   `enrollment_history` (dbo.Enrollments_Manual - the current-year
+   authority). Campus POI map pulls live from OpenStreetMap's Overpass
+   API and caches per school in localStorage. Everything is lazy: built
+   on first visit to the tab. */
+
+const POI_CATS = [
+  { key: "academic",  label: "Academic buildings",    color: "#16352e" },
+  { key: "landmark",  label: "Monuments + landmarks", color: "#a95818" },
+  { key: "athletics", label: "Athletics",             color: "#8c1d18" },
+  { key: "greek",     label: "Greek life",            color: "#6d4aa0" },
+  { key: "nightlife", label: "Nightlife",             color: "#c79830" },
+];
+
+const POI_RADIUS_M = 3200;       // search radius around the campus pin
+const POI_CACHE_TTL_MS = 30 * 24 * 3600 * 1000;
+const POI_CAP_PER_CAT = 250;     // nearest-first cap per category
+const OVERPASS_ENDPOINTS = [
+  "https://overpass-api.de/api/interpreter",
+  "https://overpass.kumi.systems/api/interpreter",
+];
+
+const uniState = {
+  initialized: false,
+  schoolKey: null,
+  map: null,
+  campusMarker: null,
+  poiLayers: new Map(),    // cat key -> L.layerGroup
+  poiHidden: new Set(),    // cat keys the user unticked
+  poiForSchool: null,      // school_key the current POI layers belong to
+  poiFetchSeq: 0,          // stale-response guard when switching schools fast
+};
+
+/* One entry per distinct school in this market (campus_locations carries
+   one duplicate row per Schools_Denormal year - dedupe by school_key),
+   joined to its university_info stats row. Anchor first, then by size. */
+function uniSchools() {
+  const infoByKey = new Map(
+    (DATA.tables.university_info || [])
+      .filter((r) => r.market_key === MARKET.market_key)
+      .map((r) => [r.school_key, r]),
+  );
+  const seen = new Map();
+  for (const c of CAMPUSES) {
+    if (c.campus_lat == null || c.campus_lng == null) continue;
+    if (!seen.has(c.school_key)) {
+      seen.set(c.school_key, {
+        school_key: c.school_key,
+        university_name: c.university_name,
+        ipeds_id: c.ipeds_id,
+        lat: c.campus_lat,
+        lng: c.campus_lng,
+        enrollment: c.total_enrollment,
+        info: infoByKey.get(c.school_key) || null,
+      });
+    }
+  }
+  return [...seen.values()].sort((a, b) => {
+    const aAnchor = a.university_name === MARKET.anchor_university ? 1 : 0;
+    const bAnchor = b.university_name === MARKET.anchor_university ? 1 : 0;
+    if (aAnchor !== bAnchor) return bAnchor - aAnchor;
+    return (b.enrollment || 0) - (a.enrollment || 0);
+  });
+}
+
+function renderUniversityTab() {
+  if (uniState.initialized) {
+    if (uniState.map) uniState.map.invalidateSize();
+    return;
+  }
+  uniState.initialized = true;
+
+  const schools = uniSchools();
+  if (!schools.length) {
+    document.getElementById("uni-stats-grid").innerHTML =
+      `<div class="empty-state">No tracked university for this market.</div>`;
+    document.getElementById("uni-map").innerHTML =
+      `<div class="empty-state">No campus coordinates on file.</div>`;
+    return;
+  }
+
+  const picker = document.getElementById("uni-picker");
+  if (schools.length > 1) {
+    picker.hidden = false;
+    picker.innerHTML = schools.map((s) => `
+      <button type="button" class="uni-pill" data-school="${s.school_key}">
+        ${escapeHtml(s.university_name)}
+      </button>`).join("");
+    picker.querySelectorAll(".uni-pill").forEach((btn) => {
+      btn.addEventListener("click", () => selectUniversity(Number(btn.dataset.school)));
+    });
+  }
+
+  selectUniversity(schools[0].school_key);
+}
+
+function selectUniversity(schoolKey) {
+  if (uniState.schoolKey === schoolKey) return;
+  uniState.schoolKey = schoolKey;
+  const school = uniSchools().find((s) => s.school_key === schoolKey);
+  if (!school) return;
+
+  document.querySelectorAll("#uni-picker .uni-pill").forEach((btn) => {
+    btn.classList.toggle("active", Number(btn.dataset.school) === schoolKey);
+  });
+
+  renderUniKpis(school);
+  renderUniStats(school);
+  renderUniMap(school);
+}
+
+/* Latest + prior year from enrollment_history for one school. */
+function uniEnrollmentLatest(ipeds) {
+  const series = (DATA.tables.enrollment_history || [])
+    .filter((r) => r.ipeds_id === ipeds)
+    .sort((a, b) => a.year_ - b.year_);
+  return {
+    latest: series[series.length - 1] || null,
+    prior: series[series.length - 2] || null,
+  };
+}
+
+/* Money / income fields use 0 to mean "not reported". */
+function nzMoney(v) {
+  return v == null || v === 0 || isNaN(v) ? null : v;
+}
+
+function uniYoy(cur, prev) {
+  if (cur == null || prev == null || !prev) return null;
+  return cur / prev - 1;
+}
+
+function renderUniKpis(school) {
+  const info = school.info || {};
+  const { latest, prior } = uniEnrollmentLatest(school.ipeds_id);
+
+  const totalYoy = uniYoy(latest?.total_enrollment, prior?.total_enrollment);
+  const ftYoy = uniYoy(latest?.full_time_enrollment, prior?.full_time_enrollment);
+  const bedsReported = info.beds_on_campus_reported || null;
+  const bedsComputed = info.beds_on_campus_computed || null;
+  const beds = bedsReported || bedsComputed;
+
+  const kpis = [
+    {
+      label: "Total Enrollment",
+      value: fmtInt(latest?.total_enrollment),
+      sub: latest ? `${latest.year_}${totalYoy != null ? ` · ${deltaSpan(totalYoy)} YoY` : ""}` : "-",
+    },
+    {
+      label: "Full-Time Enrollment",
+      value: fmtInt(latest?.full_time_enrollment),
+      sub: latest ? `${latest.year_}${ftYoy != null ? ` · ${deltaSpan(ftYoy)} YoY` : ""}` : "-",
+    },
+    {
+      label: "On-Campus Beds",
+      value: fmtInt(beds),
+      sub: beds ? (bedsReported ? "reported" : "computed") : "not reported",
+    },
+    {
+      label: "Admit Rate",
+      value: fmtPct(info.admit_rate),
+      sub: info.applied_first_year ? `${fmtInt(info.applied_first_year)} applied` : "-",
+    },
+    {
+      label: "Tuition (In-State)",
+      value: fmtUsd(nzMoney(info.tuition_in_state)),
+      sub: nzMoney(info.tuition_out_of_state)
+        ? `${fmtUsd(nzMoney(info.tuition_out_of_state))} out-of-state` : "-",
+    },
+  ];
+
+  document.getElementById("uni-kpis").innerHTML = kpis.map((k) => `
+    <div class="kpi">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join("");
+}
+
+function uniStatRow(label, value, hint) {
+  return `<div class="uni-stat-row"${hint ? ` title="${escapeHtml(hint)}"` : ""}>
+    <dt>${escapeHtml(label)}</dt><dd>${value}</dd></div>`;
+}
+
+function renderUniStats(school) {
+  const info = school.info;
+  const sub = document.getElementById("uni-stats-sub");
+  const grid = document.getElementById("uni-stats-grid");
+
+  if (!info) {
+    sub.textContent = `${school.university_name} - no institutional stats on file.`;
+    grid.innerHTML = `<div class="empty-state">No Schools_Denormal row for this campus.</div>`;
+    return;
+  }
+
+  sub.textContent =
+    `${school.university_name} · ${info.is_public ? "Public" : "Private"} · ` +
+    `latest reported year ${info.enrollment_year} · source dbo.Schools_Denormal`;
+
+  const { latest, prior } = uniEnrollmentLatest(school.ipeds_id);
+  const trend = (DATA.tables.enrollment_trend || []).find((r) => r.ipeds_id === school.ipeds_id);
+
+  /* Enrollment - headline numbers from Enrollments_Manual when we have
+     them (current-year authority); Schools_Denormal as fallback. */
+  const enrRows = latest ? [
+    uniStatRow("Total enrollment", `${fmtInt(latest.total_enrollment)} <span class="uni-stat-note">${latest.year_}</span>`),
+    uniStatRow("Full-time enrollment", fmtInt(latest.full_time_enrollment)),
+    uniStatRow("Undergraduate", fmtInt(latest.undergrad_enrollment)),
+    uniStatRow("Graduate", fmtInt(latest.graduate_enrollment)),
+    uniStatRow("Freshman class", fmtInt(latest.freshman_enrollment)),
+    uniStatRow("YoY change (total)", deltaSpan(uniYoy(latest.total_enrollment, prior?.total_enrollment))),
+    uniStatRow("5-yr CAGR (total)", deltaSpan(trend?.cagr_5yr)),
+  ] : [
+    uniStatRow("Total enrollment", `${fmtInt(info.enrollment_total)} <span class="uni-stat-note">${info.enrollment_year}</span>`),
+    uniStatRow("Full-time undergrad", fmtInt(info.enr_ft_undergrad)),
+    uniStatRow("Part-time undergrad", fmtInt(info.enr_pt_undergrad)),
+    uniStatRow("Full-time graduate", fmtInt(info.enr_ft_grad)),
+    uniStatRow("Part-time graduate", fmtInt(info.enr_pt_grad)),
+  ];
+
+  /* On-campus housing */
+  const housingChips = [
+    ["has_dorms_coed", "Coed dorms"],
+    ["has_dorms_men", "Men's dorms"],
+    ["has_dorms_women", "Women's dorms"],
+    ["has_apts_single", "Single-student apts"],
+    ["has_apts_married", "Married housing"],
+    ["has_housing_greek", "Greek housing"],
+    ["has_housing_intl", "International"],
+    ["has_housing_disabled", "Accessible"],
+    ["has_housing_coop", "Co-op"],
+  ].filter(([k]) => info[k]).map(([, l]) => `<span class="uni-chip">${l}</span>`).join("");
+
+  const housingRows = [
+    uniStatRow("On-campus beds (reported)", fmtInt(info.beds_on_campus_reported || null)),
+    uniStatRow("On-campus beds (computed)", fmtInt(info.beds_on_campus_computed || null),
+      "Computed from enrollment x share of undergrads living on campus"),
+    uniStatRow("Undergrads on campus", fmtPct(info.pct_on_campus)),
+    uniStatRow("Undergrads off campus", fmtPct(info.pct_off_campus)),
+    uniStatRow("Room rate (academic yr)", fmtUsd(nzMoney(info.rate_room_yearly))),
+    uniStatRow("Board rate (academic yr)", fmtUsd(nzMoney(info.rate_board_yearly))),
+    uniStatRow("Room rate (monthly avg)", fmtUsd(nzMoney(info.rate_room_monthly))),
+    uniStatRow("On- vs off-campus cost delta", nzMoney(info.cost_housing_delta) != null
+      ? fmtUsd(info.cost_housing_delta) : "-",
+      "Annual on-campus housing cost minus the off-campus equivalent"),
+    housingChips ? `<div class="uni-stat-row uni-stat-row-chips"><dt>Housing offered</dt><dd>${housingChips}</dd></div>` : "",
+  ];
+
+  /* Admissions funnel */
+  const yieldRate = info.enrolled_first_year && info.admitted_first_year
+    ? info.enrolled_first_year / info.admitted_first_year : null;
+  const admissionsRows = [
+    uniStatRow("Applied (first-year)", fmtInt(info.applied_first_year)),
+    uniStatRow("Admitted (first-year)", fmtInt(info.admitted_first_year)),
+    uniStatRow("Admit rate", fmtPct(info.admit_rate)),
+    uniStatRow("Enrolled (first-year)", fmtInt(info.enrolled_first_year)),
+    uniStatRow("Yield", fmtPct(yieldRate), "Enrolled / admitted"),
+    uniStatRow("Applied (transfer)", fmtInt(info.applied_transfer)),
+    uniStatRow("Transfer admit rate", fmtPct(info.transfer_admit_rate)),
+    uniStatRow("Enrolled (transfer)", fmtInt(info.enrolled_transfer)),
+  ];
+
+  /* Cost of attendance */
+  const costRows = [
+    uniStatRow("Tuition (in-state)", fmtUsd(nzMoney(info.tuition_in_state))),
+    uniStatRow("Tuition (out-of-state)", fmtUsd(nzMoney(info.tuition_out_of_state))),
+    uniStatRow("Cost / credit hour (in-state)", fmtUsd(nzMoney(info.credit_hour_in_state))),
+    uniStatRow("Cost / credit hour (out-of-state)", fmtUsd(nzMoney(info.credit_hour_out_of_state))),
+  ];
+
+  /* Student profile */
+  const profileRows = [
+    uniStatRow("Undergrads in-state", fmtPct(info.pct_in_state)),
+    uniStatRow("Undergrads out-of-state", fmtPct(info.pct_out_of_state)),
+    uniStatRow("Average student age", info.student_age_avg ? fmtNum(info.student_age_avg, 0) : "-"),
+    uniStatRow("Parent income (avg)", fmtUsd(nzMoney(info.parent_income_avg))),
+    uniStatRow("Parent income (median)", fmtUsd(nzMoney(info.parent_income_med))),
+    uniStatRow("Control", info.is_public ? "Public" : "Private"),
+  ];
+
+  const groups = [
+    ["Enrollment", enrRows, latest ? "Enrollments_Manual" : "Schools_Denormal"],
+    ["On-Campus Housing", housingRows, null],
+    ["Admissions", admissionsRows, null],
+    ["Cost of Attendance", costRows, null],
+    ["Student Profile", profileRows, null],
+  ];
+
+  grid.innerHTML = groups.map(([title, rows, note]) => `
+    <div class="uni-stat-group">
+      <div class="uni-stat-group-title">${title}${note ? `<span class="uni-stat-group-note">${note}</span>` : ""}</div>
+      <dl class="uni-stat-list">${rows.join("")}</dl>
+    </div>`).join("");
+}
+
+/* ----- Campus POI map ---------------------------------------- */
+
+async function renderUniMap(school) {
+  const container = document.getElementById("uni-map");
+  if (!container) return;
+
+  if (typeof L === "undefined") {
+    await new Promise((r) => window.addEventListener("load", r, { once: true }));
+    if (typeof L === "undefined") {
+      container.innerHTML = `<div class="empty-state">Map library failed to load.</div>`;
+      return;
+    }
+  }
+
+  if (!uniState.map) {
+    uniState.map = L.map("uni-map", {
+      center: [school.lat, school.lng],
+      zoom: 15,
+      scrollWheelZoom: true,
+      preferCanvas: true,    // hundreds of POI circle markers
+      minZoom: 8,
+      worldCopyJump: false,
+      maxBounds: [[-85, -180], [85, 180]],
+      maxBoundsViscosity: 1,
+    });
+    const baseLayers = {
+      "Street": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors", maxZoom: 19, noWrap: true,
+      }),
+      "Satellite": L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles © Esri, Maxar, Earthstar Geographics", maxZoom: 19, noWrap: true },
+      ),
+      "Light": L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
+        attribution: "© OSM · © CARTO", subdomains: "abcd", maxZoom: 19, noWrap: true,
+      }),
+    };
+    baseLayers.Street.addTo(uniState.map);
+    L.control.layers(baseLayers, null, { position: "topright", collapsed: true }).addTo(uniState.map);
+    addFullscreenControl(uniState.map);
+
+    // Campus boundary is a market-level asset; add once.
+    try {
+      const gjRes = await fetch(`assets/campus-boundaries/${MARKET.market_key}.geojson`, { cache: "no-cache" });
+      if (gjRes.ok) {
+        const gj = await gjRes.json();
+        L.geoJSON(gj, {
+          style: { color: "#d32f2f", weight: 2, opacity: 0.95, fillColor: "#d32f2f", fillOpacity: 0.10 },
+          interactive: false,
+        }).addTo(uniState.map);
+      }
+    } catch { /* missing boundary file is fine */ }
+  } else {
+    uniState.map.setView([school.lat, school.lng], 15);
+  }
+  uniState.map.invalidateSize();
+
+  if (uniState.campusMarker) uniState.campusMarker.remove();
+  uniState.campusMarker = L.marker([school.lat, school.lng], {
+    icon: campusMarkerIcon(school.university_name === MARKET.anchor_university, MARKET.market_key),
+    zIndexOffset: 1000,
+  }).addTo(uniState.map).bindPopup(
+    `<div class="map-popup"><div class="map-popup-head">
+       <div class="map-popup-eyebrow">Campus</div>
+       <div class="map-popup-title">${escapeHtml(school.university_name)}</div>
+     </div></div>`,
+    { className: "market-popup-wrapper", maxWidth: 280 },
+  );
+
+  loadUniPois(school);
+}
+
+function setUniMapStatus(text) {
+  const el = document.getElementById("uni-map-sub");
+  if (el) el.textContent = text;
+}
+
+async function loadUniPois(school) {
+  if (uniState.poiForSchool === school.school_key) return;
+  const seq = ++uniState.poiFetchSeq;
+
+  // clear the previous school's layers
+  for (const lg of uniState.poiLayers.values()) lg.remove();
+  uniState.poiLayers.clear();
+  document.getElementById("uni-map-toggles").innerHTML = "";
+
+  setUniMapStatus("Loading points of interest from OpenStreetMap ...");
+  let pois = null;
+  try {
+    pois = await fetchCampusPois(school);
+  } catch (err) {
+    if (seq !== uniState.poiFetchSeq) return;
+    setUniMapStatus(`Couldn't load points of interest (${err.message || err}). Re-open the tab to retry.`);
+    uniState.poiForSchool = null;
+    return;
+  }
+  if (seq !== uniState.poiFetchSeq) return;   // user switched schools mid-fetch
+  uniState.poiForSchool = school.school_key;
+
+  const byCat = new Map(POI_CATS.map((c) => [c.key, []]));
+  for (const p of pois) byCat.get(p.cat)?.push(p);
+
+  for (const cat of POI_CATS) {
+    const list = byCat.get(cat.key);
+    const lg = L.layerGroup();
+    for (const p of list) {
+      const m = L.circleMarker([p.lat, p.lng], {
+        radius: 6, color: "#ffffff", weight: 1.5,
+        fillColor: cat.color, fillOpacity: 0.92,
+      });
+      m.bindPopup(`
+        <div class="map-popup"><div class="map-popup-head">
+          <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label}</div>
+          <div class="map-popup-title">${escapeHtml(p.name)}</div>
+        </div>${p.sub ? `<div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${escapeHtml(p.sub)}</span></div></div>` : ""}</div>`,
+        { className: "market-popup-wrapper", maxWidth: 280 });
+      lg.addLayer(m);
+    }
+    uniState.poiLayers.set(cat.key, lg);
+    if (!uniState.poiHidden.has(cat.key)) lg.addTo(uniState.map);
+  }
+
+  renderUniPoiToggles(byCat);
+  setUniMapStatus(`${pois.length} points of interest within ~2 miles of campus · OpenStreetMap`);
+}
+
+function renderUniPoiToggles(byCat) {
+  const wrap = document.getElementById("uni-map-toggles");
+  wrap.innerHTML = POI_CATS.map((cat) => `
+    <label class="uni-poi-toggle">
+      <input type="checkbox" data-cat="${cat.key}" ${uniState.poiHidden.has(cat.key) ? "" : "checked"}>
+      <span class="uni-poi-dot" style="background:${cat.color}"></span>
+      ${cat.label} <span class="uni-poi-count">${byCat.get(cat.key)?.length ?? 0}</span>
+    </label>`).join("");
+  wrap.querySelectorAll("input[data-cat]").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      const lg = uniState.poiLayers.get(cb.dataset.cat);
+      if (!lg) return;
+      if (cb.checked) { uniState.poiHidden.delete(cb.dataset.cat); lg.addTo(uniState.map); }
+      else { uniState.poiHidden.add(cb.dataset.cat); lg.remove(); }
+    });
+  });
+}
+
+/* Greek-letter org names: "Sigma Chi", "Kappa Kappa Gamma", ... */
+const GREEK_WORDS = "Alpha|Beta|Gamma|Delta|Epsilon|Zeta|Eta|Theta|Iota|Kappa|Lambda|Mu|Nu|Xi|Omicron|Pi|Rho|Sigma|Tau|Upsilon|Phi|Chi|Psi|Omega";
+
+/* Equality-only clauses with the tag filter FIRST: Overpass value-regex
+   filters can't use the (key,value) index and scan the key worldwide,
+   which blows any sane timeout. Even so, a live per-campus query takes
+   minutes - this is the FALLBACK path; the normal path is the static
+   asset prefetched by fetch-campus-pois.py. */
+function overpassQuery(lat, lng) {
+  const around = `(around:${POI_RADIUS_M},${lat},${lng})`;
+  const clauses = [
+    ["building", "university", true], ["building", "college", true],
+    ["building", "dormitory", true], ["amenity", "library", true],
+    ["historic", "monument", true], ["historic", "memorial", true],
+    ["tourism", "attraction", true], ["tourism", "artwork", true],
+    ["leisure", "stadium", true], ["building", "stadium", true],
+    ["leisure", "sports_centre", true],
+    ["club", "fraternity", false], ["club", "sorority", false],
+    ["amenity", "fraternity", false], ["amenity", "sorority", false],
+    ["building", "fraternity", false], ["building", "sorority", false],
+    ["amenity", "bar", true], ["amenity", "pub", true],
+    ["amenity", "nightclub", true], ["amenity", "biergarten", true],
+  ].map(([k, v, named]) =>
+    `  nwr["${k}"="${v}"]${named ? `["name"]` : ""}${around};`,
+  ).join("\n");
+  return `[out:json][timeout:180];\n(\n${clauses}\n);\nout center tags;`;
+}
+
+/* Tag-based classification; order matters (most specific first). */
+function classifyPoi(tags) {
+  const amenity = tags.amenity || "";
+  const name = tags.name || "";
+  if (/^(bar|pub|nightclub|biergarten)$/.test(amenity)) return "nightlife";
+  if (/^(fraternity|sorority)$/.test(tags.club || "") ||
+      /^(fraternity|sorority)$/.test(amenity) ||
+      /fraternity|sorority/i.test(name) ||
+      (tags.building && new RegExp(`^(${GREEK_WORDS}) (${GREEK_WORDS})`).test(name))) return "greek";
+  if (tags.leisure === "stadium" || tags.leisure === "sports_centre" ||
+      tags.building === "stadium") return "athletics";
+  if (/^(monument|memorial)$/.test(tags.historic || "") ||
+      /^(attraction|artwork)$/.test(tags.tourism || "")) return "landmark";
+  if (/^(university|college|dormitory)$/.test(tags.building || "") || amenity === "library") return "academic";
+  return null;
+}
+
+async function fetchCampusPois(school) {
+  // 1. Static asset prefetched by fetch-campus-pois.py - the normal path.
+  try {
+    const res = await fetch(`assets/campus-pois/${school.school_key}.json`, { cache: "no-cache" });
+    if (res.ok) {
+      const asset = await res.json();
+      if (Array.isArray(asset.pois)) return asset.pois;
+    }
+  } catch { /* fall through to live Overpass */ }
+
+  // 2. Browser cache of a previous live fetch.
+  const cacheKey = `uniPoi.v1.${school.school_key}`;
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
+    if (cached && Date.now() - cached.t < POI_CACHE_TTL_MS) return cached.pois;
+  } catch { /* bad cache entry; refetch */ }
+
+  // 3. Live Overpass - slow (the query takes minutes server-side).
+  setUniMapStatus("No prefetched POI file for this campus - querying OpenStreetMap live (can take a few minutes) ...");
+  const query = overpassQuery(school.lat, school.lng);
+  let lastErr = null;
+  let json = null;
+  for (const endpoint of OVERPASS_ENDPOINTS) {
+    try {
+      const res = await fetch(endpoint, {
+        method: "POST",
+        headers: { "Content-Type": "application/x-www-form-urlencoded" },
+        body: "data=" + encodeURIComponent(query),
+        signal: AbortSignal.timeout(190000),
+      });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      json = await res.json();
+      break;
+    } catch (err) {
+      lastErr = err;
+    }
+  }
+  if (!json) throw lastErr || new Error("Overpass unavailable");
+
+  const seen = new Set();
+  const pois = [];
+  for (const el of json.elements || []) {
+    const id = `${el.type}/${el.id}`;
+    if (seen.has(id)) continue;
+    seen.add(id);
+    const tags = el.tags || {};
+    const lat = el.lat ?? el.center?.lat;
+    const lng = el.lon ?? el.center?.lon;
+    if (lat == null || lng == null) continue;
+    const cat = classifyPoi(tags);
+    if (!cat) continue;
+    const name = tags.name || tags["name:en"] || "(unnamed)";
+    const sub = tags.amenity || tags.leisure || tags.historic || tags.tourism || tags.building || "";
+    pois.push({ cat, name, lat, lng, sub });
+  }
+
+  // nearest-first cap per category so dense downtowns don't swamp the map
+  const dist = (p) => {
+    const dx = (p.lng - school.lng) * Math.cos(school.lat * Math.PI / 180);
+    const dy = p.lat - school.lat;
+    return dx * dx + dy * dy;
+  };
+  const capped = [];
+  for (const cat of POI_CATS) {
+    capped.push(...pois.filter((p) => p.cat === cat.key)
+      .sort((a, b) => dist(a) - dist(b))
+      .slice(0, POI_CAP_PER_CAT));
+  }
+
+  try {
+    localStorage.setItem(cacheKey, JSON.stringify({ t: Date.now(), pois: capped }));
+  } catch { /* quota exceeded - live without the cache */ }
+  return capped;
+}
+

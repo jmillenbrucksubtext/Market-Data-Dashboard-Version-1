@@ -2567,6 +2567,130 @@ h1, h2, h3, .serif {
 }
 .tool-card:hover .tool-cta { text-decoration: underline; }
 
+/* University Information tab (market page) ----------------------- */
+
+.kpi-row-uni { grid-template-columns: repeat(5, 1fr); }
+@media (max-width: 910px) { .kpi-row-uni { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px) { .kpi-row-uni { grid-template-columns: repeat(2, 1fr); } }
+
+/* school picker - only rendered when a market tracks 2+ campuses */
+.uni-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+.uni-pill {
+  padding: 6px 14px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 13px;
+  color: var(--slate-70);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s, border-color 0.12s;
+}
+.uni-pill:hover { border-color: var(--slate-30); color: var(--slate); }
+.uni-pill.active {
+  background: var(--everest);
+  border-color: var(--everest);
+  color: var(--beige);
+  font-weight: 700;
+}
+
+/* stat groups */
+.uni-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 8px 26px;
+}
+.uni-stat-group { padding: 6px 0 10px; }
+.uni-stat-group-title {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  padding-bottom: 6px;
+  margin-bottom: 2px;
+  border-bottom: 2px solid var(--lime);
+}
+.uni-stat-group-note {
+  font-size: 10px;
+  font-weight: 400;
+  color: var(--slate-50);
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+}
+.uni-stat-list { margin: 0; }
+.uni-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 12px;
+  padding: 7px 0;
+  border-bottom: 1px solid var(--beige-deep);
+  font-size: 13px;
+}
+.uni-stat-row dt { margin: 0; color: var(--slate-70); }
+.uni-stat-row dd { margin: 0; font-weight: 600; text-align: right; }
+.uni-stat-note { font-size: 11px; font-weight: 400; color: var(--slate-50); }
+.uni-stat-row-chips dd {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  justify-content: flex-end;
+}
+.uni-chip {
+  padding: 1px 8px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--slate);
+}
+
+/* campus POI map */
+.uni-map-wrap { height: 520px; }
+.uni-map-toggles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  justify-content: flex-end;
+  max-width: 55%;
+}
+.uni-poi-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  color: var(--slate-70);
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+}
+.uni-poi-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  flex: 0 0 10px;
+}
+.uni-poi-count {
+  padding: 0 7px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  background: var(--bg);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--slate-70);
+}
+.uni-map-note {
+  margin: 10px 0 0;
+  font-size: 11px;
+  color: var(--slate-50);
+}
+
 /* Tab chip - smaller cousin of the page tag, shows the tab name in the
    page's color palette so each section is instantly identifiable. */
 .dict-tab-chip {

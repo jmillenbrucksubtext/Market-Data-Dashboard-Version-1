@@ -1,0 +1,1732 @@
+[
+ {
+  "school_key": 292,
+  "university_name": "Rutgers University Newark",
+  "count": 89
+ },
+ {
+  "school_key": 241,
+  "university_name": "University of Minnesota Twin Cities",
+  "count": 263
+ },
+ {
+  "school_key": 652,
+  "university_name": "Grand Canyon University",
+  "count": 34
+ },
+ {
+  "school_key": 684,
+  "university_name": "New York University",
+  "count": 699
+ },
+ {
+  "school_key": 74,
+  "university_name": "University of Denver",
+  "count": 101
+ },
+ {
+  "school_key": 266,
+  "university_name": "Montana State University",
+  "count": 89
+ },
+ {
+  "school_key": 39,
+  "university_name": "San Diego State University",
+  "count": 70
+ },
+ {
+  "school_key": 96,
+  "university_name": "Florida Institute of Technology",
+  "count": 74
+ },
+ {
+  "school_key": 691,
+  "university_name": "Fordham University",
+  "count": 130
+ },
+ {
+  "school_key": 73,
+  "university_name": "University of Colorado Denver",
+  "count": 512
+ },
+ {
+  "school_key": 686,
+  "university_name": "Boston University",
+  "count": 627
+ },
+ {
+  "school_key": 681,
+  "university_name": "Stanford University",
+  "count": 288
+ },
+ {
+  "school_key": 680,
+  "university_name": "The University of Alabama in Huntsville",
+  "count": 73
+ },
+ {
+  "school_key": 553,
+  "university_name": "College of William and Mary",
+  "count": 177
+ },
+ {
+  "school_key": 674,
+  "university_name": "Prairie View A&M University",
+  "count": 9
+ },
+ {
+  "school_key": 38,
+  "university_name": "University of California San Diego",
+  "count": 241
+ },
+ {
+  "school_key": 657,
+  "university_name": "Lawrence University",
+  "count": 98
+ },
+ {
+  "school_key": 12,
+  "university_name": "Troy University",
+  "count": 38
+ },
+ {
+  "school_key": 435,
+  "university_name": "Kutztown University of Pennsylvania",
+  "count": 10
+ },
+ {
+  "school_key": 169,
+  "university_name": "University of Kansas",
+  "count": 213
+ },
+ {
+  "school_key": 40,
+  "university_name": "University of San Diego",
+  "count": 58
+ },
+ {
+  "school_key": 155,
+  "university_name": "Indiana University Bloomington",
+  "count": 177
+ },
+ {
+  "school_key": 600,
+  "university_name": "Binghamton University",
+  "count": 109
+ },
+ {
+  "school_key": 675,
+  "university_name": "Tulane University",
+  "count": 114
+ },
+ {
+  "school_key": 116,
+  "university_name": "Kennesaw State University",
+  "count": 56
+ },
+ {
+  "school_key": 99,
+  "university_name": "Florida International University",
+  "count": 81
+ },
+ {
+  "school_key": 244,
+  "university_name": "Minnesota State University Mankato",
+  "count": 72
+ },
+ {
+  "school_key": 566,
+  "university_name": "Eastern Washington University",
+  "count": 59
+ },
+ {
+  "school_key": 685,
+  "university_name": "Tufts University",
+  "count": 149
+ },
+ {
+  "school_key": 238,
+  "university_name": "Western Michigan University",
+  "count": 97
+ },
+ {
+  "school_key": 237,
+  "university_name": "University of Michigan Dearborn",
+  "count": 23
+ },
+ {
+  "school_key": 213,
+  "university_name": "Boston College",
+  "count": 193
+ },
+ {
+  "school_key": 687,
+  "university_name": "Case Western Reserve University",
+  "count": 278
+ },
+ {
+  "school_key": 25,
+  "university_name": "University of Arkansas",
+  "count": 188
+ },
+ {
+  "school_key": 253,
+  "university_name": "Mississippi State University",
+  "count": 174
+ },
+ {
+  "school_key": 477,
+  "university_name": "University of South Carolina Upstate",
+  "count": 10
+ },
+ {
+  "school_key": 688,
+  "university_name": "Villanova University",
+  "count": 79
+ },
+ {
+  "school_key": 10,
+  "university_name": "Jacksonville State University",
+  "count": 52
+ },
+ {
+  "school_key": 381,
+  "university_name": "Western Carolina University",
+  "count": 66
+ },
+ {
+  "school_key": 689,
+  "university_name": "Brandeis University",
+  "count": 46
+ },
+ {
+  "school_key": 136,
+  "university_name": "University of Illinois at Chicago",
+  "count": 603
+ },
+ {
+  "school_key": 260,
+  "university_name": "Saint Louis University",
+  "count": 243
+ },
+ {
+  "school_key": 427,
+  "university_name": "Temple University",
+  "count": 276
+ },
+ {
+  "school_key": 107,
+  "university_name": "University of Florida",
+  "count": 353
+ },
+ {
+  "school_key": 254,
+  "university_name": "University of Mississippi",
+  "count": 158
+ },
+ {
+  "school_key": 403,
+  "university_name": "University of Dayton",
+  "count": 123
+ },
+ {
+  "school_key": 571,
+  "university_name": "Georgetown University",
+  "count": 465
+ },
+ {
+  "school_key": 449,
+  "university_name": "Lehigh University",
+  "count": 140
+ },
+ {
+  "school_key": 102,
+  "university_name": "University of North Florida",
+  "count": 40
+ },
+ {
+  "school_key": 330,
+  "university_name": "Buffalo State University SUNY",
+  "count": 152
+ },
+ {
+  "school_key": 416,
+  "university_name": "University of Oklahoma",
+  "count": 133
+ },
+ {
+  "school_key": 119,
+  "university_name": "Savannah State University",
+  "count": 11
+ },
+ {
+  "school_key": 328,
+  "university_name": "State University of New York at Oswego",
+  "count": 39
+ },
+ {
+  "school_key": 513,
+  "university_name": "Stephen F. Austin State University",
+  "count": 146
+ },
+ {
+  "school_key": 656,
+  "university_name": "Temple College",
+  "count": 44
+ },
+ {
+  "school_key": 515,
+  "university_name": "Texas A&M International University",
+  "count": 30
+ },
+ {
+  "school_key": 481,
+  "university_name": "University of South Dakota",
+  "count": 57
+ },
+ {
+  "school_key": 526,
+  "university_name": "University of Texas at Arlington",
+  "count": 84
+ },
+ {
+  "school_key": 478,
+  "university_name": "Wofford College",
+  "count": 119
+ },
+ {
+  "school_key": 561,
+  "university_name": "Central Washington University",
+  "count": 76
+ },
+ {
+  "school_key": 162,
+  "university_name": "Drake University",
+  "count": 169
+ },
+ {
+  "school_key": 690,
+  "university_name": "Pepperdine University",
+  "count": 9
+ },
+ {
+  "school_key": 556,
+  "university_name": "Virginia Commonwealth University",
+  "count": 286
+ },
+ {
+  "school_key": 92,
+  "university_name": "Embry-Riddle Aeronautical University",
+  "count": 113
+ },
+ {
+  "school_key": 607,
+  "university_name": "Moberly Area Community College",
+  "count": 174
+ },
+ {
+  "school_key": 405,
+  "university_name": "Youngstown State University",
+  "count": 115
+ },
+ {
+  "school_key": 11,
+  "university_name": "University of Alabama",
+  "count": 198
+ },
+ {
+  "school_key": 62,
+  "university_name": "University of California Berkeley",
+  "count": 338
+ },
+ {
+  "school_key": 93,
+  "university_name": "Bethune-Cookman University",
+  "count": 140
+ },
+ {
+  "school_key": 595,
+  "university_name": "University of Alabama at Birmingham",
+  "count": 133
+ },
+ {
+  "school_key": 676,
+  "university_name": "University of Texas at Tyler",
+  "count": 29
+ },
+ {
+  "school_key": 33,
+  "university_name": "San Jose State University",
+  "count": 323
+ },
+ {
+  "school_key": 426,
+  "university_name": "Drexel University",
+  "count": 509
+ },
+ {
+  "school_key": 142,
+  "university_name": "Southern Illinois University Edwardsville",
+  "count": 112
+ },
+ {
+  "school_key": 514,
+  "university_name": "Tarleton State University",
+  "count": 70
+ },
+ {
+  "school_key": 545,
+  "university_name": "George Mason University",
+  "count": 90
+ },
+ {
+  "school_key": 594,
+  "university_name": "Georgia Southern University",
+  "count": 98
+ },
+ {
+  "school_key": 212,
+  "university_name": "University of Massachusetts Boston",
+  "count": 54
+ },
+ {
+  "school_key": 156,
+  "university_name": "University of Notre Dame",
+  "count": 195
+ },
+ {
+  "school_key": 543,
+  "university_name": "Marymount University",
+  "count": 49
+ },
+ {
+  "school_key": 94,
+  "university_name": "Florida Agricultural and Mechanical University",
+  "count": 224
+ },
+ {
+  "school_key": 160,
+  "university_name": "Valparaiso University",
+  "count": 46
+ },
+ {
+  "school_key": 120,
+  "university_name": "University of Georgia",
+  "count": 330
+ },
+ {
+  "school_key": 255,
+  "university_name": "University of Southern Mississippi",
+  "count": 60
+ },
+ {
+  "school_key": 348,
+  "university_name": "Rensselaer Polytechnic Institute",
+  "count": 147
+ },
+ {
+  "school_key": 126,
+  "university_name": "University of Idaho",
+  "count": 65
+ },
+ {
+  "school_key": 682,
+  "university_name": "California Institute of Technology",
+  "count": 109
+ },
+ {
+  "school_key": 145,
+  "university_name": "Purdue University",
+  "count": 183
+ },
+ {
+  "school_key": 113,
+  "university_name": "Columbus State University",
+  "count": 26
+ },
+ {
+  "school_key": 411,
+  "university_name": "Oklahoma State University",
+  "count": 96
+ },
+ {
+  "school_key": 9,
+  "university_name": "Samford University",
+  "count": 41
+ },
+ {
+  "school_key": 75,
+  "university_name": "University of Colorado Colorado Springs",
+  "count": 61
+ },
+ {
+  "school_key": 98,
+  "university_name": "Florida Gulf Coast University",
+  "count": 21
+ },
+ {
+  "school_key": 137,
+  "university_name": "DePaul University",
+  "count": 471
+ },
+ {
+  "school_key": 268,
+  "university_name": "University of Montana",
+  "count": 96
+ },
+ {
+  "school_key": 30,
+  "university_name": "University of California Los Angeles",
+  "count": 153
+ },
+ {
+  "school_key": 55,
+  "university_name": "California State University Sacramento",
+  "count": 49
+ },
+ {
+  "school_key": 135,
+  "university_name": "Loyola University Chicago",
+  "count": 176
+ },
+ {
+  "school_key": 211,
+  "university_name": "Cambridge College",
+  "count": 483
+ },
+ {
+  "school_key": 494,
+  "university_name": "University of Memphis",
+  "count": 43
+ },
+ {
+  "school_key": 167,
+  "university_name": "Kansas State University",
+  "count": 161
+ },
+ {
+  "school_key": 143,
+  "university_name": "University of Illinois at Urbana-Champaign",
+  "count": 320
+ },
+ {
+  "school_key": 522,
+  "university_name": "Texas Tech University",
+  "count": 167
+ },
+ {
+  "school_key": 598,
+  "university_name": "Rutgers University",
+  "count": 242
+ },
+ {
+  "school_key": 551,
+  "university_name": "Old Dominion University",
+  "count": 66
+ },
+ {
+  "school_key": 668,
+  "university_name": "University of Tampa",
+  "count": 102
+ },
+ {
+  "school_key": 87,
+  "university_name": "Yale University",
+  "count": 301
+ },
+ {
+  "school_key": 536,
+  "university_name": "Utah Valley University",
+  "count": 40
+ },
+ {
+  "school_key": 209,
+  "university_name": "Suffolk University",
+  "count": 658
+ },
+ {
+  "school_key": 396,
+  "university_name": "Ohio University",
+  "count": 108
+ },
+ {
+  "school_key": 417,
+  "university_name": "University of Central Oklahoma",
+  "count": 11
+ },
+ {
+  "school_key": 603,
+  "university_name": "Brigham Young University-Idaho",
+  "count": 40
+ },
+ {
+  "school_key": 441,
+  "university_name": "Carnegie Mellon University",
+  "count": 258
+ },
+ {
+  "school_key": 50,
+  "university_name": "California State University Fresno",
+  "count": 28
+ },
+ {
+  "school_key": 106,
+  "university_name": "University of Central Florida",
+  "count": 104
+ },
+ {
+  "school_key": 458,
+  "university_name": "Slippery Rock University of Pennsylvania",
+  "count": 26
+ },
+ {
+  "school_key": 72,
+  "university_name": "Metropolitan State University of Denver",
+  "count": 509
+ },
+ {
+  "school_key": 271,
+  "university_name": "University of Nebraska at Omaha",
+  "count": 110
+ },
+ {
+  "school_key": 601,
+  "university_name": "University of North Georgia",
+  "count": 44
+ },
+ {
+  "school_key": 262,
+  "university_name": "Washington University in St. Louis",
+  "count": 249
+ },
+ {
+  "school_key": 189,
+  "university_name": "University of Louisiana at LaFayette",
+  "count": 57
+ },
+ {
+  "school_key": 596,
+  "university_name": "University of North Carolina Greensboro",
+  "count": 201
+ },
+ {
+  "school_key": 69,
+  "university_name": "University of Colorado Boulder",
+  "count": 158
+ },
+ {
+  "school_key": 14,
+  "university_name": "University of South Alabama",
+  "count": 89
+ },
+ {
+  "school_key": 51,
+  "university_name": "California State University Fullerton",
+  "count": 61
+ },
+ {
+  "school_key": 569,
+  "university_name": "Western Washington University",
+  "count": 166
+ },
+ {
+  "school_key": 66,
+  "university_name": "University of California Santa Barbara",
+  "count": 217
+ },
+ {
+  "school_key": 22,
+  "university_name": "Arkansas State University",
+  "count": 66
+ },
+ {
+  "school_key": 195,
+  "university_name": "Johns Hopkins University",
+  "count": 350
+ },
+ {
+  "school_key": 527,
+  "university_name": "University of Texas at San Antonio",
+  "count": 46
+ },
+ {
+  "school_key": 404,
+  "university_name": "Wright State University",
+  "count": 39
+ },
+ {
+  "school_key": 13,
+  "university_name": "University of North Alabama",
+  "count": 65
+ },
+ {
+  "school_key": 612,
+  "university_name": "California State University Stanislaus",
+  "count": 49
+ },
+ {
+  "school_key": 693,
+  "university_name": "University of San Francisco",
+  "count": 436
+ },
+ {
+  "school_key": 555,
+  "university_name": "University of Richmond",
+  "count": 79
+ },
+ {
+  "school_key": 176,
+  "university_name": "University of Kentucky",
+  "count": 274
+ },
+ {
+  "school_key": 17,
+  "university_name": "Arizona State University at Phoenix",
+  "count": 162
+ },
+ {
+  "school_key": 466,
+  "university_name": "Providence College",
+  "count": 121
+ },
+ {
+  "school_key": 694,
+  "university_name": "Fairfield University",
+  "count": 60
+ },
+ {
+  "school_key": 579,
+  "university_name": "West Virginia University",
+  "count": 96
+ },
+ {
+  "school_key": 115,
+  "university_name": "Georgia College & State University",
+  "count": 31
+ },
+ {
+  "school_key": 110,
+  "university_name": "Georgia Institute of Technology",
+  "count": 373
+ },
+ {
+  "school_key": 56,
+  "university_name": "California State University San Bernardino",
+  "count": 46
+ },
+ {
+  "school_key": 423,
+  "university_name": "Oregon State University",
+  "count": 153
+ },
+ {
+  "school_key": 524,
+  "university_name": "University of North Texas",
+  "count": 209
+ },
+ {
+  "school_key": 382,
+  "university_name": "North Dakota State University",
+  "count": 87
+ },
+ {
+  "school_key": 604,
+  "university_name": "Gonzaga University",
+  "count": 172
+ },
+ {
+  "school_key": 653,
+  "university_name": "Hawaii Pacific University",
+  "count": 63
+ },
+ {
+  "school_key": 65,
+  "university_name": "University of California Merced",
+  "count": 43
+ },
+ {
+  "school_key": 614,
+  "university_name": "Gulf Coast State College",
+  "count": 13
+ },
+ {
+  "school_key": 608,
+  "university_name": "Lane Community College",
+  "count": 31
+ },
+ {
+  "school_key": 20,
+  "university_name": "University of Arizona",
+  "count": 215
+ },
+ {
+  "school_key": 550,
+  "university_name": "Norfolk State University",
+  "count": 106
+ },
+ {
+  "school_key": 490,
+  "university_name": "Middle Tennessee State University",
+  "count": 85
+ },
+ {
+  "school_key": 581,
+  "university_name": "University of Wisconsin Milwaukee",
+  "count": 164
+ },
+ {
+  "school_key": 443,
+  "university_name": "University of Pittsburgh",
+  "count": 310
+ },
+ {
+  "school_key": 214,
+  "university_name": "University of Massachusetts Lowell",
+  "count": 82
+ },
+ {
+  "school_key": 474,
+  "university_name": "Coastal Carolina",
+  "count": 56
+ },
+ {
+  "school_key": 367,
+  "university_name": "Appalachian State University",
+  "count": 84
+ },
+ {
+  "school_key": 476,
+  "university_name": "University of South Carolina",
+  "count": 476
+ },
+ {
+  "school_key": 278,
+  "university_name": "Dartmouth College",
+  "count": 183
+ },
+ {
+  "school_key": 353,
+  "university_name": "SUNY Oneonta",
+  "count": 66
+ },
+ {
+  "school_key": 565,
+  "university_name": "University of Washington",
+  "count": 357
+ },
+ {
+  "school_key": 390,
+  "university_name": "Kent State University",
+  "count": 205
+ },
+ {
+  "school_key": 385,
+  "university_name": "Bowling Green State University",
+  "count": 175
+ },
+ {
+  "school_key": 512,
+  "university_name": "University of Texas at Austin",
+  "count": 624
+ },
+ {
+  "school_key": 370,
+  "university_name": "Elon University",
+  "count": 70
+ },
+ {
+  "school_key": 109,
+  "university_name": "Clark Atlanta University",
+  "count": 343
+ },
+ {
+  "school_key": 597,
+  "university_name": "University of Tennessee at Chattanooga",
+  "count": 88
+ },
+ {
+  "school_key": 31,
+  "university_name": "University of Southern California",
+  "count": 194
+ },
+ {
+  "school_key": 539,
+  "university_name": "University of Vermont",
+  "count": 159
+ },
+ {
+  "school_key": 470,
+  "university_name": "Clemson University",
+  "count": 195
+ },
+ {
+  "school_key": 399,
+  "university_name": "University of Toledo",
+  "count": 117
+ },
+ {
+  "school_key": 236,
+  "university_name": "University of Michigan",
+  "count": 258
+ },
+ {
+  "school_key": 350,
+  "university_name": "University of Rochester",
+  "count": 174
+ },
+ {
+  "school_key": 7,
+  "university_name": "Auburn University",
+  "count": 271
+ },
+ {
+  "school_key": 529,
+  "university_name": "West Texas A&M University",
+  "count": 80
+ },
+ {
+  "school_key": 535,
+  "university_name": "Utah State University",
+  "count": 147
+ },
+ {
+  "school_key": 521,
+  "university_name": "Texas State University",
+  "count": 164
+ },
+ {
+  "school_key": 111,
+  "university_name": "Georgia State University",
+  "count": 386
+ },
+ {
+  "school_key": 388,
+  "university_name": "Ohio State University",
+  "count": 298
+ },
+ {
+  "school_key": 366,
+  "university_name": "University of North Carolina Wilmington",
+  "count": 74
+ },
+ {
+  "school_key": 118,
+  "university_name": "Savannah College of Art & Design",
+  "count": 133
+ },
+ {
+  "school_key": 560,
+  "university_name": "University of Virginia",
+  "count": 337
+ },
+ {
+  "school_key": 261,
+  "university_name": "University of Missouri St. Louis",
+  "count": 72
+ },
+ {
+  "school_key": 147,
+  "university_name": "Butler University",
+  "count": 57
+ },
+ {
+  "school_key": 133,
+  "university_name": "University of Chicago",
+  "count": 193
+ },
+ {
+  "school_key": 464,
+  "university_name": "Brown University",
+  "count": 240
+ },
+ {
+  "school_key": 273,
+  "university_name": "University of Nebraska Lincoln",
+  "count": 214
+ },
+ {
+  "school_key": 196,
+  "university_name": "Loyola University Maryland",
+  "count": 285
+ },
+ {
+  "school_key": 180,
+  "university_name": "Louisiana State University",
+  "count": 128
+ },
+ {
+  "school_key": 568,
+  "university_name": "Washington State University",
+  "count": 118
+ },
+ {
+  "school_key": 492,
+  "university_name": "University of Tennessee",
+  "count": 164
+ },
+ {
+  "school_key": 197,
+  "university_name": "Morgan State University",
+  "count": 91
+ },
+ {
+  "school_key": 150,
+  "university_name": "Indiana University-Purdue University Indianapolis",
+  "count": 146
+ },
+ {
+  "school_key": 70,
+  "university_name": "Colorado State University",
+  "count": 137
+ },
+ {
+  "school_key": 530,
+  "university_name": "Brigham Young University",
+  "count": 114
+ },
+ {
+  "school_key": 228,
+  "university_name": "Central Michigan University",
+  "count": 70
+ },
+ {
+  "school_key": 34,
+  "university_name": "Santa Clara University",
+  "count": 99
+ },
+ {
+  "school_key": 64,
+  "university_name": "University of California Irvine",
+  "count": 157
+ },
+ {
+  "school_key": 291,
+  "university_name": "New Jersey Institute of Technology",
+  "count": 86
+ },
+ {
+  "school_key": 373,
+  "university_name": "North Carolina Agricultural And Technical State University",
+  "count": 172
+ },
+ {
+  "school_key": 86,
+  "university_name": "Southern Connecticut State University",
+  "count": 222
+ },
+ {
+  "school_key": 377,
+  "university_name": "University of North Carolina at Pembroke",
+  "count": 32
+ },
+ {
+  "school_key": 615,
+  "university_name": "Northern Iowa University",
+  "count": 68
+ },
+ {
+  "school_key": 533,
+  "university_name": "University of Utah",
+  "count": 214
+ },
+ {
+  "school_key": 401,
+  "university_name": "Xavier University",
+  "count": 112
+ },
+ {
+  "school_key": 376,
+  "university_name": "University of North Carolina at Charlotte",
+  "count": 84
+ },
+ {
+  "school_key": 130,
+  "university_name": "Northeastern Illinois University",
+  "count": 117
+ },
+ {
+  "school_key": 128,
+  "university_name": "Southern Illinois University Carbondale",
+  "count": 119
+ },
+ {
+  "school_key": 204,
+  "university_name": "University of Maryland College Park",
+  "count": 163
+ },
+ {
+  "school_key": 369,
+  "university_name": "East Carolina University",
+  "count": 78
+ },
+ {
+  "school_key": 265,
+  "university_name": "University of Missouri",
+  "count": 272
+ },
+ {
+  "school_key": 599,
+  "university_name": "University of Connecticut",
+  "count": 116
+ },
+ {
+  "school_key": 275,
+  "university_name": "University of Nevada Las Vegas",
+  "count": 211
+ },
+ {
+  "school_key": 362,
+  "university_name": "Syracuse University",
+  "count": 132
+ },
+ {
+  "school_key": 117,
+  "university_name": "Mercer University",
+  "count": 26
+ },
+ {
+  "school_key": 503,
+  "university_name": "Lamar University",
+  "count": 15
+ },
+ {
+  "school_key": 352,
+  "university_name": "SUNY Cortland",
+  "count": 26
+ },
+ {
+  "school_key": 335,
+  "university_name": "Ithaca College",
+  "count": 80
+ },
+ {
+  "school_key": 174,
+  "university_name": "Murray State University",
+  "count": 48
+ },
+ {
+  "school_key": 505,
+  "university_name": "Midwestern State University",
+  "count": 14
+ },
+ {
+  "school_key": 124,
+  "university_name": "Boise State University",
+  "count": 173
+ },
+ {
+  "school_key": 519,
+  "university_name": "Texas A&M University Kingsville",
+  "count": 21
+ },
+ {
+  "school_key": 510,
+  "university_name": "Sam Houston State University",
+  "count": 115
+ },
+ {
+  "school_key": 525,
+  "university_name": "University of Texas Rio Grande Valley",
+  "count": 64
+ },
+ {
+  "school_key": 139,
+  "university_name": "Illinois State University",
+  "count": 155
+ },
+ {
+  "school_key": 16,
+  "university_name": "Northern Arizona University",
+  "count": 151
+ },
+ {
+  "school_key": 400,
+  "university_name": "University of Cincinnati",
+  "count": 275
+ },
+ {
+  "school_key": 105,
+  "university_name": "University of South Florida",
+  "count": 107
+ },
+ {
+  "school_key": 467,
+  "university_name": "Rhode Island College",
+  "count": 72
+ },
+ {
+  "school_key": 177,
+  "university_name": "University of Louisville",
+  "count": 92
+ },
+ {
+  "school_key": 178,
+  "university_name": "Western Kentucky University",
+  "count": 47
+ },
+ {
+  "school_key": 584,
+  "university_name": "University of Wisconsin Madison",
+  "count": 416
+ },
+ {
+  "school_key": 198,
+  "university_name": "University of Baltimore",
+  "count": 520
+ },
+ {
+  "school_key": 509,
+  "university_name": "University of Houston",
+  "count": 103
+ },
+ {
+  "school_key": 374,
+  "university_name": "North Carolina State University",
+  "count": 243
+ },
+ {
+  "school_key": 47,
+  "university_name": "California State University Chico",
+  "count": 66
+ },
+ {
+  "school_key": 276,
+  "university_name": "University of Nevada Reno",
+  "count": 239
+ },
+ {
+  "school_key": 520,
+  "university_name": "Texas Christian University",
+  "count": 92
+ },
+ {
+  "school_key": 421,
+  "university_name": "Portland State University",
+  "count": 497
+ },
+ {
+  "school_key": 122,
+  "university_name": "Valdosta State University",
+  "count": 102
+ },
+ {
+  "school_key": 442,
+  "university_name": "Duquesne University",
+  "count": 251
+ },
+ {
+  "school_key": 230,
+  "university_name": "Ferris State University",
+  "count": 77
+ },
+ {
+  "school_key": 45,
+  "university_name": "California Polytechnic State University Pomona",
+  "count": 86
+ },
+ {
+  "school_key": 164,
+  "university_name": "University of Iowa",
+  "count": 175
+ },
+ {
+  "school_key": 379,
+  "university_name": "Wake Forest University",
+  "count": 46
+ },
+ {
+  "school_key": 127,
+  "university_name": "Bradley University",
+  "count": 92
+ },
+ {
+  "school_key": 491,
+  "university_name": "Tennessee Technological University",
+  "count": 71
+ },
+ {
+  "school_key": 488,
+  "university_name": "East Tennessee State University",
+  "count": 74
+ },
+ {
+  "school_key": 349,
+  "university_name": "Rochester Institute of Technology",
+  "count": 97
+ },
+ {
+  "school_key": 552,
+  "university_name": "Radford University",
+  "count": 9
+ },
+ {
+  "school_key": 63,
+  "university_name": "University of California Davis",
+  "count": 279
+ },
+ {
+  "school_key": 263,
+  "university_name": "Southeast Missouri State University",
+  "count": 48
+ },
+ {
+  "school_key": 548,
+  "university_name": "James Madison University",
+  "count": 121
+ },
+ {
+  "school_key": 81,
+  "university_name": "Central Connecticut State University",
+  "count": 32
+ },
+ {
+  "school_key": 29,
+  "university_name": "University of Central Arkansas",
+  "count": 108
+ },
+ {
+  "school_key": 89,
+  "university_name": "University of Delaware",
+  "count": 142
+ },
+ {
+  "school_key": 182,
+  "university_name": "Louisiana Tech University",
+  "count": 62
+ },
+ {
+  "school_key": 432,
+  "university_name": "University of Pennsylvania",
+  "count": 492
+ },
+ {
+  "school_key": 398,
+  "university_name": "University of Akron",
+  "count": 99
+ },
+ {
+  "school_key": 191,
+  "university_name": "University of Maine",
+  "count": 131
+ },
+ {
+  "school_key": 19,
+  "university_name": "Arizona State University",
+  "count": 177
+ },
+ {
+  "school_key": 298,
+  "university_name": "New Mexico State University",
+  "count": 88
+ },
+ {
+  "school_key": 606,
+  "university_name": "Salisbury University",
+  "count": 73
+ },
+ {
+  "school_key": 123,
+  "university_name": "University of Hawaii at Manoa",
+  "count": 271
+ },
+ {
+  "school_key": 383,
+  "university_name": "University of North Dakota",
+  "count": 67
+ },
+ {
+  "school_key": 95,
+  "university_name": "Florida State University",
+  "count": 255
+ },
+ {
+  "school_key": 375,
+  "university_name": "University of North Carolina at Chapel Hill",
+  "count": 204
+ },
+ {
+  "school_key": 154,
+  "university_name": "Purdue University Fort Wayne",
+  "count": 27
+ },
+ {
+  "school_key": 502,
+  "university_name": "Baylor University",
+  "count": 118
+ },
+ {
+  "school_key": 108,
+  "university_name": "University of West Florida",
+  "count": 38
+ },
+ {
+  "school_key": 448,
+  "university_name": "Indiana University of Pennsylvania",
+  "count": 53
+ },
+ {
+  "school_key": 299,
+  "university_name": "University of New Mexico",
+  "count": 264
+ },
+ {
+  "school_key": 557,
+  "university_name": "Virginia Polytechnic Institute and State University",
+  "count": 164
+ },
+ {
+  "school_key": 215,
+  "university_name": "Amherst College",
+  "count": 189
+ },
+ {
+  "school_key": 654,
+  "university_name": "Claremont McKenna College",
+  "count": 179
+ },
+ {
+  "school_key": 202,
+  "university_name": "Towson University",
+  "count": 153
+ },
+ {
+  "school_key": 134,
+  "university_name": "Columbia College Chicago",
+  "count": 602
+ },
+ {
+  "school_key": 32,
+  "university_name": "Loyola Marymount University",
+  "count": 78
+ },
+ {
+  "school_key": 459,
+  "university_name": "West Chester University of Pennsylvania",
+  "count": 73
+ },
+ {
+  "school_key": 424,
+  "university_name": "University of Oregon",
+  "count": 214
+ },
+ {
+  "school_key": 570,
+  "university_name": "American University",
+  "count": 153
+ },
+ {
+  "school_key": 538,
+  "university_name": "Champlain College",
+  "count": 158
+ },
+ {
+  "school_key": 455,
+  "university_name": "Penn State",
+  "count": 316
+ },
+ {
+  "school_key": 231,
+  "university_name": "Grand Valley State University",
+  "count": 72
+ },
+ {
+  "school_key": 100,
+  "university_name": "University of Miami",
+  "count": 150
+ },
+ {
+  "school_key": 152,
+  "university_name": "Indiana State University",
+  "count": 62
+ },
+ {
+  "school_key": 483,
+  "university_name": "Belmont University",
+  "count": 201
+ },
+ {
+  "school_key": 331,
+  "university_name": "University at Buffalo SUNY",
+  "count": 57
+ },
+ {
+  "school_key": 378,
+  "university_name": "University of North Carolina at Asheville",
+  "count": 71
+ },
+ {
+  "school_key": 499,
+  "university_name": "University of Texas at Dallas",
+  "count": 82
+ },
+ {
+  "school_key": 23,
+  "university_name": "Arkansas Tech University",
+  "count": 26
+ },
+ {
+  "school_key": 368,
+  "university_name": "Duke University",
+  "count": 139
+ },
+ {
+  "school_key": 146,
+  "university_name": "Ball State University",
+  "count": 103
+ },
+ {
+  "school_key": 602,
+  "university_name": "University of Central Missouri",
+  "count": 75
+ },
+ {
+  "school_key": 501,
+  "university_name": "Angelo State University",
+  "count": 34
+ },
+ {
+  "school_key": 531,
+  "university_name": "Utah Tech University",
+  "count": 52
+ },
+ {
+  "school_key": 482,
+  "university_name": "Austin Peay State University",
+  "count": 62
+ },
+ {
+  "school_key": 479,
+  "university_name": "Winthrop University",
+  "count": 39
+ },
+ {
+  "school_key": 181,
+  "university_name": "Southern University",
+  "count": 51
+ },
+ {
+  "school_key": 386,
+  "university_name": "Cleveland State University",
+  "count": 194
+ },
+ {
+  "school_key": 43,
+  "university_name": "University of California Riverside",
+  "count": 92
+ },
+ {
+  "school_key": 208,
+  "university_name": "Northeastern University",
+  "count": 620
+ },
+ {
+  "school_key": 392,
+  "university_name": "Miami University",
+  "count": 147
+ },
+ {
+  "school_key": 229,
+  "university_name": "Eastern Michigan University",
+  "count": 54
+ },
+ {
+  "school_key": 611,
+  "university_name": "Abilene Christian University",
+  "count": 83
+ },
+ {
+  "school_key": 664,
+  "university_name": "Albany State University",
+  "count": 27
+ },
+ {
+  "school_key": 334,
+  "university_name": "Cornell University",
+  "count": 190
+ },
+ {
+  "school_key": 573,
+  "university_name": "George Washington University",
+  "count": 613
+ },
+ {
+  "school_key": 337,
+  "university_name": "University at Albany SUNY",
+  "count": 60
+ },
+ {
+  "school_key": 257,
+  "university_name": "Missouri State University",
+  "count": 120
+ },
+ {
+  "school_key": 683,
+  "university_name": "Columbia University",
+  "count": 275
+ },
+ {
+  "school_key": 44,
+  "university_name": "California Polytechnic State University San Luis Obispo",
+  "count": 158
+ },
+ {
+  "school_key": 121,
+  "university_name": "University of West Georgia",
+  "count": 62
+ },
+ {
+  "school_key": 484,
+  "university_name": "Lipscomb University",
+  "count": 41
+ },
+ {
+  "school_key": 380,
+  "university_name": "Winston-Salem State University",
+  "count": 40
+ },
+ {
+  "school_key": 593,
+  "university_name": "University of Wyoming",
+  "count": 90
+ },
+ {
+  "school_key": 497,
+  "university_name": "Southern Methodist University",
+  "count": 102
+ },
+ {
+  "school_key": 516,
+  "university_name": "Texas A&M University",
+  "count": 302
+ },
+ {
+  "school_key": 363,
+  "university_name": "College at Brockport SUNY",
+  "count": 44
+ },
+ {
+  "school_key": 609,
+  "university_name": "The Ohio State University at Mansfield",
+  "count": 9
+ },
+ {
+  "school_key": 76,
+  "university_name": "University of Northern Colorado",
+  "count": 182
+ },
+ {
+  "school_key": 129,
+  "university_name": "Chicago State University",
+  "count": 33
+ },
+ {
+  "school_key": 112,
+  "university_name": "Emory University",
+  "count": 132
+ },
+ {
+  "school_key": 518,
+  "university_name": "Texas A&M University Corpus Christi",
+  "count": 11
+ },
+ {
+  "school_key": 163,
+  "university_name": "Iowa State University",
+  "count": 336
+ },
+ {
+  "school_key": 270,
+  "university_name": "Creighton University",
+  "count": 154
+ },
+ {
+  "school_key": 171,
+  "university_name": "Wichita State University",
+  "count": 74
+ },
+ {
+  "school_key": 473,
+  "university_name": "College of Charleston",
+  "count": 460
+ },
+ {
+  "school_key": 507,
+  "university_name": "Texas Southern University",
+  "count": 202
+ },
+ {
+  "school_key": 618,
+  "university_name": "University of Massachusetts Amherst",
+  "count": 189
+ },
+ {
+  "school_key": 542,
+  "university_name": "Liberty University",
+  "count": 71
+ },
+ {
+  "school_key": 97,
+  "university_name": "Florida Atlantic University",
+  "count": 111
+ },
+ {
+  "school_key": 280,
+  "university_name": "University of New Hampshire",
+  "count": 89
+ },
+ {
+  "school_key": 523,
+  "university_name": "Texas Woman's University",
+  "count": 208
+ },
+ {
+  "school_key": 506,
+  "university_name": "Rice University",
+  "count": 239
+ },
+ {
+  "school_key": 485,
+  "university_name": "Vanderbilt University",
+  "count": 247
+ },
+ {
+  "school_key": 572,
+  "university_name": "Howard University",
+  "count": 654
+ },
+ {
+  "school_key": 610,
+  "university_name": "Northwestern State University",
+  "count": 55
+ },
+ {
+  "school_key": 232,
+  "university_name": "Michigan State University",
+  "count": 77
+ },
+ {
+  "school_key": 658,
+  "university_name": "Fox Valley Technical College",
+  "count": 33
+ },
+ {
+  "school_key": 580,
+  "university_name": "Marquette University",
+  "count": 510
+ },
+ {
+  "school_key": 101,
+  "university_name": "Jacksonville University",
+  "count": 17
+ },
+ {
+  "school_key": 439,
+  "university_name": "Commonwealth University of Pennsylvania",
+  "count": 49
+ },
+ {
+  "school_key": 141,
+  "university_name": "Northwestern University",
+  "count": 158
+ }
+]

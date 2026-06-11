@@ -1910,13 +1910,18 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
    API and caches per school in localStorage. Everything is lazy: built
    on first visit to the tab. */
 
+/* mode "callout": only the best-known few, each with a comp-map-style
+   call-out box (ranked by the prefetcher's notability score - Wikipedia/
+   Wikidata link + footprint size). mode "zone": no individual pins;
+   venue clusters become shaded district outlines instead. */
 const POI_CATS = [
-  { key: "academic",  label: "Academic buildings",    color: "#16352e" },
-  { key: "landmark",  label: "Monuments + landmarks", color: "#a95818" },
-  { key: "athletics", label: "Athletics",             color: "#8c1d18" },
-  { key: "greek",     label: "Greek life",            color: "#6d4aa0" },
-  { key: "nightlife", label: "Nightlife",             color: "#c79830" },
+  { key: "academic",  label: "Academic buildings",    color: "#16352e", mode: "callout", cap: 8 },
+  { key: "landmark",  label: "Monuments + landmarks", color: "#a95818", mode: "callout", cap: 5 },
+  { key: "athletics", label: "Athletics",             color: "#8c1d18", mode: "callout", cap: 5 },
+  { key: "greek",     label: "Greek life",            color: "#6d4aa0", mode: "zone" },
+  { key: "nightlife", label: "Nightlife",             color: "#c79830", mode: "zone" },
 ];
+const POI_ZONE_EPS_M = 280;   // venues closer than this merge into one district
 
 const POI_RADIUS_M = 3200;       // search radius around the campus pin
 const POI_CACHE_TTL_MS = 30 * 24 * 3600 * 1000;
@@ -2301,37 +2306,166 @@ async function loadUniPois(school) {
   const byCat = new Map(POI_CATS.map((c) => [c.key, []]));
   for (const p of pois) byCat.get(p.cat)?.push(p);
 
+  const counts = new Map();
+  let calloutTotal = 0;
+  let zoneTotal = 0;
   for (const cat of POI_CATS) {
     const list = byCat.get(cat.key);
     const lg = L.layerGroup();
-    for (const p of list) {
-      const m = L.circleMarker([p.lat, p.lng], {
-        radius: 6, color: "#ffffff", weight: 1.5,
-        fillColor: cat.color, fillOpacity: 0.92,
-      });
-      m.bindPopup(`
-        <div class="map-popup"><div class="map-popup-head">
-          <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label}</div>
-          <div class="map-popup-title">${escapeHtml(p.name)}</div>
-        </div>${p.sub ? `<div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${escapeHtml(p.sub)}</span></div></div>` : ""}</div>`,
-        { className: "market-popup-wrapper", maxWidth: 280 });
-      lg.addLayer(m);
+    if (cat.mode === "callout") {
+      const top = pickTopPois(list, cat.cap, school);
+      top.forEach((p) => lg.addLayer(calloutMarker(p, cat, school)));
+      counts.set(cat.key, top.length);
+      calloutTotal += top.length;
+    } else {
+      const zones = buildPoiZones(list);
+      let venues = 0;
+      for (const zone of zones) {
+        addZoneLayers(zone, cat, lg);
+        venues += zone.venues.length;
+        zoneTotal += 1;
+      }
+      counts.set(cat.key, venues);
     }
     uniState.poiLayers.set(cat.key, lg);
     if (!uniState.poiHidden.has(cat.key)) lg.addTo(uniState.map);
   }
 
-  renderUniPoiToggles(byCat);
-  setUniMapStatus(`${pois.length} points of interest within ~2 miles of campus · OpenStreetMap`);
+  renderUniPoiToggles(counts);
+  setUniMapStatus(
+    `${calloutTotal} campus landmarks called out · ${zoneTotal} shaded Greek life / nightlife districts · OpenStreetMap`,
+  );
 }
 
-function renderUniPoiToggles(byCat) {
+/* ----- callouts: best-known POIs, comp-map style --------------- */
+
+/* Highest notability score first (distance to campus breaks ties),
+   deduped by name so multi-part buildings appear once. */
+function pickTopPois(list, cap, school) {
+  const d = (p) => poiDistM(p, { lat: school.lat, lng: school.lng });
+  const seen = new Set();
+  return [...list]
+    .sort((a, b) => (b.score || 0) - (a.score || 0) || d(a) - d(b))
+    .filter((p) => {
+      const k = p.name.toLowerCase();
+      if (p.name === "(unnamed)" || seen.has(k)) return false;
+      seen.add(k);
+      return true;
+    })
+    .slice(0, cap);
+}
+
+/* The box points away from the campus pin so call-outs fan outward. */
+function calloutMarker(p, cat, school) {
+  const side = p.lng >= school.lng ? "right" : "left";
+  const icon = L.divIcon({
+    className: "uni-callout-wrap",
+    html: `<div class="uni-callout uni-callout-${side}" style="--cat-color:${cat.color}">
+      <span class="uni-callout-dot"></span><span class="uni-callout-line"></span>
+      <span class="uni-callout-box">${escapeHtml(p.name)}</span>
+    </div>`,
+    iconSize: [0, 0],
+  });
+  const m = L.marker([p.lat, p.lng], { icon, zIndexOffset: 800 });
+  m.bindPopup(`
+    <div class="map-popup"><div class="map-popup-head">
+      <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label}</div>
+      <div class="map-popup-title">${escapeHtml(p.name)}</div>
+    </div>${p.sub ? `<div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${escapeHtml(p.sub)}</span></div></div>` : ""}</div>`,
+    { className: "market-popup-wrapper", maxWidth: 280 });
+  return m;
+}
+
+/* ----- zones: shaded district outlines ------------------------- */
+
+function poiDistM(a, b) {
+  const dy = (a.lat - b.lat) * 111320;
+  const dx = (a.lng - b.lng) * 111320 * Math.cos(a.lat * Math.PI / 180);
+  return Math.hypot(dx, dy);
+}
+
+/* Greedy single-link clustering, then keep clusters of 3+ venues
+   (else the map litters with one-bar circles). If nothing qualifies,
+   keep the largest cluster so small towns still get their district. */
+function buildPoiZones(list) {
+  const clusters = [];
+  for (const p of list) {
+    const home = clusters.find((c) => c.some((q) => poiDistM(p, q) < POI_ZONE_EPS_M));
+    if (home) home.push(p); else clusters.push([p]);
+  }
+  clusters.sort((a, b) => b.length - a.length);
+  let kept = clusters.filter((c) => c.length >= 3);
+  if (!kept.length && clusters.length) kept = [clusters[0]];
+  return kept.map((venues) => ({ venues, hull: expandedHull(venues) }));
+}
+
+/* Monotone-chain convex hull (lng as x, lat as y), padded outward from
+   the centroid so the shading breathes around the venues. */
+function expandedHull(venues, padM = 70) {
+  const pts = venues.map((p) => ({ x: p.lng, y: p.lat }));
+  pts.sort((a, b) => a.x - b.x || a.y - b.y);
+  const cross = (o, a, b) => (a.x - o.x) * (b.y - o.y) - (a.y - o.y) * (b.x - o.x);
+  const half = (iter) => {
+    const out = [];
+    for (const p of iter) {
+      while (out.length >= 2 && cross(out[out.length - 2], out[out.length - 1], p) <= 0) out.pop();
+      out.push(p);
+    }
+    out.pop();
+    return out;
+  };
+  const hull = pts.length >= 3 ? [...half(pts), ...half([...pts].reverse())] : pts;
+  if (hull.length < 3) return null;
+  const cx = hull.reduce((s, p) => s + p.x, 0) / hull.length;
+  const cy = hull.reduce((s, p) => s + p.y, 0) / hull.length;
+  const padLat = padM / 111320;
+  return hull.map((p) => {
+    const dx = p.x - cx, dy = p.y - cy;
+    const len = Math.hypot(dx, dy) || 1;
+    const padLng = padLat / Math.cos(p.y * Math.PI / 180);
+    return [p.y + (dy / len) * padLat, p.x + (dx / len) * padLng];
+  });
+}
+
+function addZoneLayers(zone, cat, lg) {
+  const { venues, hull } = zone;
+  const clat = venues.reduce((s, p) => s + p.lat, 0) / venues.length;
+  const clng = venues.reduce((s, p) => s + p.lng, 0) / venues.length;
+  const style = {
+    color: cat.color, weight: 2, dashArray: "6 4", opacity: 0.85,
+    fillColor: cat.color, fillOpacity: 0.16, interactive: true,
+  };
+  const shape = hull
+    ? L.polygon(hull, style)
+    : L.circle([clat, clng], { radius: 120, ...style });
+  const names = venues.filter((p) => p.name !== "(unnamed)").map((p) => p.name);
+  const listed = names.slice(0, 10).map(escapeHtml).join("<br>")
+    + (names.length > 10 ? `<br>… and ${names.length - 10} more` : "");
+  shape.bindPopup(`
+    <div class="map-popup"><div class="map-popup-head">
+      <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label} district</div>
+      <div class="map-popup-title">${venues.length} venue${venues.length === 1 ? "" : "s"}</div>
+    </div><div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${listed}</span></div></div></div>`,
+    { className: "market-popup-wrapper", maxWidth: 280 });
+  lg.addLayer(shape);
+  lg.addLayer(L.marker([clat, clng], {
+    icon: L.divIcon({
+      className: "uni-zone-label-wrap",
+      html: `<div class="uni-zone-label" style="--cat-color:${cat.color}">${cat.label} · ${venues.length}</div>`,
+      iconSize: [0, 0],
+    }),
+    interactive: false,
+    zIndexOffset: 700,
+  }));
+}
+
+function renderUniPoiToggles(counts) {
   const wrap = document.getElementById("uni-map-toggles");
   wrap.innerHTML = POI_CATS.map((cat) => `
     <label class="uni-poi-toggle">
       <input type="checkbox" data-cat="${cat.key}" ${uniState.poiHidden.has(cat.key) ? "" : "checked"}>
       <span class="uni-poi-dot" style="background:${cat.color}"></span>
-      ${cat.label} <span class="uni-poi-count">${byCat.get(cat.key)?.length ?? 0}</span>
+      ${cat.label} <span class="uni-poi-count">${counts.get(cat.key) ?? 0}</span>
     </label>`).join("");
   wrap.querySelectorAll("input[data-cat]").forEach((cb) => {
     cb.addEventListener("change", () => {
@@ -2368,7 +2502,7 @@ function overpassQuery(lat, lng) {
   ].map(([k, v, named]) =>
     `  nwr["${k}"="${v}"]${named ? `["name"]` : ""}${around};`,
   ).join("\n");
-  return `[out:json][timeout:180];\n(\n${clauses}\n);\nout center tags;`;
+  return `[out:json][timeout:180];\n(\n${clauses}\n);\nout tags center bb qt;`;
 }
 
 /* Tag-based classification; order matters (most specific first). */
@@ -2399,7 +2533,7 @@ async function fetchCampusPois(school) {
   } catch { /* fall through to live Overpass */ }
 
   // 2. Browser cache of a previous live fetch.
-  const cacheKey = `uniPoi.v1.${school.school_key}`;
+  const cacheKey = `uniPoi.v2.${school.school_key}`;
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey) || "null");
     if (cached && Date.now() - cached.t < POI_CACHE_TTL_MS) return cached.pois;
@@ -2434,14 +2568,23 @@ async function fetchCampusPois(school) {
     if (seen.has(id)) continue;
     seen.add(id);
     const tags = el.tags || {};
-    const lat = el.lat ?? el.center?.lat;
-    const lng = el.lon ?? el.center?.lon;
+    const b = el.bounds;
+    const lat = el.lat ?? el.center?.lat ?? (b ? (b.minlat + b.maxlat) / 2 : null);
+    const lng = el.lon ?? el.center?.lon ?? (b ? (b.minlon + b.maxlon) / 2 : null);
     if (lat == null || lng == null) continue;
     const cat = classifyPoi(tags);
     if (!cat) continue;
     const name = tags.name || tags["name:en"] || "(unnamed)";
     const sub = tags.amenity || tags.leisure || tags.historic || tags.tourism || tags.building || "";
-    pois.push({ cat, name, lat, lng, sub });
+    // mirror of the notability score in fetch-campus-pois.py
+    let area = 0;
+    if (b) {
+      const dy = (b.maxlat - b.minlat) * 111320;
+      const dx = (b.maxlon - b.minlon) * 111320 * Math.cos(lat * Math.PI / 180);
+      area = Math.min(Math.abs(dx * dy), 150000);
+    }
+    const wiki = tags.wikipedia ? 2 : (tags.wikidata ? 1 : 0);
+    pois.push({ cat, name, lat, lng, sub, score: Math.round(wiki * 30000 + area) });
   }
 
   // nearest-first cap per category so dense downtowns don't swamp the map

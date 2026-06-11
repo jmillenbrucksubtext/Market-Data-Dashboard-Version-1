@@ -140,7 +140,7 @@ def fetch_tag(key: str, value: str, named: bool, bbox: tuple) -> list[dict]:
     """One tag over a bbox; splits into quadrants on failure."""
     s, w, n, e = bbox
     name_f = '["name"]' if named else ""
-    q = f'[out:json][timeout:900];nwr["{key}"="{value}"]{name_f}({s},{w},{n},{e});out center tags qt;'
+    q = f'[out:json][timeout:900];nwr["{key}"="{value}"]{name_f}({s},{w},{n},{e});out tags center bb qt;'
     try:
         res = overpass(q)
         return res.get("elements", [])
@@ -197,8 +197,11 @@ def main() -> int:
     pois = []
     for el in elements.values():
         tags = el.get("tags", {})
-        lat = el.get("lat") or (el.get("center") or {}).get("lat")
-        lng = el.get("lon") or (el.get("center") or {}).get("lon")
+        bounds = el.get("bounds")
+        lat = el.get("lat") or (el.get("center") or {}).get("lat") \
+            or (bounds and (bounds["minlat"] + bounds["maxlat"]) / 2)
+        lng = el.get("lon") or (el.get("center") or {}).get("lon") \
+            or (bounds and (bounds["minlon"] + bounds["maxlon"]) / 2)
         if lat is None or lng is None:
             continue
         cat = classify(tags)
@@ -207,7 +210,19 @@ def main() -> int:
         name = tags.get("name") or tags.get("name:en") or "(unnamed)"
         sub = (tags.get("amenity") or tags.get("leisure") or tags.get("historic")
                or tags.get("tourism") or tags.get("building") or "")
-        pois.append({"cat": cat, "name": name, "lat": lat, "lng": lng, "sub": sub})
+        # Notability score for the "well-known landmarks" callouts on the
+        # campus map: a Wikipedia/Wikidata link is the strongest signal;
+        # footprint area (bounds box, m^2, capped) breaks ties - stadiums,
+        # libraries, and student unions are physically big.
+        area = 0
+        if bounds:
+            dy = (bounds["maxlat"] - bounds["minlat"]) * 111320
+            dx = (bounds["maxlon"] - bounds["minlon"]) * 111320 * math.cos(math.radians(lat))
+            area = min(abs(dx * dy), 150000)
+        wiki = 2 if "wikipedia" in tags else (1 if "wikidata" in tags else 0)
+        score = int(wiki * 30000 + area)
+        pois.append({"cat": cat, "name": name, "lat": lat, "lng": lng,
+                     "sub": sub, "score": score})
     print(f"{len(pois)} classified POIs nationwide")
 
     # --- bin to campuses ---

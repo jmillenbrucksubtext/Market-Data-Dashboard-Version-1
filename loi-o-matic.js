@@ -1,4 +1,4 @@
-/* LOI-O-MATIC 3000 sidebar ad - links to loi-generator.streamlit.app.
+/* LOI-O-GENERATOR 3000 sidebar ad - links to loi-generator.streamlit.app.
 
    Aesthetic: modern premium appliance advertisement (Dyson/Miele launch
    energy). Matte graphite monolith under a showroom spotlight, lime LED
@@ -38,9 +38,9 @@
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-weight: 500;
   white-space: nowrap;
-  font-size: 13px;
+  font-size: 11.5px;
   line-height: 1.1;
-  letter-spacing: 0.18em;
+  letter-spacing: 0.11em;
   color: #f4f6f7;
 }
 .loi-omatic-ad .om-name sup { font-size: 6px; color: #9aa0a6; letter-spacing: 0; }
@@ -200,7 +200,7 @@
 </svg>`;
 
   var html = `
-<div class="om-name">LOI-O-MATIC <span class="om-series">3000</span><sup>&trade;</sup></div>
+<div class="om-name">LOI-O-GENERATOR <span class="om-series">3000</span><sup>&trade;</sup></div>
 ${svg}
 <div class="om-tagline">Engineered for non-binding commitment.</div>
 <div class="om-fine">Just add acreage, purchase price, and a dream.</div>
@@ -222,7 +222,7 @@ ${svg}
     var ad = document.createElement('div');
     ad.className = 'loi-omatic-ad';
     ad.innerHTML = html;
-    ad.title = 'The LOI-O-MATIC 3000 - open the LOI Generator';
+    ad.title = 'The LOI-O-GENERATOR 3000 - open the LOI Generator';
     ad.addEventListener('click', function () {
       window.open('https://loi-generator.streamlit.app/', '_blank', 'noopener');
     });

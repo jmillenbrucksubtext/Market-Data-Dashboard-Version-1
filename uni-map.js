@@ -1,0 +1,945 @@
+/* =============================================================
+   Campus Map Generator - University Information tab of market.html.
+   Sibling of comp-map.js: a static deck-style canvas (basemap tiles +
+   campus boundary) with the best-known campus POIs as draggable name
+   call-outs and Greek life / nightlife venue clusters as shaded
+   district outlines. Downloadable as a print-crisp PNG.
+
+   Loads after market.js and reads its data layer: fetchCampusPois(),
+   pickTopPois(), buildPoiZones(), setUniMapStatus(), MARKET.
+   market.js calls window.UniMap.show(school) when the University tab
+   opens or the selected school changes.
+   ============================================================= */
+(function () {
+  "use strict";
+
+  var W = 2800, H = 2000;
+  var TILE = 256;
+  var FIT_PAD_X = 420, FIT_PAD_Y = 300;
+  var EDGE = 24;
+  var CANDIDATES_PER_CAT = 15;   // picker depth per call-out category
+
+  var TILE_SOURCES = {
+    terrain: {
+      label: "Terrain",
+      url: function (z, x, y) {
+        return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Topo_Map/MapServer/tile/" + z + "/" + y + "/" + x;
+      },
+      attribution: "Tiles © Esri",
+      maxZoom: 19,
+    },
+    street: {
+      label: "Street",
+      url: function (z, x, y) {
+        var s = "abc"[(x + y) % 3];
+        return "https://" + s + ".tile.openstreetmap.org/" + z + "/" + x + "/" + y + ".png";
+      },
+      attribution: "© OpenStreetMap contributors",
+      maxZoom: 19,
+    },
+    light: {
+      label: "Light",
+      url: function (z, x, y) {
+        var s = "abcd"[(x + y) % 4];
+        return "https://" + s + ".basemaps.cartocdn.com/rastertiles/voyager/" + z + "/" + x + "/" + y + ".png";
+      },
+      attribution: "© OSM · © CARTO",
+      maxZoom: 19,
+    },
+    satellite: {
+      label: "Satellite",
+      url: function (z, x, y) {
+        return "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/" + z + "/" + y + "/" + x;
+      },
+      attribution: "Tiles © Esri, Maxar, Earthstar Geographics",
+      maxZoom: 19,
+    },
+  };
+
+  var CATS = [
+    { key: "academic",  label: "Academic buildings",    color: "#16352e", mode: "callout", cap: 8 },
+    { key: "landmark",  label: "Monuments + landmarks", color: "#a95818", mode: "callout", cap: 5 },
+    { key: "athletics", label: "Athletics",             color: "#8c1d18", mode: "callout", cap: 5 },
+    { key: "greek",     label: "Greek life",            color: "#6d4aa0", mode: "zone" },
+    { key: "nightlife", label: "Nightlife",             color: "#c79830", mode: "zone" },
+  ];
+  function catOf(key) { return CATS.find(function (c) { return c.key === key; }); }
+
+  var state = {
+    school: null,
+    candidates: new Map(),  // cat key -> ranked candidate pois (each with .id)
+    selected: new Set(),    // poi ids currently shown as call-outs
+    zones: new Map(),       // cat key -> [{venues, hull}]
+    hiddenCats: new Set(),
+    basemap: "satellite",
+    zoomDelta: 0,
+    center: null,
+    panDrag: null,
+    view: null,
+    base: null,
+    baseSig: null,
+    boundary: undefined,
+    placements: new Map(),  // poi id -> {x, y, w, h, auto}
+    drag: null,
+    renderToken: 0,
+    loadToken: 0,
+  };
+
+  function poiId(p) { return p.cat + "|" + p.name + "|" + p.lat.toFixed(5); }
+
+  /* visible call-out pois, with px/box stamped by refresh() */
+  function activeCallouts() {
+    var out = [];
+    CATS.forEach(function (cat) {
+      if (cat.mode !== "callout" || state.hiddenCats.has(cat.key)) return;
+      (state.candidates.get(cat.key) || []).forEach(function (p) {
+        if (state.selected.has(p.id)) out.push(p);
+      });
+    });
+    return out;
+  }
+
+  function activeZones() {
+    var out = [];
+    CATS.forEach(function (cat) {
+      if (cat.mode !== "zone" || state.hiddenCats.has(cat.key)) return;
+      (state.zones.get(cat.key) || []).forEach(function (z) {
+        out.push({ cat: cat, venues: z.venues, hull: z.hull });
+      });
+    });
+    return out;
+  }
+
+  /* ----- Web Mercator (same math as comp-map.js) ----------------- */
+
+  function worldX(lng, z) { return ((lng + 180) / 360) * TILE * Math.pow(2, z); }
+  function worldY(lat, z) {
+    var s = Math.sin((lat * Math.PI) / 180);
+    s = Math.min(Math.max(s, -0.9999), 0.9999);
+    return (0.5 - Math.log((1 + s) / (1 - s)) / (4 * Math.PI)) * TILE * Math.pow(2, z);
+  }
+  function unprojectLng(x, z) { return (x / (TILE * Math.pow(2, z))) * 360 - 180; }
+  function unprojectLat(y, z) {
+    var n = Math.PI - (2 * Math.PI * y) / (TILE * Math.pow(2, z));
+    return (180 / Math.PI) * Math.atan(0.5 * (Math.exp(n) - Math.exp(-n)));
+  }
+
+  function computeView(latLngs) {
+    var latN = -90, latS = 90, lngW = 180, lngE = -180;
+    latLngs.forEach(function (ll) {
+      latN = Math.max(latN, ll[0]); latS = Math.min(latS, ll[0]);
+      lngE = Math.max(lngE, ll[1]); lngW = Math.min(lngW, ll[1]);
+    });
+    var fitW = W - FIT_PAD_X * 2, fitH = H - FIT_PAD_Y * 2;
+    var z = 17;
+    while (z > 3) {
+      var spanX = worldX(lngE, z) - worldX(lngW, z);
+      var spanY = worldY(latS, z) - worldY(latN, z);
+      if (spanX <= fitW && spanY <= fitH) break;
+      z--;
+    }
+    var maxZ = TILE_SOURCES[state.basemap].maxZoom;
+    z = Math.min(Math.max(z + state.zoomDelta, 3), maxZ);
+    var cx, cy;
+    if (state.center) {
+      cx = worldX(state.center.lng, z);
+      cy = worldY(state.center.lat, z);
+    } else {
+      cx = (worldX(lngW, z) + worldX(lngE, z)) / 2;
+      cy = (worldY(latN, z) + worldY(latS, z)) / 2;
+    }
+    return { z: z, originX: cx - W / 2, originY: cy - H / 2 };
+  }
+
+  function project(lat, lng) {
+    return {
+      x: worldX(lng, state.view.z) - state.view.originX,
+      y: worldY(lat, state.view.z) - state.view.originY,
+    };
+  }
+
+  /* ----- Base layer: tiles + campus boundary --------------------- */
+
+  function loadTile(src) {
+    return new Promise(function (resolve) {
+      var img = new Image();
+      img.crossOrigin = "anonymous";
+      img.onload = function () { resolve(img); };
+      img.onerror = function () { resolve(null); };
+      img.src = src;
+    });
+  }
+
+  function fetchBoundary() {
+    if (state.boundary !== undefined) return Promise.resolve(state.boundary);
+    return fetch("assets/campus-boundaries/" + MARKET.market_key + ".geojson", { cache: "no-cache" })
+      .then(function (r) { return r.ok ? r.json() : null; })
+      .catch(function () { return null; })
+      .then(function (gj) { state.boundary = gj; return gj; });
+  }
+
+  function boundaryRings(gj) {
+    var rings = [];
+    function fromGeometry(geom) {
+      if (!geom) return;
+      if (geom.type === "Polygon") geom.coordinates.forEach(function (r) { rings.push(r); });
+      else if (geom.type === "MultiPolygon") geom.coordinates.forEach(function (poly) { poly.forEach(function (r) { rings.push(r); }); });
+      else if (geom.type === "GeometryCollection") (geom.geometries || []).forEach(fromGeometry);
+    }
+    if (gj.type === "FeatureCollection") (gj.features || []).forEach(function (f) { fromGeometry(f.geometry); });
+    else if (gj.type === "Feature") fromGeometry(gj.geometry);
+    else fromGeometry(gj);
+    return rings;
+  }
+
+  function buildBase() {
+    var src = TILE_SOURCES[state.basemap];
+    var z = state.view.z, ox = state.view.originX, oy = state.view.originY;
+    var maxIndex = Math.pow(2, z) - 1;
+    var txMin = Math.floor(ox / TILE), txMax = Math.floor((ox + W) / TILE);
+    var tyMin = Math.max(0, Math.floor(oy / TILE)), tyMax = Math.min(maxIndex, Math.floor((oy + H) / TILE));
+
+    var canvas = document.createElement("canvas");
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext("2d");
+    ctx.fillStyle = "#e8e4da";
+    ctx.fillRect(0, 0, W, H);
+
+    var jobs = [];
+    for (var tx = txMin; tx <= txMax; tx++) {
+      for (var ty = tyMin; ty <= tyMax; ty++) {
+        (function (tx, ty) {
+          jobs.push(loadTile(src.url(z, tx, ty)).then(function (img) {
+            if (img) ctx.drawImage(img, tx * TILE - ox, ty * TILE - oy);
+          }));
+        })(tx, ty);
+      }
+    }
+
+    return Promise.all(jobs).then(fetchBoundary).then(function (gj) {
+      if (gj) {
+        ctx.save();
+        ctx.beginPath();
+        boundaryRings(gj).forEach(function (ring) {
+          ring.forEach(function (coord, i) {
+            var p = project(coord[1], coord[0]);
+            if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y);
+          });
+          ctx.closePath();
+        });
+        ctx.fillStyle = "rgba(211, 47, 47, 0.12)";
+        ctx.fill();
+        ctx.strokeStyle = "#d32f2f";
+        ctx.lineWidth = 4;
+        ctx.stroke();
+        ctx.restore();
+      }
+      state.base = canvas;
+    });
+  }
+
+  /* ----- Call-out boxes ------------------------------------------ */
+
+  var FONTS = {
+    name: "700 28px 'Pragmatica', sans-serif",
+    cat: "600 18px 'Pragmatica', sans-serif",
+  };
+  var BOX_PAD = 18;
+
+  function measureCallout(ctx, p) {
+    ctx.font = FONTS.name;
+    var w = ctx.measureText(p.name).width;
+    return { w: Math.min(Math.max(w + BOX_PAD * 2, 160), 560), h: BOX_PAD * 2 + 30 };
+  }
+
+  /* ----- Auto-placement (comp-map algorithm on poi ids) ----------- */
+
+  function rectsOverlap(a, b, margin) {
+    return !(a.x + a.w + margin < b.x || b.x + b.w + margin < a.x ||
+             a.y + a.h + margin < b.y || b.y + b.h + margin < a.y);
+  }
+
+  function rectCoversPoint(r, px, py, margin) {
+    return px > r.x - margin && px < r.x + r.w + margin &&
+           py > r.y - margin && py < r.y + r.h + margin;
+  }
+
+  function titleCardRect(ctx) {
+    ctx.font = "700 44px 'Mencken Std', Georgia, serif";
+    var w = ctx.measureText(state.school ? state.school.university_name : "").width + 56;
+    return { x: EDGE, y: H - EDGE - 130, w: w, h: 130 };
+  }
+
+  function segmentsCross(a, b, c, d) {
+    function ccw(p, q, r) { return (r.y - p.y) * (q.x - p.x) > (q.y - p.y) * (r.x - p.x); }
+    return ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+  }
+
+  function segCrossesRect(a, b, r) {
+    if (rectCoversPoint(r, a.x, a.y, 0) || rectCoversPoint(r, b.x, b.y, 0)) return true;
+    var tl = { x: r.x, y: r.y }, tr = { x: r.x + r.w, y: r.y };
+    var bl = { x: r.x, y: r.y + r.h }, br = { x: r.x + r.w, y: r.y + r.h };
+    return segmentsCross(a, b, tl, tr) || segmentsCross(a, b, tr, br) ||
+           segmentsCross(a, b, br, bl) || segmentsCross(a, b, bl, tl);
+  }
+
+  function clampRect(r) {
+    r.x = Math.min(Math.max(r.x, EDGE), W - EDGE - r.w);
+    r.y = Math.min(Math.max(r.y, EDGE), H - EDGE - r.h);
+  }
+
+  function rectEdgePoint(r, px, py) {
+    var cx = r.x + r.w / 2, cy = r.y + r.h / 2;
+    var dx = px - cx, dy = py - cy;
+    if (dx === 0 && dy === 0) return { x: cx, y: cy };
+    var tx = dx !== 0 ? (r.w / 2) / Math.abs(dx) : Infinity;
+    var ty = dy !== 0 ? (r.h / 2) / Math.abs(dy) : Infinity;
+    var t = Math.min(tx, ty);
+    return { x: cx + dx * t, y: cy + dy * t };
+  }
+
+  function autoLayout(ctx, items) {
+    var radii = [110, 170, 250, 350, 480];
+    var angleOffsets = [0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150, 180];
+    var placed = [titleCardRect(ctx)];
+    var lr = legendRect(ctx);
+    if (lr) placed.push(lr);
+    var leaders = [];
+    var keepDragged = [];
+
+    items.forEach(function (p) {
+      var prev = state.placements.get(p.id);
+      if (prev && !prev.auto) {
+        prev.w = p.box.w; prev.h = p.box.h;
+        clampRect(prev);
+        placed.push(prev);
+        leaders.push([rectEdgePoint(prev, p.px.x, p.px.y), p.px]);
+        keepDragged.push(p.id);
+      }
+    });
+
+    var next = new Map();
+    keepDragged.forEach(function (id) { next.set(id, state.placements.get(id)); });
+
+    var cx0 = 0, cy0 = 0;
+    items.forEach(function (p) { cx0 += p.px.x; cy0 += p.px.y; });
+    cx0 /= items.length; cy0 /= items.length;
+
+    items.slice().sort(function (a, b) { return a.px.y - b.px.y; }).forEach(function (p) {
+      if (next.has(p.id)) return;
+      var radial = Math.atan2(p.px.y - cy0, p.px.x - cx0);
+      if (p.px.x === cx0 && p.px.y === cy0) radial = -Math.PI / 2;
+
+      var best = null, bestScore = Infinity;
+      for (var ri = 0; ri < radii.length; ri++) {
+        for (var ai = 0; ai < angleOffsets.length; ai++) {
+          var ang = radial + (angleOffsets[ai] * Math.PI) / 180;
+          var r = radii[ri];
+          var ccx = p.px.x + Math.cos(ang) * (r + p.box.w / 2);
+          var ccy = p.px.y + Math.sin(ang) * (r + p.box.h / 2);
+          var cand = { x: ccx - p.box.w / 2, y: ccy - p.box.h / 2, w: p.box.w, h: p.box.h };
+          if (cand.x < EDGE || cand.y < EDGE || cand.x + cand.w > W - EDGE || cand.y + cand.h > H - EDGE) continue;
+          var bad = placed.some(function (other) { return rectsOverlap(cand, other, 12); })
+                 || items.some(function (q) { return rectCoversPoint(cand, q.px.x, q.px.y, 20); });
+          if (bad) continue;
+          var seg = [rectEdgePoint(cand, p.px.x, p.px.y), p.px];
+          var crossings = leaders.reduce(function (n, other) {
+            return n + (segmentsCross(seg[0], seg[1], other[0], other[1]) ? 1 : 0)
+                     + (segCrossesRect(other[0], other[1], cand) ? 1 : 0);
+          }, 0);
+          var threading = placed.reduce(function (n, other) {
+            return n + (segCrossesRect(seg[0], seg[1], other) ? 1 : 0);
+          }, 0);
+          var score = (crossings + threading) * 1e6 + r * 2 + Math.abs(angleOffsets[ai]) * 1.5;
+          if (score < bestScore) { bestScore = score; best = cand; }
+        }
+        if (best && bestScore < 1e6) break;
+      }
+      var rect = best;
+      if (!rect) {
+        var bestCell = null, bestDist = Infinity;
+        for (var gy = EDGE; gy + p.box.h <= H - EDGE; gy += 60) {
+          for (var gx = EDGE; gx + p.box.w <= W - EDGE; gx += 60) {
+            var cell = { x: gx, y: gy, w: p.box.w, h: p.box.h };
+            var blocked = placed.some(function (other) { return rectsOverlap(cell, other, 12); })
+                       || items.some(function (q) { return rectCoversPoint(cell, q.px.x, q.px.y, 18); });
+            if (blocked) continue;
+            var ddx = gx + p.box.w / 2 - p.px.x, ddy = gy + p.box.h / 2 - p.px.y;
+            var dist = ddx * ddx + ddy * ddy;
+            if (dist < bestDist) { bestDist = dist; bestCell = cell; }
+          }
+        }
+        rect = bestCell || { x: Math.min(Math.max(p.px.x + 36, EDGE), W - EDGE - p.box.w),
+                             y: Math.min(Math.max(p.px.y + 36, EDGE), H - EDGE - p.box.h),
+                             w: p.box.w, h: p.box.h };
+      }
+      rect.auto = true;
+      placed.push(rect);
+      leaders.push([rectEdgePoint(rect, p.px.x, p.px.y), p.px]);
+      next.set(p.id, rect);
+    });
+
+    state.placements = next;
+  }
+
+  /* ----- Drawing -------------------------------------------------- */
+
+  function drawZones(ctx) {
+    activeZones().forEach(function (z) {
+      var color = z.cat.color;
+      var pts = (z.hull || z.venues.map(function (v) { return [v.lat, v.lng]; }))
+        .map(function (ll) { return project(ll[0], ll[1]); });
+
+      ctx.save();
+      ctx.beginPath();
+      if (z.hull && pts.length >= 3) {
+        pts.forEach(function (p, i) { if (i === 0) ctx.moveTo(p.x, p.y); else ctx.lineTo(p.x, p.y); });
+        ctx.closePath();
+      } else {
+        // singleton / tiny cluster: a simple disc around the centroid
+        var cx = pts.reduce(function (s, p) { return s + p.x; }, 0) / pts.length;
+        var cy = pts.reduce(function (s, p) { return s + p.y; }, 0) / pts.length;
+        var mpp = (156543.03392 * Math.cos((z.venues[0].lat * Math.PI) / 180)) / Math.pow(2, state.view.z);
+        ctx.arc(cx, cy, 130 / mpp, 0, Math.PI * 2);
+      }
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.18;
+      ctx.fill();
+      ctx.globalAlpha = 0.9;
+      ctx.setLineDash([16, 10]);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 5;
+      ctx.stroke();
+      ctx.restore();
+
+      // pill label at the centroid
+      var lx = pts.reduce(function (s, p) { return s + p.x; }, 0) / pts.length;
+      var ly = pts.reduce(function (s, p) { return s + p.y; }, 0) / pts.length;
+      var text = z.cat.label + " · " + z.venues.length;
+      ctx.font = "700 22px 'Pragmatica', sans-serif";
+      var tw = ctx.measureText(text).width;
+      var pw = tw + 36, ph = 40, rr = ph / 2;
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(lx - pw / 2 + rr, ly - ph / 2);
+      ctx.arcTo(lx + pw / 2, ly - ph / 2, lx + pw / 2, ly + ph / 2, rr);
+      ctx.arcTo(lx + pw / 2, ly + ph / 2, lx - pw / 2, ly + ph / 2, rr);
+      ctx.arcTo(lx - pw / 2, ly + ph / 2, lx - pw / 2, ly - ph / 2, rr);
+      ctx.arcTo(lx - pw / 2, ly - ph / 2, lx + pw / 2, ly - ph / 2, rr);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.globalAlpha = 0.92;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = "#ffffff";
+      ctx.fillText(text, lx - tw / 2, ly + 8);
+      ctx.restore();
+    });
+  }
+
+  function drawCallout(ctx, p, rect) {
+    var color = catOf(p.cat).color;
+    ctx.save();
+    ctx.shadowColor = "rgba(43, 40, 37, 0.25)";
+    ctx.shadowBlur = 14;
+    ctx.shadowOffsetY = 4;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.97)";
+    ctx.fillRect(rect.x, rect.y, rect.w, rect.h);
+    ctx.restore();
+    ctx.strokeStyle = color;
+    ctx.lineWidth = 4;
+    ctx.strokeRect(rect.x, rect.y, rect.w, rect.h);
+    ctx.fillStyle = "#2b2825";
+    ctx.font = FONTS.name;
+    ctx.fillText(p.name, rect.x + BOX_PAD, rect.y + rect.h / 2 + 10, rect.w - BOX_PAD * 2);
+  }
+
+  function legendEntries() {
+    var entries = [];
+    CATS.forEach(function (cat) {
+      if (state.hiddenCats.has(cat.key)) return;
+      if (cat.mode === "callout") {
+        var n = (state.candidates.get(cat.key) || []).filter(function (p) {
+          return state.selected.has(p.id);
+        }).length;
+        if (n) entries.push({ type: "dot", color: cat.color, label: cat.label });
+      } else if ((state.zones.get(cat.key) || []).length) {
+        entries.push({ type: "zone", color: cat.color, label: cat.label + " district" });
+      }
+    });
+    if (state.boundary) entries.push({ type: "line", color: "#d32f2f", label: "Campus boundary" });
+    return entries;
+  }
+
+  var LEGEND_ROW = 38, LEGEND_PAD = 22, LEGEND_ICON = 48, LEGEND_TITLE = 34;
+
+  function legendRect(ctx) {
+    var entries = legendEntries();
+    if (!entries.length) return null;
+    ctx.font = "400 22px 'Pragmatica', sans-serif";
+    var w = 0;
+    entries.forEach(function (e) { w = Math.max(w, ctx.measureText(e.label).width); });
+    w = Math.max(w + LEGEND_ICON + LEGEND_PAD * 2, 260);
+    var h = LEGEND_PAD * 2 + LEGEND_TITLE + entries.length * LEGEND_ROW;
+    return { x: W - EDGE - w, y: H - EDGE - h - 34, w: w, h: h };
+  }
+
+  function drawLegend(ctx) {
+    var entries = legendEntries();
+    var r = legendRect(ctx);
+    if (!r) return;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = "#16352e";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.fillStyle = "#2b2825";
+    ctx.font = "700 20px 'Pragmatica', sans-serif";
+    ctx.fillText("KEY", r.x + LEGEND_PAD, r.y + LEGEND_PAD + 12);
+    var y = r.y + LEGEND_PAD + LEGEND_TITLE;
+    entries.forEach(function (e) {
+      var iy = y + LEGEND_ROW / 2 - 4;
+      var ix = r.x + LEGEND_PAD + 16;
+      if (e.type === "dot") {
+        ctx.beginPath();
+        ctx.arc(ix, iy, 11, 0, Math.PI * 2);
+        ctx.fillStyle = e.color;
+        ctx.fill();
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 3;
+        ctx.stroke();
+      } else if (e.type === "zone") {
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(ix - 14, iy - 11, 28, 22);
+        ctx.fillStyle = e.color;
+        ctx.globalAlpha = 0.2;
+        ctx.fill();
+        ctx.globalAlpha = 0.9;
+        ctx.setLineDash([6, 4]);
+        ctx.strokeStyle = e.color;
+        ctx.lineWidth = 3;
+        ctx.stroke();
+        ctx.restore();
+      } else {
+        ctx.strokeStyle = e.color;
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(ix - 14, iy);
+        ctx.lineTo(ix + 14, iy);
+        ctx.stroke();
+      }
+      ctx.fillStyle = "#2b2825";
+      ctx.font = "400 22px 'Pragmatica', sans-serif";
+      ctx.fillText(e.label, r.x + LEGEND_PAD + LEGEND_ICON, iy + 8);
+      y += LEGEND_ROW;
+    });
+  }
+
+  function drawTitleCard(ctx) {
+    if (!state.school) return;
+    var title = state.school.university_name;
+    var date = MARKET.data_as_of ? new Date(MARKET.data_as_of) : new Date();
+    var sub = "Campus Map · " +
+      date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+    var r = titleCardRect(ctx);
+    ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
+    ctx.fillRect(r.x, r.y, r.w, r.h);
+    ctx.strokeStyle = "#16352e";
+    ctx.lineWidth = 4;
+    ctx.strokeRect(r.x, r.y, r.w, r.h);
+    ctx.fillStyle = "#16352e";
+    ctx.font = "700 44px 'Mencken Std', Georgia, serif";
+    ctx.fillText(title, r.x + 28, r.y + 58);
+    ctx.font = "600 22px 'Pragmatica', sans-serif";
+    ctx.fillStyle = "#5a544f";
+    ctx.fillText(sub.toUpperCase(), r.x + 28, r.y + 98);
+  }
+
+  function drawAttribution(ctx) {
+    var text = TILE_SOURCES[state.basemap].attribution + " · POIs © OpenStreetMap";
+    ctx.font = "400 18px 'Pragmatica', sans-serif";
+    var w = ctx.measureText(text).width + 20;
+    ctx.fillStyle = "rgba(255, 255, 255, 0.8)";
+    ctx.fillRect(W - w, H - 32, w, 32);
+    ctx.fillStyle = "#5a544f";
+    ctx.fillText(text, W - w + 10, H - 10);
+  }
+
+  function draw() {
+    var canvas = document.getElementById("uni-map-canvas");
+    if (!canvas) return;
+    canvas.width = W; canvas.height = H;
+    var ctx = canvas.getContext("2d");
+
+    if (!state.school) {
+      ctx.fillStyle = "#f7f1e3";
+      ctx.fillRect(0, 0, W, H);
+      ctx.fillStyle = "#837c75";
+      ctx.font = "400 36px 'Pragmatica', sans-serif";
+      ctx.textAlign = "center";
+      ctx.fillText("No campus on file for this market.", W / 2, H / 2);
+      ctx.textAlign = "left";
+      return;
+    }
+    if (!state.base) return;  // tiles still loading; draw() re-runs when done
+
+    var pd = state.panDrag;
+    if (pd) {
+      ctx.fillStyle = "#f7f1e3";
+      ctx.fillRect(0, 0, W, H);
+      ctx.save();
+      ctx.translate(pd.dx, pd.dy);
+    }
+
+    ctx.drawImage(state.base, 0, 0);
+    drawZones(ctx);
+
+    var items = activeCallouts();
+
+    // leader lines + dots under the boxes; white casing for legibility
+    items.forEach(function (p) {
+      var rect = state.placements.get(p.id);
+      if (!rect) return;
+      var color = catOf(p.cat).color;
+      var from = rectEdgePoint(rect, p.px.x, p.px.y);
+      ctx.lineCap = "round";
+      ctx.strokeStyle = "rgba(255, 255, 255, 0.95)";
+      ctx.lineWidth = 10;
+      ctx.beginPath();
+      ctx.moveTo(from.x, from.y);
+      ctx.lineTo(p.px.x, p.px.y);
+      ctx.stroke();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 4.5;
+      ctx.stroke();
+    });
+    items.forEach(function (p) {
+      var color = catOf(p.cat).color;
+      ctx.beginPath();
+      ctx.arc(p.px.x, p.px.y, 13, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.strokeStyle = "#ffffff";
+      ctx.lineWidth = 4;
+      ctx.stroke();
+    });
+    items.forEach(function (p) {
+      var rect = state.placements.get(p.id);
+      if (rect) drawCallout(ctx, p, rect);
+    });
+
+    if (pd) ctx.restore();
+
+    drawTitleCard(ctx);
+    drawLegend(ctx);
+    drawAttribution(ctx);
+  }
+
+  /* ----- Refresh pipeline ----------------------------------------- */
+
+  function refresh() {
+    var canvas = document.getElementById("uni-map-canvas");
+    if (!canvas || !state.school) { draw(); return; }
+
+    var items = activeCallouts();
+    var latLngs = [[state.school.lat, state.school.lng]];
+    items.forEach(function (p) { latLngs.push([p.lat, p.lng]); });
+    activeZones().forEach(function (z) {
+      (z.hull || z.venues.map(function (v) { return [v.lat, v.lng]; }))
+        .forEach(function (ll) { latLngs.push(ll); });
+    });
+
+    var zoneCount = activeZones().length;
+    setUniMapStatus(
+      items.length + " call-outs · " + zoneCount + " shaded district" + (zoneCount === 1 ? "" : "s") +
+      " · drag a callout to reposition · drag the map to pan",
+    );
+
+    return fetchBoundary().then(function (gj) {
+      if (gj) boundaryRings(gj).forEach(function (ring) {
+        ring.forEach(function (c) { latLngs.push([c[1], c[0]]); });
+      });
+
+      state.view = computeView(latLngs);
+      items.forEach(function (p) { p.px = project(p.lat, p.lng); });
+
+      var ctx = canvas.getContext("2d");
+      items.forEach(function (p) { p.box = measureCallout(ctx, p); });
+      autoLayout(ctx, items);
+
+      var sig = state.basemap + "|" + state.view.z + "|" +
+        Math.round(state.view.originX) + "|" + Math.round(state.view.originY);
+      if (sig !== state.baseSig) {
+        state.base = null;
+        state.baseSig = sig;
+        var token = ++state.renderToken;
+        draw();
+        return buildBase().then(function () {
+          if (token === state.renderToken) draw();
+        });
+      }
+      draw();
+    });
+  }
+
+  /* ----- School load / selection UI -------------------------------- */
+
+  function show(school) {
+    state.school = school;
+    state.candidates = new Map();
+    state.selected = new Set();
+    state.zones = new Map();
+    state.placements = new Map();
+    state.center = null;
+    state.zoomDelta = 0;
+    state.baseSig = null;
+
+    if (!school) { renderToggles(); renderPicker(); draw(); return; }
+
+    setUniMapStatus("Loading campus points of interest ...");
+    var token = ++state.loadToken;
+    fetchCampusPois(school).then(function (pois) {
+      if (token !== state.loadToken) return;  // user switched schools mid-fetch
+      var byCat = {};
+      pois.forEach(function (p) { (byCat[p.cat] = byCat[p.cat] || []).push(p); });
+
+      CATS.forEach(function (cat) {
+        if (cat.mode === "callout") {
+          var ranked = pickTopPois(byCat[cat.key] || [], CANDIDATES_PER_CAT, school);
+          ranked.forEach(function (p) { p.id = poiId(p); });
+          state.candidates.set(cat.key, ranked);
+          ranked.slice(0, cat.cap).forEach(function (p) { state.selected.add(p.id); });
+        } else {
+          state.zones.set(cat.key, buildPoiZones(byCat[cat.key] || []));
+        }
+      });
+
+      renderToggles();
+      renderPicker();
+      refresh();
+    }).catch(function (err) {
+      if (token !== state.loadToken) return;
+      setUniMapStatus("Couldn't load campus POIs (" + (err.message || err) + "). Re-open the tab to retry.");
+    });
+  }
+
+  function renderToggles() {
+    var wrap = document.getElementById("uni-map-toggles");
+    if (!wrap) return;
+    if (!state.school) { wrap.innerHTML = ""; return; }
+    wrap.innerHTML = CATS.map(function (cat) {
+      var count;
+      if (cat.mode === "callout") {
+        count = (state.candidates.get(cat.key) || []).filter(function (p) {
+          return state.selected.has(p.id);
+        }).length;
+      } else {
+        count = (state.zones.get(cat.key) || []).reduce(function (n, z) { return n + z.venues.length; }, 0);
+      }
+      return '<label class="uni-poi-toggle">' +
+        '<input type="checkbox" data-cat="' + cat.key + '"' + (state.hiddenCats.has(cat.key) ? "" : " checked") + ">" +
+        '<span class="uni-poi-dot" style="background:' + cat.color + '"></span>' +
+        cat.label + ' <span class="uni-poi-count">' + count + "</span></label>";
+    }).join("");
+    wrap.querySelectorAll("input[data-cat]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        if (cb.checked) state.hiddenCats.delete(cb.dataset.cat);
+        else state.hiddenCats.add(cb.dataset.cat);
+        refresh();
+      });
+    });
+  }
+
+  /* Checkbox list of every candidate call-out, grouped by category, so
+     individual call-outs can be removed or added beyond the defaults. */
+  function renderPicker() {
+    var panel = document.getElementById("uni-picker-panel");
+    if (!panel) return;
+    if (!state.school) { panel.innerHTML = ""; return; }
+    panel.innerHTML = CATS.filter(function (c) { return c.mode === "callout"; }).map(function (cat) {
+      var rows = (state.candidates.get(cat.key) || []).map(function (p) {
+        return '<label class="uni-picker-item">' +
+          '<input type="checkbox" data-poi="' + escapeHtml(p.id) + '"' +
+          (state.selected.has(p.id) ? " checked" : "") + ">" +
+          '<span>' + escapeHtml(p.name) + "</span></label>";
+      }).join("");
+      return '<div class="uni-picker-group">' +
+        '<div class="uni-picker-group-title" style="--cat-color:' + cat.color + '">' + cat.label + "</div>" +
+        (rows || '<div class="uni-picker-empty">None found near campus</div>') +
+        "</div>";
+    }).join("");
+    panel.querySelectorAll("input[data-poi]").forEach(function (cb) {
+      cb.addEventListener("change", function () {
+        if (cb.checked) state.selected.add(cb.dataset.poi);
+        else {
+          state.selected.delete(cb.dataset.poi);
+          state.placements.delete(cb.dataset.poi);
+        }
+        renderToggles();
+        refresh();
+      });
+    });
+  }
+
+  /* ----- Dragging (same scheme as comp-map.js) --------------------- */
+
+  function canvasPoint(canvas, evt) {
+    var r = canvas.getBoundingClientRect();
+    return {
+      x: ((evt.clientX - r.left) / r.width) * W,
+      y: ((evt.clientY - r.top) / r.height) * H,
+    };
+  }
+
+  function bindDrag(canvas) {
+    canvas.addEventListener("pointerdown", function (e) {
+      var pt = canvasPoint(canvas, e);
+      var ids = activeCallouts().map(function (p) { return p.id; }).reverse();
+      for (var i = 0; i < ids.length; i++) {
+        var rect = state.placements.get(ids[i]);
+        if (rect && rectCoversPoint(rect, pt.x, pt.y, 0)) {
+          state.drag = { id: ids[i], dx: pt.x - rect.x, dy: pt.y - rect.y };
+          canvas.classList.add("dragging");
+          canvas.setPointerCapture(e.pointerId);
+          e.preventDefault();
+          return;
+        }
+      }
+      if (!state.base || !state.school) return;
+      state.panDrag = { sx: pt.x, sy: pt.y, dx: 0, dy: 0 };
+      canvas.classList.add("dragging");
+      canvas.setPointerCapture(e.pointerId);
+      e.preventDefault();
+    });
+    canvas.addEventListener("pointermove", function (e) {
+      if (state.panDrag) {
+        var pp = canvasPoint(canvas, e);
+        state.panDrag.dx = pp.x - state.panDrag.sx;
+        state.panDrag.dy = pp.y - state.panDrag.sy;
+        draw();
+        return;
+      }
+      if (!state.drag) return;
+      var pt = canvasPoint(canvas, e);
+      var rect = state.placements.get(state.drag.id);
+      if (!rect) return;
+      rect.x = pt.x - state.drag.dx;
+      rect.y = pt.y - state.drag.dy;
+      rect.auto = false;
+      clampRect(rect);
+      draw();
+    });
+    function endDrag(e) {
+      if (state.panDrag) {
+        var pd = state.panDrag;
+        state.panDrag = null;
+        canvas.classList.remove("dragging");
+        if (e.pointerId != null && canvas.hasPointerCapture(e.pointerId)) {
+          canvas.releasePointerCapture(e.pointerId);
+        }
+        if (pd.dx || pd.dy) {
+          var z = state.view.z;
+          state.center = {
+            lat: unprojectLat(state.view.originY + H / 2 - pd.dy, z),
+            lng: unprojectLng(state.view.originX + W / 2 - pd.dx, z),
+          };
+          state.placements.forEach(function (r) {
+            r.x += pd.dx; r.y += pd.dy;
+            clampRect(r);
+          });
+          refresh();
+        } else {
+          draw();
+        }
+        return;
+      }
+      if (!state.drag) return;
+      state.drag = null;
+      canvas.classList.remove("dragging");
+      if (e.pointerId != null && canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    }
+    canvas.addEventListener("pointerup", endDrag);
+    canvas.addEventListener("pointercancel", endDrag);
+  }
+
+  /* ----- Download + controls --------------------------------------- */
+
+  function slug(text) {
+    return String(text || "campus").toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+  }
+
+  function download() {
+    var canvas = document.getElementById("uni-map-canvas");
+    if (!canvas || !state.school) return;
+    var d = new Date();
+    var stamp = d.getFullYear() + "-" +
+      String(d.getMonth() + 1).padStart(2, "0") + "-" +
+      String(d.getDate()).padStart(2, "0");
+    var link = document.createElement("a");
+    link.download = slug(state.school.university_name) + "-campus-map-" + stamp + ".png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
+
+  function init() {
+    var canvas = document.getElementById("uni-map-canvas");
+    if (!canvas) return;
+    bindDrag(canvas);
+
+    var basemapSel = document.getElementById("uni-map-basemap");
+    if (basemapSel) {
+      basemapSel.addEventListener("change", function () {
+        state.basemap = basemapSel.value;
+        state.baseSig = null;
+        refresh();
+      });
+    }
+    var chooseBtn = document.getElementById("uni-map-choose");
+    var panel = document.getElementById("uni-picker-panel");
+    if (chooseBtn && panel) {
+      chooseBtn.addEventListener("click", function () {
+        panel.hidden = !panel.hidden;
+        chooseBtn.classList.toggle("active", !panel.hidden);
+      });
+    }
+    var resetBtn = document.getElementById("uni-map-reset");
+    if (resetBtn) {
+      resetBtn.addEventListener("click", function () {
+        state.placements = new Map();
+        refresh();
+      });
+    }
+    function nudgeZoom(d) {
+      var next = Math.min(4, Math.max(-4, state.zoomDelta + d));
+      if (next === state.zoomDelta) return;
+      state.zoomDelta = next;
+      refresh();
+    }
+    var zoomIn = document.getElementById("uni-map-zoom-in");
+    var zoomOut = document.getElementById("uni-map-zoom-out");
+    var zoomHome = document.getElementById("uni-map-zoom-home");
+    if (zoomIn) zoomIn.addEventListener("click", function () { nudgeZoom(1); });
+    if (zoomOut) zoomOut.addEventListener("click", function () { nudgeZoom(-1); });
+    if (zoomHome) {
+      zoomHome.addEventListener("click", function () {
+        if (state.zoomDelta === 0 && !state.center) return;
+        state.zoomDelta = 0;
+        state.center = null;
+        refresh();
+      });
+    }
+    var dlBtn = document.getElementById("uni-map-download");
+    if (dlBtn) dlBtn.addEventListener("click", download);
+  }
+
+  if (document.readyState === "loading") {
+    document.addEventListener("DOMContentLoaded", init);
+  } else {
+    init();
+  }
+
+  window.UniMap = { show: show };
+})();

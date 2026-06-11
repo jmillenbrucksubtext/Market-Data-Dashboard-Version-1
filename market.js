@@ -1910,18 +1910,10 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
    API and caches per school in localStorage. Everything is lazy: built
    on first visit to the tab. */
 
-/* mode "callout": only the best-known few, each with a comp-map-style
-   call-out box (ranked by the prefetcher's notability score - Wikipedia/
-   Wikidata link + footprint size). mode "zone": no individual pins;
-   venue clusters become shaded district outlines instead. */
-const POI_CATS = [
-  { key: "academic",  label: "Academic buildings",    color: "#16352e", mode: "callout", cap: 8 },
-  { key: "landmark",  label: "Monuments + landmarks", color: "#a95818", mode: "callout", cap: 5 },
-  { key: "athletics", label: "Athletics",             color: "#8c1d18", mode: "callout", cap: 5 },
-  { key: "greek",     label: "Greek life",            color: "#6d4aa0", mode: "zone" },
-  { key: "nightlife", label: "Nightlife",             color: "#c79830", mode: "zone" },
-];
-const POI_ZONE_EPS_M = 280;   // venues closer than this merge into one district
+/* Map rendering lives in uni-map.js (comp-map-style canvas with
+   draggable call-outs and shaded districts). market.js owns the data
+   layer: POI fetch (asset-first, live Overpass fallback), notability
+   ranking, and district clustering. */
 
 const POI_RADIUS_M = 3200;       // search radius around the campus pin
 const POI_CACHE_TTL_MS = 30 * 24 * 3600 * 1000;
@@ -1934,12 +1926,6 @@ const OVERPASS_ENDPOINTS = [
 const uniState = {
   initialized: false,
   schoolKey: null,
-  map: null,
-  campusMarker: null,
-  poiLayers: new Map(),    // cat key -> L.layerGroup
-  poiHidden: new Set(),    // cat keys the user unticked
-  poiForSchool: null,      // school_key the current POI layers belong to
-  poiFetchSeq: 0,          // stale-response guard when switching schools fast
 };
 
 /* One entry per distinct school in this market (campus_locations carries
@@ -1975,18 +1961,15 @@ function uniSchools() {
 }
 
 function renderUniversityTab() {
-  if (uniState.initialized) {
-    if (uniState.map) uniState.map.invalidateSize();
-    return;
-  }
+  if (uniState.initialized) return;
   uniState.initialized = true;
 
   const schools = uniSchools();
   if (!schools.length) {
     document.getElementById("uni-stats-grid").innerHTML =
       `<div class="empty-state">No tracked university for this market.</div>`;
-    document.getElementById("uni-map").innerHTML =
-      `<div class="empty-state">No campus coordinates on file.</div>`;
+    setUniMapStatus("No campus coordinates on file.");
+    if (window.UniMap) UniMap.show(null);
     return;
   }
 
@@ -2204,137 +2187,15 @@ function renderUniStats(school) {
     </div>`).join("");
 }
 
-/* ----- Campus POI map ---------------------------------------- */
+/* ----- Campus POI map (rendered by uni-map.js) ----------------- */
 
-async function renderUniMap(school) {
-  const container = document.getElementById("uni-map");
-  if (!container) return;
-
-  if (typeof L === "undefined") {
-    await new Promise((r) => window.addEventListener("load", r, { once: true }));
-    if (typeof L === "undefined") {
-      container.innerHTML = `<div class="empty-state">Map library failed to load.</div>`;
-      return;
-    }
-  }
-
-  if (!uniState.map) {
-    uniState.map = L.map("uni-map", {
-      center: [school.lat, school.lng],
-      zoom: 15,
-      scrollWheelZoom: true,
-      preferCanvas: true,    // hundreds of POI circle markers
-      minZoom: 8,
-      worldCopyJump: false,
-      maxBounds: [[-85, -180], [85, 180]],
-      maxBoundsViscosity: 1,
-    });
-    const baseLayers = {
-      "Street": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-        attribution: "© OpenStreetMap contributors", maxZoom: 19, noWrap: true,
-      }),
-      "Satellite": L.tileLayer(
-        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
-        { attribution: "Tiles © Esri, Maxar, Earthstar Geographics", maxZoom: 19, noWrap: true },
-      ),
-      "Light": L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png", {
-        attribution: "© OSM · © CARTO", subdomains: "abcd", maxZoom: 19, noWrap: true,
-      }),
-    };
-    baseLayers.Street.addTo(uniState.map);
-    L.control.layers(baseLayers, null, { position: "topright", collapsed: true }).addTo(uniState.map);
-    addFullscreenControl(uniState.map);
-
-    // Campus boundary is a market-level asset; add once.
-    try {
-      const gjRes = await fetch(`assets/campus-boundaries/${MARKET.market_key}.geojson`, { cache: "no-cache" });
-      if (gjRes.ok) {
-        const gj = await gjRes.json();
-        L.geoJSON(gj, {
-          style: { color: "#d32f2f", weight: 2, opacity: 0.95, fillColor: "#d32f2f", fillOpacity: 0.10 },
-          interactive: false,
-        }).addTo(uniState.map);
-      }
-    } catch { /* missing boundary file is fine */ }
-  } else {
-    uniState.map.setView([school.lat, school.lng], 15);
-  }
-  uniState.map.invalidateSize();
-
-  if (uniState.campusMarker) uniState.campusMarker.remove();
-  uniState.campusMarker = L.marker([school.lat, school.lng], {
-    icon: campusMarkerIcon(school.university_name === MARKET.anchor_university, MARKET.market_key),
-    zIndexOffset: 1000,
-  }).addTo(uniState.map).bindPopup(
-    `<div class="map-popup"><div class="map-popup-head">
-       <div class="map-popup-eyebrow">Campus</div>
-       <div class="map-popup-title">${escapeHtml(school.university_name)}</div>
-     </div></div>`,
-    { className: "market-popup-wrapper", maxWidth: 280 },
-  );
-
-  loadUniPois(school);
+function renderUniMap(school) {
+  if (window.UniMap) UniMap.show(school);
 }
 
 function setUniMapStatus(text) {
   const el = document.getElementById("uni-map-sub");
   if (el) el.textContent = text;
-}
-
-async function loadUniPois(school) {
-  if (uniState.poiForSchool === school.school_key) return;
-  const seq = ++uniState.poiFetchSeq;
-
-  // clear the previous school's layers
-  for (const lg of uniState.poiLayers.values()) lg.remove();
-  uniState.poiLayers.clear();
-  document.getElementById("uni-map-toggles").innerHTML = "";
-
-  setUniMapStatus("Loading points of interest from OpenStreetMap ...");
-  let pois = null;
-  try {
-    pois = await fetchCampusPois(school);
-  } catch (err) {
-    if (seq !== uniState.poiFetchSeq) return;
-    setUniMapStatus(`Couldn't load points of interest (${err.message || err}). Re-open the tab to retry.`);
-    uniState.poiForSchool = null;
-    return;
-  }
-  if (seq !== uniState.poiFetchSeq) return;   // user switched schools mid-fetch
-  uniState.poiForSchool = school.school_key;
-
-  const byCat = new Map(POI_CATS.map((c) => [c.key, []]));
-  for (const p of pois) byCat.get(p.cat)?.push(p);
-
-  const counts = new Map();
-  let calloutTotal = 0;
-  let zoneTotal = 0;
-  for (const cat of POI_CATS) {
-    const list = byCat.get(cat.key);
-    const lg = L.layerGroup();
-    if (cat.mode === "callout") {
-      const top = pickTopPois(list, cat.cap, school);
-      top.forEach((p) => lg.addLayer(calloutMarker(p, cat, school)));
-      counts.set(cat.key, top.length);
-      calloutTotal += top.length;
-    } else {
-      const zones = buildPoiZones(list);
-      let venues = 0;
-      for (const zone of zones) {
-        addZoneLayers(zone, cat, lg);
-        venues += zone.venues.length;
-        zoneTotal += 1;
-      }
-      counts.set(cat.key, venues);
-    }
-    uniState.poiLayers.set(cat.key, lg);
-    if (!uniState.poiHidden.has(cat.key)) lg.addTo(uniState.map);
-  }
-
-  renderUniPoiToggles(counts);
-  setUniMapStatus(
-    `${calloutTotal} campus landmarks called out · ${zoneTotal} shaded Greek life / nightlife districts · OpenStreetMap`,
-  );
 }
 
 /* ----- callouts: best-known POIs, comp-map style --------------- */
@@ -2355,27 +2216,6 @@ function pickTopPois(list, cap, school) {
     .slice(0, cap);
 }
 
-/* The box points away from the campus pin so call-outs fan outward. */
-function calloutMarker(p, cat, school) {
-  const side = p.lng >= school.lng ? "right" : "left";
-  const icon = L.divIcon({
-    className: "uni-callout-wrap",
-    html: `<div class="uni-callout uni-callout-${side}" style="--cat-color:${cat.color}">
-      <span class="uni-callout-dot"></span><span class="uni-callout-line"></span>
-      <span class="uni-callout-box">${escapeHtml(p.name)}</span>
-    </div>`,
-    iconSize: [0, 0],
-  });
-  const m = L.marker([p.lat, p.lng], { icon, zIndexOffset: 800 });
-  m.bindPopup(`
-    <div class="map-popup"><div class="map-popup-head">
-      <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label}</div>
-      <div class="map-popup-title">${escapeHtml(p.name)}</div>
-    </div>${p.sub ? `<div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${escapeHtml(p.sub)}</span></div></div>` : ""}</div>`,
-    { className: "market-popup-wrapper", maxWidth: 280 });
-  return m;
-}
-
 /* ----- zones: shaded district outlines ------------------------- */
 
 function poiDistM(a, b) {
@@ -2387,10 +2227,10 @@ function poiDistM(a, b) {
 /* Greedy single-link clustering, then keep clusters of 3+ venues
    (else the map litters with one-bar circles). If nothing qualifies,
    keep the largest cluster so small towns still get their district. */
-function buildPoiZones(list) {
+function buildPoiZones(list, epsM = 280) {
   const clusters = [];
   for (const p of list) {
-    const home = clusters.find((c) => c.some((q) => poiDistM(p, q) < POI_ZONE_EPS_M));
+    const home = clusters.find((c) => c.some((q) => poiDistM(p, q) < epsM));
     if (home) home.push(p); else clusters.push([p]);
   }
   clusters.sort((a, b) => b.length - a.length);
@@ -2424,56 +2264,6 @@ function expandedHull(venues, padM = 70) {
     const len = Math.hypot(dx, dy) || 1;
     const padLng = padLat / Math.cos(p.y * Math.PI / 180);
     return [p.y + (dy / len) * padLat, p.x + (dx / len) * padLng];
-  });
-}
-
-function addZoneLayers(zone, cat, lg) {
-  const { venues, hull } = zone;
-  const clat = venues.reduce((s, p) => s + p.lat, 0) / venues.length;
-  const clng = venues.reduce((s, p) => s + p.lng, 0) / venues.length;
-  const style = {
-    color: cat.color, weight: 2, dashArray: "6 4", opacity: 0.85,
-    fillColor: cat.color, fillOpacity: 0.16, interactive: true,
-  };
-  const shape = hull
-    ? L.polygon(hull, style)
-    : L.circle([clat, clng], { radius: 120, ...style });
-  const names = venues.filter((p) => p.name !== "(unnamed)").map((p) => p.name);
-  const listed = names.slice(0, 10).map(escapeHtml).join("<br>")
-    + (names.length > 10 ? `<br>… and ${names.length - 10} more` : "");
-  shape.bindPopup(`
-    <div class="map-popup"><div class="map-popup-head">
-      <div class="map-popup-eyebrow" style="color:${cat.color}">${cat.label} district</div>
-      <div class="map-popup-title">${venues.length} venue${venues.length === 1 ? "" : "s"}</div>
-    </div><div class="map-popup-body"><div class="map-popup-row"><span class="map-popup-row-label">${listed}</span></div></div></div>`,
-    { className: "market-popup-wrapper", maxWidth: 280 });
-  lg.addLayer(shape);
-  lg.addLayer(L.marker([clat, clng], {
-    icon: L.divIcon({
-      className: "uni-zone-label-wrap",
-      html: `<div class="uni-zone-label" style="--cat-color:${cat.color}">${cat.label} · ${venues.length}</div>`,
-      iconSize: [0, 0],
-    }),
-    interactive: false,
-    zIndexOffset: 700,
-  }));
-}
-
-function renderUniPoiToggles(counts) {
-  const wrap = document.getElementById("uni-map-toggles");
-  wrap.innerHTML = POI_CATS.map((cat) => `
-    <label class="uni-poi-toggle">
-      <input type="checkbox" data-cat="${cat.key}" ${uniState.poiHidden.has(cat.key) ? "" : "checked"}>
-      <span class="uni-poi-dot" style="background:${cat.color}"></span>
-      ${cat.label} <span class="uni-poi-count">${counts.get(cat.key) ?? 0}</span>
-    </label>`).join("");
-  wrap.querySelectorAll("input[data-cat]").forEach((cb) => {
-    cb.addEventListener("change", () => {
-      const lg = uniState.poiLayers.get(cb.dataset.cat);
-      if (!lg) return;
-      if (cb.checked) { uniState.poiHidden.delete(cb.dataset.cat); lg.addTo(uniState.map); }
-      else { uniState.poiHidden.add(cb.dataset.cat); lg.remove(); }
-    });
   });
 }
 

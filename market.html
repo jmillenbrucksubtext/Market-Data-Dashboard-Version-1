@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=45">
+  <link rel="stylesheet" href="style.css?v=46">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -522,24 +522,47 @@
             </div>
           </section>
 
-          <!-- Campus map - boundary + points of interest pulled live from
-               OpenStreetMap (Overpass API) and cached in the browser.
-               Category toggles built by market.js. -->
+          <!-- Campus Map Generator: comp-map-style static canvas - basemap
+               tiles + campus boundary + draggable name call-outs + shaded
+               Greek life / nightlife districts. Rendered by uni-map.js;
+               downloadable as PNG. POIs come from assets/campus-pois/. -->
           <section class="card">
-            <header class="card-header">
+            <header class="card-header uni-map-header">
               <div>
                 <h2>Campus Map</h2>
                 <p id="uni-map-sub">Named call-outs for campus landmarks; shaded districts for Greek life and nightlife.</p>
               </div>
-              <div class="uni-map-toggles" id="uni-map-toggles"></div>
+              <div class="uni-map-controls">
+                <div class="uni-map-toggles" id="uni-map-toggles"></div>
+                <div class="comp-map-actions">
+                  <button type="button" class="comps-select-btn" id="uni-map-choose">Choose call-outs</button>
+                  <select id="uni-map-basemap" class="select" aria-label="Basemap">
+                    <option value="satellite" selected>Satellite</option>
+                    <option value="terrain">Terrain</option>
+                    <option value="street">Street</option>
+                    <option value="light">Light</option>
+                  </select>
+                  <span class="comp-map-zoom-group" role="group" aria-label="Zoom">
+                    <button type="button" class="comps-select-btn comp-map-zoom-btn" id="uni-map-zoom-out" title="Zoom out">−</button>
+                    <button type="button" class="comps-select-btn comp-map-zoom-btn" id="uni-map-zoom-in" title="Zoom in">+</button>
+                    <button type="button" class="comps-select-btn" id="uni-map-zoom-home" title="Reset zoom and centering">Reset view</button>
+                  </span>
+                  <button type="button" class="comps-select-btn" id="uni-map-reset">Reset layout</button>
+                  <button type="button" class="comps-select-btn comp-map-download-btn" id="uni-map-download">Download PNG</button>
+                </div>
+              </div>
             </header>
             <div class="card-body">
-              <div id="uni-map" class="map-wrap uni-map-wrap"></div>
+              <div id="uni-picker-panel" class="uni-picker-panel" hidden></div>
+              <div class="comp-map-stage">
+                <canvas id="uni-map-canvas" width="2800" height="2000"></canvas>
+              </div>
               <p class="uni-map-note">
                 Best-known buildings, athletic venues, and monuments are called out by name
-                (ranked by Wikipedia presence and footprint size). Greek life and nightlife
-                show as shaded districts - click one for the venue list. Data from
-                OpenStreetMap - community-mapped, so coverage varies by campus.
+                (ranked by Wikipedia presence and footprint size). Use Choose call-outs to pick
+                your own set, drag any box to fine-tune its position, then Download PNG.
+                Greek life and nightlife show as shaded districts. Data from OpenStreetMap -
+                community-mapped, so coverage varies by campus.
               </p>
             </div>
           </section>
@@ -580,8 +603,9 @@
     </div>
   </div>
 
-  <script src="market.js?v=35" defer></script>
+  <script src="market.js?v=36" defer></script>
   <script src="comp-map.js?v=9" defer></script>
+  <script src="uni-map.js?v=1" defer></script>
   <script src="chart-download.js?v=4" defer></script>
 </body>
 </html>

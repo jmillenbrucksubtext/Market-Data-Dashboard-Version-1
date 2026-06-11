@@ -2651,14 +2651,65 @@ h1, h2, h3, .serif {
   color: var(--slate);
 }
 
-/* campus POI map */
-.uni-map-wrap { height: 520px; }
+/* campus map (canvas rendered by uni-map.js; reuses .comp-map-stage) */
+.uni-map-header { align-items: flex-start; }
+.uni-map-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  flex: 0 0 auto;
+}
+.uni-map-controls .comp-map-actions { flex-wrap: wrap; justify-content: flex-end; }
 .uni-map-toggles {
   display: flex;
   flex-wrap: wrap;
   gap: 8px 14px;
   justify-content: flex-end;
-  max-width: 55%;
+}
+.comps-select-btn.active {
+  background: var(--lime-soft);
+  color: var(--everest);
+  border-color: var(--lime);
+}
+
+/* "Choose call-outs" picker panel */
+.uni-picker-panel[hidden] { display: none; }
+.uni-picker-panel {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 14px 22px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  background: var(--bg);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+}
+.uni-picker-group-title {
+  font-size: 12px;
+  font-weight: 700;
+  padding-bottom: 4px;
+  margin-bottom: 6px;
+  border-bottom: 2px solid var(--cat-color, var(--lime));
+}
+.uni-picker-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 2px 0;
+  font-size: 12px;
+  color: var(--slate-70);
+  cursor: pointer;
+  user-select: none;
+}
+.uni-picker-item span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.uni-picker-empty {
+  font-size: 11px;
+  color: var(--slate-50);
 }
 .uni-poi-toggle {
   display: flex;
@@ -2691,69 +2742,8 @@ h1, h2, h3, .serif {
   color: var(--slate-50);
 }
 
-/* comp-map-style call-outs for the best-known campus POIs.
-   The wrapper anchors at the POI point; the dot centers on it and the
-   box extends left or right (away from the campus pin). */
-.uni-callout-wrap { background: none; border: none; }
-.uni-callout {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  pointer-events: auto;
-  cursor: pointer;
-  filter: drop-shadow(0 2px 3px rgba(43, 40, 37, 0.35));
-}
-.uni-callout-left { flex-direction: row-reverse; transform: translate(-100%, -50%); }
-.uni-callout-right { transform: translateY(-50%); }
-.uni-callout-dot {
-  width: 11px;
-  height: 11px;
-  flex: 0 0 11px;
-  border-radius: 50%;
-  background: var(--cat-color);
-  border: 2px solid #fff;
-  box-sizing: border-box;
-}
-/* anchor the dot exactly on the POI coordinate */
-.uni-callout-right .uni-callout-dot { margin-left: -5.5px; }
-.uni-callout-left .uni-callout-dot { margin-right: -5.5px; }
-.uni-callout-line {
-  width: 16px;
-  height: 2px;
-  flex: 0 0 16px;
-  background: var(--cat-color);
-}
-.uni-callout-box {
-  padding: 2px 8px 3px;
-  background: #fff;
-  border: 1.5px solid var(--cat-color);
-  border-radius: 3px;
-  font-size: 11px;
-  font-weight: 700;
-  line-height: 1.25;
-  color: var(--slate);
-  white-space: nowrap;
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* shaded district label (Greek life / nightlife zones) */
-.uni-zone-label-wrap { background: none; border: none; }
-.uni-zone-label {
-  position: absolute;
-  transform: translate(-50%, -50%);
-  padding: 2px 9px 3px;
-  background: var(--cat-color);
-  color: #fff;
-  border-radius: 999px;
-  font-size: 10.5px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  white-space: nowrap;
-  box-shadow: 0 2px 4px rgba(43, 40, 37, 0.35);
-  opacity: 0.92;
-}
+/* (Leaflet call-out / zone-label styles removed - the campus map is a
+   canvas now; see uni-map.js.) */
 
 /* Tab chip - smaller cousin of the page tag, shows the tab name in the
    page's color palette so each section is instantly identifiable. */

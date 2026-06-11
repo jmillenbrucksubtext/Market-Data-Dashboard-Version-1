@@ -238,6 +238,16 @@ h1, h2, h3, .serif {
   color: var(--beige);
 }
 
+/* "More Subtext Tools" tab - lives beneath the sidebar ad stack, just
+   above the footer. Its auto top margin pins it to the bottom when no
+   ad is visible above it; the ad scripts override the margin while an
+   ad is pinning the stack itself. */
+.nav-more-tools {
+  margin-top: auto;
+  font-size: 13px;
+}
+.nav-more-tools + .sidebar-footer { margin-top: 0; }
+
 /* ----- Main column ------------------------------------------- */
 
 .main { display: flex; flex-direction: column; }
@@ -557,6 +567,7 @@ h1, h2, h3, .serif {
   .brand img { height: 22px; }
   .brand .wordmark { font-size: 20px; padding-bottom: 2px; border-bottom-width: 2px; }
   .nav { flex-direction: row; gap: 4px; }
+  .nav-more-tools { margin-top: 0; white-space: nowrap; }
   .sidebar-footer { display: none; }
   .content { padding: 14px; }
   .topbar { padding: 10px 14px; flex-wrap: wrap; }
@@ -2472,6 +2483,89 @@ h1, h2, h3, .serif {
   font-size: 12.5px;
   line-height: 1.5;
 }
+
+/* More Subtext Tools view --------------------------------------- */
+
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  max-width: 1100px;
+}
+.tool-card {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+  overflow: hidden;
+  text-decoration: none;
+  color: var(--slate);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
+}
+.tool-card:hover {
+  transform: translateY(-3px);
+  border-color: var(--lime);
+  box-shadow: 0 10px 22px rgba(43, 40, 37, 0.16);
+}
+.tool-art {
+  height: 120px;
+  display: grid;
+  place-items: center;
+}
+.tool-art svg {
+  width: 54px;
+  height: 54px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.6;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.tool-art-dispatch { background: var(--everest); color: var(--lime); }
+.tool-art-loi { background: linear-gradient(180deg, #202327 0%, #121416 100%); color: var(--lime); }
+.tool-art-memo { background: #f5b400; color: #221d12; }
+.tool-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 16px 18px 18px;
+}
+.tool-name {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.tool-pill {
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.tool-pill.live { background: var(--good-soft); color: var(--good); }
+.tool-pill.soon { background: var(--warn-soft); color: var(--warn); }
+.tool-info p {
+  flex: 1;
+  margin: 0;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--slate-70);
+}
+.tool-cta {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--everest);
+}
+.tool-card:hover .tool-cta { text-decoration: underline; }
 
 /* Tab chip - smaller cousin of the page tag, shows the tab name in the
    page's color palette so each section is instantly identifiable. */

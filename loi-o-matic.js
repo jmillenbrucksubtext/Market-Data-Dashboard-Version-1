@@ -37,6 +37,12 @@
    drops its own auto top margin (else the free space splits between them) */
 .loi-omatic-ad ~ .memo-chef-ad { margin-top: 5px; }
 
+/* same deal for the "More Subtext Tools" tab beneath the ad stack: it
+   only keeps its own auto pin while every ad above it is hidden */
+.loi-omatic-ad ~ .nav-more-tools { margin-top: 5px; }
+.loi-omatic-ad.om-hidden ~ .nav-more-tools { margin-top: auto; }
+.loi-omatic-ad.om-hidden ~ .memo-chef-ad:not(.om-hidden) ~ .nav-more-tools { margin-top: 5px; }
+
 .loi-omatic-ad .om-name {
   font-family: "Space Grotesk", "Segoe UI", sans-serif;
   font-weight: 500;
@@ -123,6 +129,7 @@
 @media (max-width: 760px) {
   .loi-omatic-ad { display: none; }
   .loi-omatic-ad ~ .memo-chef-ad { margin-top: auto; }
+  .loi-omatic-ad ~ .nav-more-tools { margin-top: 0; } /* sidebar is a row here */
 }
 
 /* applied by the fit check below when even scaled-down ads would overflow
@@ -238,8 +245,8 @@ ${svg}
     ad.addEventListener('click', function () {
       window.open('https://loi-generator.streamlit.app/', '_blank', 'noopener');
     });
-    /* sits between the nav and the Memo Chef ad / footer */
-    sidebar.insertBefore(ad, sidebar.querySelector('.memo-chef-ad') || sidebar.querySelector('.sidebar-footer'));
+    /* sits between the nav and the Memo Chef ad / More Tools tab / footer */
+    sidebar.insertBefore(ad, sidebar.querySelector('.memo-chef-ad') || sidebar.querySelector('.nav-more-tools') || sidebar.querySelector('.sidebar-footer'));
     refit();
 
     /* the Memo Chef injects after this script; re-run the fit check when it

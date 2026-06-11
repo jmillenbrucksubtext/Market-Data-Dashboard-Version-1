@@ -12,6 +12,10 @@
 /* the footer also has margin-top auto; zero it so the two auto margins
    don't split the free space and strand the ad mid-sidebar */
 .memo-chef-ad + .sidebar-footer { margin-top: 0; }
+/* ditto the "More Subtext Tools" tab that sits between this ad and the
+   footer; the LOI script's higher-specificity om-hidden rules win when
+   every ad is hidden and the tab takes the auto pin back */
+.memo-chef-ad ~ .nav-more-tools { margin-top: 5px; }
 
 .memo-chef-ad {
   margin: auto 10px 14px; /* pins to the sidebar bottom when it's the only ad;
@@ -214,7 +218,10 @@
 }
 
 /* sidebar collapses to a top bar on phones and the footer hides; ditto */
-@media (max-width: 760px) { .memo-chef-ad { display: none; } }
+@media (max-width: 760px) {
+  .memo-chef-ad { display: none; }
+  .memo-chef-ad ~ .nav-more-tools { margin-top: 0; } /* sidebar is a row here */
+}
 `;
 
   /* The patient: queasy green chef, half-mast eyes, worried brows, ice bag
@@ -305,7 +312,7 @@
     ad.addEventListener('click', function () {
       window.open('https://memochef.streamlit.app/', '_blank', 'noopener');
     });
-    sidebar.insertBefore(ad, sidebar.querySelector('.sidebar-footer'));
+    sidebar.insertBefore(ad, sidebar.querySelector('.nav-more-tools') || sidebar.querySelector('.sidebar-footer'));
   }
 
   if (document.readyState === 'loading') {

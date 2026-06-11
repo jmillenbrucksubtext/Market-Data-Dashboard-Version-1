@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Dashboard</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=43">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -44,6 +44,13 @@
           Dictionary
         </a>
       </nav>
+
+      <!-- Sits beneath the sidebar ad stack (the ad scripts insert their
+           cards above this element), just over the footer. -->
+      <a class="nav-item nav-more-tools" data-view="tools" href="#tools">
+        <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg>
+        More Subtext Tools
+      </a>
 
       <div class="sidebar-footer">
         <div class="avatar" id="user-avatar">JM</div>
@@ -605,14 +612,77 @@
                 title="Forward Looking Model - Market Screener" loading="lazy"></iframe>
       </section>
 
+      <!-- ============================================================
+           View: More Subtext Tools
+           One page collecting every tool advertised in the sidebar.
+           ============================================================ -->
+      <section id="tools-view" class="view">
+        <div class="page-header">
+          <h1>More Subtext Tools</h1>
+          <p>
+            Everything from the sidebar advertisements, collected in one place.
+            Each tool opens in a new tab.
+          </p>
+        </div>
+
+        <div class="tools-grid">
+
+          <a class="tool-card" href="https://subtext-dispatch.jacksubtextuse.workers.dev/" target="_blank" rel="noopener">
+            <div class="tool-art tool-art-dispatch">
+              <svg viewBox="0 0 24 24"><path d="M4 5h13v14H6a2 2 0 0 1-2-2z"/><path d="M17 8h3v9a2 2 0 0 1-2 2h-1"/><path d="M7 9h7"/><path d="M7 12h7"/><path d="M7 15h4"/></svg>
+            </div>
+            <div class="tool-info">
+              <div class="tool-name">Subtext Dispatch <span class="tool-pill live">Live</span></div>
+              <p>
+                The weekly student-housing news brief. Industry headlines and
+                market briefs, refreshed every Monday - the same stories that
+                scroll across the ticker on the Industry tab.
+              </p>
+              <span class="tool-cta">Read the latest issue</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="https://loi-generator.streamlit.app/" target="_blank" rel="noopener">
+            <div class="tool-art tool-art-loi">
+              <svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="13" rx="2"/><circle cx="12" cy="9" r="2.4"/><path d="M8 14h8"/><path d="M9 17v3l3-1.5 3 1.5v-3"/></svg>
+            </div>
+            <div class="tool-info">
+              <div class="tool-name">LOI Generator <span class="tool-pill live">Live</span></div>
+              <p>
+                The LOI-O-GENERATOR 3000. Feed it acreage, purchase price, and
+                a dream; it returns a crisp, ready-to-send letter of intent.
+                Engineered for non-binding commitment.
+              </p>
+              <span class="tool-cta">Generate an LOI</span>
+            </div>
+          </a>
+
+          <a class="tool-card" href="https://memochef.streamlit.app/" target="_blank" rel="noopener">
+            <div class="tool-art tool-art-memo">
+              <svg viewBox="0 0 24 24"><path d="M7 9a3 3 0 0 1 .2-6 4 4 0 0 1 7.6-1A3.5 3.5 0 0 1 17 9v2H7z"/><path d="M7 11v3h10v-3"/><path d="M6 17h12"/><path d="M8 17v3M12 17v3M16 17v3"/></svg>
+            </div>
+            <div class="tool-info">
+              <div class="tool-name">Memo Chef <span class="tool-pill soon">Coming soon</span></div>
+              <p>
+                He's cooking up something - probably a fever. Investment memos
+                served hot, straight from the kitchen. Still under
+                construction, but you can peek behind the pass.
+              </p>
+              <span class="tool-cta">Visit the kitchen</span>
+            </div>
+          </a>
+
+        </div>
+      </section>
+
       </div>
     </div>
   </div>
 
-  <script src="dashboard.js?v=20"></script>
+  <script src="dashboard.js?v=21"></script>
   <script src="chart-download.js?v=4"></script>
   <!-- Sidebar easter-egg ads: LOI-O-MATIC and the Memo Chef -->
-  <script src="loi-o-matic.js?v=6" defer></script>
-  <script src="memo-chef.js?v=2" defer></script>
+  <script src="loi-o-matic.js?v=7" defer></script>
+  <script src="memo-chef.js?v=3" defer></script>
 </body>
 </html>

@@ -2215,6 +2215,21 @@ h1, h2, h3, .serif {
 }
 .unitmix-tables-grid { margin-top: 18px; }
 .unitmix-pies-row { margin-top: 18px; }
+
+/* Pipeline tab: two rows of paired panels (doughnut + project list, then two
+   trend charts). Stacks to one column on narrow screens. */
+.pipeline-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+.pipeline-row-bottom { margin-top: 18px; }
+@media (min-width: 920px) {
+  .pipeline-row-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
+  .pipeline-row-bottom { grid-template-columns: 1fr 1fr; }
+}
+.pipeline-projects-card { align-self: start; }
+.pipeline-projects-card .table-wrap { max-height: 312px; overflow-y: auto; }
 @media (min-width: 920px) {
   .unitmix-tables-grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
 }

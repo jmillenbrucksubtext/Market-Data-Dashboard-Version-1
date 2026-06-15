@@ -78,6 +78,7 @@
           <nav class="market-tabs" role="tablist">
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
+            <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
 
@@ -553,6 +554,55 @@
           </section>
 
           </div> <!-- /.market-tab-panel[comps] -->
+
+          <!-- ============ PIPELINE TAB ============ -->
+          <div class="market-tab-panel" data-panel="pipeline" hidden>
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Development Pipeline</h2>
+                <p id="pipeline-summary">Planned, under-construction, and lease-up supply for this market.</p>
+              </div>
+              <div class="unitmix-toggle pipeline-distance-toggle" role="group" aria-label="Distance to campus">
+                <button type="button" class="unitmix-toggle-btn" data-dist="0.5">Within &frac12; mi</button>
+                <button type="button" class="unitmix-toggle-btn" data-dist="1">Within 1 mi</button>
+                <button type="button" class="unitmix-toggle-btn active" data-dist="all">Total market</button>
+              </div>
+            </header>
+            <div class="card-body">
+              <!-- Row 1: total pipeline beds by phase + the project list -->
+              <div class="pipeline-row pipeline-row-top">
+                <figure class="perf-chart pipeline-totalbeds-figure">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Total Pipeline Beds</span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-totalbeds"></canvas></div>
+                </figure>
+                <div class="comp-table-card pipeline-projects-card">
+                  <div class="comp-table-title">New Projects</div>
+                  <div class="table-wrap"><table id="pipe-projects" class="comp-detail-table"></table></div>
+                </div>
+              </div>
+              <!-- Row 2: deliveries by year + same-store vs new-delivery rents -->
+              <div class="pipeline-row pipeline-row-bottom">
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Deliveries Over Time</span>
+                    <span class="perf-title-sub">beds by year built</span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-deliveries"></canvas></div>
+                </figure>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Same-Store Rate Growth</span>
+                    <span class="perf-title-sub">avg rent / bed · annual</span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-rate"></canvas></div>
+                </figure>
+              </div>
+            </div>
+          </section>
+          </div> <!-- /.market-tab-panel[pipeline] -->
 
           <!-- ============ UNIVERSITY INFORMATION TAB ============ -->
           <div class="market-tab-panel" data-panel="university" hidden>

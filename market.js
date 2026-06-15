@@ -45,6 +45,8 @@ let unitMixPieChart = null;  // Chart instance for the per-building pie
 let unitMixPieBuilding = null;  // property_key (number) or "all" - pie scope
 let unitMixParityChart = null;  // Chart instance for the bed/bath parity pie
 let unitMixParityType = "all";  // bedroom-type filter for the parity pie
+let pipeCharts = {};  // Pipeline tab: canvas id → Chart instance
+let pipelineDistance = "all";  // "0.5" | "1" | "all" - campus-distance band
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
@@ -95,6 +97,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderEnrollment();
   bindTabs();
   bindUnitMixToggle();
+  bindPipelineToggle();
   // Comp charts are hidden under the Comps tab on load; size will be 0
   // until the tab is shown, so we re-render via bindTabs. Build once now so
   // selection state is wired up.
@@ -938,6 +941,8 @@ function bindTabs() {
         if (map) map.invalidateSize();
       } else if (target === "comps") {
         renderCompCharts();
+      } else if (target === "pipeline") {
+        renderPipeline();
       } else if (target === "university") {
         renderUniversityTab();
       }
@@ -948,6 +953,266 @@ function bindTabs() {
   const hash = location.hash.replace(/^#/, "");
   const initial = [...tabs].find((t) => t.dataset.tab === hash);
   if (initial && hash !== "market") initial.click();
+}
+
+function bindPipelineToggle() {
+  document.querySelectorAll(".pipeline-distance-toggle .unitmix-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.dist === pipelineDistance) return;
+      pipelineDistance = btn.dataset.dist;
+      renderPipeline();
+    });
+  });
+}
+
+/* ----- Pipeline tab ------------------------------------------ */
+// Four panels mirroring the Development Pipeline view: total pipeline beds by
+// phase (doughnut), the project list, deliveries by year, and same-store vs
+// new-delivery rate growth. Scoped to the current market. Charts lazy-render
+// on tab show (a canvas sized while hidden renders at 0x0).
+
+const PIPE_PHASE_LABELS = {
+  "planned": "Planned",
+  "under construction": "Under Construction",
+  "lease up": "Lease Up",
+  "stable": "Stabilized",
+};
+const PIPE_COLORS = {
+  planned: "#b6b1ab",            // slate30
+  under_construction: "#a95818", // rust
+  lease_up: "#16352e",           // everest
+  delivered: "#7fb0a4",          // light teal - already delivered
+  projected: "#16352e",          // everest - not yet delivered
+  newdeliv: "#a95818",           // rust - new-delivery rent line
+};
+
+function bedWeightedRent(rows) {
+  let num = 0, den = 0;
+  rows.forEach((r) => {
+    if (r.avg_rent_per_bed && r.beds) { num += r.avg_rent_per_bed * r.beds; den += r.beds; }
+  });
+  return den ? num / den : null;
+}
+
+// Keep only properties within the active campus-distance band. Properties
+// missing a distance are dropped from the ½-mi and 1-mi bands, kept in Total.
+function withinDistance(props) {
+  if (pipelineDistance === "all") return props;
+  const lim = parseFloat(pipelineDistance);
+  return props.filter((p) => p.milesToClosestCampus != null
+    && p.milesToClosestCampus <= lim);
+}
+
+function renderPipeline() {
+  if (typeof Chart === "undefined") return;
+
+  // Reflect the active distance band on the toggle and scope every panel to
+  // properties within that radius of campus.
+  document.querySelectorAll(".pipeline-distance-toggle .unitmix-toggle-btn")
+    .forEach((b) => b.classList.toggle("active", b.dataset.dist === pipelineDistance));
+  const distLabel = pipelineDistance === "all" ? "market-wide"
+    : pipelineDistance === "0.5" ? "within ½ mi of campus" : "within 1 mi of campus";
+  const scoped = withinDistance(PROPERTIES);
+
+  // Pipeline projects (within band) - the single source for every panel so
+  // the doughnut total always equals the listed projects. (The market-level
+  // pipeline_beds aggregate on the Market tab can run higher because it
+  // includes planned beds that have no individual property record yet.)
+  const pipePhases = ["under construction", "lease up", "planned"];
+  const projects = scoped
+    .filter((p) => pipePhases.includes(p.phase))
+    .sort((a, b) => (a.yearBuilt || 9999) - (b.yearBuilt || 9999)
+      || (b.beds || 0) - (a.beds || 0));
+
+  // All-band pipeline-bed totals for the at-a-glance comparison in the summary.
+  const bandBeds = (lim) => PROPERTIES
+    .filter((p) => pipePhases.includes(p.phase)
+      && (lim == null || (p.milesToClosestCampus != null && p.milesToClosestCampus <= lim)))
+    .reduce((s, p) => s + (p.beds || 0), 0);
+
+  // ---- Panel 1: total pipeline beds by phase (doughnut) -----------------
+  const sumByPhase = (phase) =>
+    projects.filter((p) => p.phase === phase).reduce((s, p) => s + (p.beds || 0), 0);
+  const planned = sumByPhase("planned");
+  const uc = sumByPhase("under construction");
+  const lu = sumByPhase("lease up");
+  const totalPipe = planned + uc + lu;
+
+  const summary = document.getElementById("pipeline-summary");
+  if (summary) {
+    const totalMarket = bandBeds(null);
+    summary.textContent = totalMarket > 0
+      ? `Pipeline beds by proximity to campus: ${fmtInt(bandBeds(0.5))} within ½ mi · ${fmtInt(bandBeds(1.0))} within 1 mi · ${fmtInt(totalMarket)} market-wide. Showing ${distLabel}.`
+      : "No planned, under-construction, or lease-up beds on record for this market.";
+  }
+
+  const centerText = {
+    id: "pipeCenterText",
+    afterDraw(chart) {
+      if (chart.canvas.id !== "pipe-totalbeds") return;
+      const { ctx, chartArea } = chart;
+      if (!chartArea) return;
+      const cx = (chartArea.left + chartArea.right) / 2;
+      const cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save();
+      ctx.textAlign = "center";
+      ctx.fillStyle = "#837c75";
+      ctx.font = "600 11px Pragmatica, sans-serif";
+      ctx.fillText("Total Beds", cx, cy - 10);
+      ctx.fillStyle = "#16352e";
+      ctx.font = "700 26px 'Mencken Std', Georgia, serif";
+      ctx.fillText(fmtInt(totalPipe), cx, cy + 16);
+      ctx.restore();
+    },
+  };
+
+  if (pipeCharts["pipe-totalbeds"]) pipeCharts["pipe-totalbeds"].destroy();
+  const tbCanvas = document.getElementById("pipe-totalbeds");
+  if (tbCanvas) {
+    pipeCharts["pipe-totalbeds"] = new Chart(tbCanvas.getContext("2d"), {
+      type: "doughnut",
+      data: {
+        labels: [
+          `Lease Up (${fmtInt(lu)})`,
+          `Under Construction (${fmtInt(uc)})`,
+          `Planned (${fmtInt(planned)})`,
+        ],
+        datasets: [{
+          data: totalPipe > 0 ? [lu, uc, planned] : [],
+          backgroundColor: [PIPE_COLORS.lease_up, PIPE_COLORS.under_construction, PIPE_COLORS.planned],
+          borderColor: "#fff",
+          borderWidth: 2,
+        }],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: "64%",
+        layout: { padding: 6 },
+        plugins: {
+          legend: { position: "bottom",
+            labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                      boxWidth: 12, boxHeight: 12, padding: 9 } },
+          tooltip: { callbacks: { label: (c) => `${c.label.replace(/\s*\(.*\)/, "")}: ${fmtInt(c.parsed)} beds` } },
+          datalabels: {
+            color: "#fff", font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+            formatter: (v) => (v && totalPipe && v / totalPipe >= 0.06) ? fmtInt(v) : "",
+          },
+        },
+      },
+      plugins: [centerText],
+    });
+  }
+
+  // ---- Panel 2: New Projects table --------------------------------------
+  const projTable = document.getElementById("pipe-projects");
+  if (projTable) {
+    if (projects.length === 0) {
+      projTable.innerHTML = `<tbody><tr><td>No pipeline projects on record for this market.</td></tr></tbody>`;
+    } else {
+      const head = `<thead><tr><th class="property-cell">Property</th><th class="property-cell">Phase</th>`
+        + `<th>Completion</th><th>Beds</th></tr></thead>`;
+      const body = projects.map((p) =>
+        `<tr><td class="property-cell">${p.property_name}</td>`
+        + `<td class="property-cell">${PIPE_PHASE_LABELS[p.phase] || p.phase}</td>`
+        + `<td>${p.yearBuilt || "-"}</td>`
+        + `<td>${p.beds ? fmtInt(p.beds) : "-"}</td></tr>`).join("");
+      projTable.innerHTML = head + `<tbody>${body}</tbody>`;
+    }
+  }
+
+  // ---- Panel 3: Deliveries Over Time (beds by year built) ---------------
+  const delivered = {}, projected = {};
+  scoped.forEach((p) => {
+    const yb = p.yearBuilt, b = p.beds || 0;
+    if (!yb || !b) return;
+    const bucket = ["stable", "lease up"].includes(p.phase) ? delivered : projected;
+    bucket[yb] = (bucket[yb] || 0) + b;
+  });
+  const years = [...new Set([...Object.keys(delivered), ...Object.keys(projected)].map(Number))]
+    .sort((a, b) => a - b);
+  if (pipeCharts["pipe-deliveries"]) pipeCharts["pipe-deliveries"].destroy();
+  const delCanvas = document.getElementById("pipe-deliveries");
+  if (delCanvas) {
+    pipeCharts["pipe-deliveries"] = new Chart(delCanvas.getContext("2d"), {
+      type: "bar",
+      data: {
+        labels: years,
+        datasets: [
+          { label: "Beds Delivered", backgroundColor: PIPE_COLORS.delivered,
+            data: years.map((y) => delivered[y] || 0), borderRadius: 2 },
+          { label: "Projected Deliveries", backgroundColor: PIPE_COLORS.projected,
+            data: years.map((y) => projected[y] || 0), borderRadius: 2 },
+        ],
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom",
+            labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                      boxWidth: 12, boxHeight: 12, padding: 10 } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} beds` } },
+          datalabels: { display: false },
+        },
+        scales: {
+          x: { stacked: true, grid: { display: false, drawBorder: false }, border: { display: false },
+               ticks: { color: "#5a544f", font: { size: 11 } } },
+          y: { stacked: true, beginAtZero: true, grid: { color: "#f5efde", drawTicks: false },
+               border: { display: false }, ticks: { color: "#5a544f", font: { size: 11 },
+               callback: (v) => fmtInt(v) } },
+        },
+      },
+    });
+  }
+
+  // ---- Panel 4: Same-Store Rate Growth (annual, bed-weighted) -----------
+  const hist = DATA.tables.property_history || [];
+  const stableKeys = new Set(scoped.filter((p) => p.phase === "stable").map((p) => p.property_key));
+  const newKeys = new Set(scoped.filter((p) => p.phase === "lease up").map((p) => p.property_key));
+  const histYears = [...new Set(hist
+    .filter((r) => stableKeys.has(r.property_key) || newKeys.has(r.property_key))
+    .map((r) => r.year_))].sort((a, b) => a - b);
+  const rentBy = (keys) => histYears.map((y) =>
+    bedWeightedRent(hist.filter((r) => r.year_ === y && keys.has(r.property_key))));
+  const stableRents = rentBy(stableKeys);
+  const newRents = rentBy(newKeys);
+  const hasNew = newRents.some((v) => v != null);
+
+  const rateDatasets = [{
+    label: "Stabilized Properties", data: stableRents,
+    borderColor: PIPE_COLORS.lease_up, backgroundColor: PIPE_COLORS.lease_up,
+    borderWidth: 2.5, pointRadius: 3, tension: 0.25, spanGaps: true,
+  }];
+  if (hasNew) rateDatasets.push({
+    label: "New Deliveries", data: newRents,
+    borderColor: PIPE_COLORS.newdeliv, backgroundColor: PIPE_COLORS.newdeliv,
+    borderWidth: 2.5, pointRadius: 3, tension: 0.25, spanGaps: true,
+  });
+
+  if (pipeCharts["pipe-rate"]) pipeCharts["pipe-rate"].destroy();
+  const rateCanvas = document.getElementById("pipe-rate");
+  if (rateCanvas) {
+    pipeCharts["pipe-rate"] = new Chart(rateCanvas.getContext("2d"), {
+      type: "line",
+      data: { labels: histYears, datasets: rateDatasets },
+      options: {
+        responsive: true, maintainAspectRatio: false,
+        plugins: {
+          legend: { position: "bottom",
+            labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                      boxWidth: 18, boxHeight: 2, padding: 10, usePointStyle: true } },
+          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : "$" + fmtInt(c.parsed.y)}` } },
+          datalabels: { display: false },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: "#5a544f", font: { size: 11 } } },
+          y: { beginAtZero: false, grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+               ticks: { color: "#5a544f", font: { size: 11 }, callback: (v) => "$" + fmtInt(v) } },
+        },
+        interaction: { mode: "index", intersect: false },
+      },
+    });
+  }
 }
 
 /* ----- Map (Leaflet) ----------------------------------------- */

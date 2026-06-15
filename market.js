@@ -39,6 +39,12 @@ let propertyMarkers = new Map();  // market map: property_key → leaflet marker
 let compSelection = new Set();  // property_keys currently checked on Comps tab
 let compSelectionInit = false;  // defaults applied once; user edits persist after
 let compCharts = {};  // canvas id → Chart instance
+let unitMixMetric = "beds";  // "beds" | "units" - Unit & Bed Mix toggle state
+let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
+let unitMixPieChart = null;  // Chart instance for the per-building pie
+let unitMixPieBuilding = null;  // property_key (number) or "all" - pie scope
+let unitMixParityChart = null;  // Chart instance for the bed/bath parity pie
+let unitMixParityType = "all";  // bedroom-type filter for the parity pie
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
@@ -88,6 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderPerformance();
   renderEnrollment();
   bindTabs();
+  bindUnitMixToggle();
   // Comp charts are hidden under the Comps tab on load; size will be 0
   // until the tab is shown, so we re-render via bindTabs. Build once now so
   // selection state is wired up.
@@ -1348,8 +1355,438 @@ function renderCompCharts() {
     marketYearlySeries(mkKey, "prelease"),
     { yFmt: fmtPctVal, isPct: true });
 
+  renderUnitMix();
+
   // Comp Map Generator (comp-map.js) tracks the same selection.
   if (window.CompMap) window.CompMap.refresh();
+}
+
+/* ----- Unit & Bed Mix (Comps tab) ---------------------------- */
+// Stacked bar of the selected comps by bedroom type - one stack segment per
+// property - plus a market summary table (count + % of each type) and a
+// per-property matrix. Toggles between authoritative bed counts and derived
+// unit counts. Data: tables.unit_mix (built by load_unit_mix.py).
+
+const UNIT_MIX_TYPES = ["Studio", "1BR", "2BR", "3BR", "4BR", "5BR", "6BR+"];
+
+// Per-property segment palette: brand tones first, then a distinct spread so
+// stacks stay readable past ~6 comps. Pipeline phases get a lighter wash.
+const UNIT_MIX_PALETTE = [
+  "#16352e", "#a95818", "#4f7a6f", "#c7973f", "#6d5b8e",
+  "#3d8aa6", "#8c6d46", "#9c4a3c", "#5a8c4a", "#b0894d",
+  "#42606d", "#7a4f63",
+];
+
+// Fixed colour per bedroom type for the per-building pie (slices = types).
+const UNIT_TYPE_COLORS = {
+  "Studio": "#6d5b8e",
+  "1BR": "#3d8aa6",
+  "2BR": "#4f7a6f",
+  "3BR": "#c7973f",
+  "4BR": "#a95818",
+  "5BR": "#16352e",
+  "6BR+": "#9c4a3c",
+};
+
+function unitMixByProperty() {
+  // property_key → unit_mix row, scoped to this market.
+  const rows = (DATA.tables.unit_mix || []).filter(
+    (r) => r.market_key === MARKET.market_key
+  );
+  return new Map(rows.map((r) => [r.property_key, r]));
+}
+
+function renderUnitMix() {
+  const canvas = document.getElementById("unitmix-chart");
+  if (!canvas || typeof Chart === "undefined") return;
+
+  const metric = unitMixMetric;              // "beds" | "units"
+  const field = metric === "beds" ? "beds_by_type" : "units_by_type";
+  const noun = metric === "beds" ? "beds" : "units";
+  const mixByProp = unitMixByProperty();
+
+  // Selected comps that actually have floor-plan mix data, biggest first.
+  const selected = PROPERTIES
+    .filter((p) => compSelection.has(p.property_key) && mixByProp.has(p.property_key))
+    .map((p) => ({ prop: p, mix: mixByProp.get(p.property_key) }))
+    .sort((a, b) => (b.mix.total_beds || 0) - (a.mix.total_beds || 0));
+
+  // Only show bedroom types present across the selection.
+  const typesPresent = UNIT_MIX_TYPES.filter((t) =>
+    selected.some(({ mix }) => (mix[field] || {})[t])
+  );
+
+  const summaryEl = document.getElementById("unitmix-summary");
+  if (summaryEl) {
+    const withMix = selected.length;
+    const totalSel = PROPERTIES.filter((p) => compSelection.has(p.property_key)).length;
+    const noData = totalSel - withMix;
+    summaryEl.textContent = withMix === 0
+      ? "No selected comps have floor-plan data. Tick comps above to populate this section."
+      : `Inventory by bedroom type across ${withMix} comp${withMix === 1 ? "" : "s"}, `
+        + `stacked by property${noData > 0 ? ` (${noData} selected comp${noData === 1 ? "" : "s"} lack floor-plan data)` : ""}.`;
+  }
+
+  // Sync titles + toggle button state to the active metric.
+  const metricLabel = metric === "beds" ? "Beds" : "Units";
+  const sumTitle = document.getElementById("unitmix-summary-title");
+  const matTitle = document.getElementById("unitmix-matrix-title");
+  if (sumTitle) sumTitle.textContent = `Market Summary - ${metricLabel} by Type`;
+  if (matTitle) matTitle.textContent = `By Property - ${metricLabel} by Type`;
+  document.querySelectorAll(".unitmix-toggle-btn").forEach((b) =>
+    b.classList.toggle("active", b.dataset.mix === metric)
+  );
+
+  // ---- Stacked bar: x = bedroom type, one dataset per property ----------
+  const datasets = selected.map(({ prop, mix }, i) => {
+    const color = UNIT_MIX_PALETTE[i % UNIT_MIX_PALETTE.length];
+    const isPipeline = !["stable", "lease up"].includes(prop.phase);
+    return {
+      label: prop.property_name + (isPipeline ? ` (${prop.phase})` : ""),
+      data: typesPresent.map((t) => (mix[field] || {})[t] || 0),
+      backgroundColor: isPipeline ? color + "b3" : color,  // pipeline = lighter
+      borderColor: "#fff",
+      borderWidth: 1,
+      borderRadius: 1,
+    };
+  });
+
+  // Stack totals, drawn above each bar.
+  const stackTotals = typesPresent.map((t, ti) =>
+    datasets.reduce((s, ds) => s + (ds.data[ti] || 0), 0)
+  );
+
+  const totalsPlugin = {
+    id: "unitMixTotals",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(chart.data.datasets.length - 1);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.fillStyle = "#16352e";
+      ctx.font = "700 13px Pragmatica, sans-serif";
+      ctx.textAlign = "center";
+      meta.data.forEach((bar, i) => {
+        const total = stackTotals[i];
+        if (!total) return;
+        ctx.fillText(fmtInt(total), bar.x, bar.y - 6);
+      });
+      ctx.restore();
+    },
+  };
+
+  if (unitMixChart) unitMixChart.destroy();
+  unitMixChart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: { labels: typesPresent, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 10 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} ${noun}`,
+          },
+        },
+        // Per-segment values are noise; only the stack total (drawn by
+        // unitMixTotals) sits above each bar. Hover for the per-comp number.
+        datalabels: { display: false },
+      },
+      scales: {
+        x: { stacked: true, grid: { display: false, drawBorder: false },
+             border: { display: false },
+             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        y: { stacked: true, beginAtZero: true,
+             title: { display: true, text: metric === "beds" ? "Bed Count" : "Unit Count",
+                      font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
+             grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+             ticks: { color: "#5a544f", font: { size: 11 } } },
+      },
+    },
+    plugins: [totalsPlugin],
+  });
+
+  renderUnitMixTables(selected, typesPresent, field, noun);
+  populateUnitMixBuildingPicker(selected);
+  renderUnitMixPie(selected, field, noun);
+  populateUnitMixParityPicker(selected);
+  renderUnitMixParityPie(selected);
+}
+
+// Parity slice colours: full = everest (good), none = birch (shared baths).
+const PARITY_COLORS = { full: "#16352e", partial: "#a95818" };
+
+/* Bed/bath parity pie: share of beds (or units, per the By Bed/By Unit
+   toggle) where every bedroom has its own bath. Filterable by bedroom type. */
+function populateUnitMixParityPicker(selected) {
+  const sel = document.getElementById("unitmix-parity-type");
+  if (!sel) return;
+  // Bedroom types that appear in the parity data across the selection.
+  const present = UNIT_MIX_TYPES.filter((t) =>
+    selected.some(({ mix }) => (mix.parity_by_type || {})[t]));
+  if (unitMixParityType !== "all" && !present.includes(unitMixParityType)) {
+    unitMixParityType = "all";
+  }
+  const opts = [`<option value="all">All bedroom types</option>`].concat(
+    present.map((t) => `<option value="${t}">${t}</option>`));
+  sel.innerHTML = opts.join("");
+  sel.value = unitMixParityType;
+}
+
+function renderUnitMixParityPie(selected) {
+  const canvas = document.getElementById("unitmix-parity-pie");
+  if (!canvas || typeof Chart === "undefined") return;
+  const titleEl = document.getElementById("unitmix-parity-title");
+
+  const useBeds = unitMixMetric === "beds";
+  const fullKey = useBeds ? "beds_full" : "units_full";
+  const partialKey = useBeds ? "beds_partial" : "units_partial";
+  const noun = useBeds ? "beds" : "units";
+  const metricLabel = useBeds ? "Beds" : "Units";
+
+  let full = 0, partial = 0;
+  selected.forEach(({ mix }) => {
+    const pbt = mix.parity_by_type || {};
+    const types = unitMixParityType === "all" ? Object.keys(pbt) : [unitMixParityType];
+    types.forEach((t) => {
+      if (!pbt[t]) return;
+      full += pbt[t][fullKey] || 0;
+      partial += pbt[t][partialKey] || 0;
+    });
+  });
+  const total = full + partial;
+
+  const scope = unitMixParityType === "all" ? "" : ` - ${unitMixParityType}`;
+  if (titleEl) titleEl.textContent = `Bed / Bath Parity${scope} (${metricLabel})`;
+
+  if (unitMixParityChart) unitMixParityChart.destroy();
+  if (!total) {
+    unitMixParityChart = null;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  unitMixParityChart = new Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels: ["Full parity", "No parity"],
+      datasets: [{
+        data: [full, partial],
+        backgroundColor: [PARITY_COLORS.full, PARITY_COLORS.partial],
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "52%",
+      layout: { padding: 6 },
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 9 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
+          },
+        },
+        datalabels: {
+          color: "#fff",
+          font: { weight: 700, size: 12, family: "Pragmatica, sans-serif" },
+          textAlign: "center",
+          formatter: (v) => {
+            const pct = v / total * 100;
+            if (pct < 6) return "";
+            return `${pct.toFixed(0)}%`;
+          },
+        },
+      },
+    },
+  });
+}
+
+/* Per-building unit-type pie. Slices are bedroom types for one building (or
+   the aggregate of all selected comps), coloured by type, labelled with %. */
+function populateUnitMixBuildingPicker(selected) {
+  const sel = document.getElementById("unitmix-pie-building");
+  if (!sel) return;
+  const validKeys = new Set(selected.map(({ prop }) => prop.property_key));
+  // Reset the choice if the previously-picked building left the selection.
+  if (unitMixPieBuilding !== "all" && !validKeys.has(unitMixPieBuilding)) {
+    unitMixPieBuilding = selected.length ? selected[0].prop.property_key : "all";
+  }
+  if (unitMixPieBuilding === null) {
+    unitMixPieBuilding = selected.length ? selected[0].prop.property_key : "all";
+  }
+  const opts = [`<option value="all">All selected comps</option>`].concat(
+    selected.map(({ prop }) =>
+      `<option value="${prop.property_key}">${prop.property_name}</option>`)
+  );
+  sel.innerHTML = opts.join("");
+  sel.value = String(unitMixPieBuilding);
+}
+
+function renderUnitMixPie(selected, field, noun) {
+  const canvas = document.getElementById("unitmix-pie");
+  if (!canvas || typeof Chart === "undefined") return;
+  const titleEl = document.getElementById("unitmix-pie-title");
+
+  // Resolve the scope: one building or the aggregate of all selected comps.
+  let buildingName = "Comp Set";
+  let mix = null;
+  if (unitMixPieBuilding === "all") {
+    const agg = {};
+    selected.forEach(({ mix: m }) => {
+      Object.entries(m[field] || {}).forEach(([t, v]) => { agg[t] = (agg[t] || 0) + v; });
+    });
+    mix = agg;
+  } else {
+    const hit = selected.find(({ prop }) => prop.property_key === unitMixPieBuilding);
+    if (hit) { mix = hit.mix[field] || {}; buildingName = hit.prop.property_name; }
+  }
+
+  const metricLabel = noun === "beds" ? "Beds" : "Units";
+  if (titleEl) titleEl.textContent = `${buildingName} (${metricLabel})`;
+
+  const types = UNIT_MIX_TYPES.filter((t) => mix && mix[t]);
+  const values = types.map((t) => mix[t]);
+  const total = values.reduce((s, v) => s + v, 0);
+
+  if (unitMixPieChart) unitMixPieChart.destroy();
+  if (!total) {
+    // Nothing to draw - leave an empty canvas.
+    unitMixPieChart = null;
+    const ctx = canvas.getContext("2d");
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  unitMixPieChart = new Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels: types,
+      datasets: [{
+        data: values,
+        backgroundColor: types.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "52%",
+      layout: { padding: 6 },
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 9 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
+          },
+        },
+        datalabels: {
+          color: "#fff",
+          font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+          textAlign: "center",
+          // Label slices >= 6% with type + percent; hide slivers.
+          formatter: (v, ctx) => {
+            const pct = v / total * 100;
+            if (pct < 6) return "";
+            return `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct.toFixed(0)}%`;
+          },
+        },
+      },
+    },
+  });
+}
+
+function renderUnitMixTables(selected, typesPresent, field, noun) {
+  // ---- Market summary: bedroom type × [count, % of total] --------------
+  const totals = {};
+  typesPresent.forEach((t) => {
+    totals[t] = selected.reduce((s, { mix }) => s + ((mix[field] || {})[t] || 0), 0);
+  });
+  const grand = Object.values(totals).reduce((s, v) => s + v, 0);
+  const pct = (v) => (grand ? (v / grand * 100).toFixed(1) + "%" : "-");
+
+  const nounLabel = noun === "beds" ? "Beds" : "Units";
+  const summaryTable = document.getElementById("unitmix-summary-table");
+  if (summaryTable) {
+    if (grand === 0) {
+      summaryTable.innerHTML = `<tbody><tr><td>No data for the current selection.</td></tr></tbody>`;
+    } else {
+      const head = `<thead><tr><th class="property-cell">Type</th><th>${nounLabel}</th><th>% of total</th></tr></thead>`;
+      const body = typesPresent.map((t) =>
+        `<tr><td class="property-cell">${t}</td><td>${fmtInt(totals[t])}</td><td>${pct(totals[t])}</td></tr>`
+      ).join("");
+      const foot = `<tfoot><tr><td class="property-cell">Total</td><td>${fmtInt(grand)}</td><td>100.0%</td></tr></tfoot>`;
+      summaryTable.innerHTML = head + `<tbody>${body}</tbody>` + foot;
+    }
+  }
+
+  // ---- Per-property matrix: property × bedroom type (+ total) ----------
+  const matrix = document.getElementById("unitmix-matrix-table");
+  if (matrix) {
+    if (selected.length === 0) {
+      matrix.innerHTML = `<tbody><tr><td>No data for the current selection.</td></tr></tbody>`;
+    } else {
+      const head = `<thead><tr><th class="property-cell">Property</th>${typesPresent.map((t) => `<th>${t}</th>`).join("")}<th>Total</th></tr></thead>`;
+      const rows = selected.map(({ prop, mix }) => {
+        const cells = typesPresent.map((t) => {
+          const v = (mix[field] || {})[t] || 0;
+          return `<td>${v ? fmtInt(v) : "-"}</td>`;
+        }).join("");
+        const rowTotal = typesPresent.reduce((s, t) => s + ((mix[field] || {})[t] || 0), 0);
+        return `<tr><td class="property-cell">${prop.property_name}</td>${cells}<td>${fmtInt(rowTotal)}</td></tr>`;
+      }).join("");
+      const foot = `<tfoot><tr><td class="property-cell">Total</td>${typesPresent.map((t) => `<td>${fmtInt(totals[t])}</td>`).join("")}<td>${fmtInt(grand)}</td></tr></tfoot>`;
+      matrix.innerHTML = head + `<tbody>${rows}</tbody>` + foot;
+    }
+  }
+}
+
+function bindUnitMixToggle() {
+  document.querySelectorAll(".unitmix-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = btn.dataset.mix;
+      if (next === unitMixMetric) return;
+      unitMixMetric = next;
+      renderUnitMix();
+    });
+  });
+
+  // Building picker for the pie: re-render just the pie on change. The
+  // <select> element persists across renders (only its options are rebuilt),
+  // so this listener stays attached.
+  const sel = document.getElementById("unitmix-pie-building");
+  if (sel) {
+    sel.addEventListener("change", () => {
+      unitMixPieBuilding = sel.value === "all" ? "all" : Number(sel.value);
+      renderUnitMix();
+    });
+  }
+
+  // Bedroom-type filter for the bed/bath parity pie.
+  const parSel = document.getElementById("unitmix-parity-type");
+  if (parSel) {
+    parSel.addEventListener("change", () => {
+      unitMixParityType = parSel.value;
+      renderUnitMix();
+    });
+  }
 }
 
 const COMP_LINE_COLOR_COMP   = "#a95818";   // rust - comp aggregate

@@ -1603,6 +1603,21 @@ def main() -> int:
         )
     print(f"  plans split into {len(by_property)} per-property files in {plans_dir}/")
 
+    # --- unit_mix: per-property beds/units by bedroom type --------------
+    # Built from the same in-memory plan rows (single source of truth lives
+    # in load_unit_mix.py). Drives the Unit & Bed Mix section on market.html.
+    from load_unit_mix import mix_for_property
+    unit_mix = []
+    for pk, rows in by_property.items():
+        mix = mix_for_property(rows)
+        if mix["total_beds"] == 0 and mix["total_units"] == 0:
+            continue
+        market_key = next((r.get("market_key") for r in rows if r.get("market_key") is not None), None)
+        unit_mix.append({"property_key": pk, "market_key": market_key, **mix})
+    unit_mix.sort(key=lambda r: (r["market_key"] or 0, -r["total_beds"]))
+    payload["tables"]["unit_mix"] = unit_mix
+    print(f"  unit_mix: {len(unit_mix)} properties with bedroom-type mix")
+
     # Derived dashboard-level data_as_of = min across all tables that carry one
     as_ofs = []
     for table in payload["tables"].values():

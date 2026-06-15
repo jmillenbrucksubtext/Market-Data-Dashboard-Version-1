@@ -2186,6 +2186,76 @@ h1, h2, h3, .serif {
   .comp-tables-grid { grid-template-columns: 1fr; }
 }
 
+/* Unit & Bed Mix: By Bed / By Unit segmented toggle + table grid */
+.unitmix-toggle {
+  display: inline-flex;
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bg);
+}
+.unitmix-toggle-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 6px 16px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  color: var(--slate-70);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.unitmix-toggle-btn + .unitmix-toggle-btn { border-left: 1px solid var(--beige-deep); }
+.unitmix-toggle-btn:hover { color: var(--everest); }
+.unitmix-toggle-btn.active {
+  background: var(--everest);
+  color: var(--surface);
+}
+.unitmix-tables-grid { margin-top: 18px; }
+.unitmix-pies-row { margin-top: 18px; }
+@media (min-width: 920px) {
+  .unitmix-tables-grid { grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr); }
+}
+/* Stacked bar (wider) beside the per-building pie. Stacks on narrow screens. */
+.unitmix-charts-row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+@media (min-width: 920px) {
+  .unitmix-charts-row { grid-template-columns: minmax(0, 1.5fr) minmax(0, 1fr); }
+}
+/* Building picker sits on its own row under the title so the (dynamic)
+   title has the full bar width and reads cleanly on screen and in exports. */
+.unitmix-pie-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: -4px 0 10px;
+}
+.unitmix-pie-label {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+}
+.unitmix-pie-controls .select {
+  flex: 1 1 auto;
+  min-width: 0;
+  font-size: 12px;
+}
+/* Keep the dynamic building title on one line; full text is still read by
+   chart-download.js for the export filename. */
+.unitmix-pie-figure .perf-title-text {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 /* Selectable comp table: checkbox column + action buttons */
 .comp-select-col {
   width: 36px;

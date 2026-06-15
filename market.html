@@ -407,6 +407,63 @@
             </div>
           </section>
 
+          <!-- Unit & Bed Mix: composition of the selected comps by bedroom
+               type, stacked by property (the analyst Unit Mix report, in the
+               dashboard). Toggle switches the whole section between bed counts
+               and derived unit counts. Rendered by renderUnitMix(). -->
+          <section class="card">
+            <header class="card-header">
+              <div>
+                <h2>Unit &amp; Bed Mix</h2>
+                <p id="unitmix-summary">Inventory by bedroom type across the selected comps, stacked by property.</p>
+              </div>
+              <div class="unitmix-toggle" role="group" aria-label="Mix metric">
+                <button type="button" class="unitmix-toggle-btn active" data-mix="beds">By Bed</button>
+                <button type="button" class="unitmix-toggle-btn" data-mix="units">By Unit</button>
+              </div>
+            </header>
+            <div class="card-body">
+              <figure class="perf-chart unitmix-bar-figure">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Inventory by Bedroom Type</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-chart"></canvas></div>
+              </figure>
+              <div class="unitmix-charts-row unitmix-pies-row">
+                <figure class="perf-chart unitmix-pie-figure">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text" id="unitmix-pie-title">Unit Mix by Building</span>
+                  </figcaption>
+                  <div class="unitmix-pie-controls">
+                    <label class="unitmix-pie-label" for="unitmix-pie-building">Building</label>
+                    <select id="unitmix-pie-building" class="select" aria-label="Building"></select>
+                  </div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-pie"></canvas></div>
+                </figure>
+                <figure class="perf-chart unitmix-pie-figure">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text" id="unitmix-parity-title">Bed / Bath Parity</span>
+                  </figcaption>
+                  <div class="unitmix-pie-controls">
+                    <label class="unitmix-pie-label" for="unitmix-parity-type">Bedroom type</label>
+                    <select id="unitmix-parity-type" class="select" aria-label="Bedroom type"></select>
+                  </div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-parity-pie"></canvas></div>
+                </figure>
+              </div>
+              <div class="comp-tables-grid unitmix-tables-grid">
+                <div class="comp-table-card">
+                  <div class="comp-table-title" id="unitmix-summary-title">Market Summary</div>
+                  <div class="table-wrap"><table id="unitmix-summary-table" class="comp-detail-table"></table></div>
+                </div>
+                <div class="comp-table-card">
+                  <div class="comp-table-title" id="unitmix-matrix-title">By Property</div>
+                  <div class="table-wrap"><table id="unitmix-matrix-table" class="comp-detail-table"></table></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <!-- Per-comp comparison charts: one bar per selected comp.
                No per-property time series exists in data.json - current
                snapshot values only. -->

@@ -2314,6 +2314,121 @@ h1, h2, h3, .serif {
 .pipeline-projects-card { align-self: start; }
 .pipeline-projects-card .table-wrap { max-height: 312px; overflow-y: auto; }
 
+/* Student Migration tab -------------------------------------- */
+.student-migration-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 14px;
+}
+.student-migration-control {
+  display: grid;
+  gap: 5px;
+  min-width: 260px;
+  font-family: "Pragmatica", sans-serif;
+}
+.student-migration-control[hidden] { display: none; }
+.student-migration-control > span {
+  color: var(--slate-70);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.student-migration-control select {
+  width: 100%;
+  border: 1px solid var(--beige-deep);
+  border-radius: 4px;
+  background: var(--surface);
+  color: var(--slate);
+  padding: 8px 10px;
+  font: 600 12px/1.2 "Pragmatica", sans-serif;
+}
+.student-migration-kpis {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+}
+.student-migration-map-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 18px;
+}
+.student-migration-rankings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.student-migration-rankings { margin-top: 18px; }
+.student-migration-card { overflow: visible; }
+.student-migration-map {
+  width: 100%;
+  height: 540px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  background: var(--beige);
+  isolation: isolate;
+}
+.student-migration-legend {
+  min-height: 76px;
+  margin-top: 12px;
+  color: var(--slate-70);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12px;
+  line-height: 1.65;
+}
+.student-migration-legend strong { color: var(--slate); }
+.student-migration-gradient {
+  display: inline-block;
+  width: 130px;
+  height: 10px;
+  margin: 0 7px;
+  border-radius: 999px;
+  vertical-align: middle;
+  background: linear-gradient(
+    90deg,
+    #1d4ed8,
+    #06b6d4,
+    #84cc16,
+    #facc15,
+    #f97316,
+    #dc2626
+  );
+}
+.student-migration-table th:last-child,
+.student-migration-table td:last-child {
+  text-align: right;
+}
+.student-migration-table td:first-child {
+  width: 38px;
+  color: var(--slate-70);
+}
+.student-migration-methodology { margin-bottom: 0; }
+.student-migration-notes {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+}
+.student-migration-notes > div {
+  padding: 16px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  background: var(--beige);
+}
+.student-migration-notes h3 {
+  margin: 0 0 7px;
+  color: var(--slate);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 13px;
+}
+.student-migration-notes p {
+  margin: 0;
+  color: var(--slate-70);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12px;
+  line-height: 1.55;
+}
+.leaflet-tooltip.student-migration-tooltip {
+  max-width: min(330px, calc(100vw - 48px));
+}
+
 /* Shadow Market Analysis tab ---------------------------------- */
 .shadow-market-kpis {
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -2458,6 +2573,8 @@ h1, h2, h3, .serif {
   border-top: 1px solid var(--beige-deep);
 }
 @media (max-width: 980px) {
+  .student-migration-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .student-migration-rankings { grid-template-columns: 1fr; }
   .shadow-market-kpis { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .shadow-market-header { align-items: stretch; }
   .shadow-market-metric-control { min-width: 220px; }
@@ -2470,6 +2587,13 @@ h1, h2, h3, .serif {
     scrollbar-width: thin;
   }
   .market-tab { white-space: nowrap; }
+  .student-migration-kpis { grid-template-columns: 1fr; }
+  .student-migration-toolbar .student-migration-control {
+    width: 100%;
+    min-width: 0;
+  }
+  .student-migration-map { height: 500px; }
+  .student-migration-notes { grid-template-columns: 1fr; }
   .shadow-market-kpis { grid-template-columns: 1fr; }
   .shadow-market-header { display: block; }
   .shadow-market-metric-control { margin-top: 12px; min-width: 0; }

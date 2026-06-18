@@ -1,0 +1,1482 @@
+{
+  "schema_version": 1,
+  "generated_at": "2026-06-18T21:55:22.578692+00:00",
+  "markets": [
+    {
+      "market_key": 11,
+      "anchor_university": "Clemson University",
+      "school_count": 1,
+      "file": "11.json"
+    },
+    {
+      "market_key": 12,
+      "anchor_university": "University of Georgia",
+      "school_count": 1,
+      "file": "12.json"
+    },
+    {
+      "market_key": 13,
+      "anchor_university": "Auburn University",
+      "school_count": 1,
+      "file": "13.json"
+    },
+    {
+      "market_key": 14,
+      "anchor_university": "University of Alabama",
+      "school_count": 1,
+      "file": "14.json"
+    },
+    {
+      "market_key": 15,
+      "anchor_university": "University of Mississippi",
+      "school_count": 1,
+      "file": "15.json"
+    },
+    {
+      "market_key": 16,
+      "anchor_university": "Georgia College & State University",
+      "school_count": 1,
+      "file": "16.json"
+    },
+    {
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "school_count": 4,
+      "file": "17.json"
+    },
+    {
+      "market_key": 18,
+      "anchor_university": "Florida State University",
+      "school_count": 2,
+      "file": "18.json"
+    },
+    {
+      "market_key": 20,
+      "anchor_university": "University of South Carolina",
+      "school_count": 1,
+      "file": "20.json"
+    },
+    {
+      "market_key": 21,
+      "anchor_university": "Mississippi State University",
+      "school_count": 1,
+      "file": "21.json"
+    },
+    {
+      "market_key": 22,
+      "anchor_university": "University of West Georgia",
+      "school_count": 1,
+      "file": "22.json"
+    },
+    {
+      "market_key": 24,
+      "anchor_university": "Texas A&M University",
+      "school_count": 1,
+      "file": "24.json"
+    },
+    {
+      "market_key": 25,
+      "anchor_university": "University of Michigan",
+      "school_count": 1,
+      "file": "25.json"
+    },
+    {
+      "market_key": 27,
+      "anchor_university": "University of Texas at Austin",
+      "school_count": 1,
+      "file": "27.json"
+    },
+    {
+      "market_key": 29,
+      "anchor_university": "University of Texas at San Antonio",
+      "school_count": 1,
+      "file": "29.json"
+    },
+    {
+      "market_key": 31,
+      "anchor_university": "University of Houston",
+      "school_count": 3,
+      "file": "31.json"
+    },
+    {
+      "market_key": 37,
+      "anchor_university": "Southern Methodist University",
+      "school_count": 1,
+      "file": "37.json"
+    },
+    {
+      "market_key": 38,
+      "anchor_university": "University of North Texas",
+      "school_count": 2,
+      "file": "38.json"
+    },
+    {
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "school_count": 6,
+      "file": "42.json"
+    },
+    {
+      "market_key": 48,
+      "anchor_university": "University of Illinois at Urbana-Champaign",
+      "school_count": 1,
+      "file": "48.json"
+    },
+    {
+      "market_key": 52,
+      "anchor_university": "University of Pittsburgh",
+      "school_count": 3,
+      "file": "52.json"
+    },
+    {
+      "market_key": 60,
+      "anchor_university": "Texas Christian University",
+      "school_count": 1,
+      "file": "60.json"
+    },
+    {
+      "market_key": 65,
+      "anchor_university": "George Mason University",
+      "school_count": 1,
+      "file": "65.json"
+    },
+    {
+      "market_key": 66,
+      "anchor_university": "Iowa State University",
+      "school_count": 1,
+      "file": "66.json"
+    },
+    {
+      "market_key": 69,
+      "anchor_university": "Texas State University",
+      "school_count": 1,
+      "file": "69.json"
+    },
+    {
+      "market_key": 74,
+      "anchor_university": "University of Nebraska at Omaha",
+      "school_count": 1,
+      "file": "74.json"
+    },
+    {
+      "market_key": 82,
+      "anchor_university": "Northeastern University",
+      "school_count": 4,
+      "file": "82.json"
+    },
+    {
+      "market_key": 86,
+      "anchor_university": "University of Missouri",
+      "school_count": 1,
+      "file": "86.json"
+    },
+    {
+      "market_key": 93,
+      "anchor_university": "Johns Hopkins University",
+      "school_count": 3,
+      "file": "93.json"
+    },
+    {
+      "market_key": 95,
+      "anchor_university": "Western Michigan University",
+      "school_count": 1,
+      "file": "95.json"
+    },
+    {
+      "market_key": 99,
+      "anchor_university": "University of North Carolina at Charlotte",
+      "school_count": 1,
+      "file": "99.json"
+    },
+    {
+      "market_key": 100,
+      "anchor_university": "North Carolina State University",
+      "school_count": 1,
+      "file": "100.json"
+    },
+    {
+      "market_key": 104,
+      "anchor_university": "Mercer University",
+      "school_count": 1,
+      "file": "104.json"
+    },
+    {
+      "market_key": 106,
+      "anchor_university": "University of North Dakota",
+      "school_count": 1,
+      "file": "106.json"
+    },
+    {
+      "market_key": 107,
+      "anchor_university": "Temple University",
+      "school_count": 3,
+      "file": "107.json"
+    },
+    {
+      "market_key": 109,
+      "anchor_university": "George Washington University",
+      "school_count": 3,
+      "file": "109.json"
+    },
+    {
+      "market_key": 118,
+      "anchor_university": "Indiana University Bloomington",
+      "school_count": 1,
+      "file": "118.json"
+    },
+    {
+      "market_key": 121,
+      "anchor_university": "Vanderbilt University",
+      "school_count": 3,
+      "file": "121.json"
+    },
+    {
+      "market_key": 122,
+      "anchor_university": "University of Oklahoma",
+      "school_count": 1,
+      "file": "122.json"
+    },
+    {
+      "market_key": 141,
+      "anchor_university": "University of Central Florida",
+      "school_count": 1,
+      "file": "141.json"
+    },
+    {
+      "market_key": 146,
+      "anchor_university": "Duke University",
+      "school_count": 1,
+      "file": "146.json"
+    },
+    {
+      "market_key": 149,
+      "anchor_university": "College of Charleston",
+      "school_count": 1,
+      "file": "149.json"
+    },
+    {
+      "market_key": 155,
+      "anchor_university": "Ohio State University",
+      "school_count": 1,
+      "file": "155.json"
+    },
+    {
+      "market_key": 175,
+      "anchor_university": "University of North Carolina at Asheville",
+      "school_count": 1,
+      "file": "175.json"
+    },
+    {
+      "market_key": 180,
+      "anchor_university": "University of Arkansas",
+      "school_count": 1,
+      "file": "180.json"
+    },
+    {
+      "market_key": 185,
+      "anchor_university": "University of Minnesota Twin Cities",
+      "school_count": 1,
+      "file": "185.json"
+    },
+    {
+      "market_key": 189,
+      "anchor_university": "Southern Illinois University Carbondale",
+      "school_count": 1,
+      "file": "189.json"
+    },
+    {
+      "market_key": 194,
+      "anchor_university": "Indiana University-Purdue University Indianapolis",
+      "school_count": 2,
+      "file": "194.json"
+    },
+    {
+      "market_key": 211,
+      "anchor_university": "University of North Florida",
+      "school_count": 2,
+      "file": "211.json"
+    },
+    {
+      "market_key": 215,
+      "anchor_university": "Eastern Michigan University",
+      "school_count": 1,
+      "file": "215.json"
+    },
+    {
+      "market_key": 224,
+      "anchor_university": "Wright State University",
+      "school_count": 1,
+      "file": "224.json"
+    },
+    {
+      "market_key": 261,
+      "anchor_university": "Southern Illinois University Edwardsville",
+      "school_count": 1,
+      "file": "261.json"
+    },
+    {
+      "market_key": 288,
+      "anchor_university": "University of Memphis",
+      "school_count": 1,
+      "file": "288.json"
+    },
+    {
+      "market_key": 294,
+      "anchor_university": "Baylor University",
+      "school_count": 1,
+      "file": "294.json"
+    },
+    {
+      "market_key": 296,
+      "anchor_university": "University of Wisconsin Milwaukee",
+      "school_count": 2,
+      "file": "296.json"
+    },
+    {
+      "market_key": 297,
+      "anchor_university": "Coastal Carolina",
+      "school_count": 1,
+      "file": "297.json"
+    },
+    {
+      "market_key": 303,
+      "anchor_university": "University of West Florida",
+      "school_count": 1,
+      "file": "303.json"
+    },
+    {
+      "market_key": 317,
+      "anchor_university": "Florida International University",
+      "school_count": 2,
+      "file": "317.json"
+    },
+    {
+      "market_key": 321,
+      "anchor_university": "University of North Carolina Wilmington",
+      "school_count": 1,
+      "file": "321.json"
+    },
+    {
+      "market_key": 322,
+      "anchor_university": "University of Alabama at Birmingham",
+      "school_count": 2,
+      "file": "322.json"
+    },
+    {
+      "market_key": 330,
+      "anchor_university": "University of Southern Mississippi",
+      "school_count": 1,
+      "file": "330.json"
+    },
+    {
+      "market_key": 333,
+      "anchor_university": "Rochester Institute of Technology",
+      "school_count": 2,
+      "file": "333.json"
+    },
+    {
+      "market_key": 334,
+      "anchor_university": "University of Wisconsin Madison",
+      "school_count": 1,
+      "file": "334.json"
+    },
+    {
+      "market_key": 347,
+      "anchor_university": "Rensselaer Polytechnic Institute",
+      "school_count": 1,
+      "file": "347.json"
+    },
+    {
+      "market_key": 353,
+      "anchor_university": "University of Louisville",
+      "school_count": 1,
+      "file": "353.json"
+    },
+    {
+      "market_key": 364,
+      "anchor_university": "University of Iowa",
+      "school_count": 1,
+      "file": "364.json"
+    },
+    {
+      "market_key": 383,
+      "anchor_university": "University of Kansas",
+      "school_count": 1,
+      "file": "383.json"
+    },
+    {
+      "market_key": 395,
+      "anchor_university": "Rhode Island College",
+      "school_count": 3,
+      "file": "395.json"
+    },
+    {
+      "market_key": 404,
+      "anchor_university": "The University of Alabama in Huntsville",
+      "school_count": 1,
+      "file": "404.json"
+    },
+    {
+      "market_key": 410,
+      "anchor_university": "Winthrop University",
+      "school_count": 1,
+      "file": "410.json"
+    },
+    {
+      "market_key": 414,
+      "anchor_university": "Bradley University",
+      "school_count": 1,
+      "file": "414.json"
+    },
+    {
+      "market_key": 418,
+      "anchor_university": "University of South Florida",
+      "school_count": 2,
+      "file": "418.json"
+    },
+    {
+      "market_key": 451,
+      "anchor_university": "University of Louisiana at LaFayette",
+      "school_count": 1,
+      "file": "451.json"
+    },
+    {
+      "market_key": 454,
+      "anchor_university": "Florida Atlantic University",
+      "school_count": 1,
+      "file": "454.json"
+    },
+    {
+      "market_key": 465,
+      "anchor_university": "Cleveland State University",
+      "school_count": 1,
+      "file": "465.json"
+    },
+    {
+      "market_key": 483,
+      "anchor_university": "Ferris State University",
+      "school_count": 1,
+      "file": "483.json"
+    },
+    {
+      "market_key": 494,
+      "anchor_university": "Valparaiso University",
+      "school_count": 1,
+      "file": "494.json"
+    },
+    {
+      "market_key": 496,
+      "anchor_university": "Illinois State University",
+      "school_count": 1,
+      "file": "496.json"
+    },
+    {
+      "market_key": 500,
+      "anchor_university": "Wichita State University",
+      "school_count": 1,
+      "file": "500.json"
+    },
+    {
+      "market_key": 504,
+      "anchor_university": "Old Dominion University",
+      "school_count": 1,
+      "file": "504.json"
+    },
+    {
+      "market_key": 509,
+      "anchor_university": "Columbus State University",
+      "school_count": 1,
+      "file": "509.json"
+    },
+    {
+      "market_key": 512,
+      "anchor_university": "Virginia Commonwealth University",
+      "school_count": 2,
+      "file": "512.json"
+    },
+    {
+      "market_key": 521,
+      "anchor_university": "East Carolina University",
+      "school_count": 1,
+      "file": "521.json"
+    },
+    {
+      "market_key": 524,
+      "anchor_university": "Ohio University",
+      "school_count": 1,
+      "file": "524.json"
+    },
+    {
+      "market_key": 526,
+      "anchor_university": "Tulane University",
+      "school_count": 1,
+      "file": "526.json"
+    },
+    {
+      "market_key": 538,
+      "anchor_university": "Yale University",
+      "school_count": 2,
+      "file": "538.json"
+    },
+    {
+      "market_key": 549,
+      "anchor_university": "North Dakota State University",
+      "school_count": 1,
+      "file": "549.json"
+    },
+    {
+      "market_key": 553,
+      "anchor_university": "University of Tennessee",
+      "school_count": 1,
+      "file": "553.json"
+    },
+    {
+      "market_key": 555,
+      "anchor_university": "Cornell University",
+      "school_count": 2,
+      "file": "555.json"
+    },
+    {
+      "market_key": 560,
+      "anchor_university": "Ball State University",
+      "school_count": 1,
+      "file": "560.json"
+    },
+    {
+      "market_key": 562,
+      "anchor_university": "SUNY Cortland",
+      "school_count": 1,
+      "file": "562.json"
+    },
+    {
+      "market_key": 567,
+      "anchor_university": "University of Kentucky",
+      "school_count": 1,
+      "file": "567.json"
+    },
+    {
+      "market_key": 568,
+      "anchor_university": "University of Virginia",
+      "school_count": 1,
+      "file": "568.json"
+    },
+    {
+      "market_key": 578,
+      "anchor_university": "Stephen F. Austin State University",
+      "school_count": 1,
+      "file": "578.json"
+    },
+    {
+      "market_key": 580,
+      "anchor_university": "Texas A&M University Corpus Christi",
+      "school_count": 1,
+      "file": "580.json"
+    },
+    {
+      "market_key": 590,
+      "anchor_university": "University of Florida",
+      "school_count": 1,
+      "file": "590.json"
+    },
+    {
+      "market_key": 593,
+      "anchor_university": "Southeast Missouri State University",
+      "school_count": 1,
+      "file": "593.json"
+    },
+    {
+      "market_key": 611,
+      "anchor_university": "Purdue University",
+      "school_count": 1,
+      "file": "611.json"
+    },
+    {
+      "market_key": 624,
+      "anchor_university": "College of William and Mary",
+      "school_count": 1,
+      "file": "624.json"
+    },
+    {
+      "market_key": 629,
+      "anchor_university": "University of Nebraska Lincoln",
+      "school_count": 1,
+      "file": "629.json"
+    },
+    {
+      "market_key": 650,
+      "anchor_university": "University at Buffalo SUNY",
+      "school_count": 2,
+      "file": "650.json"
+    },
+    {
+      "market_key": 667,
+      "anchor_university": "Wake Forest University",
+      "school_count": 2,
+      "file": "667.json"
+    },
+    {
+      "market_key": 682,
+      "anchor_university": "Louisiana Tech University",
+      "school_count": 1,
+      "file": "682.json"
+    },
+    {
+      "market_key": 700,
+      "anchor_university": "Austin Peay State University",
+      "school_count": 1,
+      "file": "700.json"
+    },
+    {
+      "market_key": 714,
+      "anchor_university": "Valdosta State University",
+      "school_count": 1,
+      "file": "714.json"
+    },
+    {
+      "market_key": 732,
+      "anchor_university": "Syracuse University",
+      "school_count": 1,
+      "file": "732.json"
+    },
+    {
+      "market_key": 734,
+      "anchor_university": "Brandeis University",
+      "school_count": 1,
+      "file": "734.json"
+    },
+    {
+      "market_key": 757,
+      "anchor_university": "University of Massachusetts Lowell",
+      "school_count": 1,
+      "file": "757.json"
+    },
+    {
+      "market_key": 769,
+      "anchor_university": "University of Missouri St. Louis",
+      "school_count": 3,
+      "file": "769.json"
+    },
+    {
+      "market_key": 800,
+      "anchor_university": "University of Akron",
+      "school_count": 1,
+      "file": "800.json"
+    },
+    {
+      "market_key": 823,
+      "anchor_university": "Oklahoma State University",
+      "school_count": 1,
+      "file": "823.json"
+    },
+    {
+      "market_key": 838,
+      "anchor_university": "University of Vermont",
+      "school_count": 1,
+      "file": "838.json"
+    },
+    {
+      "market_key": 843,
+      "anchor_university": "East Tennessee State University",
+      "school_count": 1,
+      "file": "843.json"
+    },
+    {
+      "market_key": 847,
+      "anchor_university": "University of North Carolina Greensboro",
+      "school_count": 2,
+      "file": "847.json"
+    },
+    {
+      "market_key": 896,
+      "anchor_university": "University of Notre Dame",
+      "school_count": 1,
+      "file": "896.json"
+    },
+    {
+      "market_key": 903,
+      "anchor_university": "University of Toledo",
+      "school_count": 1,
+      "file": "903.json"
+    },
+    {
+      "market_key": 914,
+      "anchor_university": "Middle Tennessee State University",
+      "school_count": 1,
+      "file": "914.json"
+    },
+    {
+      "market_key": 921,
+      "anchor_university": "Grand Valley State University",
+      "school_count": 1,
+      "file": "921.json"
+    },
+    {
+      "market_key": 931,
+      "anchor_university": "California State University Fresno",
+      "school_count": 1,
+      "file": "931.json"
+    },
+    {
+      "market_key": 933,
+      "anchor_university": "California State University Sacramento",
+      "school_count": 1,
+      "file": "933.json"
+    },
+    {
+      "market_key": 935,
+      "anchor_university": "University of California Santa Barbara",
+      "school_count": 1,
+      "file": "935.json"
+    },
+    {
+      "market_key": 936,
+      "anchor_university": "University of Colorado Colorado Springs",
+      "school_count": 1,
+      "file": "936.json"
+    },
+    {
+      "market_key": 940,
+      "anchor_university": "University of Washington",
+      "school_count": 1,
+      "file": "940.json"
+    },
+    {
+      "market_key": 941,
+      "anchor_university": "Portland State University",
+      "school_count": 1,
+      "file": "941.json"
+    },
+    {
+      "market_key": 946,
+      "anchor_university": "University of Southern California",
+      "school_count": 3,
+      "file": "946.json"
+    },
+    {
+      "market_key": 960,
+      "anchor_university": "Oregon State University",
+      "school_count": 1,
+      "file": "960.json"
+    },
+    {
+      "market_key": 970,
+      "anchor_university": "University of Wyoming",
+      "school_count": 1,
+      "file": "970.json"
+    },
+    {
+      "market_key": 975,
+      "anchor_university": "University of California San Diego",
+      "school_count": 3,
+      "file": "975.json"
+    },
+    {
+      "market_key": 976,
+      "anchor_university": "Eastern Washington University",
+      "school_count": 1,
+      "file": "976.json"
+    },
+    {
+      "market_key": 977,
+      "anchor_university": "University of Colorado Boulder",
+      "school_count": 1,
+      "file": "977.json"
+    },
+    {
+      "market_key": 982,
+      "anchor_university": "Western Washington University",
+      "school_count": 1,
+      "file": "982.json"
+    },
+    {
+      "market_key": 984,
+      "anchor_university": "University of San Francisco",
+      "school_count": 1,
+      "file": "984.json"
+    },
+    {
+      "market_key": 992,
+      "anchor_university": "New Mexico State University",
+      "school_count": 1,
+      "file": "992.json"
+    },
+    {
+      "market_key": 994,
+      "anchor_university": "University of California Merced",
+      "school_count": 1,
+      "file": "994.json"
+    },
+    {
+      "market_key": 1002,
+      "anchor_university": "Texas Tech University",
+      "school_count": 1,
+      "file": "1002.json"
+    },
+    {
+      "market_key": 1005,
+      "anchor_university": "University of Arizona",
+      "school_count": 1,
+      "file": "1005.json"
+    },
+    {
+      "market_key": 1006,
+      "anchor_university": "University of California Berkeley",
+      "school_count": 1,
+      "file": "1006.json"
+    },
+    {
+      "market_key": 1012,
+      "anchor_university": "University of Utah",
+      "school_count": 1,
+      "file": "1012.json"
+    },
+    {
+      "market_key": 1027,
+      "anchor_university": "California State University Chico",
+      "school_count": 1,
+      "file": "1027.json"
+    },
+    {
+      "market_key": 1028,
+      "anchor_university": "University of Nevada Reno",
+      "school_count": 1,
+      "file": "1028.json"
+    },
+    {
+      "market_key": 1029,
+      "anchor_university": "University of Hawaii at Manoa",
+      "school_count": 1,
+      "file": "1029.json"
+    },
+    {
+      "market_key": 1040,
+      "anchor_university": "Montana State University",
+      "school_count": 1,
+      "file": "1040.json"
+    },
+    {
+      "market_key": 1055,
+      "anchor_university": "San Jose State University",
+      "school_count": 1,
+      "file": "1055.json"
+    },
+    {
+      "market_key": 1060,
+      "anchor_university": "University of Nevada Las Vegas",
+      "school_count": 1,
+      "file": "1060.json"
+    },
+    {
+      "market_key": 1063,
+      "anchor_university": "California Polytechnic State University San Luis Obispo",
+      "school_count": 1,
+      "file": "1063.json"
+    },
+    {
+      "market_key": 1065,
+      "anchor_university": "University of New Mexico",
+      "school_count": 1,
+      "file": "1065.json"
+    },
+    {
+      "market_key": 1066,
+      "anchor_university": "West Texas A&M University",
+      "school_count": 1,
+      "file": "1066.json"
+    },
+    {
+      "market_key": 1069,
+      "anchor_university": "University of California Irvine",
+      "school_count": 1,
+      "file": "1069.json"
+    },
+    {
+      "market_key": 1084,
+      "anchor_university": "California State University Fullerton",
+      "school_count": 1,
+      "file": "1084.json"
+    },
+    {
+      "market_key": 1090,
+      "anchor_university": "Lehigh University",
+      "school_count": 1,
+      "file": "1090.json"
+    },
+    {
+      "market_key": 1099,
+      "anchor_university": "Colorado State University",
+      "school_count": 1,
+      "file": "1099.json"
+    },
+    {
+      "market_key": 1104,
+      "anchor_university": "Boise State University",
+      "school_count": 1,
+      "file": "1104.json"
+    },
+    {
+      "market_key": 1152,
+      "anchor_university": "Arizona State University",
+      "school_count": 1,
+      "file": "1152.json"
+    },
+    {
+      "market_key": 1160,
+      "anchor_university": "Santa Clara University",
+      "school_count": 1,
+      "file": "1160.json"
+    },
+    {
+      "market_key": 1183,
+      "anchor_university": "Pepperdine University",
+      "school_count": 1,
+      "file": "1183.json"
+    },
+    {
+      "market_key": 1242,
+      "anchor_university": "Florida Institute of Technology",
+      "school_count": 1,
+      "file": "1242.json"
+    },
+    {
+      "market_key": 1258,
+      "anchor_university": "Central Connecticut State University",
+      "school_count": 1,
+      "file": "1258.json"
+    },
+    {
+      "market_key": 1299,
+      "anchor_university": "University of Oregon",
+      "school_count": 1,
+      "file": "1299.json"
+    },
+    {
+      "market_key": 1353,
+      "anchor_university": "University of South Carolina Upstate",
+      "school_count": 1,
+      "file": "1353.json"
+    },
+    {
+      "market_key": 1401,
+      "anchor_university": "Sam Houston State University",
+      "school_count": 1,
+      "file": "1401.json"
+    },
+    {
+      "market_key": 1410,
+      "anchor_university": "University of California Riverside",
+      "school_count": 1,
+      "file": "1410.json"
+    },
+    {
+      "market_key": 1447,
+      "anchor_university": "Utah Valley University",
+      "school_count": 1,
+      "file": "1447.json"
+    },
+    {
+      "market_key": 1492,
+      "anchor_university": "West Chester University of Pennsylvania",
+      "school_count": 1,
+      "file": "1492.json"
+    },
+    {
+      "market_key": 1558,
+      "anchor_university": "University of Colorado Denver",
+      "school_count": 1,
+      "file": "1558.json"
+    },
+    {
+      "market_key": 1560,
+      "anchor_university": "Michigan State University",
+      "school_count": 1,
+      "file": "1560.json"
+    },
+    {
+      "market_key": 1574,
+      "anchor_university": "Missouri State University",
+      "school_count": 1,
+      "file": "1574.json"
+    },
+    {
+      "market_key": 1598,
+      "anchor_university": "University of California Davis",
+      "school_count": 1,
+      "file": "1598.json"
+    },
+    {
+      "market_key": 1620,
+      "anchor_university": "Kennesaw State University",
+      "school_count": 1,
+      "file": "1620.json"
+    },
+    {
+      "market_key": 1653,
+      "anchor_university": "University of Montana",
+      "school_count": 1,
+      "file": "1653.json"
+    },
+    {
+      "market_key": 1760,
+      "anchor_university": "Liberty University",
+      "school_count": 2,
+      "file": "1760.json"
+    },
+    {
+      "market_key": 1771,
+      "anchor_university": "New York University",
+      "school_count": 3,
+      "file": "1771.json"
+    },
+    {
+      "market_key": 1780,
+      "anchor_university": "California Polytechnic State University Pomona",
+      "school_count": 1,
+      "file": "1780.json"
+    },
+    {
+      "market_key": 1804,
+      "anchor_university": "Louisiana State University",
+      "school_count": 1,
+      "file": "1804.json"
+    },
+    {
+      "market_key": 1905,
+      "anchor_university": "Northern Arizona University",
+      "school_count": 1,
+      "file": "1905.json"
+    },
+    {
+      "market_key": 1988,
+      "anchor_university": "Purdue University Fort Wayne",
+      "school_count": 1,
+      "file": "1988.json"
+    },
+    {
+      "market_key": 1995,
+      "anchor_university": "Indiana State University",
+      "school_count": 1,
+      "file": "1995.json"
+    },
+    {
+      "market_key": 2146,
+      "anchor_university": "University of South Alabama",
+      "school_count": 1,
+      "file": "2146.json"
+    },
+    {
+      "market_key": 2147,
+      "anchor_university": "Western Carolina University",
+      "school_count": 1,
+      "file": "2147.json"
+    },
+    {
+      "market_key": 2170,
+      "anchor_university": "Towson University",
+      "school_count": 1,
+      "file": "2170.json"
+    },
+    {
+      "market_key": 2227,
+      "anchor_university": "University of Michigan Dearborn",
+      "school_count": 1,
+      "file": "2227.json"
+    },
+    {
+      "market_key": 2251,
+      "anchor_university": "Jacksonville State University",
+      "school_count": 1,
+      "file": "2251.json"
+    },
+    {
+      "market_key": 2253,
+      "anchor_university": "University of North Alabama",
+      "school_count": 1,
+      "file": "2253.json"
+    },
+    {
+      "market_key": 2256,
+      "anchor_university": "Arkansas Tech University",
+      "school_count": 1,
+      "file": "2256.json"
+    },
+    {
+      "market_key": 2260,
+      "anchor_university": "California State University San Bernardino",
+      "school_count": 1,
+      "file": "2260.json"
+    },
+    {
+      "market_key": 2264,
+      "anchor_university": "University of Northern Colorado",
+      "school_count": 1,
+      "file": "2264.json"
+    },
+    {
+      "market_key": 2267,
+      "anchor_university": "Fairfield University",
+      "school_count": 1,
+      "file": "2267.json"
+    },
+    {
+      "market_key": 2269,
+      "anchor_university": "University of Delaware",
+      "school_count": 1,
+      "file": "2269.json"
+    },
+    {
+      "market_key": 2272,
+      "anchor_university": "Embry-Riddle Aeronautical University",
+      "school_count": 2,
+      "file": "2272.json"
+    },
+    {
+      "market_key": 2273,
+      "anchor_university": "Florida Gulf Coast University",
+      "school_count": 1,
+      "file": "2273.json"
+    },
+    {
+      "market_key": 2275,
+      "anchor_university": "University of Idaho",
+      "school_count": 1,
+      "file": "2275.json"
+    },
+    {
+      "market_key": 2282,
+      "anchor_university": "Kansas State University",
+      "school_count": 1,
+      "file": "2282.json"
+    },
+    {
+      "market_key": 2285,
+      "anchor_university": "Murray State University",
+      "school_count": 1,
+      "file": "2285.json"
+    },
+    {
+      "market_key": 2287,
+      "anchor_university": "Western Kentucky University",
+      "school_count": 1,
+      "file": "2287.json"
+    },
+    {
+      "market_key": 2290,
+      "anchor_university": "University of Maine",
+      "school_count": 1,
+      "file": "2290.json"
+    },
+    {
+      "market_key": 2294,
+      "anchor_university": "University of Maryland College Park",
+      "school_count": 1,
+      "file": "2294.json"
+    },
+    {
+      "market_key": 2295,
+      "anchor_university": "University of Massachusetts Amherst",
+      "school_count": 1,
+      "file": "2295.json"
+    },
+    {
+      "market_key": 2300,
+      "anchor_university": "Central Michigan University",
+      "school_count": 1,
+      "file": "2300.json"
+    },
+    {
+      "market_key": 2308,
+      "anchor_university": "Dartmouth College",
+      "school_count": 1,
+      "file": "2308.json"
+    },
+    {
+      "market_key": 2310,
+      "anchor_university": "University of New Hampshire",
+      "school_count": 1,
+      "file": "2310.json"
+    },
+    {
+      "market_key": 2333,
+      "anchor_university": "SUNY Oneonta",
+      "school_count": 1,
+      "file": "2333.json"
+    },
+    {
+      "market_key": 2339,
+      "anchor_university": "College at Brockport SUNY",
+      "school_count": 1,
+      "file": "2339.json"
+    },
+    {
+      "market_key": 2341,
+      "anchor_university": "Appalachian State University",
+      "school_count": 1,
+      "file": "2341.json"
+    },
+    {
+      "market_key": 2342,
+      "anchor_university": "Elon University",
+      "school_count": 1,
+      "file": "2342.json"
+    },
+    {
+      "market_key": 2344,
+      "anchor_university": "University of North Carolina at Chapel Hill",
+      "school_count": 1,
+      "file": "2344.json"
+    },
+    {
+      "market_key": 2345,
+      "anchor_university": "University of North Carolina at Pembroke",
+      "school_count": 1,
+      "file": "2345.json"
+    },
+    {
+      "market_key": 2347,
+      "anchor_university": "Bowling Green State University",
+      "school_count": 1,
+      "file": "2347.json"
+    },
+    {
+      "market_key": 2349,
+      "anchor_university": "Kent State University",
+      "school_count": 1,
+      "file": "2349.json"
+    },
+    {
+      "market_key": 2350,
+      "anchor_university": "Miami University",
+      "school_count": 1,
+      "file": "2350.json"
+    },
+    {
+      "market_key": 2354,
+      "anchor_university": "University of Cincinnati",
+      "school_count": 2,
+      "file": "2354.json"
+    },
+    {
+      "market_key": 2362,
+      "anchor_university": "Kutztown University of Pennsylvania",
+      "school_count": 1,
+      "file": "2362.json"
+    },
+    {
+      "market_key": 2364,
+      "anchor_university": "Villanova University",
+      "school_count": 1,
+      "file": "2364.json"
+    },
+    {
+      "market_key": 2369,
+      "anchor_university": "Indiana University of Pennsylvania",
+      "school_count": 1,
+      "file": "2369.json"
+    },
+    {
+      "market_key": 2375,
+      "anchor_university": "Penn State",
+      "school_count": 1,
+      "file": "2375.json"
+    },
+    {
+      "market_key": 2377,
+      "anchor_university": "Slippery Rock University of Pennsylvania",
+      "school_count": 1,
+      "file": "2377.json"
+    },
+    {
+      "market_key": 2383,
+      "anchor_university": "Tennessee Technological University",
+      "school_count": 1,
+      "file": "2383.json"
+    },
+    {
+      "market_key": 2386,
+      "anchor_university": "Angelo State University",
+      "school_count": 1,
+      "file": "2386.json"
+    },
+    {
+      "market_key": 2387,
+      "anchor_university": "Lamar University",
+      "school_count": 1,
+      "file": "2387.json"
+    },
+    {
+      "market_key": 2388,
+      "anchor_university": "Tarleton State University",
+      "school_count": 1,
+      "file": "2388.json"
+    },
+    {
+      "market_key": 2391,
+      "anchor_university": "Texas A&M University Kingsville",
+      "school_count": 1,
+      "file": "2391.json"
+    },
+    {
+      "market_key": 2392,
+      "anchor_university": "Brigham Young University",
+      "school_count": 1,
+      "file": "2392.json"
+    },
+    {
+      "market_key": 2393,
+      "anchor_university": "Utah State University",
+      "school_count": 1,
+      "file": "2393.json"
+    },
+    {
+      "market_key": 2397,
+      "anchor_university": "James Madison University",
+      "school_count": 1,
+      "file": "2397.json"
+    },
+    {
+      "market_key": 2399,
+      "anchor_university": "Radford University",
+      "school_count": 1,
+      "file": "2399.json"
+    },
+    {
+      "market_key": 2400,
+      "anchor_university": "Virginia Polytechnic Institute and State University",
+      "school_count": 1,
+      "file": "2400.json"
+    },
+    {
+      "market_key": 2403,
+      "anchor_university": "Washington State University",
+      "school_count": 1,
+      "file": "2403.json"
+    },
+    {
+      "market_key": 2407,
+      "anchor_university": "West Virginia University",
+      "school_count": 1,
+      "file": "2407.json"
+    },
+    {
+      "market_key": 2415,
+      "anchor_university": "Georgia Southern University",
+      "school_count": 1,
+      "file": "2415.json"
+    },
+    {
+      "market_key": 2417,
+      "anchor_university": "Rutgers University",
+      "school_count": 1,
+      "file": "2417.json"
+    },
+    {
+      "market_key": 2418,
+      "anchor_university": "University of Connecticut",
+      "school_count": 1,
+      "file": "2418.json"
+    },
+    {
+      "market_key": 2419,
+      "anchor_university": "Binghamton University",
+      "school_count": 1,
+      "file": "2419.json"
+    },
+    {
+      "market_key": 2420,
+      "anchor_university": "University of Tennessee at Chattanooga",
+      "school_count": 1,
+      "file": "2420.json"
+    },
+    {
+      "market_key": 2421,
+      "anchor_university": "University of North Georgia",
+      "school_count": 1,
+      "file": "2421.json"
+    },
+    {
+      "market_key": 2422,
+      "anchor_university": "University of Central Missouri",
+      "school_count": 1,
+      "file": "2422.json"
+    },
+    {
+      "market_key": 2423,
+      "anchor_university": "University of Texas at Dallas",
+      "school_count": 1,
+      "file": "2423.json"
+    },
+    {
+      "market_key": 2427,
+      "anchor_university": "Arkansas State University",
+      "school_count": 1,
+      "file": "2427.json"
+    },
+    {
+      "market_key": 2430,
+      "anchor_university": "Gonzaga University",
+      "school_count": 1,
+      "file": "2430.json"
+    },
+    {
+      "market_key": 2435,
+      "anchor_university": "Brigham Young University-Idaho",
+      "school_count": 1,
+      "file": "2435.json"
+    },
+    {
+      "market_key": 2437,
+      "anchor_university": "Salisbury University",
+      "school_count": 1,
+      "file": "2437.json"
+    },
+    {
+      "market_key": 2438,
+      "anchor_university": "Claremont McKenna College",
+      "school_count": 1,
+      "file": "2438.json"
+    },
+    {
+      "market_key": 2449,
+      "anchor_university": "Northwestern State University",
+      "school_count": 1,
+      "file": "2449.json"
+    },
+    {
+      "market_key": 2451,
+      "anchor_university": "Northern Iowa University",
+      "school_count": 1,
+      "file": "2451.json"
+    },
+    {
+      "market_key": 2478,
+      "anchor_university": "Fox Valley Technical College",
+      "school_count": 1,
+      "file": "2478.json"
+    },
+    {
+      "market_key": 2486,
+      "anchor_university": "University of Texas at Tyler",
+      "school_count": 1,
+      "file": "2486.json"
+    },
+    {
+      "market_key": 2487,
+      "anchor_university": "Stanford University",
+      "school_count": 1,
+      "file": "2487.json"
+    },
+    {
+      "market_key": 2488,
+      "anchor_university": "California Institute of Technology",
+      "school_count": 1,
+      "file": "2488.json"
+    },
+    {
+      "market_key": 2489,
+      "anchor_university": "Tufts University",
+      "school_count": 1,
+      "file": "2489.json"
+    }
+  ]
+}

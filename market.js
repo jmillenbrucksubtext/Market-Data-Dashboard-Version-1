@@ -950,6 +950,8 @@ function bindTabs() {
         renderCompCharts();
       } else if (target === "pipeline") {
         renderPipeline();
+      } else if (target === "student-migration") {
+        renderStudentMigrationTab();
       } else if (target === "shadow-market") {
         renderShadowMarketTab();
       } else if (target === "university") {

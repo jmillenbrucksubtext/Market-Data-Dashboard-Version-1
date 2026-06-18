@@ -1,0 +1,3853 @@
+{
+  "generated_at": "2026-06-18T21:55:22.578692+00:00",
+  "source_file": "MigrationOnly.csv",
+  "source_headers": [
+    "",
+    "NAME",
+    "UNIQUEID",
+    "State",
+    "CBSAID",
+    "MigrantsIn",
+    "FTE"
+  ],
+  "reporting_period": null,
+  "reporting_period_note": "The source file does not contain a reporting-period field.",
+  "input_rows": 36017,
+  "retained_rows": 36017,
+  "duplicate_records_removed": [],
+  "zero_count_records": 6673,
+  "suppressed_counts": [],
+  "suppression_note": "The source contains numeric counts only and no suppression marker. Zero values are reported separately and are not classified as suppressed.",
+  "school_identifier": "UNIQUEID matched exactly to campus_locations.ipeds_id",
+  "source_school_count": 297,
+  "matched_school_count": 297,
+  "unmatched_school_count": 0,
+  "matched_markets": [
+    {
+      "ipeds_id": 100663,
+      "source_name": "UNIVERSITY OF ALABAMA AT BIRMINGHAM",
+      "dashboard_names": [
+        "University of Alabama at Birmingham"
+      ],
+      "market_key": 322,
+      "anchor_university": "University of Alabama at Birmingham",
+      "source_rows": 126,
+      "migrants_in": 8990,
+      "asset": "assets/student-origin/322.json"
+    },
+    {
+      "ipeds_id": 100706,
+      "source_name": "UNIVERSITY OF ALABAMA IN HUNTSVILLE",
+      "dashboard_names": [
+        "The University of Alabama in Huntsville"
+      ],
+      "market_key": 404,
+      "anchor_university": "The University of Alabama in Huntsville",
+      "source_rows": 102,
+      "migrants_in": 3878,
+      "asset": "assets/student-origin/404.json"
+    },
+    {
+      "ipeds_id": 100751,
+      "source_name": "THE UNIVERSITY OF ALABAMA",
+      "dashboard_names": [
+        "University of Alabama"
+      ],
+      "market_key": 14,
+      "anchor_university": "University of Alabama",
+      "source_rows": 265,
+      "migrants_in": 19812,
+      "asset": "assets/student-origin/14.json"
+    },
+    {
+      "ipeds_id": 100858,
+      "source_name": "AUBURN UNIVERSITY",
+      "dashboard_names": [
+        "Auburn University"
+      ],
+      "market_key": 13,
+      "anchor_university": "Auburn University",
+      "source_rows": 108,
+      "migrants_in": 4280,
+      "asset": "assets/student-origin/13.json"
+    },
+    {
+      "ipeds_id": 101480,
+      "source_name": "JACKSONVILLE STATE UNIVERSITY",
+      "dashboard_names": [
+        "Jacksonville State University"
+      ],
+      "market_key": 2251,
+      "anchor_university": "Jacksonville State University",
+      "source_rows": 35,
+      "migrants_in": 1610,
+      "asset": "assets/student-origin/2251.json"
+    },
+    {
+      "ipeds_id": 101879,
+      "source_name": "UNIVERSITY OF NORTH ALABAMA",
+      "dashboard_names": [
+        "University of North Alabama"
+      ],
+      "market_key": 2253,
+      "anchor_university": "University of North Alabama",
+      "source_rows": 51,
+      "migrants_in": 1722,
+      "asset": "assets/student-origin/2253.json"
+    },
+    {
+      "ipeds_id": 102049,
+      "source_name": "SAMFORD UNIVERSITY",
+      "dashboard_names": [
+        "Samford University"
+      ],
+      "market_key": 322,
+      "anchor_university": "University of Alabama at Birmingham",
+      "source_rows": 107,
+      "migrants_in": 4722,
+      "asset": "assets/student-origin/322.json"
+    },
+    {
+      "ipeds_id": 102094,
+      "source_name": "UNIVERSITY OF SOUTH ALABAMA",
+      "dashboard_names": [
+        "University of South Alabama"
+      ],
+      "market_key": 2146,
+      "anchor_university": "University of South Alabama",
+      "source_rows": 147,
+      "migrants_in": 9868,
+      "asset": "assets/student-origin/2146.json"
+    },
+    {
+      "ipeds_id": 104151,
+      "source_name": "ARIZONA STATE UNIVERSITY CAMPUS IMMERSION",
+      "dashboard_names": [
+        "Arizona State University"
+      ],
+      "market_key": 1152,
+      "anchor_university": "Arizona State University",
+      "source_rows": 145,
+      "migrants_in": 18366,
+      "asset": "assets/student-origin/1152.json"
+    },
+    {
+      "ipeds_id": 104179,
+      "source_name": "UNIVERSITY OF ARIZONA",
+      "dashboard_names": [
+        "University of Arizona"
+      ],
+      "market_key": 1005,
+      "anchor_university": "University of Arizona",
+      "source_rows": 134,
+      "migrants_in": 21822,
+      "asset": "assets/student-origin/1005.json"
+    },
+    {
+      "ipeds_id": 105330,
+      "source_name": "NORTHERN ARIZONA UNIVERSITY",
+      "dashboard_names": [
+        "Northern Arizona University"
+      ],
+      "market_key": 1905,
+      "anchor_university": "Northern Arizona University",
+      "source_rows": 151,
+      "migrants_in": 25240,
+      "asset": "assets/student-origin/1905.json"
+    },
+    {
+      "ipeds_id": 106397,
+      "source_name": "UNIVERSITY OF ARKANSAS",
+      "dashboard_names": [
+        "University of Arkansas"
+      ],
+      "market_key": 180,
+      "anchor_university": "University of Arkansas",
+      "source_rows": 136,
+      "migrants_in": 13805,
+      "asset": "assets/student-origin/180.json"
+    },
+    {
+      "ipeds_id": 106458,
+      "source_name": "ARKANSAS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Arkansas State University"
+      ],
+      "market_key": 2427,
+      "anchor_university": "Arkansas State University",
+      "source_rows": 82,
+      "migrants_in": 4654,
+      "asset": "assets/student-origin/2427.json"
+    },
+    {
+      "ipeds_id": 106467,
+      "source_name": "ARKANSAS TECH UNIVERSITY",
+      "dashboard_names": [
+        "Arkansas Tech University"
+      ],
+      "market_key": 2256,
+      "anchor_university": "Arkansas Tech University",
+      "source_rows": 74,
+      "migrants_in": 4324,
+      "asset": "assets/student-origin/2256.json"
+    },
+    {
+      "ipeds_id": 110404,
+      "source_name": "CALIFORNIA INSTITUTE OF TECHNOLOGY",
+      "dashboard_names": [
+        "California Institute of Technology"
+      ],
+      "market_key": 2488,
+      "anchor_university": "California Institute of Technology",
+      "source_rows": 62,
+      "migrants_in": 3604,
+      "asset": "assets/student-origin/2488.json"
+    },
+    {
+      "ipeds_id": 110422,
+      "source_name": "CALIFORNIA POLYTECHNIC STATE UNIVERSITY-SAN LUIS OBISPO",
+      "dashboard_names": [
+        "California Polytechnic State University San Luis Obispo"
+      ],
+      "market_key": 1063,
+      "anchor_university": "California Polytechnic State University San Luis Obispo",
+      "source_rows": 107,
+      "migrants_in": 44896,
+      "asset": "assets/student-origin/1063.json"
+    },
+    {
+      "ipeds_id": 110510,
+      "source_name": "CALIFORNIA STATE UNIVERSITY-SAN BERNARDINO",
+      "dashboard_names": [
+        "California State University San Bernardino"
+      ],
+      "market_key": 2260,
+      "anchor_university": "California State University San Bernardino",
+      "source_rows": 38,
+      "migrants_in": 5733,
+      "asset": "assets/student-origin/2260.json"
+    },
+    {
+      "ipeds_id": 110529,
+      "source_name": "CALIFORNIA STATE POLYTECHNIC UNIVERSITY-POMONA",
+      "dashboard_names": [
+        "California Polytechnic State University Pomona"
+      ],
+      "market_key": 1780,
+      "anchor_university": "California Polytechnic State University Pomona",
+      "source_rows": 87,
+      "migrants_in": 17537,
+      "asset": "assets/student-origin/1780.json"
+    },
+    {
+      "ipeds_id": 110538,
+      "source_name": "CALIFORNIA STATE UNIVERSITY-CHICO",
+      "dashboard_names": [
+        "California State University Chico"
+      ],
+      "market_key": 1027,
+      "anchor_university": "California State University Chico",
+      "source_rows": 81,
+      "migrants_in": 10131,
+      "asset": "assets/student-origin/1027.json"
+    },
+    {
+      "ipeds_id": 110556,
+      "source_name": "CALIFORNIA STATE UNIVERSITY-FRESNO",
+      "dashboard_names": [
+        "California State University Fresno"
+      ],
+      "market_key": 931,
+      "anchor_university": "California State University Fresno",
+      "source_rows": 101,
+      "migrants_in": 13794,
+      "asset": "assets/student-origin/931.json"
+    },
+    {
+      "ipeds_id": 110565,
+      "source_name": "CALIFORNIA STATE UNIVERSITY-FULLERTON",
+      "dashboard_names": [
+        "California State University Fullerton"
+      ],
+      "market_key": 1084,
+      "anchor_university": "California State University Fullerton",
+      "source_rows": 65,
+      "migrants_in": 11950,
+      "asset": "assets/student-origin/1084.json"
+    },
+    {
+      "ipeds_id": 110617,
+      "source_name": "CALIFORNIA STATE UNIVERSITY-SACRAMENTO",
+      "dashboard_names": [
+        "California State University Sacramento"
+      ],
+      "market_key": 933,
+      "anchor_university": "California State University Sacramento",
+      "source_rows": 91,
+      "migrants_in": 17279,
+      "asset": "assets/student-origin/933.json"
+    },
+    {
+      "ipeds_id": 110635,
+      "source_name": "UNIVERSITY OF CALIFORNIA-BERKELEY",
+      "dashboard_names": [
+        "University of California Berkeley"
+      ],
+      "market_key": 1006,
+      "anchor_university": "University of California Berkeley",
+      "source_rows": 105,
+      "migrants_in": 25174,
+      "asset": "assets/student-origin/1006.json"
+    },
+    {
+      "ipeds_id": 110644,
+      "source_name": "UNIVERSITY OF CALIFORNIA-DAVIS",
+      "dashboard_names": [
+        "University of California Davis"
+      ],
+      "market_key": 1598,
+      "anchor_university": "University of California Davis",
+      "source_rows": 112,
+      "migrants_in": 54674,
+      "asset": "assets/student-origin/1598.json"
+    },
+    {
+      "ipeds_id": 110653,
+      "source_name": "UNIVERSITY OF CALIFORNIA-IRVINE",
+      "dashboard_names": [
+        "University of California Irvine"
+      ],
+      "market_key": 1069,
+      "anchor_university": "University of California Irvine",
+      "source_rows": 124,
+      "migrants_in": 42501,
+      "asset": "assets/student-origin/1069.json"
+    },
+    {
+      "ipeds_id": 110662,
+      "source_name": "UNIVERSITY OF CALIFORNIA-LOS ANGELES",
+      "dashboard_names": [
+        "University of California Los Angeles"
+      ],
+      "market_key": 946,
+      "anchor_university": "University of Southern California",
+      "source_rows": 135,
+      "migrants_in": 62534,
+      "asset": "assets/student-origin/946.json"
+    },
+    {
+      "ipeds_id": 110671,
+      "source_name": "UNIVERSITY OF CALIFORNIA-RIVERSIDE",
+      "dashboard_names": [
+        "University of California Riverside"
+      ],
+      "market_key": 1410,
+      "anchor_university": "University of California Riverside",
+      "source_rows": 73,
+      "migrants_in": 32016,
+      "asset": "assets/student-origin/1410.json"
+    },
+    {
+      "ipeds_id": 110680,
+      "source_name": "UNIVERSITY OF CALIFORNIA-SAN DIEGO",
+      "dashboard_names": [
+        "University of California San Diego"
+      ],
+      "market_key": 975,
+      "anchor_university": "University of California San Diego",
+      "source_rows": 133,
+      "migrants_in": 50248,
+      "asset": "assets/student-origin/975.json"
+    },
+    {
+      "ipeds_id": 110705,
+      "source_name": "UNIVERSITY OF CALIFORNIA-SANTA BARBARA",
+      "dashboard_names": [
+        "University of California Santa Barbara"
+      ],
+      "market_key": 935,
+      "anchor_university": "University of California Santa Barbara",
+      "source_rows": 92,
+      "migrants_in": 44468,
+      "asset": "assets/student-origin/935.json"
+    },
+    {
+      "ipeds_id": 112260,
+      "source_name": "CLAREMONT MCKENNA COLLEGE",
+      "dashboard_names": [
+        "Claremont McKenna College"
+      ],
+      "market_key": 2438,
+      "anchor_university": "Claremont McKenna College",
+      "source_rows": 83,
+      "migrants_in": 10814,
+      "asset": "assets/student-origin/2438.json"
+    },
+    {
+      "ipeds_id": 117946,
+      "source_name": "LOYOLA MARYMOUNT UNIVERSITY",
+      "dashboard_names": [
+        "Loyola Marymount University"
+      ],
+      "market_key": 946,
+      "anchor_university": "University of Southern California",
+      "source_rows": 120,
+      "migrants_in": 16263,
+      "asset": "assets/student-origin/946.json"
+    },
+    {
+      "ipeds_id": 121150,
+      "source_name": "PEPPERDINE UNIVERSITY",
+      "dashboard_names": [
+        "Pepperdine University"
+      ],
+      "market_key": 1183,
+      "anchor_university": "Pepperdine University",
+      "source_rows": 54,
+      "migrants_in": 3123,
+      "asset": "assets/student-origin/1183.json"
+    },
+    {
+      "ipeds_id": 122409,
+      "source_name": "SAN DIEGO STATE UNIVERSITY",
+      "dashboard_names": [
+        "San Diego State University"
+      ],
+      "market_key": 975,
+      "anchor_university": "University of California San Diego",
+      "source_rows": 119,
+      "migrants_in": 24789,
+      "asset": "assets/student-origin/975.json"
+    },
+    {
+      "ipeds_id": 122436,
+      "source_name": "UNIVERSITY OF SAN DIEGO",
+      "dashboard_names": [
+        "University of San Diego"
+      ],
+      "market_key": 975,
+      "anchor_university": "University of California San Diego",
+      "source_rows": 137,
+      "migrants_in": 17065,
+      "asset": "assets/student-origin/975.json"
+    },
+    {
+      "ipeds_id": 122612,
+      "source_name": "UNIVERSITY OF SAN FRANCISCO",
+      "dashboard_names": [
+        "University of San Francisco"
+      ],
+      "market_key": 984,
+      "anchor_university": "University of San Francisco",
+      "source_rows": 89,
+      "migrants_in": 10781,
+      "asset": "assets/student-origin/984.json"
+    },
+    {
+      "ipeds_id": 122755,
+      "source_name": "SAN JOSE STATE UNIVERSITY",
+      "dashboard_names": [
+        "San Jose State University"
+      ],
+      "market_key": 1055,
+      "anchor_university": "San Jose State University",
+      "source_rows": 96,
+      "migrants_in": 21098,
+      "asset": "assets/student-origin/1055.json"
+    },
+    {
+      "ipeds_id": 122931,
+      "source_name": "SANTA CLARA UNIVERSITY",
+      "dashboard_names": [
+        "Santa Clara University"
+      ],
+      "market_key": 1160,
+      "anchor_university": "Santa Clara University",
+      "source_rows": 82,
+      "migrants_in": 14439,
+      "asset": "assets/student-origin/1160.json"
+    },
+    {
+      "ipeds_id": 123961,
+      "source_name": "UNIVERSITY OF SOUTHERN CALIFORNIA",
+      "dashboard_names": [
+        "University of Southern California"
+      ],
+      "market_key": 946,
+      "anchor_university": "University of Southern California",
+      "source_rows": 109,
+      "migrants_in": 23676,
+      "asset": "assets/student-origin/946.json"
+    },
+    {
+      "ipeds_id": 126580,
+      "source_name": "UNIVERSITY OF COLORADO COLORADO SPRINGS",
+      "dashboard_names": [
+        "University of Colorado Colorado Springs"
+      ],
+      "market_key": 936,
+      "anchor_university": "University of Colorado Colorado Springs",
+      "source_rows": 155,
+      "migrants_in": 11453,
+      "asset": "assets/student-origin/936.json"
+    },
+    {
+      "ipeds_id": 126614,
+      "source_name": "UNIVERSITY OF COLORADO BOULDER",
+      "dashboard_names": [
+        "University of Colorado Boulder"
+      ],
+      "market_key": 977,
+      "anchor_university": "University of Colorado Boulder",
+      "source_rows": 184,
+      "migrants_in": 26572,
+      "asset": "assets/student-origin/977.json"
+    },
+    {
+      "ipeds_id": 126818,
+      "source_name": "COLORADO STATE UNIVERSITY-FORT COLLINS",
+      "dashboard_names": [
+        "Colorado State University"
+      ],
+      "market_key": 1099,
+      "anchor_university": "Colorado State University",
+      "source_rows": 166,
+      "migrants_in": 18543,
+      "asset": "assets/student-origin/1099.json"
+    },
+    {
+      "ipeds_id": 127060,
+      "source_name": "UNIVERSITY OF DENVER",
+      "dashboard_names": [
+        "University of Denver"
+      ],
+      "market_key": 1558,
+      "anchor_university": "University of Colorado Denver",
+      "source_rows": 151,
+      "migrants_in": 12870,
+      "asset": "assets/student-origin/1558.json"
+    },
+    {
+      "ipeds_id": 127741,
+      "source_name": "UNIVERSITY OF NORTHERN COLORADO",
+      "dashboard_names": [
+        "University of Northern Colorado"
+      ],
+      "market_key": 2264,
+      "anchor_university": "University of Northern Colorado",
+      "source_rows": 110,
+      "migrants_in": 7829,
+      "asset": "assets/student-origin/2264.json"
+    },
+    {
+      "ipeds_id": 128771,
+      "source_name": "CENTRAL CONNECTICUT STATE UNIVERSITY",
+      "dashboard_names": [
+        "Central Connecticut State University"
+      ],
+      "market_key": 1258,
+      "anchor_university": "Central Connecticut State University",
+      "source_rows": 66,
+      "migrants_in": 11907,
+      "asset": "assets/student-origin/1258.json"
+    },
+    {
+      "ipeds_id": 129020,
+      "source_name": "UNIVERSITY OF CONNECTICUT",
+      "dashboard_names": [
+        "University of Connecticut"
+      ],
+      "market_key": 2418,
+      "anchor_university": "University of Connecticut",
+      "source_rows": 84,
+      "migrants_in": 33488,
+      "asset": "assets/student-origin/2418.json"
+    },
+    {
+      "ipeds_id": 129242,
+      "source_name": "FAIRFIELD UNIVERSITY",
+      "dashboard_names": [
+        "Fairfield University"
+      ],
+      "market_key": 2267,
+      "anchor_university": "Fairfield University",
+      "source_rows": 99,
+      "migrants_in": 29238,
+      "asset": "assets/student-origin/2267.json"
+    },
+    {
+      "ipeds_id": 130493,
+      "source_name": "SOUTHERN CONNECTICUT STATE UNIVERSITY",
+      "dashboard_names": [
+        "Southern Connecticut State University"
+      ],
+      "market_key": 538,
+      "anchor_university": "Yale University",
+      "source_rows": 134,
+      "migrants_in": 20789,
+      "asset": "assets/student-origin/538.json"
+    },
+    {
+      "ipeds_id": 130794,
+      "source_name": "YALE UNIVERSITY",
+      "dashboard_names": [
+        "Yale University"
+      ],
+      "market_key": 538,
+      "anchor_university": "Yale University",
+      "source_rows": 166,
+      "migrants_in": 27142,
+      "asset": "assets/student-origin/538.json"
+    },
+    {
+      "ipeds_id": 130943,
+      "source_name": "UNIVERSITY OF DELAWARE",
+      "dashboard_names": [
+        "University of Delaware"
+      ],
+      "market_key": 2269,
+      "anchor_university": "University of Delaware",
+      "source_rows": 120,
+      "migrants_in": 53411,
+      "asset": "assets/student-origin/2269.json"
+    },
+    {
+      "ipeds_id": 131159,
+      "source_name": "AMERICAN UNIVERSITY",
+      "dashboard_names": [
+        "American University"
+      ],
+      "market_key": 109,
+      "anchor_university": "George Washington University",
+      "source_rows": 144,
+      "migrants_in": 16232,
+      "asset": "assets/student-origin/109.json"
+    },
+    {
+      "ipeds_id": 131469,
+      "source_name": "GEORGE WASHINGTON UNIVERSITY",
+      "dashboard_names": [
+        "George Washington University"
+      ],
+      "market_key": 109,
+      "anchor_university": "George Washington University",
+      "source_rows": 183,
+      "migrants_in": 28193,
+      "asset": "assets/student-origin/109.json"
+    },
+    {
+      "ipeds_id": 131496,
+      "source_name": "GEORGETOWN UNIVERSITY",
+      "dashboard_names": [
+        "Georgetown University"
+      ],
+      "market_key": 109,
+      "anchor_university": "George Washington University",
+      "source_rows": 206,
+      "migrants_in": 32421,
+      "asset": "assets/student-origin/109.json"
+    },
+    {
+      "ipeds_id": 132602,
+      "source_name": "BETHUNE-COOKMAN UNIVERSITY",
+      "dashboard_names": [
+        "Bethune-Cookman University"
+      ],
+      "market_key": 2272,
+      "anchor_university": "Embry-Riddle Aeronautical University",
+      "source_rows": 197,
+      "migrants_in": 15159,
+      "asset": "assets/student-origin/2272.json"
+    },
+    {
+      "ipeds_id": 132903,
+      "source_name": "UNIVERSITY OF CENTRAL FLORIDA",
+      "dashboard_names": [
+        "University of Central Florida"
+      ],
+      "market_key": 141,
+      "anchor_university": "University of Central Florida",
+      "source_rows": 140,
+      "migrants_in": 40102,
+      "asset": "assets/student-origin/141.json"
+    },
+    {
+      "ipeds_id": 133553,
+      "source_name": "EMBRY-RIDDLE AERONAUTICAL UNIVERSITY-DAYTONA BEACH",
+      "dashboard_names": [
+        "Embry-Riddle Aeronautical University"
+      ],
+      "market_key": 2272,
+      "anchor_university": "Embry-Riddle Aeronautical University",
+      "source_rows": 158,
+      "migrants_in": 11654,
+      "asset": "assets/student-origin/2272.json"
+    },
+    {
+      "ipeds_id": 133650,
+      "source_name": "FLORIDA AGRICULTURAL AND MECHANICAL UNIVERSITY",
+      "dashboard_names": [
+        "Florida Agricultural and Mechanical University"
+      ],
+      "market_key": 18,
+      "anchor_university": "Florida State University",
+      "source_rows": 185,
+      "migrants_in": 70563,
+      "asset": "assets/student-origin/18.json"
+    },
+    {
+      "ipeds_id": 133669,
+      "source_name": "FLORIDA ATLANTIC UNIVERSITY",
+      "dashboard_names": [
+        "Florida Atlantic University"
+      ],
+      "market_key": 454,
+      "anchor_university": "Florida Atlantic University",
+      "source_rows": 119,
+      "migrants_in": 16269,
+      "asset": "assets/student-origin/454.json"
+    },
+    {
+      "ipeds_id": 133881,
+      "source_name": "FLORIDA INSTITUTE OF TECHNOLOGY",
+      "dashboard_names": [
+        "Florida Institute of Technology"
+      ],
+      "market_key": 1242,
+      "anchor_university": "Florida Institute of Technology",
+      "source_rows": 98,
+      "migrants_in": 3951,
+      "asset": "assets/student-origin/1242.json"
+    },
+    {
+      "ipeds_id": 133951,
+      "source_name": "FLORIDA INTERNATIONAL UNIVERSITY",
+      "dashboard_names": [
+        "Florida International University"
+      ],
+      "market_key": 317,
+      "anchor_university": "Florida International University",
+      "source_rows": 98,
+      "migrants_in": 12859,
+      "asset": "assets/student-origin/317.json"
+    },
+    {
+      "ipeds_id": 134097,
+      "source_name": "FLORIDA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Florida State University"
+      ],
+      "market_key": 18,
+      "anchor_university": "Florida State University",
+      "source_rows": 196,
+      "migrants_in": 72452,
+      "asset": "assets/student-origin/18.json"
+    },
+    {
+      "ipeds_id": 134130,
+      "source_name": "UNIVERSITY OF FLORIDA",
+      "dashboard_names": [
+        "University of Florida"
+      ],
+      "market_key": 590,
+      "anchor_university": "University of Florida",
+      "source_rows": 171,
+      "migrants_in": 50342,
+      "asset": "assets/student-origin/590.json"
+    },
+    {
+      "ipeds_id": 134945,
+      "source_name": "JACKSONVILLE UNIVERSITY",
+      "dashboard_names": [
+        "Jacksonville University"
+      ],
+      "market_key": 211,
+      "anchor_university": "University of North Florida",
+      "source_rows": 54,
+      "migrants_in": 2912,
+      "asset": "assets/student-origin/211.json"
+    },
+    {
+      "ipeds_id": 135726,
+      "source_name": "UNIVERSITY OF MIAMI",
+      "dashboard_names": [
+        "University of Miami"
+      ],
+      "market_key": 317,
+      "anchor_university": "Florida International University",
+      "source_rows": 124,
+      "migrants_in": 13229,
+      "asset": "assets/student-origin/317.json"
+    },
+    {
+      "ipeds_id": 136172,
+      "source_name": "UNIVERSITY OF NORTH FLORIDA",
+      "dashboard_names": [
+        "University of North Florida"
+      ],
+      "market_key": 211,
+      "anchor_university": "University of North Florida",
+      "source_rows": 139,
+      "migrants_in": 14724,
+      "asset": "assets/student-origin/211.json"
+    },
+    {
+      "ipeds_id": 137351,
+      "source_name": "UNIVERSITY OF SOUTH FLORIDA",
+      "dashboard_names": [
+        "University of South Florida"
+      ],
+      "market_key": 418,
+      "anchor_university": "University of South Florida",
+      "source_rows": 181,
+      "migrants_in": 24807,
+      "asset": "assets/student-origin/418.json"
+    },
+    {
+      "ipeds_id": 137847,
+      "source_name": "THE UNIVERSITY OF TAMPA",
+      "dashboard_names": [
+        "University of Tampa"
+      ],
+      "market_key": 418,
+      "anchor_university": "University of South Florida",
+      "source_rows": 192,
+      "migrants_in": 26067,
+      "asset": "assets/student-origin/418.json"
+    },
+    {
+      "ipeds_id": 138354,
+      "source_name": "THE UNIVERSITY OF WEST FLORIDA",
+      "dashboard_names": [
+        "University of West Florida"
+      ],
+      "market_key": 303,
+      "anchor_university": "University of West Florida",
+      "source_rows": 151,
+      "migrants_in": 8086,
+      "asset": "assets/student-origin/303.json"
+    },
+    {
+      "ipeds_id": 138947,
+      "source_name": "CLARK ATLANTA UNIVERSITY",
+      "dashboard_names": [
+        "Clark Atlanta University"
+      ],
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "source_rows": 137,
+      "migrants_in": 18917,
+      "asset": "assets/student-origin/17.json"
+    },
+    {
+      "ipeds_id": 139366,
+      "source_name": "COLUMBUS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Columbus State University"
+      ],
+      "market_key": 509,
+      "anchor_university": "Columbus State University",
+      "source_rows": 127,
+      "migrants_in": 6999,
+      "asset": "assets/student-origin/509.json"
+    },
+    {
+      "ipeds_id": 139658,
+      "source_name": "EMORY UNIVERSITY",
+      "dashboard_names": [
+        "Emory University"
+      ],
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "source_rows": 155,
+      "migrants_in": 12487,
+      "asset": "assets/student-origin/17.json"
+    },
+    {
+      "ipeds_id": 139755,
+      "source_name": "GEORGIA INSTITUTE OF TECHNOLOGY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Georgia Institute of Technology"
+      ],
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "source_rows": 202,
+      "migrants_in": 34232,
+      "asset": "assets/student-origin/17.json"
+    },
+    {
+      "ipeds_id": 139861,
+      "source_name": "GEORGIA COLLEGE & STATE UNIVERSITY",
+      "dashboard_names": [
+        "Georgia College & State University"
+      ],
+      "market_key": 16,
+      "anchor_university": "Georgia College & State University",
+      "source_rows": 52,
+      "migrants_in": 3830,
+      "asset": "assets/student-origin/16.json"
+    },
+    {
+      "ipeds_id": 139931,
+      "source_name": "GEORGIA SOUTHERN UNIVERSITY",
+      "dashboard_names": [
+        "Georgia Southern University"
+      ],
+      "market_key": 2415,
+      "anchor_university": "Georgia Southern University",
+      "source_rows": 69,
+      "migrants_in": 3000,
+      "asset": "assets/student-origin/2415.json"
+    },
+    {
+      "ipeds_id": 139940,
+      "source_name": "GEORGIA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Georgia State University"
+      ],
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "source_rows": 157,
+      "migrants_in": 25172,
+      "asset": "assets/student-origin/17.json"
+    },
+    {
+      "ipeds_id": 139959,
+      "source_name": "UNIVERSITY OF GEORGIA",
+      "dashboard_names": [
+        "University of Georgia"
+      ],
+      "market_key": 12,
+      "anchor_university": "University of Georgia",
+      "source_rows": 96,
+      "migrants_in": 9696,
+      "asset": "assets/student-origin/12.json"
+    },
+    {
+      "ipeds_id": 140447,
+      "source_name": "MERCER UNIVERSITY",
+      "dashboard_names": [
+        "Mercer University"
+      ],
+      "market_key": 104,
+      "anchor_university": "Mercer University",
+      "source_rows": 64,
+      "migrants_in": 3976,
+      "asset": "assets/student-origin/104.json"
+    },
+    {
+      "ipeds_id": 141264,
+      "source_name": "VALDOSTA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Valdosta State University"
+      ],
+      "market_key": 714,
+      "anchor_university": "Valdosta State University",
+      "source_rows": 89,
+      "migrants_in": 3388,
+      "asset": "assets/student-origin/714.json"
+    },
+    {
+      "ipeds_id": 141334,
+      "source_name": "UNIVERSITY OF WEST GEORGIA",
+      "dashboard_names": [
+        "University of West Georgia"
+      ],
+      "market_key": 22,
+      "anchor_university": "University of West Georgia",
+      "source_rows": 53,
+      "migrants_in": 1398,
+      "asset": "assets/student-origin/22.json"
+    },
+    {
+      "ipeds_id": 141574,
+      "source_name": "UNIVERSITY OF HAWAII AT MANOA",
+      "dashboard_names": [
+        "University of Hawaii at Manoa"
+      ],
+      "market_key": 1029,
+      "anchor_university": "University of Hawaii at Manoa",
+      "source_rows": 160,
+      "migrants_in": 12870,
+      "asset": "assets/student-origin/1029.json"
+    },
+    {
+      "ipeds_id": 142115,
+      "source_name": "BOISE STATE UNIVERSITY",
+      "dashboard_names": [
+        "Boise State University"
+      ],
+      "market_key": 1104,
+      "anchor_university": "Boise State University",
+      "source_rows": 94,
+      "migrants_in": 9484,
+      "asset": "assets/student-origin/1104.json"
+    },
+    {
+      "ipeds_id": 142285,
+      "source_name": "UNIVERSITY OF IDAHO",
+      "dashboard_names": [
+        "University of Idaho"
+      ],
+      "market_key": 2275,
+      "anchor_university": "University of Idaho",
+      "source_rows": 77,
+      "migrants_in": 11717,
+      "asset": "assets/student-origin/2275.json"
+    },
+    {
+      "ipeds_id": 142522,
+      "source_name": "BRIGHAM YOUNG UNIVERSITY-IDAHO",
+      "dashboard_names": [
+        "Brigham Young University-Idaho"
+      ],
+      "market_key": 2435,
+      "anchor_university": "Brigham Young University-Idaho",
+      "source_rows": 205,
+      "migrants_in": 14288,
+      "asset": "assets/student-origin/2435.json"
+    },
+    {
+      "ipeds_id": 143358,
+      "source_name": "BRADLEY UNIVERSITY",
+      "dashboard_names": [
+        "Bradley University"
+      ],
+      "market_key": 414,
+      "anchor_university": "Bradley University",
+      "source_rows": 61,
+      "migrants_in": 6630,
+      "asset": "assets/student-origin/414.json"
+    },
+    {
+      "ipeds_id": 144005,
+      "source_name": "CHICAGO STATE UNIVERSITY",
+      "dashboard_names": [
+        "Chicago State University"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 60,
+      "migrants_in": 6159,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 144050,
+      "source_name": "UNIVERSITY OF CHICAGO",
+      "dashboard_names": [
+        "University of Chicago"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 121,
+      "migrants_in": 16026,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 144281,
+      "source_name": "COLUMBIA COLLEGE CHICAGO",
+      "dashboard_names": [
+        "Columbia College Chicago"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 194,
+      "migrants_in": 26885,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 144740,
+      "source_name": "DEPAUL UNIVERSITY",
+      "dashboard_names": [
+        "DePaul University"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 156,
+      "migrants_in": 16972,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 145600,
+      "source_name": "UNIVERSITY OF ILLINOIS CHICAGO",
+      "dashboard_names": [
+        "University of Illinois at Chicago"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 176,
+      "migrants_in": 26494,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 145637,
+      "source_name": "UNIVERSITY OF ILLINOIS URBANA-CHAMPAIGN",
+      "dashboard_names": [
+        "University of Illinois at Urbana-Champaign"
+      ],
+      "market_key": 48,
+      "anchor_university": "University of Illinois at Urbana-Champaign",
+      "source_rows": 139,
+      "migrants_in": 33627,
+      "asset": "assets/student-origin/48.json"
+    },
+    {
+      "ipeds_id": 145813,
+      "source_name": "ILLINOIS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Illinois State University"
+      ],
+      "market_key": 496,
+      "anchor_university": "Illinois State University",
+      "source_rows": 93,
+      "migrants_in": 17344,
+      "asset": "assets/student-origin/496.json"
+    },
+    {
+      "ipeds_id": 146719,
+      "source_name": "LOYOLA UNIVERSITY CHICAGO",
+      "dashboard_names": [
+        "Loyola University Chicago"
+      ],
+      "market_key": 42,
+      "anchor_university": "University of Illinois at Chicago",
+      "source_rows": 150,
+      "migrants_in": 19248,
+      "asset": "assets/student-origin/42.json"
+    },
+    {
+      "ipeds_id": 149222,
+      "source_name": "SOUTHERN ILLINOIS UNIVERSITY-CARBONDALE",
+      "dashboard_names": [
+        "Southern Illinois University Carbondale"
+      ],
+      "market_key": 189,
+      "anchor_university": "Southern Illinois University Carbondale",
+      "source_rows": 64,
+      "migrants_in": 4517,
+      "asset": "assets/student-origin/189.json"
+    },
+    {
+      "ipeds_id": 149231,
+      "source_name": "SOUTHERN ILLINOIS UNIVERSITY-EDWARDSVILLE",
+      "dashboard_names": [
+        "Southern Illinois University Edwardsville"
+      ],
+      "market_key": 261,
+      "anchor_university": "Southern Illinois University Edwardsville",
+      "source_rows": 79,
+      "migrants_in": 5409,
+      "asset": "assets/student-origin/261.json"
+    },
+    {
+      "ipeds_id": 150136,
+      "source_name": "BALL STATE UNIVERSITY",
+      "dashboard_names": [
+        "Ball State University"
+      ],
+      "market_key": 560,
+      "anchor_university": "Ball State University",
+      "source_rows": 109,
+      "migrants_in": 11416,
+      "asset": "assets/student-origin/560.json"
+    },
+    {
+      "ipeds_id": 150163,
+      "source_name": "BUTLER UNIVERSITY",
+      "dashboard_names": [
+        "Butler University"
+      ],
+      "market_key": 194,
+      "anchor_university": "Indiana University-Purdue University Indianapolis",
+      "source_rows": 126,
+      "migrants_in": 9555,
+      "asset": "assets/student-origin/194.json"
+    },
+    {
+      "ipeds_id": 151102,
+      "source_name": "PURDUE UNIVERSITY FORT WAYNE",
+      "dashboard_names": [
+        "Purdue University Fort Wayne"
+      ],
+      "market_key": 1988,
+      "anchor_university": "Purdue University Fort Wayne",
+      "source_rows": 111,
+      "migrants_in": 6768,
+      "asset": "assets/student-origin/1988.json"
+    },
+    {
+      "ipeds_id": 151111,
+      "source_name": "INDIANA UNIVERSITY-PURDUE UNIVERSITY-INDIANAPOLIS",
+      "dashboard_names": [
+        "Indiana University-Purdue University Indianapolis"
+      ],
+      "market_key": 194,
+      "anchor_university": "Indiana University-Purdue University Indianapolis",
+      "source_rows": 167,
+      "migrants_in": 18121,
+      "asset": "assets/student-origin/194.json"
+    },
+    {
+      "ipeds_id": 151324,
+      "source_name": "INDIANA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Indiana State University"
+      ],
+      "market_key": 1995,
+      "anchor_university": "Indiana State University",
+      "source_rows": 161,
+      "migrants_in": 9137,
+      "asset": "assets/student-origin/1995.json"
+    },
+    {
+      "ipeds_id": 151351,
+      "source_name": "INDIANA UNIVERSITY-BLOOMINGTON",
+      "dashboard_names": [
+        "Indiana University Bloomington"
+      ],
+      "market_key": 118,
+      "anchor_university": "Indiana University Bloomington",
+      "source_rows": 151,
+      "migrants_in": 30367,
+      "asset": "assets/student-origin/118.json"
+    },
+    {
+      "ipeds_id": 152080,
+      "source_name": "UNIVERSITY OF NOTRE DAME",
+      "dashboard_names": [
+        "University of Notre Dame"
+      ],
+      "market_key": 896,
+      "anchor_university": "University of Notre Dame",
+      "source_rows": 162,
+      "migrants_in": 11685,
+      "asset": "assets/student-origin/896.json"
+    },
+    {
+      "ipeds_id": 152600,
+      "source_name": "VALPARAISO UNIVERSITY",
+      "dashboard_names": [
+        "Valparaiso University"
+      ],
+      "market_key": 494,
+      "anchor_university": "Valparaiso University",
+      "source_rows": 82,
+      "migrants_in": 4009,
+      "asset": "assets/student-origin/494.json"
+    },
+    {
+      "ipeds_id": 153603,
+      "source_name": "IOWA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Iowa State University"
+      ],
+      "market_key": 66,
+      "anchor_university": "Iowa State University",
+      "source_rows": 122,
+      "migrants_in": 14355,
+      "asset": "assets/student-origin/66.json"
+    },
+    {
+      "ipeds_id": 153658,
+      "source_name": "UNIVERSITY OF IOWA",
+      "dashboard_names": [
+        "University of Iowa"
+      ],
+      "market_key": 364,
+      "anchor_university": "University of Iowa",
+      "source_rows": 107,
+      "migrants_in": 11663,
+      "asset": "assets/student-origin/364.json"
+    },
+    {
+      "ipeds_id": 154095,
+      "source_name": "UNIVERSITY OF NORTHERN IOWA",
+      "dashboard_names": [
+        "Northern Iowa University"
+      ],
+      "market_key": 2451,
+      "anchor_university": "Northern Iowa University",
+      "source_rows": 58,
+      "migrants_in": 5285,
+      "asset": "assets/student-origin/2451.json"
+    },
+    {
+      "ipeds_id": 155317,
+      "source_name": "UNIVERSITY OF KANSAS",
+      "dashboard_names": [
+        "University of Kansas"
+      ],
+      "market_key": 383,
+      "anchor_university": "University of Kansas",
+      "source_rows": 120,
+      "migrants_in": 12294,
+      "asset": "assets/student-origin/383.json"
+    },
+    {
+      "ipeds_id": 155399,
+      "source_name": "KANSAS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Kansas State University"
+      ],
+      "market_key": 2282,
+      "anchor_university": "Kansas State University",
+      "source_rows": 97,
+      "migrants_in": 6665,
+      "asset": "assets/student-origin/2282.json"
+    },
+    {
+      "ipeds_id": 156125,
+      "source_name": "WICHITA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Wichita State University"
+      ],
+      "market_key": 500,
+      "anchor_university": "Wichita State University",
+      "source_rows": 79,
+      "migrants_in": 5121,
+      "asset": "assets/student-origin/500.json"
+    },
+    {
+      "ipeds_id": 157085,
+      "source_name": "UNIVERSITY OF KENTUCKY",
+      "dashboard_names": [
+        "University of Kentucky"
+      ],
+      "market_key": 567,
+      "anchor_university": "University of Kentucky",
+      "source_rows": 144,
+      "migrants_in": 18995,
+      "asset": "assets/student-origin/567.json"
+    },
+    {
+      "ipeds_id": 157289,
+      "source_name": "UNIVERSITY OF LOUISVILLE",
+      "dashboard_names": [
+        "University of Louisville"
+      ],
+      "market_key": 353,
+      "anchor_university": "University of Louisville",
+      "source_rows": 112,
+      "migrants_in": 10845,
+      "asset": "assets/student-origin/353.json"
+    },
+    {
+      "ipeds_id": 157401,
+      "source_name": "MURRAY STATE UNIVERSITY",
+      "dashboard_names": [
+        "Murray State University"
+      ],
+      "market_key": 2285,
+      "anchor_university": "Murray State University",
+      "source_rows": 57,
+      "migrants_in": 1289,
+      "asset": "assets/student-origin/2285.json"
+    },
+    {
+      "ipeds_id": 157951,
+      "source_name": "WESTERN KENTUCKY UNIVERSITY",
+      "dashboard_names": [
+        "Western Kentucky University"
+      ],
+      "market_key": 2287,
+      "anchor_university": "Western Kentucky University",
+      "source_rows": 156,
+      "migrants_in": 11298,
+      "asset": "assets/student-origin/2287.json"
+    },
+    {
+      "ipeds_id": 159391,
+      "source_name": "LOUISIANA STATE UNIVERSITY AND AGRICULTURAL & MECHANICAL COLLEGE",
+      "dashboard_names": [
+        "Louisiana State University"
+      ],
+      "market_key": 1804,
+      "anchor_university": "Louisiana State University",
+      "source_rows": 145,
+      "migrants_in": 19360,
+      "asset": "assets/student-origin/1804.json"
+    },
+    {
+      "ipeds_id": 159647,
+      "source_name": "LOUISIANA TECH UNIVERSITY",
+      "dashboard_names": [
+        "Louisiana Tech University"
+      ],
+      "market_key": 682,
+      "anchor_university": "Louisiana Tech University",
+      "source_rows": 100,
+      "migrants_in": 9680,
+      "asset": "assets/student-origin/682.json"
+    },
+    {
+      "ipeds_id": 160038,
+      "source_name": "NORTHWESTERN STATE UNIVERSITY OF LOUISIANA",
+      "dashboard_names": [
+        "Northwestern State University"
+      ],
+      "market_key": 2449,
+      "anchor_university": "Northwestern State University",
+      "source_rows": 38,
+      "migrants_in": 923,
+      "asset": "assets/student-origin/2449.json"
+    },
+    {
+      "ipeds_id": 160658,
+      "source_name": "UNIVERSITY OF LOUISIANA AT LAFAYETTE",
+      "dashboard_names": [
+        "University of Louisiana at LaFayette"
+      ],
+      "market_key": 451,
+      "anchor_university": "University of Louisiana at LaFayette",
+      "source_rows": 110,
+      "migrants_in": 10226,
+      "asset": "assets/student-origin/451.json"
+    },
+    {
+      "ipeds_id": 160755,
+      "source_name": "TULANE UNIVERSITY OF LOUISIANA",
+      "dashboard_names": [
+        "Tulane University"
+      ],
+      "market_key": 526,
+      "anchor_university": "Tulane University",
+      "source_rows": 113,
+      "migrants_in": 10283,
+      "asset": "assets/student-origin/526.json"
+    },
+    {
+      "ipeds_id": 161253,
+      "source_name": "UNIVERSITY OF MAINE",
+      "dashboard_names": [
+        "University of Maine"
+      ],
+      "market_key": 2290,
+      "anchor_university": "University of Maine",
+      "source_rows": 78,
+      "migrants_in": 11358,
+      "asset": "assets/student-origin/2290.json"
+    },
+    {
+      "ipeds_id": 161873,
+      "source_name": "UNIVERSITY OF BALTIMORE",
+      "dashboard_names": [
+        "University of Baltimore"
+      ],
+      "market_key": 93,
+      "anchor_university": "Johns Hopkins University",
+      "source_rows": 113,
+      "migrants_in": 16124,
+      "asset": "assets/student-origin/93.json"
+    },
+    {
+      "ipeds_id": 162928,
+      "source_name": "JOHNS HOPKINS UNIVERSITY",
+      "dashboard_names": [
+        "Johns Hopkins University"
+      ],
+      "market_key": 93,
+      "anchor_university": "Johns Hopkins University",
+      "source_rows": 145,
+      "migrants_in": 25090,
+      "asset": "assets/student-origin/93.json"
+    },
+    {
+      "ipeds_id": 163046,
+      "source_name": "LOYOLA UNIVERSITY MARYLAND",
+      "dashboard_names": [
+        "Loyola University Maryland"
+      ],
+      "market_key": 93,
+      "anchor_university": "Johns Hopkins University",
+      "source_rows": 129,
+      "migrants_in": 21278,
+      "asset": "assets/student-origin/93.json"
+    },
+    {
+      "ipeds_id": 163286,
+      "source_name": "UNIVERSITY OF MARYLAND-COLLEGE PARK",
+      "dashboard_names": [
+        "University of Maryland College Park"
+      ],
+      "market_key": 2294,
+      "anchor_university": "University of Maryland College Park",
+      "source_rows": 139,
+      "migrants_in": 62909,
+      "asset": "assets/student-origin/2294.json"
+    },
+    {
+      "ipeds_id": 163851,
+      "source_name": "SALISBURY UNIVERSITY",
+      "dashboard_names": [
+        "Salisbury University"
+      ],
+      "market_key": 2437,
+      "anchor_university": "Salisbury University",
+      "source_rows": 73,
+      "migrants_in": 14457,
+      "asset": "assets/student-origin/2437.json"
+    },
+    {
+      "ipeds_id": 164076,
+      "source_name": "TOWSON UNIVERSITY",
+      "dashboard_names": [
+        "Towson University"
+      ],
+      "market_key": 2170,
+      "anchor_university": "Towson University",
+      "source_rows": 139,
+      "migrants_in": 38164,
+      "asset": "assets/student-origin/2170.json"
+    },
+    {
+      "ipeds_id": 164465,
+      "source_name": "AMHERST COLLEGE",
+      "dashboard_names": [
+        "Amherst College"
+      ],
+      "market_key": 2295,
+      "anchor_university": "University of Massachusetts Amherst",
+      "source_rows": 115,
+      "migrants_in": 50237,
+      "asset": "assets/student-origin/2295.json"
+    },
+    {
+      "ipeds_id": 164924,
+      "source_name": "BOSTON COLLEGE",
+      "dashboard_names": [
+        "Boston College"
+      ],
+      "market_key": 82,
+      "anchor_university": "Northeastern University",
+      "source_rows": 141,
+      "migrants_in": 27967,
+      "asset": "assets/student-origin/82.json"
+    },
+    {
+      "ipeds_id": 164988,
+      "source_name": "BOSTON UNIVERSITY",
+      "dashboard_names": [
+        "Boston University"
+      ],
+      "market_key": 82,
+      "anchor_university": "Northeastern University",
+      "source_rows": 309,
+      "migrants_in": 166802,
+      "asset": "assets/student-origin/82.json"
+    },
+    {
+      "ipeds_id": 165015,
+      "source_name": "BRANDEIS UNIVERSITY",
+      "dashboard_names": [
+        "Brandeis University"
+      ],
+      "market_key": 734,
+      "anchor_university": "Brandeis University",
+      "source_rows": 92,
+      "migrants_in": 13287,
+      "asset": "assets/student-origin/734.json"
+    },
+    {
+      "ipeds_id": 166513,
+      "source_name": "UNIVERSITY OF MASSACHUSETTS-LOWELL",
+      "dashboard_names": [
+        "University of Massachusetts Lowell"
+      ],
+      "market_key": 757,
+      "anchor_university": "University of Massachusetts Lowell",
+      "source_rows": 67,
+      "migrants_in": 18311,
+      "asset": "assets/student-origin/757.json"
+    },
+    {
+      "ipeds_id": 166638,
+      "source_name": "UNIVERSITY OF MASSACHUSETTS-BOSTON",
+      "dashboard_names": [
+        "University of Massachusetts Boston"
+      ],
+      "market_key": 82,
+      "anchor_university": "Northeastern University",
+      "source_rows": 70,
+      "migrants_in": 14940,
+      "asset": "assets/student-origin/82.json"
+    },
+    {
+      "ipeds_id": 167358,
+      "source_name": "NORTHEASTERN UNIVERSITY",
+      "dashboard_names": [
+        "Northeastern University"
+      ],
+      "market_key": 82,
+      "anchor_university": "Northeastern University",
+      "source_rows": 232,
+      "migrants_in": 111669,
+      "asset": "assets/student-origin/82.json"
+    },
+    {
+      "ipeds_id": 168148,
+      "source_name": "TUFTS UNIVERSITY",
+      "dashboard_names": [
+        "Tufts University"
+      ],
+      "market_key": 2489,
+      "anchor_university": "Tufts University",
+      "source_rows": 108,
+      "migrants_in": 15556,
+      "asset": "assets/student-origin/2489.json"
+    },
+    {
+      "ipeds_id": 169248,
+      "source_name": "CENTRAL MICHIGAN UNIVERSITY",
+      "dashboard_names": [
+        "Central Michigan University"
+      ],
+      "market_key": 2300,
+      "anchor_university": "Central Michigan University",
+      "source_rows": 83,
+      "migrants_in": 16630,
+      "asset": "assets/student-origin/2300.json"
+    },
+    {
+      "ipeds_id": 169798,
+      "source_name": "EASTERN MICHIGAN UNIVERSITY",
+      "dashboard_names": [
+        "Eastern Michigan University"
+      ],
+      "market_key": 215,
+      "anchor_university": "Eastern Michigan University",
+      "source_rows": 123,
+      "migrants_in": 16202,
+      "asset": "assets/student-origin/215.json"
+    },
+    {
+      "ipeds_id": 169910,
+      "source_name": "FERRIS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Ferris State University"
+      ],
+      "market_key": 483,
+      "anchor_university": "Ferris State University",
+      "source_rows": 67,
+      "migrants_in": 10460,
+      "asset": "assets/student-origin/483.json"
+    },
+    {
+      "ipeds_id": 170082,
+      "source_name": "GRAND VALLEY STATE UNIVERSITY",
+      "dashboard_names": [
+        "Grand Valley State University"
+      ],
+      "market_key": 921,
+      "anchor_university": "Grand Valley State University",
+      "source_rows": 97,
+      "migrants_in": 28895,
+      "asset": "assets/student-origin/921.json"
+    },
+    {
+      "ipeds_id": 170976,
+      "source_name": "UNIVERSITY OF MICHIGAN-ANN ARBOR",
+      "dashboard_names": [
+        "University of Michigan"
+      ],
+      "market_key": 25,
+      "anchor_university": "University of Michigan",
+      "source_rows": 212,
+      "migrants_in": 49584,
+      "asset": "assets/student-origin/25.json"
+    },
+    {
+      "ipeds_id": 171100,
+      "source_name": "MICHIGAN STATE UNIVERSITY",
+      "dashboard_names": [
+        "Michigan State University"
+      ],
+      "market_key": 1560,
+      "anchor_university": "Michigan State University",
+      "source_rows": 224,
+      "migrants_in": 71116,
+      "asset": "assets/student-origin/1560.json"
+    },
+    {
+      "ipeds_id": 171137,
+      "source_name": "UNIVERSITY OF MICHIGAN-DEARBORN",
+      "dashboard_names": [
+        "University of Michigan Dearborn"
+      ],
+      "market_key": 2227,
+      "anchor_university": "University of Michigan Dearborn",
+      "source_rows": 75,
+      "migrants_in": 6643,
+      "asset": "assets/student-origin/2227.json"
+    },
+    {
+      "ipeds_id": 172699,
+      "source_name": "WESTERN MICHIGAN UNIVERSITY",
+      "dashboard_names": [
+        "Western Michigan University"
+      ],
+      "market_key": 95,
+      "anchor_university": "Western Michigan University",
+      "source_rows": 137,
+      "migrants_in": 27239,
+      "asset": "assets/student-origin/95.json"
+    },
+    {
+      "ipeds_id": 174066,
+      "source_name": "UNIVERSITY OF MINNESOTA-TWIN CITIES",
+      "dashboard_names": [
+        "University of Minnesota Twin Cities"
+      ],
+      "market_key": 185,
+      "anchor_university": "University of Minnesota Twin Cities",
+      "source_rows": 179,
+      "migrants_in": 54614,
+      "asset": "assets/student-origin/185.json"
+    },
+    {
+      "ipeds_id": 176017,
+      "source_name": "UNIVERSITY OF MISSISSIPPI",
+      "dashboard_names": [
+        "University of Mississippi"
+      ],
+      "market_key": 15,
+      "anchor_university": "University of Mississippi",
+      "source_rows": 146,
+      "migrants_in": 6238,
+      "asset": "assets/student-origin/15.json"
+    },
+    {
+      "ipeds_id": 176080,
+      "source_name": "MISSISSIPPI STATE UNIVERSITY",
+      "dashboard_names": [
+        "Mississippi State University"
+      ],
+      "market_key": 21,
+      "anchor_university": "Mississippi State University",
+      "source_rows": 85,
+      "migrants_in": 3027,
+      "asset": "assets/student-origin/21.json"
+    },
+    {
+      "ipeds_id": 176372,
+      "source_name": "UNIVERSITY OF SOUTHERN MISSISSIPPI",
+      "dashboard_names": [
+        "University of Southern Mississippi"
+      ],
+      "market_key": 330,
+      "anchor_university": "University of Southern Mississippi",
+      "source_rows": 112,
+      "migrants_in": 6020,
+      "asset": "assets/student-origin/330.json"
+    },
+    {
+      "ipeds_id": 176965,
+      "source_name": "UNIVERSITY OF CENTRAL MISSOURI",
+      "dashboard_names": [
+        "University of Central Missouri"
+      ],
+      "market_key": 2422,
+      "anchor_university": "University of Central Missouri",
+      "source_rows": 36,
+      "migrants_in": 1262,
+      "asset": "assets/student-origin/2422.json"
+    },
+    {
+      "ipeds_id": 178396,
+      "source_name": "UNIVERSITY OF MISSOURI-COLUMBIA",
+      "dashboard_names": [
+        "University of Missouri"
+      ],
+      "market_key": 86,
+      "anchor_university": "University of Missouri",
+      "source_rows": 149,
+      "migrants_in": 21935,
+      "asset": "assets/student-origin/86.json"
+    },
+    {
+      "ipeds_id": 178420,
+      "source_name": "UNIVERSITY OF MISSOURI-ST LOUIS",
+      "dashboard_names": [
+        "University of Missouri St. Louis"
+      ],
+      "market_key": 769,
+      "anchor_university": "University of Missouri St. Louis",
+      "source_rows": 47,
+      "migrants_in": 3954,
+      "asset": "assets/student-origin/769.json"
+    },
+    {
+      "ipeds_id": 179159,
+      "source_name": "SAINT LOUIS UNIVERSITY",
+      "dashboard_names": [
+        "Saint Louis University"
+      ],
+      "market_key": 769,
+      "anchor_university": "University of Missouri St. Louis",
+      "source_rows": 115,
+      "migrants_in": 14416,
+      "asset": "assets/student-origin/769.json"
+    },
+    {
+      "ipeds_id": 179557,
+      "source_name": "SOUTHEAST MISSOURI STATE UNIVERSITY",
+      "dashboard_names": [
+        "Southeast Missouri State University"
+      ],
+      "market_key": 593,
+      "anchor_university": "Southeast Missouri State University",
+      "source_rows": 57,
+      "migrants_in": 3617,
+      "asset": "assets/student-origin/593.json"
+    },
+    {
+      "ipeds_id": 179566,
+      "source_name": "MISSOURI STATE UNIVERSITY-SPRINGFIELD",
+      "dashboard_names": [
+        "Missouri State University"
+      ],
+      "market_key": 1574,
+      "anchor_university": "Missouri State University",
+      "source_rows": 160,
+      "migrants_in": 13839,
+      "asset": "assets/student-origin/1574.json"
+    },
+    {
+      "ipeds_id": 179867,
+      "source_name": "WASHINGTON UNIVERSITY IN ST LOUIS",
+      "dashboard_names": [
+        "Washington University in St. Louis"
+      ],
+      "market_key": 769,
+      "anchor_university": "University of Missouri St. Louis",
+      "source_rows": 170,
+      "migrants_in": 22388,
+      "asset": "assets/student-origin/769.json"
+    },
+    {
+      "ipeds_id": 180461,
+      "source_name": "MONTANA STATE UNIVERSITY",
+      "dashboard_names": [
+        "Montana State University"
+      ],
+      "market_key": 1040,
+      "anchor_university": "Montana State University",
+      "source_rows": 168,
+      "migrants_in": 14402,
+      "asset": "assets/student-origin/1040.json"
+    },
+    {
+      "ipeds_id": 180489,
+      "source_name": "THE UNIVERSITY OF MONTANA",
+      "dashboard_names": [
+        "University of Montana"
+      ],
+      "market_key": 1653,
+      "anchor_university": "University of Montana",
+      "source_rows": 96,
+      "migrants_in": 7605,
+      "asset": "assets/student-origin/1653.json"
+    },
+    {
+      "ipeds_id": 181394,
+      "source_name": "UNIVERSITY OF NEBRASKA AT OMAHA",
+      "dashboard_names": [
+        "University of Nebraska at Omaha"
+      ],
+      "market_key": 74,
+      "anchor_university": "University of Nebraska at Omaha",
+      "source_rows": 81,
+      "migrants_in": 5054,
+      "asset": "assets/student-origin/74.json"
+    },
+    {
+      "ipeds_id": 181464,
+      "source_name": "UNIVERSITY OF NEBRASKA-LINCOLN",
+      "dashboard_names": [
+        "University of Nebraska Lincoln"
+      ],
+      "market_key": 629,
+      "anchor_university": "University of Nebraska Lincoln",
+      "source_rows": 137,
+      "migrants_in": 12913,
+      "asset": "assets/student-origin/629.json"
+    },
+    {
+      "ipeds_id": 182281,
+      "source_name": "UNIVERSITY OF NEVADA-LAS VEGAS",
+      "dashboard_names": [
+        "University of Nevada Las Vegas"
+      ],
+      "market_key": 1060,
+      "anchor_university": "University of Nevada Las Vegas",
+      "source_rows": 102,
+      "migrants_in": 9809,
+      "asset": "assets/student-origin/1060.json"
+    },
+    {
+      "ipeds_id": 182290,
+      "source_name": "UNIVERSITY OF NEVADA-RENO",
+      "dashboard_names": [
+        "University of Nevada Reno"
+      ],
+      "market_key": 1028,
+      "anchor_university": "University of Nevada Reno",
+      "source_rows": 109,
+      "migrants_in": 20187,
+      "asset": "assets/student-origin/1028.json"
+    },
+    {
+      "ipeds_id": 182670,
+      "source_name": "DARTMOUTH COLLEGE",
+      "dashboard_names": [
+        "Dartmouth College"
+      ],
+      "market_key": 2308,
+      "anchor_university": "Dartmouth College",
+      "source_rows": 112,
+      "migrants_in": 6192,
+      "asset": "assets/student-origin/2308.json"
+    },
+    {
+      "ipeds_id": 183044,
+      "source_name": "UNIVERSITY OF NEW HAMPSHIRE-MAIN CAMPUS",
+      "dashboard_names": [
+        "University of New Hampshire"
+      ],
+      "market_key": 2310,
+      "anchor_university": "University of New Hampshire",
+      "source_rows": 81,
+      "migrants_in": 23253,
+      "asset": "assets/student-origin/2310.json"
+    },
+    {
+      "ipeds_id": 186380,
+      "source_name": "RUTGERS UNIVERSITY-NEW BRUNSWICK",
+      "dashboard_names": [
+        "Rutgers University"
+      ],
+      "market_key": 2417,
+      "anchor_university": "Rutgers University",
+      "source_rows": 160,
+      "migrants_in": 55540,
+      "asset": "assets/student-origin/2417.json"
+    },
+    {
+      "ipeds_id": 187985,
+      "source_name": "UNIVERSITY OF NEW MEXICO-MAIN CAMPUS",
+      "dashboard_names": [
+        "University of New Mexico"
+      ],
+      "market_key": 1065,
+      "anchor_university": "University of New Mexico",
+      "source_rows": 119,
+      "migrants_in": 13161,
+      "asset": "assets/student-origin/1065.json"
+    },
+    {
+      "ipeds_id": 188030,
+      "source_name": "NEW MEXICO STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "New Mexico State University"
+      ],
+      "market_key": 992,
+      "anchor_university": "New Mexico State University",
+      "source_rows": 59,
+      "migrants_in": 5504,
+      "asset": "assets/student-origin/992.json"
+    },
+    {
+      "ipeds_id": 190150,
+      "source_name": "COLUMBIA UNIVERSITY IN THE CITY OF NEW YORK",
+      "dashboard_names": [
+        "Columbia University"
+      ],
+      "market_key": 1771,
+      "anchor_university": "New York University",
+      "source_rows": 204,
+      "migrants_in": 34039,
+      "asset": "assets/student-origin/1771.json"
+    },
+    {
+      "ipeds_id": 190415,
+      "source_name": "CORNELL UNIVERSITY",
+      "dashboard_names": [
+        "Cornell University"
+      ],
+      "market_key": 555,
+      "anchor_university": "Cornell University",
+      "source_rows": 133,
+      "migrants_in": 16610,
+      "asset": "assets/student-origin/555.json"
+    },
+    {
+      "ipeds_id": 191241,
+      "source_name": "FORDHAM UNIVERSITY",
+      "dashboard_names": [
+        "Fordham University"
+      ],
+      "market_key": 1771,
+      "anchor_university": "New York University",
+      "source_rows": 129,
+      "migrants_in": 24861,
+      "asset": "assets/student-origin/1771.json"
+    },
+    {
+      "ipeds_id": 191968,
+      "source_name": "ITHACA COLLEGE",
+      "dashboard_names": [
+        "Ithaca College"
+      ],
+      "market_key": 555,
+      "anchor_university": "Cornell University",
+      "source_rows": 125,
+      "migrants_in": 13934,
+      "asset": "assets/student-origin/555.json"
+    },
+    {
+      "ipeds_id": 193900,
+      "source_name": "NEW YORK UNIVERSITY",
+      "dashboard_names": [
+        "New York University"
+      ],
+      "market_key": 1771,
+      "anchor_university": "New York University",
+      "source_rows": 261,
+      "migrants_in": 82045,
+      "asset": "assets/student-origin/1771.json"
+    },
+    {
+      "ipeds_id": 194824,
+      "source_name": "RENSSELAER POLYTECHNIC INSTITUTE",
+      "dashboard_names": [
+        "Rensselaer Polytechnic Institute"
+      ],
+      "market_key": 347,
+      "anchor_university": "Rensselaer Polytechnic Institute",
+      "source_rows": 124,
+      "migrants_in": 16038,
+      "asset": "assets/student-origin/347.json"
+    },
+    {
+      "ipeds_id": 195003,
+      "source_name": "ROCHESTER INSTITUTE OF TECHNOLOGY",
+      "dashboard_names": [
+        "Rochester Institute of Technology"
+      ],
+      "market_key": 333,
+      "anchor_university": "Rochester Institute of Technology",
+      "source_rows": 160,
+      "migrants_in": 25772,
+      "asset": "assets/student-origin/333.json"
+    },
+    {
+      "ipeds_id": 195030,
+      "source_name": "UNIVERSITY OF ROCHESTER",
+      "dashboard_names": [
+        "University of Rochester"
+      ],
+      "market_key": 333,
+      "anchor_university": "Rochester Institute of Technology",
+      "source_rows": 172,
+      "migrants_in": 31648,
+      "asset": "assets/student-origin/333.json"
+    },
+    {
+      "ipeds_id": 196079,
+      "source_name": "BINGHAMTON UNIVERSITY",
+      "dashboard_names": [
+        "Binghamton University"
+      ],
+      "market_key": 2419,
+      "anchor_university": "Binghamton University",
+      "source_rows": 87,
+      "migrants_in": 25948,
+      "asset": "assets/student-origin/2419.json"
+    },
+    {
+      "ipeds_id": 196088,
+      "source_name": "UNIVERSITY AT BUFFALO",
+      "dashboard_names": [
+        "University at Buffalo SUNY"
+      ],
+      "market_key": 650,
+      "anchor_university": "University at Buffalo SUNY",
+      "source_rows": 103,
+      "migrants_in": 33439,
+      "asset": "assets/student-origin/650.json"
+    },
+    {
+      "ipeds_id": 196121,
+      "source_name": "SUNY BROCKPORT",
+      "dashboard_names": [
+        "College at Brockport SUNY"
+      ],
+      "market_key": 2339,
+      "anchor_university": "College at Brockport SUNY",
+      "source_rows": 43,
+      "migrants_in": 9587,
+      "asset": "assets/student-origin/2339.json"
+    },
+    {
+      "ipeds_id": 196130,
+      "source_name": "SUNY BUFFALO STATE",
+      "dashboard_names": [
+        "Buffalo State University SUNY"
+      ],
+      "market_key": 650,
+      "anchor_university": "University at Buffalo SUNY",
+      "source_rows": 70,
+      "migrants_in": 15706,
+      "asset": "assets/student-origin/650.json"
+    },
+    {
+      "ipeds_id": 196149,
+      "source_name": "SUNY CORTLAND",
+      "dashboard_names": [
+        "SUNY Cortland"
+      ],
+      "market_key": 562,
+      "anchor_university": "SUNY Cortland",
+      "source_rows": 62,
+      "migrants_in": 23809,
+      "asset": "assets/student-origin/562.json"
+    },
+    {
+      "ipeds_id": 196185,
+      "source_name": "SUNY ONEONTA",
+      "dashboard_names": [
+        "SUNY Oneonta"
+      ],
+      "market_key": 2333,
+      "anchor_university": "SUNY Oneonta",
+      "source_rows": 55,
+      "migrants_in": 19152,
+      "asset": "assets/student-origin/2333.json"
+    },
+    {
+      "ipeds_id": 196413,
+      "source_name": "SYRACUSE UNIVERSITY",
+      "dashboard_names": [
+        "Syracuse University"
+      ],
+      "market_key": 732,
+      "anchor_university": "Syracuse University",
+      "source_rows": 165,
+      "migrants_in": 37388,
+      "asset": "assets/student-origin/732.json"
+    },
+    {
+      "ipeds_id": 197869,
+      "source_name": "APPALACHIAN STATE UNIVERSITY",
+      "dashboard_names": [
+        "Appalachian State University"
+      ],
+      "market_key": 2341,
+      "anchor_university": "Appalachian State University",
+      "source_rows": 95,
+      "migrants_in": 12013,
+      "asset": "assets/student-origin/2341.json"
+    },
+    {
+      "ipeds_id": 198419,
+      "source_name": "DUKE UNIVERSITY",
+      "dashboard_names": [
+        "Duke University"
+      ],
+      "market_key": 146,
+      "anchor_university": "Duke University",
+      "source_rows": 146,
+      "migrants_in": 14932,
+      "asset": "assets/student-origin/146.json"
+    },
+    {
+      "ipeds_id": 198464,
+      "source_name": "EAST CAROLINA UNIVERSITY",
+      "dashboard_names": [
+        "East Carolina University"
+      ],
+      "market_key": 521,
+      "anchor_university": "East Carolina University",
+      "source_rows": 124,
+      "migrants_in": 20511,
+      "asset": "assets/student-origin/521.json"
+    },
+    {
+      "ipeds_id": 198516,
+      "source_name": "ELON UNIVERSITY",
+      "dashboard_names": [
+        "Elon University"
+      ],
+      "market_key": 2342,
+      "anchor_university": "Elon University",
+      "source_rows": 127,
+      "migrants_in": 9002,
+      "asset": "assets/student-origin/2342.json"
+    },
+    {
+      "ipeds_id": 199102,
+      "source_name": "NORTH CAROLINA A & T STATE UNIVERSITY",
+      "dashboard_names": [
+        "North Carolina Agricultural And Technical State University"
+      ],
+      "market_key": 847,
+      "anchor_university": "University of North Carolina Greensboro",
+      "source_rows": 118,
+      "migrants_in": 14831,
+      "asset": "assets/student-origin/847.json"
+    },
+    {
+      "ipeds_id": 199111,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA AT ASHEVILLE",
+      "dashboard_names": [
+        "University of North Carolina at Asheville"
+      ],
+      "market_key": 175,
+      "anchor_university": "University of North Carolina at Asheville",
+      "source_rows": 93,
+      "migrants_in": 4552,
+      "asset": "assets/student-origin/175.json"
+    },
+    {
+      "ipeds_id": 199120,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA AT CHAPEL HILL",
+      "dashboard_names": [
+        "University of North Carolina at Chapel Hill"
+      ],
+      "market_key": 2344,
+      "anchor_university": "University of North Carolina at Chapel Hill",
+      "source_rows": 143,
+      "migrants_in": 20203,
+      "asset": "assets/student-origin/2344.json"
+    },
+    {
+      "ipeds_id": 199139,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA AT CHARLOTTE",
+      "dashboard_names": [
+        "University of North Carolina at Charlotte"
+      ],
+      "market_key": 99,
+      "anchor_university": "University of North Carolina at Charlotte",
+      "source_rows": 115,
+      "migrants_in": 22881,
+      "asset": "assets/student-origin/99.json"
+    },
+    {
+      "ipeds_id": 199148,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA AT GREENSBORO",
+      "dashboard_names": [
+        "University of North Carolina Greensboro"
+      ],
+      "market_key": 847,
+      "anchor_university": "University of North Carolina Greensboro",
+      "source_rows": 148,
+      "migrants_in": 18307,
+      "asset": "assets/student-origin/847.json"
+    },
+    {
+      "ipeds_id": 199193,
+      "source_name": "NORTH CAROLINA STATE UNIVERSITY AT RALEIGH",
+      "dashboard_names": [
+        "North Carolina State University"
+      ],
+      "market_key": 100,
+      "anchor_university": "North Carolina State University",
+      "source_rows": 167,
+      "migrants_in": 30073,
+      "asset": "assets/student-origin/100.json"
+    },
+    {
+      "ipeds_id": 199218,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA WILMINGTON",
+      "dashboard_names": [
+        "University of North Carolina Wilmington"
+      ],
+      "market_key": 321,
+      "anchor_university": "University of North Carolina Wilmington",
+      "source_rows": 149,
+      "migrants_in": 18840,
+      "asset": "assets/student-origin/321.json"
+    },
+    {
+      "ipeds_id": 199281,
+      "source_name": "UNIVERSITY OF NORTH CAROLINA AT PEMBROKE",
+      "dashboard_names": [
+        "University of North Carolina at Pembroke"
+      ],
+      "market_key": 2345,
+      "anchor_university": "University of North Carolina at Pembroke",
+      "source_rows": 19,
+      "migrants_in": 740,
+      "asset": "assets/student-origin/2345.json"
+    },
+    {
+      "ipeds_id": 199847,
+      "source_name": "WAKE FOREST UNIVERSITY",
+      "dashboard_names": [
+        "Wake Forest University"
+      ],
+      "market_key": 667,
+      "anchor_university": "Wake Forest University",
+      "source_rows": 134,
+      "migrants_in": 11565,
+      "asset": "assets/student-origin/667.json"
+    },
+    {
+      "ipeds_id": 199999,
+      "source_name": "WINSTON-SALEM STATE UNIVERSITY",
+      "dashboard_names": [
+        "Winston-Salem State University"
+      ],
+      "market_key": 667,
+      "anchor_university": "Wake Forest University",
+      "source_rows": 92,
+      "migrants_in": 6017,
+      "asset": "assets/student-origin/667.json"
+    },
+    {
+      "ipeds_id": 200004,
+      "source_name": "WESTERN CAROLINA UNIVERSITY",
+      "dashboard_names": [
+        "Western Carolina University"
+      ],
+      "market_key": 2147,
+      "anchor_university": "Western Carolina University",
+      "source_rows": 74,
+      "migrants_in": 6141,
+      "asset": "assets/student-origin/2147.json"
+    },
+    {
+      "ipeds_id": 200280,
+      "source_name": "UNIVERSITY OF NORTH DAKOTA",
+      "dashboard_names": [
+        "University of North Dakota"
+      ],
+      "market_key": 106,
+      "anchor_university": "University of North Dakota",
+      "source_rows": 94,
+      "migrants_in": 8651,
+      "asset": "assets/student-origin/106.json"
+    },
+    {
+      "ipeds_id": 200332,
+      "source_name": "NORTH DAKOTA STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "North Dakota State University"
+      ],
+      "market_key": 549,
+      "anchor_university": "North Dakota State University",
+      "source_rows": 71,
+      "migrants_in": 5130,
+      "asset": "assets/student-origin/549.json"
+    },
+    {
+      "ipeds_id": 200800,
+      "source_name": "UNIVERSITY OF AKRON MAIN CAMPUS",
+      "dashboard_names": [
+        "University of Akron"
+      ],
+      "market_key": 800,
+      "anchor_university": "University of Akron",
+      "source_rows": 88,
+      "migrants_in": 11354,
+      "asset": "assets/student-origin/800.json"
+    },
+    {
+      "ipeds_id": 201441,
+      "source_name": "BOWLING GREEN STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Bowling Green State University"
+      ],
+      "market_key": 2347,
+      "anchor_university": "Bowling Green State University",
+      "source_rows": 94,
+      "migrants_in": 9281,
+      "asset": "assets/student-origin/2347.json"
+    },
+    {
+      "ipeds_id": 201645,
+      "source_name": "CASE WESTERN RESERVE UNIVERSITY",
+      "dashboard_names": [
+        "Case Western Reserve University"
+      ],
+      "market_key": 465,
+      "anchor_university": "Cleveland State University",
+      "source_rows": 143,
+      "migrants_in": 18582,
+      "asset": "assets/student-origin/465.json"
+    },
+    {
+      "ipeds_id": 201885,
+      "source_name": "UNIVERSITY OF CINCINNATI-MAIN CAMPUS",
+      "dashboard_names": [
+        "University of Cincinnati"
+      ],
+      "market_key": 2354,
+      "anchor_university": "University of Cincinnati",
+      "source_rows": 123,
+      "migrants_in": 17506,
+      "asset": "assets/student-origin/2354.json"
+    },
+    {
+      "ipeds_id": 202480,
+      "source_name": "UNIVERSITY OF DAYTON",
+      "dashboard_names": [
+        "University of Dayton"
+      ],
+      "market_key": 224,
+      "anchor_university": "Wright State University",
+      "source_rows": 120,
+      "migrants_in": 14871,
+      "asset": "assets/student-origin/224.json"
+    },
+    {
+      "ipeds_id": 203517,
+      "source_name": "KENT STATE UNIVERSITY AT KENT",
+      "dashboard_names": [
+        "Kent State University"
+      ],
+      "market_key": 2349,
+      "anchor_university": "Kent State University",
+      "source_rows": 109,
+      "migrants_in": 15774,
+      "asset": "assets/student-origin/2349.json"
+    },
+    {
+      "ipeds_id": 204024,
+      "source_name": "MIAMI UNIVERSITY-OXFORD",
+      "dashboard_names": [
+        "Miami University"
+      ],
+      "market_key": 2350,
+      "anchor_university": "Miami University",
+      "source_rows": 163,
+      "migrants_in": 31324,
+      "asset": "assets/student-origin/2350.json"
+    },
+    {
+      "ipeds_id": 204796,
+      "source_name": "OHIO STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Ohio State University"
+      ],
+      "market_key": 155,
+      "anchor_university": "Ohio State University",
+      "source_rows": 178,
+      "migrants_in": 40862,
+      "asset": "assets/student-origin/155.json"
+    },
+    {
+      "ipeds_id": 204857,
+      "source_name": "OHIO UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Ohio University"
+      ],
+      "market_key": 524,
+      "anchor_university": "Ohio University",
+      "source_rows": 130,
+      "migrants_in": 33288,
+      "asset": "assets/student-origin/524.json"
+    },
+    {
+      "ipeds_id": 206084,
+      "source_name": "UNIVERSITY OF TOLEDO",
+      "dashboard_names": [
+        "University of Toledo"
+      ],
+      "market_key": 903,
+      "anchor_university": "University of Toledo",
+      "source_rows": 77,
+      "migrants_in": 8325,
+      "asset": "assets/student-origin/903.json"
+    },
+    {
+      "ipeds_id": 206622,
+      "source_name": "XAVIER UNIVERSITY",
+      "dashboard_names": [
+        "Xavier University"
+      ],
+      "market_key": 2354,
+      "anchor_university": "University of Cincinnati",
+      "source_rows": 97,
+      "migrants_in": 7649,
+      "asset": "assets/student-origin/2354.json"
+    },
+    {
+      "ipeds_id": 207388,
+      "source_name": "OKLAHOMA STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Oklahoma State University"
+      ],
+      "market_key": 823,
+      "anchor_university": "Oklahoma State University",
+      "source_rows": 116,
+      "migrants_in": 8871,
+      "asset": "assets/student-origin/823.json"
+    },
+    {
+      "ipeds_id": 207500,
+      "source_name": "UNIVERSITY OF OKLAHOMA-NORMAN CAMPUS",
+      "dashboard_names": [
+        "University of Oklahoma"
+      ],
+      "market_key": 122,
+      "anchor_university": "University of Oklahoma",
+      "source_rows": 123,
+      "migrants_in": 10044,
+      "asset": "assets/student-origin/122.json"
+    },
+    {
+      "ipeds_id": 209542,
+      "source_name": "OREGON STATE UNIVERSITY",
+      "dashboard_names": [
+        "Oregon State University"
+      ],
+      "market_key": 960,
+      "anchor_university": "Oregon State University",
+      "source_rows": 142,
+      "migrants_in": 34499,
+      "asset": "assets/student-origin/960.json"
+    },
+    {
+      "ipeds_id": 209551,
+      "source_name": "UNIVERSITY OF OREGON",
+      "dashboard_names": [
+        "University of Oregon"
+      ],
+      "market_key": 1299,
+      "anchor_university": "University of Oregon",
+      "source_rows": 186,
+      "migrants_in": 46677,
+      "asset": "assets/student-origin/1299.json"
+    },
+    {
+      "ipeds_id": 209807,
+      "source_name": "PORTLAND STATE UNIVERSITY",
+      "dashboard_names": [
+        "Portland State University"
+      ],
+      "market_key": 941,
+      "anchor_university": "Portland State University",
+      "source_rows": 119,
+      "migrants_in": 12719,
+      "asset": "assets/student-origin/941.json"
+    },
+    {
+      "ipeds_id": 211440,
+      "source_name": "CARNEGIE MELLON UNIVERSITY",
+      "dashboard_names": [
+        "Carnegie Mellon University"
+      ],
+      "market_key": 52,
+      "anchor_university": "University of Pittsburgh",
+      "source_rows": 184,
+      "migrants_in": 50109,
+      "asset": "assets/student-origin/52.json"
+    },
+    {
+      "ipeds_id": 212054,
+      "source_name": "DREXEL UNIVERSITY",
+      "dashboard_names": [
+        "Drexel University"
+      ],
+      "market_key": 107,
+      "anchor_university": "Temple University",
+      "source_rows": 195,
+      "migrants_in": 59970,
+      "asset": "assets/student-origin/107.json"
+    },
+    {
+      "ipeds_id": 212106,
+      "source_name": "DUQUESNE UNIVERSITY",
+      "dashboard_names": [
+        "Duquesne University"
+      ],
+      "market_key": 52,
+      "anchor_university": "University of Pittsburgh",
+      "source_rows": 189,
+      "migrants_in": 49681,
+      "asset": "assets/student-origin/52.json"
+    },
+    {
+      "ipeds_id": 213020,
+      "source_name": "INDIANA UNIVERSITY OF PENNSYLVANIA-MAIN CAMPUS",
+      "dashboard_names": [
+        "Indiana University of Pennsylvania"
+      ],
+      "market_key": 2369,
+      "anchor_university": "Indiana University of Pennsylvania",
+      "source_rows": 71,
+      "migrants_in": 14432,
+      "asset": "assets/student-origin/2369.json"
+    },
+    {
+      "ipeds_id": 213349,
+      "source_name": "KUTZTOWN UNIVERSITY OF PENNSYLVANIA",
+      "dashboard_names": [
+        "Kutztown University of Pennsylvania"
+      ],
+      "market_key": 2362,
+      "anchor_university": "Kutztown University of Pennsylvania",
+      "source_rows": 59,
+      "migrants_in": 13404,
+      "asset": "assets/student-origin/2362.json"
+    },
+    {
+      "ipeds_id": 213543,
+      "source_name": "LEHIGH UNIVERSITY",
+      "dashboard_names": [
+        "Lehigh University"
+      ],
+      "market_key": 1090,
+      "anchor_university": "Lehigh University",
+      "source_rows": 102,
+      "migrants_in": 13587,
+      "asset": "assets/student-origin/1090.json"
+    },
+    {
+      "ipeds_id": 214777,
+      "source_name": "PENNSYLVANIA STATE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Penn State"
+      ],
+      "market_key": 2375,
+      "anchor_university": "Penn State",
+      "source_rows": 162,
+      "migrants_in": 43443,
+      "asset": "assets/student-origin/2375.json"
+    },
+    {
+      "ipeds_id": 215062,
+      "source_name": "UNIVERSITY OF PENNSYLVANIA",
+      "dashboard_names": [
+        "University of Pennsylvania"
+      ],
+      "market_key": 107,
+      "anchor_university": "Temple University",
+      "source_rows": 182,
+      "migrants_in": 47729,
+      "asset": "assets/student-origin/107.json"
+    },
+    {
+      "ipeds_id": 215293,
+      "source_name": "UNIVERSITY OF PITTSBURGH-PITTSBURGH CAMPUS",
+      "dashboard_names": [
+        "University of Pittsburgh"
+      ],
+      "market_key": 52,
+      "anchor_university": "University of Pittsburgh",
+      "source_rows": 200,
+      "migrants_in": 54955,
+      "asset": "assets/student-origin/52.json"
+    },
+    {
+      "ipeds_id": 216038,
+      "source_name": "SLIPPERY ROCK UNIVERSITY OF PENNSYLVANIA",
+      "dashboard_names": [
+        "Slippery Rock University of Pennsylvania"
+      ],
+      "market_key": 2377,
+      "anchor_university": "Slippery Rock University of Pennsylvania",
+      "source_rows": 65,
+      "migrants_in": 8087,
+      "asset": "assets/student-origin/2377.json"
+    },
+    {
+      "ipeds_id": 216339,
+      "source_name": "TEMPLE UNIVERSITY",
+      "dashboard_names": [
+        "Temple University"
+      ],
+      "market_key": 107,
+      "anchor_university": "Temple University",
+      "source_rows": 106,
+      "migrants_in": 33616,
+      "asset": "assets/student-origin/107.json"
+    },
+    {
+      "ipeds_id": 216597,
+      "source_name": "VILLANOVA UNIVERSITY",
+      "dashboard_names": [
+        "Villanova University"
+      ],
+      "market_key": 2364,
+      "anchor_university": "Villanova University",
+      "source_rows": 136,
+      "migrants_in": 18426,
+      "asset": "assets/student-origin/2364.json"
+    },
+    {
+      "ipeds_id": 216764,
+      "source_name": "WEST CHESTER UNIVERSITY OF PENNSYLVANIA",
+      "dashboard_names": [
+        "West Chester University of Pennsylvania"
+      ],
+      "market_key": 1492,
+      "anchor_university": "West Chester University of Pennsylvania",
+      "source_rows": 94,
+      "migrants_in": 29431,
+      "asset": "assets/student-origin/1492.json"
+    },
+    {
+      "ipeds_id": 217156,
+      "source_name": "BROWN UNIVERSITY",
+      "dashboard_names": [
+        "Brown University"
+      ],
+      "market_key": 395,
+      "anchor_university": "Rhode Island College",
+      "source_rows": 153,
+      "migrants_in": 30289,
+      "asset": "assets/student-origin/395.json"
+    },
+    {
+      "ipeds_id": 217402,
+      "source_name": "PROVIDENCE COLLEGE",
+      "dashboard_names": [
+        "Providence College"
+      ],
+      "market_key": 395,
+      "anchor_university": "Rhode Island College",
+      "source_rows": 72,
+      "migrants_in": 14906,
+      "asset": "assets/student-origin/395.json"
+    },
+    {
+      "ipeds_id": 217420,
+      "source_name": "RHODE ISLAND COLLEGE",
+      "dashboard_names": [
+        "Rhode Island College"
+      ],
+      "market_key": 395,
+      "anchor_university": "Rhode Island College",
+      "source_rows": 89,
+      "migrants_in": 18852,
+      "asset": "assets/student-origin/395.json"
+    },
+    {
+      "ipeds_id": 217819,
+      "source_name": "COLLEGE OF CHARLESTON",
+      "dashboard_names": [
+        "College of Charleston"
+      ],
+      "market_key": 149,
+      "anchor_university": "College of Charleston",
+      "source_rows": 135,
+      "migrants_in": 12079,
+      "asset": "assets/student-origin/149.json"
+    },
+    {
+      "ipeds_id": 217882,
+      "source_name": "CLEMSON UNIVERSITY",
+      "dashboard_names": [
+        "Clemson University"
+      ],
+      "market_key": 11,
+      "anchor_university": "Clemson University",
+      "source_rows": 149,
+      "migrants_in": 18113,
+      "asset": "assets/student-origin/11.json"
+    },
+    {
+      "ipeds_id": 218663,
+      "source_name": "UNIVERSITY OF SOUTH CAROLINA-COLUMBIA",
+      "dashboard_names": [
+        "University of South Carolina"
+      ],
+      "market_key": 20,
+      "anchor_university": "University of South Carolina",
+      "source_rows": 166,
+      "migrants_in": 41198,
+      "asset": "assets/student-origin/20.json"
+    },
+    {
+      "ipeds_id": 218724,
+      "source_name": "COASTAL CAROLINA UNIVERSITY",
+      "dashboard_names": [
+        "Coastal Carolina"
+      ],
+      "market_key": 297,
+      "anchor_university": "Coastal Carolina",
+      "source_rows": 176,
+      "migrants_in": 13238,
+      "asset": "assets/student-origin/297.json"
+    },
+    {
+      "ipeds_id": 218742,
+      "source_name": "UNIVERSITY OF SOUTH CAROLINA-UPSTATE",
+      "dashboard_names": [
+        "University of South Carolina Upstate"
+      ],
+      "market_key": 1353,
+      "anchor_university": "University of South Carolina Upstate",
+      "source_rows": 107,
+      "migrants_in": 7257,
+      "asset": "assets/student-origin/1353.json"
+    },
+    {
+      "ipeds_id": 218964,
+      "source_name": "WINTHROP UNIVERSITY",
+      "dashboard_names": [
+        "Winthrop University"
+      ],
+      "market_key": 410,
+      "anchor_university": "Winthrop University",
+      "source_rows": 102,
+      "migrants_in": 6087,
+      "asset": "assets/student-origin/410.json"
+    },
+    {
+      "ipeds_id": 219602,
+      "source_name": "AUSTIN PEAY STATE UNIVERSITY",
+      "dashboard_names": [
+        "Austin Peay State University"
+      ],
+      "market_key": 700,
+      "anchor_university": "Austin Peay State University",
+      "source_rows": 212,
+      "migrants_in": 9779,
+      "asset": "assets/student-origin/700.json"
+    },
+    {
+      "ipeds_id": 219709,
+      "source_name": "BELMONT UNIVERSITY",
+      "dashboard_names": [
+        "Belmont University"
+      ],
+      "market_key": 121,
+      "anchor_university": "Vanderbilt University",
+      "source_rows": 225,
+      "migrants_in": 19349,
+      "asset": "assets/student-origin/121.json"
+    },
+    {
+      "ipeds_id": 219976,
+      "source_name": "LIPSCOMB UNIVERSITY",
+      "dashboard_names": [
+        "Lipscomb University"
+      ],
+      "market_key": 121,
+      "anchor_university": "Vanderbilt University",
+      "source_rows": 208,
+      "migrants_in": 16181,
+      "asset": "assets/student-origin/121.json"
+    },
+    {
+      "ipeds_id": 220075,
+      "source_name": "EAST TENNESSEE STATE UNIVERSITY",
+      "dashboard_names": [
+        "East Tennessee State University"
+      ],
+      "market_key": 843,
+      "anchor_university": "East Tennessee State University",
+      "source_rows": 127,
+      "migrants_in": 8270,
+      "asset": "assets/student-origin/843.json"
+    },
+    {
+      "ipeds_id": 220862,
+      "source_name": "UNIVERSITY OF MEMPHIS",
+      "dashboard_names": [
+        "University of Memphis"
+      ],
+      "market_key": 288,
+      "anchor_university": "University of Memphis",
+      "source_rows": 77,
+      "migrants_in": 8608,
+      "asset": "assets/student-origin/288.json"
+    },
+    {
+      "ipeds_id": 220978,
+      "source_name": "MIDDLE TENNESSEE STATE UNIVERSITY",
+      "dashboard_names": [
+        "Middle Tennessee State University"
+      ],
+      "market_key": 914,
+      "anchor_university": "Middle Tennessee State University",
+      "source_rows": 127,
+      "migrants_in": 11259,
+      "asset": "assets/student-origin/914.json"
+    },
+    {
+      "ipeds_id": 221740,
+      "source_name": "THE UNIVERSITY OF TENNESSEE-CHATTANOOGA",
+      "dashboard_names": [
+        "University of Tennessee at Chattanooga"
+      ],
+      "market_key": 2420,
+      "anchor_university": "University of Tennessee at Chattanooga",
+      "source_rows": 100,
+      "migrants_in": 9535,
+      "asset": "assets/student-origin/2420.json"
+    },
+    {
+      "ipeds_id": 221759,
+      "source_name": "THE UNIVERSITY OF TENNESSEE-KNOXVILLE",
+      "dashboard_names": [
+        "University of Tennessee"
+      ],
+      "market_key": 553,
+      "anchor_university": "University of Tennessee",
+      "source_rows": 189,
+      "migrants_in": 15662,
+      "asset": "assets/student-origin/553.json"
+    },
+    {
+      "ipeds_id": 221847,
+      "source_name": "TENNESSEE TECHNOLOGICAL UNIVERSITY",
+      "dashboard_names": [
+        "Tennessee Technological University"
+      ],
+      "market_key": 2383,
+      "anchor_university": "Tennessee Technological University",
+      "source_rows": 61,
+      "migrants_in": 2470,
+      "asset": "assets/student-origin/2383.json"
+    },
+    {
+      "ipeds_id": 221999,
+      "source_name": "VANDERBILT UNIVERSITY",
+      "dashboard_names": [
+        "Vanderbilt University"
+      ],
+      "market_key": 121,
+      "anchor_university": "Vanderbilt University",
+      "source_rows": 276,
+      "migrants_in": 31759,
+      "asset": "assets/student-origin/121.json"
+    },
+    {
+      "ipeds_id": 222831,
+      "source_name": "ANGELO STATE UNIVERSITY",
+      "dashboard_names": [
+        "Angelo State University"
+      ],
+      "market_key": 2386,
+      "anchor_university": "Angelo State University",
+      "source_rows": 118,
+      "migrants_in": 8722,
+      "asset": "assets/student-origin/2386.json"
+    },
+    {
+      "ipeds_id": 223232,
+      "source_name": "BAYLOR UNIVERSITY",
+      "dashboard_names": [
+        "Baylor University"
+      ],
+      "market_key": 294,
+      "anchor_university": "Baylor University",
+      "source_rows": 150,
+      "migrants_in": 13946,
+      "asset": "assets/student-origin/294.json"
+    },
+    {
+      "ipeds_id": 224147,
+      "source_name": "TEXAS A & M UNIVERSITY-CORPUS CHRISTI",
+      "dashboard_names": [
+        "Texas A&M University Corpus Christi"
+      ],
+      "market_key": 580,
+      "anchor_university": "Texas A&M University Corpus Christi",
+      "source_rows": 108,
+      "migrants_in": 11145,
+      "asset": "assets/student-origin/580.json"
+    },
+    {
+      "ipeds_id": 225511,
+      "source_name": "UNIVERSITY OF HOUSTON",
+      "dashboard_names": [
+        "University of Houston"
+      ],
+      "market_key": 31,
+      "anchor_university": "University of Houston",
+      "source_rows": 115,
+      "migrants_in": 21122,
+      "asset": "assets/student-origin/31.json"
+    },
+    {
+      "ipeds_id": 226091,
+      "source_name": "LAMAR UNIVERSITY",
+      "dashboard_names": [
+        "Lamar University"
+      ],
+      "market_key": 2387,
+      "anchor_university": "Lamar University",
+      "source_rows": 43,
+      "migrants_in": 2058,
+      "asset": "assets/student-origin/2387.json"
+    },
+    {
+      "ipeds_id": 227216,
+      "source_name": "UNIVERSITY OF NORTH TEXAS",
+      "dashboard_names": [
+        "University of North Texas"
+      ],
+      "market_key": 38,
+      "anchor_university": "University of North Texas",
+      "source_rows": 132,
+      "migrants_in": 19904,
+      "asset": "assets/student-origin/38.json"
+    },
+    {
+      "ipeds_id": 227757,
+      "source_name": "RICE UNIVERSITY",
+      "dashboard_names": [
+        "Rice University"
+      ],
+      "market_key": 31,
+      "anchor_university": "University of Houston",
+      "source_rows": 184,
+      "migrants_in": 26536,
+      "asset": "assets/student-origin/31.json"
+    },
+    {
+      "ipeds_id": 227881,
+      "source_name": "SAM HOUSTON STATE UNIVERSITY",
+      "dashboard_names": [
+        "Sam Houston State University"
+      ],
+      "market_key": 1401,
+      "anchor_university": "Sam Houston State University",
+      "source_rows": 70,
+      "migrants_in": 10021,
+      "asset": "assets/student-origin/1401.json"
+    },
+    {
+      "ipeds_id": 228246,
+      "source_name": "SOUTHERN METHODIST UNIVERSITY",
+      "dashboard_names": [
+        "Southern Methodist University"
+      ],
+      "market_key": 37,
+      "anchor_university": "Southern Methodist University",
+      "source_rows": 118,
+      "migrants_in": 9852,
+      "asset": "assets/student-origin/37.json"
+    },
+    {
+      "ipeds_id": 228431,
+      "source_name": "STEPHEN F AUSTIN STATE UNIVERSITY",
+      "dashboard_names": [
+        "Stephen F. Austin State University"
+      ],
+      "market_key": 578,
+      "anchor_university": "Stephen F. Austin State University",
+      "source_rows": 94,
+      "migrants_in": 11682,
+      "asset": "assets/student-origin/578.json"
+    },
+    {
+      "ipeds_id": 228459,
+      "source_name": "TEXAS STATE UNIVERSITY",
+      "dashboard_names": [
+        "Texas State University"
+      ],
+      "market_key": 69,
+      "anchor_university": "Texas State University",
+      "source_rows": 113,
+      "migrants_in": 25831,
+      "asset": "assets/student-origin/69.json"
+    },
+    {
+      "ipeds_id": 228529,
+      "source_name": "TARLETON STATE UNIVERSITY",
+      "dashboard_names": [
+        "Tarleton State University"
+      ],
+      "market_key": 2388,
+      "anchor_university": "Tarleton State University",
+      "source_rows": 87,
+      "migrants_in": 7947,
+      "asset": "assets/student-origin/2388.json"
+    },
+    {
+      "ipeds_id": 228705,
+      "source_name": "TEXAS A & M UNIVERSITY-KINGSVILLE",
+      "dashboard_names": [
+        "Texas A&M University Kingsville"
+      ],
+      "market_key": 2391,
+      "anchor_university": "Texas A&M University Kingsville",
+      "source_rows": 54,
+      "migrants_in": 3695,
+      "asset": "assets/student-origin/2391.json"
+    },
+    {
+      "ipeds_id": 228723,
+      "source_name": "TEXAS A & M UNIVERSITY-COLLEGE STATION",
+      "dashboard_names": [
+        "Texas A&M University"
+      ],
+      "market_key": 24,
+      "anchor_university": "Texas A&M University",
+      "source_rows": 205,
+      "migrants_in": 58871,
+      "asset": "assets/student-origin/24.json"
+    },
+    {
+      "ipeds_id": 228778,
+      "source_name": "THE UNIVERSITY OF TEXAS AT AUSTIN",
+      "dashboard_names": [
+        "University of Texas at Austin"
+      ],
+      "market_key": 27,
+      "anchor_university": "University of Texas at Austin",
+      "source_rows": 134,
+      "migrants_in": 46592,
+      "asset": "assets/student-origin/27.json"
+    },
+    {
+      "ipeds_id": 228787,
+      "source_name": "THE UNIVERSITY OF TEXAS AT DALLAS",
+      "dashboard_names": [
+        "University of Texas at Dallas"
+      ],
+      "market_key": 2423,
+      "anchor_university": "University of Texas at Dallas",
+      "source_rows": 138,
+      "migrants_in": 13423,
+      "asset": "assets/student-origin/2423.json"
+    },
+    {
+      "ipeds_id": 228802,
+      "source_name": "THE UNIVERSITY OF TEXAS AT TYLER",
+      "dashboard_names": [
+        "University of Texas at Tyler"
+      ],
+      "market_key": 2486,
+      "anchor_university": "University of Texas at Tyler",
+      "source_rows": 107,
+      "migrants_in": 8518,
+      "asset": "assets/student-origin/2486.json"
+    },
+    {
+      "ipeds_id": 228875,
+      "source_name": "TEXAS CHRISTIAN UNIVERSITY",
+      "dashboard_names": [
+        "Texas Christian University"
+      ],
+      "market_key": 60,
+      "anchor_university": "Texas Christian University",
+      "source_rows": 89,
+      "migrants_in": 4616,
+      "asset": "assets/student-origin/60.json"
+    },
+    {
+      "ipeds_id": 229027,
+      "source_name": "THE UNIVERSITY OF TEXAS AT SAN ANTONIO",
+      "dashboard_names": [
+        "University of Texas at San Antonio"
+      ],
+      "market_key": 29,
+      "anchor_university": "University of Texas at San Antonio",
+      "source_rows": 101,
+      "migrants_in": 18043,
+      "asset": "assets/student-origin/29.json"
+    },
+    {
+      "ipeds_id": 229063,
+      "source_name": "TEXAS SOUTHERN UNIVERSITY",
+      "dashboard_names": [
+        "Texas Southern University"
+      ],
+      "market_key": 31,
+      "anchor_university": "University of Houston",
+      "source_rows": 109,
+      "migrants_in": 19760,
+      "asset": "assets/student-origin/31.json"
+    },
+    {
+      "ipeds_id": 229115,
+      "source_name": "TEXAS TECH UNIVERSITY",
+      "dashboard_names": [
+        "Texas Tech University"
+      ],
+      "market_key": 1002,
+      "anchor_university": "Texas Tech University",
+      "source_rows": 167,
+      "migrants_in": 22831,
+      "asset": "assets/student-origin/1002.json"
+    },
+    {
+      "ipeds_id": 229179,
+      "source_name": "TEXAS WOMAN'S UNIVERSITY",
+      "dashboard_names": [
+        "Texas Woman's University"
+      ],
+      "market_key": 38,
+      "anchor_university": "University of North Texas",
+      "source_rows": 132,
+      "migrants_in": 19904,
+      "asset": "assets/student-origin/38.json"
+    },
+    {
+      "ipeds_id": 229814,
+      "source_name": "WEST TEXAS A & M UNIVERSITY",
+      "dashboard_names": [
+        "West Texas A&M University"
+      ],
+      "market_key": 1066,
+      "anchor_university": "West Texas A&M University",
+      "source_rows": 56,
+      "migrants_in": 2621,
+      "asset": "assets/student-origin/1066.json"
+    },
+    {
+      "ipeds_id": 230038,
+      "source_name": "BRIGHAM YOUNG UNIVERSITY",
+      "dashboard_names": [
+        "Brigham Young University"
+      ],
+      "market_key": 2392,
+      "anchor_university": "Brigham Young University",
+      "source_rows": 193,
+      "migrants_in": 25155,
+      "asset": "assets/student-origin/2392.json"
+    },
+    {
+      "ipeds_id": 230728,
+      "source_name": "UTAH STATE UNIVERSITY",
+      "dashboard_names": [
+        "Utah State University"
+      ],
+      "market_key": 2393,
+      "anchor_university": "Utah State University",
+      "source_rows": 102,
+      "migrants_in": 15116,
+      "asset": "assets/student-origin/2393.json"
+    },
+    {
+      "ipeds_id": 230737,
+      "source_name": "UTAH VALLEY UNIVERSITY",
+      "dashboard_names": [
+        "Utah Valley University"
+      ],
+      "market_key": 1447,
+      "anchor_university": "Utah Valley University",
+      "source_rows": 78,
+      "migrants_in": 7228,
+      "asset": "assets/student-origin/1447.json"
+    },
+    {
+      "ipeds_id": 230764,
+      "source_name": "UNIVERSITY OF UTAH",
+      "dashboard_names": [
+        "University of Utah"
+      ],
+      "market_key": 1012,
+      "anchor_university": "University of Utah",
+      "source_rows": 101,
+      "migrants_in": 6082,
+      "asset": "assets/student-origin/1012.json"
+    },
+    {
+      "ipeds_id": 231174,
+      "source_name": "UNIVERSITY OF VERMONT",
+      "dashboard_names": [
+        "University of Vermont"
+      ],
+      "market_key": 838,
+      "anchor_university": "University of Vermont",
+      "source_rows": 151,
+      "migrants_in": 16256,
+      "asset": "assets/student-origin/838.json"
+    },
+    {
+      "ipeds_id": 231624,
+      "source_name": "WILLIAM & MARY",
+      "dashboard_names": [
+        "College of William and Mary"
+      ],
+      "market_key": 624,
+      "anchor_university": "College of William and Mary",
+      "source_rows": 147,
+      "migrants_in": 14517,
+      "asset": "assets/student-origin/624.json"
+    },
+    {
+      "ipeds_id": 232186,
+      "source_name": "GEORGE MASON UNIVERSITY",
+      "dashboard_names": [
+        "George Mason University"
+      ],
+      "market_key": 65,
+      "anchor_university": "George Mason University",
+      "source_rows": 104,
+      "migrants_in": 11236,
+      "asset": "assets/student-origin/65.json"
+    },
+    {
+      "ipeds_id": 232423,
+      "source_name": "JAMES MADISON UNIVERSITY",
+      "dashboard_names": [
+        "James Madison University"
+      ],
+      "market_key": 2397,
+      "anchor_university": "James Madison University",
+      "source_rows": 104,
+      "migrants_in": 33898,
+      "asset": "assets/student-origin/2397.json"
+    },
+    {
+      "ipeds_id": 232557,
+      "source_name": "LIBERTY UNIVERSITY",
+      "dashboard_names": [
+        "Liberty University"
+      ],
+      "market_key": 1760,
+      "anchor_university": "Liberty University",
+      "source_rows": 194,
+      "migrants_in": 15077,
+      "asset": "assets/student-origin/1760.json"
+    },
+    {
+      "ipeds_id": 232706,
+      "source_name": "MARYMOUNT UNIVERSITY",
+      "dashboard_names": [
+        "Marymount University"
+      ],
+      "market_key": 1760,
+      "anchor_university": "Liberty University",
+      "source_rows": 57,
+      "migrants_in": 3086,
+      "asset": "assets/student-origin/1760.json"
+    },
+    {
+      "ipeds_id": 232982,
+      "source_name": "OLD DOMINION UNIVERSITY",
+      "dashboard_names": [
+        "Old Dominion University"
+      ],
+      "market_key": 504,
+      "anchor_university": "Old Dominion University",
+      "source_rows": 129,
+      "migrants_in": 21250,
+      "asset": "assets/student-origin/504.json"
+    },
+    {
+      "ipeds_id": 233277,
+      "source_name": "RADFORD UNIVERSITY",
+      "dashboard_names": [
+        "Radford University"
+      ],
+      "market_key": 2399,
+      "anchor_university": "Radford University",
+      "source_rows": 84,
+      "migrants_in": 6694,
+      "asset": "assets/student-origin/2399.json"
+    },
+    {
+      "ipeds_id": 233374,
+      "source_name": "UNIVERSITY OF RICHMOND",
+      "dashboard_names": [
+        "University of Richmond"
+      ],
+      "market_key": 512,
+      "anchor_university": "Virginia Commonwealth University",
+      "source_rows": 108,
+      "migrants_in": 8908,
+      "asset": "assets/student-origin/512.json"
+    },
+    {
+      "ipeds_id": 233921,
+      "source_name": "VIRGINIA POLYTECHNIC INSTITUTE AND STATE UNIVERSITY",
+      "dashboard_names": [
+        "Virginia Polytechnic Institute and State University"
+      ],
+      "market_key": 2400,
+      "anchor_university": "Virginia Polytechnic Institute and State University",
+      "source_rows": 132,
+      "migrants_in": 23712,
+      "asset": "assets/student-origin/2400.json"
+    },
+    {
+      "ipeds_id": 234030,
+      "source_name": "VIRGINIA COMMONWEALTH UNIVERSITY",
+      "dashboard_names": [
+        "Virginia Commonwealth University"
+      ],
+      "market_key": 512,
+      "anchor_university": "Virginia Commonwealth University",
+      "source_rows": 89,
+      "migrants_in": 28079,
+      "asset": "assets/student-origin/512.json"
+    },
+    {
+      "ipeds_id": 234076,
+      "source_name": "UNIVERSITY OF VIRGINIA-MAIN CAMPUS",
+      "dashboard_names": [
+        "University of Virginia"
+      ],
+      "market_key": 568,
+      "anchor_university": "University of Virginia",
+      "source_rows": 117,
+      "migrants_in": 20265,
+      "asset": "assets/student-origin/568.json"
+    },
+    {
+      "ipeds_id": 235097,
+      "source_name": "EASTERN WASHINGTON UNIVERSITY",
+      "dashboard_names": [
+        "Eastern Washington University"
+      ],
+      "market_key": 976,
+      "anchor_university": "Eastern Washington University",
+      "source_rows": 59,
+      "migrants_in": 7986,
+      "asset": "assets/student-origin/976.json"
+    },
+    {
+      "ipeds_id": 235316,
+      "source_name": "GONZAGA UNIVERSITY",
+      "dashboard_names": [
+        "Gonzaga University"
+      ],
+      "market_key": 2430,
+      "anchor_university": "Gonzaga University",
+      "source_rows": 109,
+      "migrants_in": 13664,
+      "asset": "assets/student-origin/2430.json"
+    },
+    {
+      "ipeds_id": 236939,
+      "source_name": "WASHINGTON STATE UNIVERSITY",
+      "dashboard_names": [
+        "Washington State University"
+      ],
+      "market_key": 2403,
+      "anchor_university": "Washington State University",
+      "source_rows": 52,
+      "migrants_in": 8536,
+      "asset": "assets/student-origin/2403.json"
+    },
+    {
+      "ipeds_id": 236948,
+      "source_name": "UNIVERSITY OF WASHINGTON-SEATTLE CAMPUS",
+      "dashboard_names": [
+        "University of Washington"
+      ],
+      "market_key": 940,
+      "anchor_university": "University of Washington",
+      "source_rows": 159,
+      "migrants_in": 52193,
+      "asset": "assets/student-origin/940.json"
+    },
+    {
+      "ipeds_id": 237011,
+      "source_name": "WESTERN WASHINGTON UNIVERSITY",
+      "dashboard_names": [
+        "Western Washington University"
+      ],
+      "market_key": 982,
+      "anchor_university": "Western Washington University",
+      "source_rows": 100,
+      "migrants_in": 27152,
+      "asset": "assets/student-origin/982.json"
+    },
+    {
+      "ipeds_id": 238032,
+      "source_name": "WEST VIRGINIA UNIVERSITY",
+      "dashboard_names": [
+        "West Virginia University"
+      ],
+      "market_key": 2407,
+      "anchor_university": "West Virginia University",
+      "source_rows": 105,
+      "migrants_in": 4936,
+      "asset": "assets/student-origin/2407.json"
+    },
+    {
+      "ipeds_id": 239017,
+      "source_name": "LAWRENCE UNIVERSITY",
+      "dashboard_names": [
+        "Lawrence University"
+      ],
+      "market_key": 2478,
+      "anchor_university": "Fox Valley Technical College",
+      "source_rows": 100,
+      "migrants_in": 5143,
+      "asset": "assets/student-origin/2478.json"
+    },
+    {
+      "ipeds_id": 239105,
+      "source_name": "MARQUETTE UNIVERSITY",
+      "dashboard_names": [
+        "Marquette University"
+      ],
+      "market_key": 296,
+      "anchor_university": "University of Wisconsin Milwaukee",
+      "source_rows": 140,
+      "migrants_in": 26018,
+      "asset": "assets/student-origin/296.json"
+    },
+    {
+      "ipeds_id": 240444,
+      "source_name": "UNIVERSITY OF WISCONSIN-MADISON",
+      "dashboard_names": [
+        "University of Wisconsin Madison"
+      ],
+      "market_key": 334,
+      "anchor_university": "University of Wisconsin Madison",
+      "source_rows": 180,
+      "migrants_in": 54379,
+      "asset": "assets/student-origin/334.json"
+    },
+    {
+      "ipeds_id": 240453,
+      "source_name": "UNIVERSITY OF WISCONSIN-MILWAUKEE",
+      "dashboard_names": [
+        "University of Wisconsin Milwaukee"
+      ],
+      "market_key": 296,
+      "anchor_university": "University of Wisconsin Milwaukee",
+      "source_rows": 78,
+      "migrants_in": 16576,
+      "asset": "assets/student-origin/296.json"
+    },
+    {
+      "ipeds_id": 240727,
+      "source_name": "UNIVERSITY OF WYOMING",
+      "dashboard_names": [
+        "University of Wyoming"
+      ],
+      "market_key": 970,
+      "anchor_university": "University of Wyoming",
+      "source_rows": 145,
+      "migrants_in": 9757,
+      "asset": "assets/student-origin/970.json"
+    },
+    {
+      "ipeds_id": 243744,
+      "source_name": "STANFORD UNIVERSITY",
+      "dashboard_names": [
+        "Stanford University"
+      ],
+      "market_key": 2487,
+      "anchor_university": "Stanford University",
+      "source_rows": 138,
+      "migrants_in": 15393,
+      "asset": "assets/student-origin/2487.json"
+    },
+    {
+      "ipeds_id": 243780,
+      "source_name": "PURDUE UNIVERSITY-MAIN CAMPUS",
+      "dashboard_names": [
+        "Purdue University"
+      ],
+      "market_key": 611,
+      "anchor_university": "Purdue University",
+      "source_rows": 232,
+      "migrants_in": 32199,
+      "asset": "assets/student-origin/611.json"
+    },
+    {
+      "ipeds_id": 433660,
+      "source_name": "FLORIDA GULF COAST UNIVERSITY",
+      "dashboard_names": [
+        "Florida Gulf Coast University"
+      ],
+      "market_key": 2273,
+      "anchor_university": "Florida Gulf Coast University",
+      "source_rows": 126,
+      "migrants_in": 6489,
+      "asset": "assets/student-origin/2273.json"
+    },
+    {
+      "ipeds_id": 445188,
+      "source_name": "UNIVERSITY OF CALIFORNIA-MERCED",
+      "dashboard_names": [
+        "University of California Merced"
+      ],
+      "market_key": 994,
+      "anchor_university": "University of California Merced",
+      "source_rows": 51,
+      "migrants_in": 10012,
+      "asset": "assets/student-origin/994.json"
+    },
+    {
+      "ipeds_id": 482680,
+      "source_name": "UNIVERSITY OF NORTH GEORGIA",
+      "dashboard_names": [
+        "University of North Georgia"
+      ],
+      "market_key": 2421,
+      "anchor_university": "University of North Georgia",
+      "source_rows": 56,
+      "migrants_in": 5334,
+      "asset": "assets/student-origin/2421.json"
+    },
+    {
+      "ipeds_id": 486840,
+      "source_name": "KENNESAW STATE UNIVERSITY",
+      "dashboard_names": [
+        "Kennesaw State University"
+      ],
+      "market_key": 1620,
+      "anchor_university": "Kennesaw State University",
+      "source_rows": 133,
+      "migrants_in": 8994,
+      "asset": "assets/student-origin/1620.json"
+    }
+  ],
+  "unmatched_schools": [],
+  "cbsa_gazetteer": {
+    "file": "2021_Gaz_cbsa_national.txt",
+    "vintage": 2021,
+    "source_url": "https://www2.census.gov/geo/docs/maps-data/data/gazetteer/2021_Gazetteer/2021_Gaz_cbsa_national.zip",
+    "source_cbsa_code_count": 921,
+    "mapped_cbsa_code_count": 919,
+    "unmapped_cbsa_codes": [
+      "99999",
+      "NA"
+    ],
+    "unmapped_note": "99999 and NA are retained in state totals but cannot be plotted as CBSA centroids."
+  },
+  "generated_assets": [
+    "assets/student-origin/11.json",
+    "assets/student-origin/12.json",
+    "assets/student-origin/13.json",
+    "assets/student-origin/14.json",
+    "assets/student-origin/15.json",
+    "assets/student-origin/16.json",
+    "assets/student-origin/17.json",
+    "assets/student-origin/18.json",
+    "assets/student-origin/20.json",
+    "assets/student-origin/21.json",
+    "assets/student-origin/22.json",
+    "assets/student-origin/24.json",
+    "assets/student-origin/25.json",
+    "assets/student-origin/27.json",
+    "assets/student-origin/29.json",
+    "assets/student-origin/31.json",
+    "assets/student-origin/37.json",
+    "assets/student-origin/38.json",
+    "assets/student-origin/42.json",
+    "assets/student-origin/48.json",
+    "assets/student-origin/52.json",
+    "assets/student-origin/60.json",
+    "assets/student-origin/65.json",
+    "assets/student-origin/66.json",
+    "assets/student-origin/69.json",
+    "assets/student-origin/74.json",
+    "assets/student-origin/82.json",
+    "assets/student-origin/86.json",
+    "assets/student-origin/93.json",
+    "assets/student-origin/95.json",
+    "assets/student-origin/99.json",
+    "assets/student-origin/100.json",
+    "assets/student-origin/104.json",
+    "assets/student-origin/106.json",
+    "assets/student-origin/107.json",
+    "assets/student-origin/109.json",
+    "assets/student-origin/118.json",
+    "assets/student-origin/121.json",
+    "assets/student-origin/122.json",
+    "assets/student-origin/141.json",
+    "assets/student-origin/146.json",
+    "assets/student-origin/149.json",
+    "assets/student-origin/155.json",
+    "assets/student-origin/175.json",
+    "assets/student-origin/180.json",
+    "assets/student-origin/185.json",
+    "assets/student-origin/189.json",
+    "assets/student-origin/194.json",
+    "assets/student-origin/211.json",
+    "assets/student-origin/215.json",
+    "assets/student-origin/224.json",
+    "assets/student-origin/261.json",
+    "assets/student-origin/288.json",
+    "assets/student-origin/294.json",
+    "assets/student-origin/296.json",
+    "assets/student-origin/297.json",
+    "assets/student-origin/303.json",
+    "assets/student-origin/317.json",
+    "assets/student-origin/321.json",
+    "assets/student-origin/322.json",
+    "assets/student-origin/330.json",
+    "assets/student-origin/333.json",
+    "assets/student-origin/334.json",
+    "assets/student-origin/347.json",
+    "assets/student-origin/353.json",
+    "assets/student-origin/364.json",
+    "assets/student-origin/383.json",
+    "assets/student-origin/395.json",
+    "assets/student-origin/404.json",
+    "assets/student-origin/410.json",
+    "assets/student-origin/414.json",
+    "assets/student-origin/418.json",
+    "assets/student-origin/451.json",
+    "assets/student-origin/454.json",
+    "assets/student-origin/465.json",
+    "assets/student-origin/483.json",
+    "assets/student-origin/494.json",
+    "assets/student-origin/496.json",
+    "assets/student-origin/500.json",
+    "assets/student-origin/504.json",
+    "assets/student-origin/509.json",
+    "assets/student-origin/512.json",
+    "assets/student-origin/521.json",
+    "assets/student-origin/524.json",
+    "assets/student-origin/526.json",
+    "assets/student-origin/538.json",
+    "assets/student-origin/549.json",
+    "assets/student-origin/553.json",
+    "assets/student-origin/555.json",
+    "assets/student-origin/560.json",
+    "assets/student-origin/562.json",
+    "assets/student-origin/567.json",
+    "assets/student-origin/568.json",
+    "assets/student-origin/578.json",
+    "assets/student-origin/580.json",
+    "assets/student-origin/590.json",
+    "assets/student-origin/593.json",
+    "assets/student-origin/611.json",
+    "assets/student-origin/624.json",
+    "assets/student-origin/629.json",
+    "assets/student-origin/650.json",
+    "assets/student-origin/667.json",
+    "assets/student-origin/682.json",
+    "assets/student-origin/700.json",
+    "assets/student-origin/714.json",
+    "assets/student-origin/732.json",
+    "assets/student-origin/734.json",
+    "assets/student-origin/757.json",
+    "assets/student-origin/769.json",
+    "assets/student-origin/800.json",
+    "assets/student-origin/823.json",
+    "assets/student-origin/838.json",
+    "assets/student-origin/843.json",
+    "assets/student-origin/847.json",
+    "assets/student-origin/896.json",
+    "assets/student-origin/903.json",
+    "assets/student-origin/914.json",
+    "assets/student-origin/921.json",
+    "assets/student-origin/931.json",
+    "assets/student-origin/933.json",
+    "assets/student-origin/935.json",
+    "assets/student-origin/936.json",
+    "assets/student-origin/940.json",
+    "assets/student-origin/941.json",
+    "assets/student-origin/946.json",
+    "assets/student-origin/960.json",
+    "assets/student-origin/970.json",
+    "assets/student-origin/975.json",
+    "assets/student-origin/976.json",
+    "assets/student-origin/977.json",
+    "assets/student-origin/982.json",
+    "assets/student-origin/984.json",
+    "assets/student-origin/992.json",
+    "assets/student-origin/994.json",
+    "assets/student-origin/1002.json",
+    "assets/student-origin/1005.json",
+    "assets/student-origin/1006.json",
+    "assets/student-origin/1012.json",
+    "assets/student-origin/1027.json",
+    "assets/student-origin/1028.json",
+    "assets/student-origin/1029.json",
+    "assets/student-origin/1040.json",
+    "assets/student-origin/1055.json",
+    "assets/student-origin/1060.json",
+    "assets/student-origin/1063.json",
+    "assets/student-origin/1065.json",
+    "assets/student-origin/1066.json",
+    "assets/student-origin/1069.json",
+    "assets/student-origin/1084.json",
+    "assets/student-origin/1090.json",
+    "assets/student-origin/1099.json",
+    "assets/student-origin/1104.json",
+    "assets/student-origin/1152.json",
+    "assets/student-origin/1160.json",
+    "assets/student-origin/1183.json",
+    "assets/student-origin/1242.json",
+    "assets/student-origin/1258.json",
+    "assets/student-origin/1299.json",
+    "assets/student-origin/1353.json",
+    "assets/student-origin/1401.json",
+    "assets/student-origin/1410.json",
+    "assets/student-origin/1447.json",
+    "assets/student-origin/1492.json",
+    "assets/student-origin/1558.json",
+    "assets/student-origin/1560.json",
+    "assets/student-origin/1574.json",
+    "assets/student-origin/1598.json",
+    "assets/student-origin/1620.json",
+    "assets/student-origin/1653.json",
+    "assets/student-origin/1760.json",
+    "assets/student-origin/1771.json",
+    "assets/student-origin/1780.json",
+    "assets/student-origin/1804.json",
+    "assets/student-origin/1905.json",
+    "assets/student-origin/1988.json",
+    "assets/student-origin/1995.json",
+    "assets/student-origin/2146.json",
+    "assets/student-origin/2147.json",
+    "assets/student-origin/2170.json",
+    "assets/student-origin/2227.json",
+    "assets/student-origin/2251.json",
+    "assets/student-origin/2253.json",
+    "assets/student-origin/2256.json",
+    "assets/student-origin/2260.json",
+    "assets/student-origin/2264.json",
+    "assets/student-origin/2267.json",
+    "assets/student-origin/2269.json",
+    "assets/student-origin/2272.json",
+    "assets/student-origin/2273.json",
+    "assets/student-origin/2275.json",
+    "assets/student-origin/2282.json",
+    "assets/student-origin/2285.json",
+    "assets/student-origin/2287.json",
+    "assets/student-origin/2290.json",
+    "assets/student-origin/2294.json",
+    "assets/student-origin/2295.json",
+    "assets/student-origin/2300.json",
+    "assets/student-origin/2308.json",
+    "assets/student-origin/2310.json",
+    "assets/student-origin/2333.json",
+    "assets/student-origin/2339.json",
+    "assets/student-origin/2341.json",
+    "assets/student-origin/2342.json",
+    "assets/student-origin/2344.json",
+    "assets/student-origin/2345.json",
+    "assets/student-origin/2347.json",
+    "assets/student-origin/2349.json",
+    "assets/student-origin/2350.json",
+    "assets/student-origin/2354.json",
+    "assets/student-origin/2362.json",
+    "assets/student-origin/2364.json",
+    "assets/student-origin/2369.json",
+    "assets/student-origin/2375.json",
+    "assets/student-origin/2377.json",
+    "assets/student-origin/2383.json",
+    "assets/student-origin/2386.json",
+    "assets/student-origin/2387.json",
+    "assets/student-origin/2388.json",
+    "assets/student-origin/2391.json",
+    "assets/student-origin/2392.json",
+    "assets/student-origin/2393.json",
+    "assets/student-origin/2397.json",
+    "assets/student-origin/2399.json",
+    "assets/student-origin/2400.json",
+    "assets/student-origin/2403.json",
+    "assets/student-origin/2407.json",
+    "assets/student-origin/2415.json",
+    "assets/student-origin/2417.json",
+    "assets/student-origin/2418.json",
+    "assets/student-origin/2419.json",
+    "assets/student-origin/2420.json",
+    "assets/student-origin/2421.json",
+    "assets/student-origin/2422.json",
+    "assets/student-origin/2423.json",
+    "assets/student-origin/2427.json",
+    "assets/student-origin/2430.json",
+    "assets/student-origin/2435.json",
+    "assets/student-origin/2437.json",
+    "assets/student-origin/2438.json",
+    "assets/student-origin/2449.json",
+    "assets/student-origin/2451.json",
+    "assets/student-origin/2478.json",
+    "assets/student-origin/2486.json",
+    "assets/student-origin/2487.json",
+    "assets/student-origin/2488.json",
+    "assets/student-origin/2489.json",
+    "assets/student-origin/_manifest.json"
+  ]
+}

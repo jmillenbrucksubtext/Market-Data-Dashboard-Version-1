@@ -971,20 +971,19 @@ function bindShadowMarketControls() {
 
 const SHADOW_MARKET_METRICS = {
   shadow_pop: {
-    label: "Estimated shadow population",
-    description: "Estimated people in the sub-50-unit, college-age renter market",
+    label: "Approved shadow population",
+    description: "CoStar 5–49 units plus Census 2–4 units, adjusted to renters age 18–21",
+    totalKey: "shadow_pop",
   },
-  shadow_hhs: {
-    label: "Estimated shadow households",
-    description: "Renter households age 15-24 adjusted to sub-50-unit inventory",
+  est_pop: {
+    label: "Estimated renter population",
+    description: "Combined small-rental units multiplied by local sub-50 occupancy",
+    totalKey: "est_pop",
   },
-  renter_15_24: {
-    label: "Renter households age 15-24",
-    description: "Raw ACS renter households with a householder age 15-24",
-  },
-  renter_units_sub50: {
-    label: "Sub-50 renter inventory",
-    description: "Renter units in buildings with fewer than 50 units",
+  units: {
+    label: "Combined small-rental units",
+    description: "CoStar 5–49-unit inventory plus Census 2–4-unit renter inventory",
+    totalKey: "total_units",
   },
 };
 
@@ -1039,26 +1038,30 @@ async function renderShadowMarketTab() {
 
 function renderShadowMarketSummary() {
   const data = shadowMarketData;
-  const total = data.total;
+  const official = data.official;
+  const total = official.total;
   document.getElementById("shadow-kpi-pop").textContent = fmtInt(total.shadow_pop);
   document.getElementById("shadow-kpi-pop-sub").textContent =
-    `${fmtInt(total.block_groups)} block groups · ACS ${data.year}`;
-  document.getElementById("shadow-kpi-hhs").textContent = fmtInt(total.shadow_hhs);
-  document.getElementById("shadow-kpi-renters").textContent = fmtInt(total.renter_15_24);
-  document.getElementById("shadow-kpi-units").textContent = fmtInt(total.renter_units_sub50);
+    `approved ${official.college_age} estimate · ACS ${data.year}`;
+  document.getElementById("shadow-kpi-buildings").textContent = fmtInt(total.buildings);
+  document.getElementById("shadow-kpi-buildings-sub").textContent =
+    `${fmtInt(total.costar_beds)} beds · 5–49-unit multifamily`;
+  document.getElementById("shadow-kpi-costar-units").textContent = fmtInt(total.costar_units);
+  document.getElementById("shadow-kpi-census-units").textContent = fmtInt(total.census_2to4_units);
   document.getElementById("shadow-market-summary").textContent =
-    `${data.anchor_university} · ACS ${data.year} · methodology v${data.methodology_version}`;
+    `${data.anchor_university} · CoStar + Census · ACS ${data.year} · methodology v${official.methodology_version}`;
 
   const body = document.getElementById("shadow-market-rings");
-  body.innerHTML = data.ring_labels.map((label) => {
-    const ring = data.rings[label] || {};
+  body.innerHTML = official.ring_labels.map((label) => {
+    const ring = official.rings[label] || {};
     return `<tr>
       <td>${escapeHtml(label.replace("mi", " mi"))}</td>
-      <td>${fmtInt(ring.block_groups)}</td>
+      <td>${fmtInt(ring.buildings)}</td>
+      <td>${fmtInt(ring.costar_units)}</td>
+      <td>${fmtInt(ring.census_2to4_units)}</td>
+      <td>${fmtInt(ring.total_units)}</td>
+      <td>${fmtInt(ring.est_pop)}</td>
       <td>${fmtInt(ring.shadow_pop)}</td>
-      <td>${fmtInt(ring.shadow_hhs)}</td>
-      <td>${fmtInt(ring.renter_15_24)}</td>
-      <td>${fmtInt(ring.renter_units_sub50)}</td>
     </tr>`;
   }).join("");
 }
@@ -1069,10 +1072,22 @@ function renderShadowMarketMap() {
   const metricKey = document.getElementById("shadow-market-metric").value;
   const metric = SHADOW_MARKET_METRICS[metricKey];
   const data = shadowMarketData;
+  const official = data.official;
+  const useOfficialPoints = Array.isArray(official.points) && official.points.length > 0;
+  const mapData = useOfficialPoints ? official : data.distribution_proxy;
+  const mapPoints = useOfficialPoints
+    ? official.points
+    : data.distribution_proxy.points.map((point) => ({
+        ...point,
+        source: "Census distribution proxy",
+        units: point.renter_units_sub50,
+        est_pop: point.shadow_pop,
+      }));
+  const effectiveMetricKey = useOfficialPoints ? metricKey : "shadow_pop";
 
   if (!shadowMarketMap) {
     shadowMarketMap = L.map("shadow-market-map", {
-      center: Object.values(data.campuses)[0],
+      center: Object.values(official.campuses)[0],
       zoom: 13,
       scrollWheelZoom: true,
       minZoom: 8,
@@ -1108,9 +1123,9 @@ function renderShadowMarketMap() {
   }
 
   const bounds = L.latLngBounds();
-  Object.entries(data.campuses).forEach(([campusName, coords]) => {
-    [...data.ring_miles].reverse().forEach((miles, reverseIndex) => {
-      const index = data.ring_miles.length - 1 - reverseIndex;
+  Object.entries(official.campuses).forEach(([campusName, coords]) => {
+    [...official.ring_miles].reverse().forEach((miles, reverseIndex) => {
+      const index = official.ring_miles.length - 1 - reverseIndex;
       const color = SHADOW_RING_COLORS[index % SHADOW_RING_COLORS.length];
       const circle = L.circle(coords, {
         radius: miles * 1609.34,
@@ -1119,22 +1134,24 @@ function renderShadowMarketMap() {
         fillOpacity: 0.025,
         opacity: 0.8,
         weight: 2,
-      }).bindTooltip(`${data.ring_labels[index]} from ${campusName}`);
+      }).bindTooltip(`${official.ring_labels[index]} from ${campusName}`);
       shadowMarketOverlay.addLayer(circle);
       bounds.extend(circle.getBounds());
     });
   });
 
-  const positivePoints = data.points.filter((point) => Number(point[metricKey]) > 0);
+  const positivePoints = mapPoints.filter(
+    (point) => Number(point[effectiveMetricKey]) > 0,
+  );
   const sortedValues = positivePoints
-    .map((point) => Number(point[metricKey]))
+    .map((point) => Number(point[effectiveMetricKey]))
     .sort((a, b) => a - b);
   const displayCapIndex = Math.max(0, Math.ceil(sortedValues.length * 0.90) - 1);
   const displayCap = sortedValues[displayCapIndex] || 1;
   const heatPoints = positivePoints.map((point) => [
     point.lat,
     point.lon,
-    Math.min(1, Math.pow(Number(point[metricKey]) / displayCap, 0.42)),
+    Math.min(1, Math.pow(Number(point[effectiveMetricKey]) / displayCap, 0.42)),
   ]);
 
   if (typeof L.heatLayer === "function" && heatPoints.length) {
@@ -1159,25 +1176,25 @@ function renderShadowMarketMap() {
     const tooltip = `
       <div class="map-popup">
         <div class="map-popup-head">
-          <div class="map-popup-eyebrow">Census block group</div>
+          <div class="map-popup-eyebrow">${escapeHtml(point.source || "Combined record")}</div>
           <div class="map-popup-title">${escapeHtml(point.name)}</div>
         </div>
         <div class="map-popup-body">
           <div class="map-popup-row">
             <span class="map-popup-row-label">${escapeHtml(metric.label)}</span>
-            <span class="map-popup-row-value">${fmtInt(point[metricKey])}</span>
+            <span class="map-popup-row-value">${fmtInt(point[effectiveMetricKey])}</span>
           </div>
           <div class="map-popup-row">
             <span class="map-popup-row-label">Shadow population</span>
             <span class="map-popup-row-value">${fmtInt(point.shadow_pop)}</span>
           </div>
           <div class="map-popup-row">
-            <span class="map-popup-row-label">Renters age 15–24</span>
-            <span class="map-popup-row-value">${fmtInt(point.renter_15_24)}</span>
+            <span class="map-popup-row-label">Units</span>
+            <span class="map-popup-row-value">${fmtInt(point.units)}</span>
           </div>
           <div class="map-popup-row">
-            <span class="map-popup-row-label">Sub-50 renter units</span>
-            <span class="map-popup-row-value">${fmtInt(point.renter_units_sub50)}</span>
+            <span class="map-popup-row-label">Estimated population</span>
+            <span class="map-popup-row-value">${fmtInt(point.est_pop)}</span>
           </div>
           <div class="map-popup-address">${escapeHtml(point.ring)} · ${fmtNum(point.distance_mi, 2)} mi to campus</div>
         </div>
@@ -1198,7 +1215,7 @@ function renderShadowMarketMap() {
     );
   });
 
-  Object.entries(data.campuses).forEach(([campusName, coords]) => {
+  Object.entries(official.campuses).forEach(([campusName, coords]) => {
     const marker = L.marker(coords, {
       icon: campusMarkerIcon(true, MARKET.market_key),
       zIndexOffset: 1000,
@@ -1217,14 +1234,18 @@ function renderShadowMarketMap() {
   }
   setTimeout(() => shadowMarketMap.invalidateSize(), 0);
 
-  const ringLegend = data.ring_labels.map((label, index) => `
+  const ringLegend = official.ring_labels.map((label, index) => `
     <span class="shadow-market-ring-key">
       <span class="shadow-market-ring-swatch" style="background:${SHADOW_RING_COLORS[index % SHADOW_RING_COLORS.length]}"></span>
       ${escapeHtml(label)}
     </span>`).join("");
   document.getElementById("shadow-market-legend").innerHTML = `
-    <strong>${escapeHtml(metric.label)}:</strong> ${fmtInt(data.total[metricKey])}
-    across ${fmtInt(data.total.block_groups)} block groups (ACS ${data.year})<br>
+    <strong>${escapeHtml(metric.label)}:</strong>
+    ${fmtInt(useOfficialPoints ? official.total[metric.totalKey] : mapData.total.shadow_pop)}
+    across ${fmtInt(mapPoints.length)} combined records (ACS ${data.year})<br>
+    <strong>Source:</strong> ${useOfficialPoints
+      ? "Approved CoStar 5–49 + Census 2–4 methodology"
+      : "Census distribution proxy fallback"}<br>
     <strong>Heat:</strong> Low <span class="shadow-market-gradient"></span> High
     (90th percentile display cap: ${fmtInt(displayCap)})<br>
     <strong>Definition:</strong> ${escapeHtml(metric.description)}<br>

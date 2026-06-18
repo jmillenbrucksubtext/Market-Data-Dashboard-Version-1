@@ -69,7 +69,8 @@ The script writes:
 - `data.json` (~7 MB, all tables for the Industry, Market, and Analysis tabs)
 - `plans/<property_key>.json` (~3,600 small files for lazy-loaded floor plans)
 - `assets/shadow-market/<market_key>.json` (Census block-group heatmap data
-  for markets configured in `shadow_market/markets.json`)
+  and approved CoStar + Census combined analysis for markets configured in
+  `shadow_market/markets.json`)
 
 Push the updated files to redeploy.
 

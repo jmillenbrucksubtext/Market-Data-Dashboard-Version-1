@@ -3,6 +3,8 @@
     "name": "Mizzou",
     "anchor_university": "University of Missouri",
     "school_key": 265,
+    "costar_university": "University of Missouri at Columbia",
+    "include_graduates": false,
     "county_fips": [
       "29019"
     ],

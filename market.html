@@ -620,19 +620,19 @@
                   <div class="kpi-sub" id="shadow-kpi-pop-sub">-</div>
                 </div>
                 <div class="kpi">
-                  <div class="kpi-label">Shadow Households</div>
-                  <div class="kpi-value" id="shadow-kpi-hhs">-</div>
-                  <div class="kpi-sub">estimated college-age renter households</div>
+                  <div class="kpi-label">CoStar Buildings</div>
+                  <div class="kpi-value" id="shadow-kpi-buildings">-</div>
+                  <div class="kpi-sub" id="shadow-kpi-buildings-sub">5–49-unit multifamily</div>
                 </div>
                 <div class="kpi">
-                  <div class="kpi-label">Renters Age 15–24</div>
-                  <div class="kpi-value" id="shadow-kpi-renters">-</div>
-                  <div class="kpi-sub">ACS renter households</div>
+                  <div class="kpi-label">CoStar Units</div>
+                  <div class="kpi-value" id="shadow-kpi-costar-units">-</div>
+                  <div class="kpi-sub">approved 5–49-unit inventory</div>
                 </div>
                 <div class="kpi">
-                  <div class="kpi-label">Sub-50 Renter Units</div>
-                  <div class="kpi-value" id="shadow-kpi-units">-</div>
-                  <div class="kpi-sub">renter inventory below 50 units</div>
+                  <div class="kpi-label">Census 2–4 Units</div>
+                  <div class="kpi-value" id="shadow-kpi-census-units">-</div>
+                  <div class="kpi-sub">one-unit rentals excluded</div>
                 </div>
               </div>
 
@@ -647,10 +647,9 @@
                   <label class="shadow-market-metric-control">
                     <span>Heatmap metric</span>
                     <select id="shadow-market-metric">
-                      <option value="shadow_pop">Estimated shadow population</option>
-                      <option value="shadow_hhs">Estimated shadow households</option>
-                      <option value="renter_15_24">Renter households age 15–24</option>
-                      <option value="renter_units_sub50">Sub-50 renter inventory</option>
+                      <option value="shadow_pop">Approved shadow population</option>
+                      <option value="est_pop">Estimated renter population</option>
+                      <option value="units">Combined small-rental units</option>
                     </select>
                   </label>
                 </header>
@@ -673,11 +672,12 @@
                       <thead>
                         <tr>
                           <th>Distance</th>
-                          <th>Block Groups</th>
+                          <th>CoStar Buildings</th>
+                          <th>CoStar Units</th>
+                          <th>Census 2–4 Units</th>
+                          <th>Total Units</th>
+                          <th>Est. Population</th>
                           <th>Shadow Population</th>
-                          <th>Shadow Households</th>
-                          <th>Renters 15–24</th>
-                          <th>Sub-50 Units</th>
                         </tr>
                       </thead>
                       <tbody id="shadow-market-rings"></tbody>
@@ -691,8 +691,8 @@
                   <div>
                     <h2>How the Shadow Market Estimate Works</h2>
                     <p>
-                      A Census-based estimate of college-age renters living outside
-                      large purpose-built student properties.
+                      The approved CoStar + Census methodology for estimating
+                      college-age renters outside large purpose-built properties.
                     </p>
                   </div>
                 </header>
@@ -701,49 +701,53 @@
                     <article class="shadow-methodology-step">
                       <span class="shadow-methodology-number">1</span>
                       <div>
-                        <h3>Identify smaller renter inventory</h3>
+                        <h3>Capture CoStar multifamily inventory</h3>
                         <p>
-                          For each Census block group, renter units in buildings with
-                          fewer than 50 units are divided by all renter units. This
-                          produces the <strong>sub-50 share</strong>.
+                          CoStar multifamily properties with 5–49 units are included.
+                          Properties typed as student housing, demolished properties,
+                          and buildings with 50 or more units are excluded.
                         </p>
-                        <code>sub-50 share = sub-50 renter units ÷ total renter units</code>
+                        <code>approved CoStar inventory = multifamily properties with 5–49 units</code>
                       </div>
                     </article>
                     <article class="shadow-methodology-step">
                       <span class="shadow-methodology-number">2</span>
                       <div>
-                        <h3>Estimate college-age shadow households</h3>
+                        <h3>Add the small-property gap</h3>
                         <p>
-                          ACS renter households with a householder age 15–24 are
-                          multiplied by the sub-50 share.
+                          Census renter inventory in 2–4-unit structures is added
+                          because CoStar does not comprehensively capture those
+                          properties. One-unit rentals are intentionally excluded
+                          because they materially overstated the population.
                         </p>
-                        <code>shadow households = renters age 15–24 × sub-50 share</code>
+                        <code>combined units = CoStar 5–49 units + Census 2–4 units</code>
                       </div>
                     </article>
                     <article class="shadow-methodology-step">
                       <span class="shadow-methodology-number">3</span>
                       <div>
-                        <h3>Estimate people per smaller renter unit</h3>
+                        <h3>Estimate renter population</h3>
                         <p>
-                          Renter population in smaller structures is divided by
-                          sub-50 renter units. Because Census groups all buildings
-                          with five or more units together for population, that
-                          population is allocated between sub-50 and 50+ buildings
-                          using their unit-count shares.
+                          Each CoStar building is matched to its nearest Census block
+                          group. Census population and unit tables provide average
+                          occupancy for renter inventory below 50 units. The same
+                          local occupancy is applied to CoStar units and Census
+                          2–4-unit inventory.
                         </p>
-                        <code>average occupancy = estimated sub-50 renter population ÷ sub-50 units</code>
+                        <code>estimated population = combined units × local sub-50 occupancy</code>
                       </div>
                     </article>
                     <article class="shadow-methodology-step">
                       <span class="shadow-methodology-number">4</span>
                       <div>
-                        <h3>Convert households to population</h3>
+                        <h3>Isolate the college-age renter share</h3>
                         <p>
-                          Estimated shadow households are multiplied by average
-                          occupancy to calculate shadow population.
+                          The Census renter share age 15–24 is narrowed to the
+                          approved 18–21 age window using local population age
+                          distributions. That percentage is applied independently
+                          within each block group before results are summed.
                         </p>
-                        <code>shadow population = shadow households × average occupancy</code>
+                        <code>shadow population = estimated population × renter 15–24 share × age 18–21 tightening</code>
                       </div>
                     </article>
                   </div>
@@ -760,11 +764,11 @@
                     <div>
                       <h3>How to interpret the heatmap</h3>
                       <p>
-                        The map shows modeled neighborhood concentration, not exact
-                        student addresses. Census age data identifies college-age
-                        renters but cannot confirm enrollment, and block-group
-                        centroids simplify where residents are distributed inside
-                        each geography.
+                        The default heat layer uses the approved combined records:
+                        actual CoStar building coordinates plus Census 2–4-unit block
+                        group centroids. It shows modeled concentration, not exact
+                        student addresses, and Census age data cannot confirm
+                        enrollment.
                       </p>
                     </div>
                     <div>
@@ -772,8 +776,7 @@
                       <p>
                         ACS 5-Year tables B25007 (renter age), B25032 (renter units
                         by structure size), and B25033 (renter population by
-                        structure size). B01001 is retained for future age-window
-                        refinements.
+                        structure size). B01001 narrows age 15–24 to ages 18–21.
                       </p>
                     </div>
                   </div>
@@ -893,7 +896,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=38" defer></script>
+  <script src="market.js?v=39" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
   <script src="chart-download.js?v=4" defer></script>

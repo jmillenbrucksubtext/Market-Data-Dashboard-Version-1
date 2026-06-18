@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import hashlib
+import csv
 import json
 import math
 import os
@@ -266,9 +267,19 @@ def _shadow_metrics(record: dict) -> dict:
     }
 
 
-def analyze(config: dict, year: int) -> dict:
+def _merged_census(config: dict, year: int) -> list[dict]:
     acs = fetch_acs(year, config["county_fips"])
     centroids = fetch_centroids(config["county_fips"])
+    return [
+        {**record, "lat": centroids[record["geoid"]][0], "lon": centroids[record["geoid"]][1]}
+        for record in acs
+        if record["geoid"] in centroids
+    ]
+
+
+def analyze(config: dict, year: int, merged: list[dict] | None = None) -> dict:
+    """Build the Census-only distribution proxy retained as a map fallback."""
+    merged = merged or _merged_census(config, year)
     ring_miles = config["ring_miles"]
     ring_labels = _ring_labels(ring_miles)
     campuses = config["campuses"]
@@ -291,11 +302,8 @@ def analyze(config: dict, year: int) -> dict:
         for label in ring_labels
     }
 
-    for record in acs:
-        coords = centroids.get(record["geoid"])
-        if not coords:
-            continue
-        lat, lon = coords
+    for record in merged:
+        lat, lon = record["lat"], record["lon"]
         nearest_name, distance = min(
             (
                 (name, haversine_miles(lat, lon, campus[0], campus[1]))
@@ -360,6 +368,278 @@ def analyze(config: dict, year: int) -> dict:
         "ring_labels": ring_labels,
         "campuses": campuses,
         "total": totals,
+        "rings": rings,
+        "points": points,
+    }
+
+
+def parse_costar_csv(
+    file_path: str | Path,
+    university_filter: str,
+    min_units: int = 5,
+    max_units: int = 49,
+) -> list[dict]:
+    """Read the approved CoStar segment without committing the raw export."""
+    buildings = []
+    with Path(file_path).open("r", encoding="latin-1", newline="") as handle:
+        reader = csv.DictReader(handle)
+        for row in reader:
+            university = (row.get("University") or "").strip()
+            if university_filter.lower() not in university.lower():
+                continue
+            name = (row.get("Property Name") or "").strip()
+            if name.lower() == "demolished":
+                continue
+            property_type = (row.get("PropertyType") or "").strip().lower()
+            if property_type.startswith("student"):
+                continue
+            units = _safe_int(row.get("Number Of Units"))
+            if units < min_units or units > max_units:
+                continue
+            try:
+                lat = float(row.get("Latitude") or 0)
+                lon = float(row.get("Longitude") or 0)
+            except (TypeError, ValueError):
+                continue
+            if not lat or not lon:
+                continue
+            buildings.append({
+                "name": name,
+                "address": (row.get("Property Address") or "").strip(),
+                "property_id": (row.get("PropertyID") or "").strip(),
+                "units": units,
+                "beds": _safe_int(row.get("Beds") or row.get("Number of Beds")),
+                "lat": lat,
+                "lon": lon,
+                "year_built": _safe_int(row.get("Year Built")),
+            })
+    return buildings
+
+
+def _compute_bg_occupancy(record: dict) -> float:
+    sub50_units = record.get("renter_units_sub50", 0)
+    if sub50_units <= 0:
+        return 0.0
+    fiveplus_sub50 = record.get("fiveplus_sub50_units", 0)
+    fiveplus_total = fiveplus_sub50 + record.get("renter_units_50plus", 0)
+    allocated_fiveplus_pop = 0.0
+    if fiveplus_total > 0:
+        allocated_fiveplus_pop = (
+            record.get("renter_pop_5plus", 0)
+            * fiveplus_sub50
+            / fiveplus_total
+        )
+    sub50_population = (
+        record.get("renter_pop_1unit", 0)
+        + record.get("renter_pop_2to4", 0)
+        + allocated_fiveplus_pop
+    )
+    return sub50_population / sub50_units
+
+
+def _college_age_tightening(record: dict, include_graduates: bool) -> float:
+    population_15_24 = (
+        record.get("pop_15_17", 0)
+        + record.get("pop_18_19", 0)
+        + record.get("pop_20_21", 0)
+        + record.get("pop_22_24", 0)
+    )
+    if population_15_24 <= 0:
+        return 0.0
+    college_population = (
+        record.get("pop_18_19", 0)
+        + record.get("pop_20_21", 0)
+    )
+    if include_graduates:
+        college_population += record.get("pop_22_24", 0)
+    return college_population / population_15_24
+
+
+def _nearest_block_group(lat: float, lon: float, records: list[dict]) -> dict | None:
+    if not records:
+        return None
+    return min(
+        records,
+        key=lambda record: haversine_miles(lat, lon, record["lat"], record["lon"]),
+    )
+
+
+def _empty_combined_ring() -> dict:
+    return {
+        "buildings": 0,
+        "costar_units": 0,
+        "costar_beds": 0,
+        "census_2to4_bgs": 0,
+        "census_2to4_units": 0,
+        "total_units": 0,
+        "est_pop": 0.0,
+        "avg_occ": 0.0,
+        "shadow_pop": 0.0,
+    }
+
+
+def analyze_costar_combined(
+    config: dict,
+    year: int,
+    costar_csv: str | Path,
+    merged: list[dict] | None = None,
+) -> dict:
+    """Approved CoStar 5-49 + Census 2-4 combined methodology."""
+    merged = merged or _merged_census(config, year)
+    for record in merged:
+        record["avg_occ_sub50"] = _compute_bg_occupancy(record)
+
+    buildings = parse_costar_csv(
+        costar_csv,
+        config["costar_university"],
+        min_units=5,
+        max_units=49,
+    )
+    ring_miles = config["ring_miles"]
+    ring_labels = _ring_labels(ring_miles)
+    campuses = config["campuses"]
+    include_graduates = bool(config.get("include_graduates", False))
+    age_label = "18-24" if include_graduates else "18-21"
+    rings = {label: _empty_combined_ring() for label in ring_labels}
+    points = []
+
+    def locate(lat: float, lon: float):
+        nearest_name, distance = min(
+            (
+                (name, haversine_miles(lat, lon, coords[0], coords[1]))
+                for name, coords in campuses.items()
+            ),
+            key=lambda item: item[1],
+        )
+        ring = next(
+            (
+                label
+                for boundary, label in zip(ring_miles, ring_labels)
+                if distance <= boundary
+            ),
+            None,
+        )
+        return nearest_name, distance, ring
+
+    for building in buildings:
+        campus_name, distance, ring = locate(building["lat"], building["lon"])
+        if ring is None:
+            continue
+        block_group = _nearest_block_group(building["lat"], building["lon"], merged)
+        if block_group is None:
+            continue
+        average_occupancy = block_group["avg_occ_sub50"]
+        renter_total = block_group.get("renter_total", 0)
+        renter_15_24_share = (
+            block_group.get("renter_15_24", 0) / renter_total
+            if renter_total > 0
+            else 0.0
+        )
+        college_share = (
+            renter_15_24_share
+            * _college_age_tightening(block_group, include_graduates)
+        )
+        estimated_population = building["units"] * average_occupancy
+        shadow_population = estimated_population * college_share
+        aggregate = rings[ring]
+        aggregate["buildings"] += 1
+        aggregate["costar_units"] += building["units"]
+        aggregate["costar_beds"] += building["beds"]
+        aggregate["est_pop"] += estimated_population
+        aggregate["shadow_pop"] += shadow_population
+        points.append({
+            **building,
+            "source": "CoStar 5-49",
+            "nearest_campus": campus_name,
+            "distance_mi": round(distance, 2),
+            "ring": ring,
+            "matched_bg": block_group["geoid"],
+            "census_avg_occ": round(average_occupancy, 2),
+            "college_pct": round(college_share * 100, 1),
+            "est_pop": round(estimated_population, 2),
+            "shadow_pop": round(shadow_population, 2),
+        })
+
+    for block_group in merged:
+        campus_name, distance, ring = locate(block_group["lat"], block_group["lon"])
+        if ring is None:
+            continue
+        units_2to4 = block_group.get("renter_units_2to4", 0)
+        if units_2to4 <= 0:
+            continue
+        average_occupancy = block_group["avg_occ_sub50"]
+        renter_total = block_group.get("renter_total", 0)
+        renter_15_24_share = (
+            block_group.get("renter_15_24", 0) / renter_total
+            if renter_total > 0
+            else 0.0
+        )
+        college_share = (
+            renter_15_24_share
+            * _college_age_tightening(block_group, include_graduates)
+        )
+        estimated_population = units_2to4 * average_occupancy
+        shadow_population = estimated_population * college_share
+        aggregate = rings[ring]
+        aggregate["census_2to4_bgs"] += 1
+        aggregate["census_2to4_units"] += units_2to4
+        aggregate["est_pop"] += estimated_population
+        aggregate["shadow_pop"] += shadow_population
+        points.append({
+            "name": block_group["name"],
+            "address": block_group["geoid"],
+            "property_id": block_group["geoid"],
+            "units": units_2to4,
+            "beds": 0,
+            "lat": block_group["lat"],
+            "lon": block_group["lon"],
+            "year_built": 0,
+            "source": "Census 2-4",
+            "nearest_campus": campus_name,
+            "distance_mi": round(distance, 2),
+            "ring": ring,
+            "matched_bg": block_group["geoid"],
+            "census_avg_occ": round(average_occupancy, 2),
+            "college_pct": round(college_share * 100, 1),
+            "est_pop": round(estimated_population, 2),
+            "shadow_pop": round(shadow_population, 2),
+        })
+
+    total = _empty_combined_ring()
+    for aggregate in rings.values():
+        for key in (
+            "buildings",
+            "costar_units",
+            "costar_beds",
+            "census_2to4_bgs",
+            "census_2to4_units",
+            "est_pop",
+            "shadow_pop",
+        ):
+            total[key] += aggregate[key]
+
+    for aggregate in [*rings.values(), total]:
+        aggregate["total_units"] = (
+            aggregate["costar_units"] + aggregate["census_2to4_units"]
+        )
+        aggregate["avg_occ"] = (
+            round(aggregate["est_pop"] / aggregate["total_units"], 2)
+            if aggregate["total_units"] > 0
+            else 0.0
+        )
+        aggregate["est_pop"] = round(aggregate["est_pop"], 2)
+        aggregate["shadow_pop"] = round(aggregate["shadow_pop"], 2)
+
+    points.sort(key=lambda point: point["shadow_pop"], reverse=True)
+    return {
+        "methodology": "costar_combined",
+        "methodology_version": 2,
+        "college_age": age_label,
+        "year": year,
+        "ring_miles": ring_miles,
+        "ring_labels": ring_labels,
+        "campuses": campuses,
+        "total": total,
         "rings": rings,
         "points": points,
     }

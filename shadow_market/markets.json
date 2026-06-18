@@ -1,0 +1,24 @@
+{
+  "86": {
+    "name": "Mizzou",
+    "anchor_university": "University of Missouri",
+    "school_key": 265,
+    "county_fips": [
+      "29019"
+    ],
+    "campuses": {
+      "University of Missouri": [
+        38.9403808,
+        -92.3277375
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ]
+  }
+}

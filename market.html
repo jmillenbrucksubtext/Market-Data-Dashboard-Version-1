@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=46">
+  <link rel="stylesheet" href="style.css?v=47">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" defer></script>
 </head>
 <body>
   <div class="app">
@@ -79,6 +80,7 @@
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
+            <button class="market-tab" data-tab="shadow-market" role="tab" aria-selected="false">Shadow Market Analysis</button>
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
 
@@ -604,6 +606,92 @@
           </section>
           </div> <!-- /.market-tab-panel[pipeline] -->
 
+          <!-- ============ SHADOW MARKET ANALYSIS TAB ============ -->
+          <div class="market-tab-panel" data-panel="shadow-market" hidden>
+            <div id="shadow-market-loading" class="empty-state">
+              Loading shadow-market analysis…
+            </div>
+
+            <div id="shadow-market-content" hidden>
+              <div class="kpi-row shadow-market-kpis">
+                <div class="kpi">
+                  <div class="kpi-label">Shadow Population</div>
+                  <div class="kpi-value" id="shadow-kpi-pop">-</div>
+                  <div class="kpi-sub" id="shadow-kpi-pop-sub">-</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Shadow Households</div>
+                  <div class="kpi-value" id="shadow-kpi-hhs">-</div>
+                  <div class="kpi-sub">estimated college-age renter households</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Renters Age 15–24</div>
+                  <div class="kpi-value" id="shadow-kpi-renters">-</div>
+                  <div class="kpi-sub">ACS renter households</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Sub-50 Renter Units</div>
+                  <div class="kpi-value" id="shadow-kpi-units">-</div>
+                  <div class="kpi-sub">renter inventory below 50 units</div>
+                </div>
+              </div>
+
+              <section class="card shadow-market-card">
+                <header class="card-header shadow-market-header">
+                  <div>
+                    <h2>Off-Campus Student Concentration</h2>
+                    <p id="shadow-market-summary">
+                      Census block-group estimates weighted by modeled shadow population.
+                    </p>
+                  </div>
+                  <label class="shadow-market-metric-control">
+                    <span>Heatmap metric</span>
+                    <select id="shadow-market-metric">
+                      <option value="shadow_pop">Estimated shadow population</option>
+                      <option value="shadow_hhs">Estimated shadow households</option>
+                      <option value="renter_15_24">Renter households age 15–24</option>
+                      <option value="renter_units_sub50">Sub-50 renter inventory</option>
+                    </select>
+                  </label>
+                </header>
+                <div class="card-body">
+                  <div id="shadow-market-map" class="shadow-market-map"></div>
+                  <div id="shadow-market-legend" class="shadow-market-legend"></div>
+                </div>
+              </section>
+
+              <section class="card">
+                <header class="card-header">
+                  <div>
+                    <h2>Distance-Ring Summary</h2>
+                    <p>Each block group is assigned once to its nearest configured campus.</p>
+                  </div>
+                </header>
+                <div class="card-body">
+                  <div class="table-wrap">
+                    <table class="comp-detail-table shadow-market-ring-table">
+                      <thead>
+                        <tr>
+                          <th>Distance</th>
+                          <th>Block Groups</th>
+                          <th>Shadow Population</th>
+                          <th>Shadow Households</th>
+                          <th>Renters 15–24</th>
+                          <th>Sub-50 Units</th>
+                        </tr>
+                      </thead>
+                      <tbody id="shadow-market-rings"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div id="shadow-market-empty" class="empty-state" hidden>
+              Shadow-market analysis has not been generated for this market yet.
+            </div>
+          </div> <!-- /.market-tab-panel[shadow-market] -->
+
           <!-- ============ UNIVERSITY INFORMATION TAB ============ -->
           <div class="market-tab-panel" data-panel="university" hidden>
 
@@ -711,7 +799,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=37" defer></script>
+  <script src="market.js?v=38" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
   <script src="chart-download.js?v=4" defer></script>

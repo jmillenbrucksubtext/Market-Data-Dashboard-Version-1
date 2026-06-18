@@ -971,19 +971,20 @@ function bindShadowMarketControls() {
 
 const SHADOW_MARKET_METRICS = {
   shadow_pop: {
-    label: "Approved shadow population",
-    description: "CoStar 5–49 units plus Census 2–4 units, adjusted to renters age 18–21",
-    totalKey: "shadow_pop",
+    label: "Census shadow-population distribution",
+    description: "Census block-group proxy used to show the relative neighborhood distribution",
   },
-  est_pop: {
-    label: "Estimated renter population",
-    description: "Combined small-rental units multiplied by local sub-50 occupancy",
-    totalKey: "est_pop",
+  shadow_hhs: {
+    label: "Census shadow households",
+    description: "Renter households age 15–24 adjusted to sub-50-unit inventory",
   },
-  units: {
-    label: "Combined small-rental units",
-    description: "CoStar 5–49-unit inventory plus Census 2–4-unit renter inventory",
-    totalKey: "total_units",
+  renter_15_24: {
+    label: "Renter households age 15–24",
+    description: "Raw ACS renter households with a householder age 15–24",
+  },
+  renter_units_sub50: {
+    label: "Sub-50 renter inventory",
+    description: "Census renter units in buildings with fewer than 50 units",
   },
 };
 
@@ -1073,17 +1074,8 @@ function renderShadowMarketMap() {
   const metric = SHADOW_MARKET_METRICS[metricKey];
   const data = shadowMarketData;
   const official = data.official;
-  const useOfficialPoints = Array.isArray(official.points) && official.points.length > 0;
-  const mapData = useOfficialPoints ? official : data.distribution_proxy;
-  const mapPoints = useOfficialPoints
-    ? official.points
-    : data.distribution_proxy.points.map((point) => ({
-        ...point,
-        source: "Census distribution proxy",
-        units: point.renter_units_sub50,
-        est_pop: point.shadow_pop,
-      }));
-  const effectiveMetricKey = useOfficialPoints ? metricKey : "shadow_pop";
+  const mapData = data.distribution_proxy;
+  const mapPoints = mapData.points;
 
   if (!shadowMarketMap) {
     shadowMarketMap = L.map("shadow-market-map", {
@@ -1140,18 +1132,16 @@ function renderShadowMarketMap() {
     });
   });
 
-  const positivePoints = mapPoints.filter(
-    (point) => Number(point[effectiveMetricKey]) > 0,
-  );
+  const positivePoints = mapPoints.filter((point) => Number(point[metricKey]) > 0);
   const sortedValues = positivePoints
-    .map((point) => Number(point[effectiveMetricKey]))
+    .map((point) => Number(point[metricKey]))
     .sort((a, b) => a - b);
   const displayCapIndex = Math.max(0, Math.ceil(sortedValues.length * 0.90) - 1);
   const displayCap = sortedValues[displayCapIndex] || 1;
   const heatPoints = positivePoints.map((point) => [
     point.lat,
     point.lon,
-    Math.min(1, Math.pow(Number(point[effectiveMetricKey]) / displayCap, 0.42)),
+    Math.min(1, Math.pow(Number(point[metricKey]) / displayCap, 0.42)),
   ]);
 
   if (typeof L.heatLayer === "function" && heatPoints.length) {
@@ -1176,25 +1166,25 @@ function renderShadowMarketMap() {
     const tooltip = `
       <div class="map-popup">
         <div class="map-popup-head">
-          <div class="map-popup-eyebrow">${escapeHtml(point.source || "Combined record")}</div>
+          <div class="map-popup-eyebrow">Census block-group distribution</div>
           <div class="map-popup-title">${escapeHtml(point.name)}</div>
         </div>
         <div class="map-popup-body">
           <div class="map-popup-row">
             <span class="map-popup-row-label">${escapeHtml(metric.label)}</span>
-            <span class="map-popup-row-value">${fmtInt(point[effectiveMetricKey])}</span>
+            <span class="map-popup-row-value">${fmtInt(point[metricKey])}</span>
           </div>
           <div class="map-popup-row">
             <span class="map-popup-row-label">Shadow population</span>
             <span class="map-popup-row-value">${fmtInt(point.shadow_pop)}</span>
           </div>
           <div class="map-popup-row">
-            <span class="map-popup-row-label">Units</span>
-            <span class="map-popup-row-value">${fmtInt(point.units)}</span>
+            <span class="map-popup-row-label">Renters age 15–24</span>
+            <span class="map-popup-row-value">${fmtInt(point.renter_15_24)}</span>
           </div>
           <div class="map-popup-row">
-            <span class="map-popup-row-label">Estimated population</span>
-            <span class="map-popup-row-value">${fmtInt(point.est_pop)}</span>
+            <span class="map-popup-row-label">Sub-50 renter units</span>
+            <span class="map-popup-row-value">${fmtInt(point.renter_units_sub50)}</span>
           </div>
           <div class="map-popup-address">${escapeHtml(point.ring)} · ${fmtNum(point.distance_mi, 2)} mi to campus</div>
         </div>
@@ -1240,12 +1230,10 @@ function renderShadowMarketMap() {
       ${escapeHtml(label)}
     </span>`).join("");
   document.getElementById("shadow-market-legend").innerHTML = `
-    <strong>${escapeHtml(metric.label)}:</strong>
-    ${fmtInt(useOfficialPoints ? official.total[metric.totalKey] : mapData.total.shadow_pop)}
-    across ${fmtInt(mapPoints.length)} combined records (ACS ${data.year})<br>
-    <strong>Source:</strong> ${useOfficialPoints
-      ? "Approved CoStar 5–49 + Census 2–4 methodology"
-      : "Census distribution proxy fallback"}<br>
+    <strong>${escapeHtml(metric.label)}:</strong> ${fmtInt(mapData.total[metricKey])}
+    across ${fmtInt(mapData.total.block_groups)} Census block groups (ACS ${data.year})<br>
+    <strong>Visualization only:</strong> Census distribution proxy. Official KPI and
+    ring totals use the approved CoStar 5–49 + Census 2–4 methodology.<br>
     <strong>Heat:</strong> Low <span class="shadow-market-gradient"></span> High
     (90th percentile display cap: ${fmtInt(displayCap)})<br>
     <strong>Definition:</strong> ${escapeHtml(metric.description)}<br>

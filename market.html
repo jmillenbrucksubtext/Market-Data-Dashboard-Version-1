@@ -647,9 +647,10 @@
                   <label class="shadow-market-metric-control">
                     <span>Heatmap metric</span>
                     <select id="shadow-market-metric">
-                      <option value="shadow_pop">Approved shadow population</option>
-                      <option value="est_pop">Estimated renter population</option>
-                      <option value="units">Combined small-rental units</option>
+                      <option value="shadow_pop">Census shadow-population distribution</option>
+                      <option value="shadow_hhs">Census shadow households</option>
+                      <option value="renter_15_24">Renter households age 15–24</option>
+                      <option value="renter_units_sub50">Sub-50 renter inventory</option>
                     </select>
                   </label>
                 </header>
@@ -764,11 +765,12 @@
                     <div>
                       <h3>How to interpret the heatmap</h3>
                       <p>
-                        The default heat layer uses the approved combined records:
-                        actual CoStar building coordinates plus Census 2–4-unit block
-                        group centroids. It shows modeled concentration, not exact
-                        student addresses, and Census age data cannot confirm
-                        enrollment.
+                        The heatmap uses the broader Census block-group distribution
+                        because it produced the more accurate neighborhood pattern
+                        during market validation. The KPI cards and ring table still
+                        use the approved CoStar + Census calculation. The map is a
+                        distribution aid, not a separate official total or exact
+                        student-address map.
                       </p>
                     </div>
                     <div>
@@ -896,7 +898,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=39" defer></script>
+  <script src="market.js?v=40" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
   <script src="chart-download.js?v=4" defer></script>

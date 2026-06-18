@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=47">
+  <link rel="stylesheet" href="style.css?v=48">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -682,6 +682,100 @@
                       </thead>
                       <tbody id="shadow-market-rings"></tbody>
                     </table>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card shadow-methodology-card">
+                <header class="card-header">
+                  <div>
+                    <h2>How the Shadow Market Estimate Works</h2>
+                    <p>
+                      A Census-based estimate of college-age renters living outside
+                      large purpose-built student properties.
+                    </p>
+                  </div>
+                </header>
+                <div class="card-body">
+                  <div class="shadow-methodology-grid">
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">1</span>
+                      <div>
+                        <h3>Identify smaller renter inventory</h3>
+                        <p>
+                          For each Census block group, renter units in buildings with
+                          fewer than 50 units are divided by all renter units. This
+                          produces the <strong>sub-50 share</strong>.
+                        </p>
+                        <code>sub-50 share = sub-50 renter units ÷ total renter units</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">2</span>
+                      <div>
+                        <h3>Estimate college-age shadow households</h3>
+                        <p>
+                          ACS renter households with a householder age 15–24 are
+                          multiplied by the sub-50 share.
+                        </p>
+                        <code>shadow households = renters age 15–24 × sub-50 share</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">3</span>
+                      <div>
+                        <h3>Estimate people per smaller renter unit</h3>
+                        <p>
+                          Renter population in smaller structures is divided by
+                          sub-50 renter units. Because Census groups all buildings
+                          with five or more units together for population, that
+                          population is allocated between sub-50 and 50+ buildings
+                          using their unit-count shares.
+                        </p>
+                        <code>average occupancy = estimated sub-50 renter population ÷ sub-50 units</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">4</span>
+                      <div>
+                        <h3>Convert households to population</h3>
+                        <p>
+                          Estimated shadow households are multiplied by average
+                          occupancy to calculate shadow population.
+                        </p>
+                        <code>shadow population = shadow households × average occupancy</code>
+                      </div>
+                    </article>
+                  </div>
+
+                  <div class="shadow-methodology-notes">
+                    <div>
+                      <h3>Geography and distance</h3>
+                      <p>
+                        Calculations are performed separately for each Census block
+                        group. Each block group is represented by its Census centroid
+                        and assigned once to the nearest campus distance ring.
+                      </p>
+                    </div>
+                    <div>
+                      <h3>How to interpret the heatmap</h3>
+                      <p>
+                        The map shows modeled neighborhood concentration, not exact
+                        student addresses. Census age data identifies college-age
+                        renters but cannot confirm enrollment, and block-group
+                        centroids simplify where residents are distributed inside
+                        each geography.
+                      </p>
+                    </div>
+                    <div>
+                      <h3>Primary Census tables</h3>
+                      <p>
+                        ACS 5-Year tables B25007 (renter age), B25032 (renter units
+                        by structure size), and B25033 (renter population by
+                        structure size). B01001 is retained for future age-window
+                        refinements.
+                      </p>
+                    </div>
                   </div>
                 </div>
               </section>

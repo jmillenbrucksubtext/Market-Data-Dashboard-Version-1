@@ -5,11 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=46">
+  <link rel="stylesheet" href="style.css?v=49">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
+  <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js" defer></script>
 </head>
 <body>
   <div class="app">
@@ -79,6 +80,7 @@
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
+            <button class="market-tab" data-tab="shadow-market" role="tab" aria-selected="false">Shadow Market Analysis</button>
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
 
@@ -604,6 +606,200 @@
           </section>
           </div> <!-- /.market-tab-panel[pipeline] -->
 
+          <!-- ============ SHADOW MARKET ANALYSIS TAB ============ -->
+          <div class="market-tab-panel" data-panel="shadow-market" hidden>
+            <div id="shadow-market-loading" class="empty-state">
+              Loading shadow-market analysis…
+            </div>
+
+            <div id="shadow-market-content" hidden>
+              <div class="kpi-row shadow-market-kpis">
+                <div class="kpi">
+                  <div class="kpi-label">Shadow Population</div>
+                  <div class="kpi-value" id="shadow-kpi-pop">-</div>
+                  <div class="kpi-sub" id="shadow-kpi-pop-sub">-</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">CoStar Buildings</div>
+                  <div class="kpi-value" id="shadow-kpi-buildings">-</div>
+                  <div class="kpi-sub" id="shadow-kpi-buildings-sub">5–49-unit multifamily</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">CoStar Units</div>
+                  <div class="kpi-value" id="shadow-kpi-costar-units">-</div>
+                  <div class="kpi-sub">approved 5–49-unit inventory</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Census 2–4 Units</div>
+                  <div class="kpi-value" id="shadow-kpi-census-units">-</div>
+                  <div class="kpi-sub">one-unit rentals excluded</div>
+                </div>
+              </div>
+
+              <section class="card shadow-market-card">
+                <header class="card-header shadow-market-header">
+                  <div>
+                    <h2>Off-Campus Student Concentration</h2>
+                    <p id="shadow-market-summary">
+                      Census block-group estimates weighted by modeled shadow population.
+                    </p>
+                  </div>
+                  <label class="shadow-market-metric-control">
+                    <span>Heatmap metric</span>
+                    <select id="shadow-market-metric">
+                      <option value="shadow_pop">Census shadow-population distribution</option>
+                      <option value="shadow_hhs">Census shadow households</option>
+                      <option value="renter_15_24">Renter households age 15–24</option>
+                      <option value="renter_units_sub50">Sub-50 renter inventory</option>
+                    </select>
+                  </label>
+                </header>
+                <div class="card-body">
+                  <div id="shadow-market-map" class="shadow-market-map"></div>
+                  <div id="shadow-market-legend" class="shadow-market-legend"></div>
+                </div>
+              </section>
+
+              <section class="card">
+                <header class="card-header">
+                  <div>
+                    <h2>Distance-Ring Summary</h2>
+                    <p>Each block group is assigned once to its nearest configured campus.</p>
+                  </div>
+                </header>
+                <div class="card-body">
+                  <div class="table-wrap">
+                    <table class="comp-detail-table shadow-market-ring-table">
+                      <thead>
+                        <tr>
+                          <th>Distance</th>
+                          <th>CoStar Buildings</th>
+                          <th>CoStar Units</th>
+                          <th>Census 2–4 Units</th>
+                          <th>Total Units</th>
+                          <th>Est. Population</th>
+                          <th>Shadow Population</th>
+                        </tr>
+                      </thead>
+                      <tbody id="shadow-market-rings"></tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
+
+              <section class="card shadow-methodology-card">
+                <header class="card-header">
+                  <div>
+                    <h2>How the Shadow Market Estimate Works</h2>
+                    <p>
+                      The approved CoStar + Census methodology for estimating
+                      college-age renters outside large purpose-built properties.
+                    </p>
+                  </div>
+                </header>
+                <div class="card-body">
+                  <div class="shadow-methodology-grid">
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">1</span>
+                      <div>
+                        <h3>Capture CoStar multifamily inventory</h3>
+                        <p>
+                          CoStar multifamily properties with 5–49 units are included.
+                          Properties typed as student housing, demolished properties,
+                          and buildings with 50 or more units are excluded.
+                        </p>
+                        <code>approved CoStar inventory = multifamily properties with 5–49 units</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">2</span>
+                      <div>
+                        <h3>Add the small-property gap</h3>
+                        <p>
+                          Census renter inventory in 2–4-unit structures is added
+                          because CoStar does not comprehensively capture those
+                          properties. One-unit rentals are intentionally excluded
+                          because they materially overstated the population.
+                        </p>
+                        <code>combined units = CoStar 5–49 units + Census 2–4 units</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">3</span>
+                      <div>
+                        <h3>Estimate renter population</h3>
+                        <p>
+                          Each CoStar building is matched to its nearest Census block
+                          group. Census population and unit tables provide average
+                          occupancy for renter inventory below 50 units. The same
+                          local occupancy is applied to CoStar units and Census
+                          2–4-unit inventory.
+                        </p>
+                        <code>estimated population = combined units × local sub-50 occupancy</code>
+                      </div>
+                    </article>
+                    <article class="shadow-methodology-step">
+                      <span class="shadow-methodology-number">4</span>
+                      <div>
+                        <h3>Isolate the college-age renter share</h3>
+                        <p>
+                          The Census renter share age 15–24 is narrowed to the
+                          approved 18–21 age window using local population age
+                          distributions. That percentage is applied independently
+                          within each block group before results are summed.
+                        </p>
+                        <code>shadow population = estimated population × renter 15–24 share × age 18–21 tightening</code>
+                      </div>
+                    </article>
+                  </div>
+
+                  <div class="shadow-methodology-notes">
+                    <div>
+                      <h3>Geography and distance</h3>
+                      <p>
+                        Calculations are performed separately for each Census block
+                        group. Each block group is represented by its Census centroid
+                        and assigned once to the nearest campus distance ring.
+                      </p>
+                    </div>
+                    <div>
+                      <h3>How to interpret the heatmap</h3>
+                      <p>
+                        The heatmap uses the broader Census block-group distribution
+                        because it produced the more accurate neighborhood pattern
+                        during market validation. The KPI cards and ring table still
+                        use the approved CoStar + Census calculation. The map is a
+                        distribution aid, not a separate official total or exact
+                        student-address map.
+                      </p>
+                    </div>
+                    <div>
+                      <h3>Primary Census tables</h3>
+                      <p>
+                        ACS 5-Year tables B25007 (renter age), B25032 (renter units
+                        by structure size), and B25033 (renter population by
+                        structure size). B01001 narrows age 15–24 to ages 18–21.
+                      </p>
+                    </div>
+                    <div>
+                      <h3>Scope and overlap controls</h3>
+                      <p>
+                        Each dashboard market is generated once by market key and
+                        uses only its anchor university. Repeated campus records are
+                        collapsed, CoStar properties are deduplicated by PropertyID
+                        or location, and every Census block group is assigned once.
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div id="shadow-market-empty" class="empty-state" hidden>
+              Shadow-market analysis has not been generated for this market yet.
+            </div>
+          </div> <!-- /.market-tab-panel[shadow-market] -->
+
           <!-- ============ UNIVERSITY INFORMATION TAB ============ -->
           <div class="market-tab-panel" data-panel="university" hidden>
 
@@ -711,7 +907,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=37" defer></script>
+  <script src="market.js?v=41" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
   <script src="chart-download.js?v=4" defer></script>

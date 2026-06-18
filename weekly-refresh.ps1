@@ -52,6 +52,11 @@ if (-not (Test-Path $credFile)) {
 $cred = Import-Clixml -Path $credFile
 
 $dataBefore = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SHA1).Hash } else { "" }
+$shadowBefore = if (Test-Path "assets\shadow-market") {
+    (Get-ChildItem "assets\shadow-market" -Filter *.json -File |
+        Sort-Object Name |
+        ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
+} else { "" }
 
 $env:SQLUSER     = $cred.UserName
 $env:SQLPASSWORD = $cred.GetNetworkCredential().Password
@@ -75,9 +80,30 @@ if ($py -ne 0) {
     exit $py
 }
 
+python -u shadow_market/build_configs.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+$shadowConfigPy = $LASTEXITCODE
+if ($shadowConfigPy -ne 0) {
+    Write-Log "FAIL shadow_market/build_configs.py exited $shadowConfigPy"
+    exit $shadowConfigPy
+}
+
+python -u shadow_market/generate.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+$shadowPy = $LASTEXITCODE
+if ($shadowPy -ne 0) {
+    Write-Log "FAIL shadow_market/generate.py exited $shadowPy"
+    exit $shadowPy
+}
+
 $dataAfter = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SHA1).Hash } else { "" }
-$changed = $dataBefore -ne $dataAfter
-Write-Log "export complete (data.json changed: $changed)"
+$shadowAfter = if (Test-Path "assets\shadow-market") {
+    (Get-ChildItem "assets\shadow-market" -Filter *.json -File |
+        Sort-Object Name |
+        ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
+} else { "" }
+$dataChanged = $dataBefore -ne $dataAfter
+$shadowChanged = $shadowBefore -ne $shadowAfter
+$changed = $dataChanged -or $shadowChanged
+Write-Log "export complete (data.json changed: $dataChanged; shadow-market changed: $shadowChanged)"
 
 if (-not $changed) {
     Write-Log "no change; skipping commit"

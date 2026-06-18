@@ -1,0 +1,2020 @@
+{
+  "11": {
+    "name": "Clemson University",
+    "anchor_university": "Clemson University",
+    "school_key": 470,
+    "costar_university": "Clemson University",
+    "include_graduates": false,
+    "county_fips": [
+      "45007",
+      "45073",
+      "45077"
+    ],
+    "campuses": {
+      "Clemson University": [
+        34.6761105,
+        -82.8366374
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "12": {
+    "name": "University of Georgia",
+    "anchor_university": "University of Georgia",
+    "school_key": 120,
+    "costar_university": "University of Georgia",
+    "include_graduates": false,
+    "county_fips": [
+      "13059"
+    ],
+    "campuses": {
+      "University of Georgia": [
+        33.9480053,
+        -83.3773221
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "13": {
+    "name": "Auburn University",
+    "anchor_university": "Auburn University",
+    "school_key": 7,
+    "costar_university": "Auburn University",
+    "include_graduates": false,
+    "county_fips": [
+      "01081"
+    ],
+    "campuses": {
+      "Auburn University": [
+        32.5933574,
+        -85.4951663
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "14": {
+    "name": "University of Alabama",
+    "anchor_university": "University of Alabama",
+    "school_key": 11,
+    "costar_university": "The University of Alabama",
+    "include_graduates": false,
+    "county_fips": [
+      "01125"
+    ],
+    "campuses": {
+      "University of Alabama": [
+        33.2140233,
+        -87.5391418
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "15": {
+    "name": "University of Mississippi",
+    "anchor_university": "University of Mississippi",
+    "school_key": 254,
+    "costar_university": "The University of Mississippi",
+    "include_graduates": false,
+    "county_fips": [
+      "28071"
+    ],
+    "campuses": {
+      "University of Mississippi": [
+        34.3647324,
+        -89.538443
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "17": {
+    "name": "Georgia Institute of Technology",
+    "anchor_university": "Georgia Institute of Technology",
+    "school_key": 110,
+    "costar_university": "Georgia Institute of Technology",
+    "include_graduates": false,
+    "county_fips": [
+      "13121"
+    ],
+    "campuses": {
+      "Georgia Institute of Technology": [
+        33.7756178,
+        -84.396285
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "18": {
+    "name": "Florida State University",
+    "anchor_university": "Florida State University",
+    "school_key": 95,
+    "costar_university": "Florida State University",
+    "include_graduates": false,
+    "county_fips": [
+      "12073"
+    ],
+    "campuses": {
+      "Florida State University": [
+        30.4418778,
+        -84.2984889
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "20": {
+    "name": "University of South Carolina",
+    "anchor_university": "University of South Carolina",
+    "school_key": 476,
+    "costar_university": "University of South Carolina",
+    "include_graduates": false,
+    "county_fips": [
+      "45063",
+      "45079"
+    ],
+    "campuses": {
+      "University of South Carolina": [
+        33.996112,
+        -81.0274276
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "21": {
+    "name": "Mississippi State University",
+    "anchor_university": "Mississippi State University",
+    "school_key": 253,
+    "costar_university": "Mississippi State University",
+    "include_graduates": false,
+    "county_fips": [
+      "28105"
+    ],
+    "campuses": {
+      "Mississippi State University": [
+        33.4551742,
+        -88.7943766
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "24": {
+    "name": "Texas A&M University",
+    "anchor_university": "Texas A&M University",
+    "school_key": 516,
+    "costar_university": "Texas A&M University",
+    "include_graduates": false,
+    "county_fips": [
+      "48041"
+    ],
+    "campuses": {
+      "Texas A&M University": [
+        30.618531,
+        -96.336499
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "25": {
+    "name": "University of Michigan",
+    "anchor_university": "University of Michigan",
+    "school_key": 236,
+    "costar_university": "University of Michigan at Ann Arbor",
+    "include_graduates": false,
+    "county_fips": [
+      "26161"
+    ],
+    "campuses": {
+      "University of Michigan": [
+        42.277145,
+        -83.740782
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "27": {
+    "name": "University of Texas at Austin",
+    "anchor_university": "University of Texas at Austin",
+    "school_key": 512,
+    "costar_university": "University of Texas at Austin",
+    "include_graduates": false,
+    "county_fips": [
+      "48453"
+    ],
+    "campuses": {
+      "University of Texas at Austin": [
+        30.2850284,
+        -97.7335226
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "31": {
+    "name": "University of Houston",
+    "anchor_university": "University of Houston",
+    "school_key": 509,
+    "costar_university": "University of Houston",
+    "include_graduates": false,
+    "county_fips": [
+      "48201"
+    ],
+    "campuses": {
+      "University of Houston": [
+        29.7199489,
+        -95.3422334
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "37": {
+    "name": "Southern Methodist University",
+    "anchor_university": "Southern Methodist University",
+    "school_key": 497,
+    "costar_university": "Southern Methodist University",
+    "include_graduates": false,
+    "county_fips": [
+      "48113"
+    ],
+    "campuses": {
+      "Southern Methodist University": [
+        32.8412178,
+        -96.7845175
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "43": {
+    "name": "Northwestern University",
+    "anchor_university": "Northwestern University",
+    "school_key": 141,
+    "costar_university": "Northwestern University",
+    "include_graduates": false,
+    "county_fips": [
+      "17031"
+    ],
+    "campuses": {
+      "Northwestern University": [
+        42.0564594,
+        -87.675267
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "48": {
+    "name": "University of Illinois at Urbana-Champaign",
+    "anchor_university": "University of Illinois at Urbana-Champaign",
+    "school_key": 143,
+    "costar_university": "University of Illinois at Urbana, Champaign",
+    "include_graduates": false,
+    "county_fips": [
+      "17019"
+    ],
+    "campuses": {
+      "University of Illinois at Urbana-Champaign": [
+        40.1019523,
+        -88.2271615
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "52": {
+    "name": "University of Pittsburgh",
+    "anchor_university": "University of Pittsburgh",
+    "school_key": 443,
+    "costar_university": "University of Pittsburgh",
+    "include_graduates": false,
+    "county_fips": [
+      "42003"
+    ],
+    "campuses": {
+      "University of Pittsburgh": [
+        40.4443533,
+        -79.960835
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "60": {
+    "name": "Texas Christian University",
+    "anchor_university": "Texas Christian University",
+    "school_key": 520,
+    "costar_university": "Texas Christian University",
+    "include_graduates": false,
+    "county_fips": [
+      "48439"
+    ],
+    "campuses": {
+      "Texas Christian University": [
+        32.7083275,
+        -97.3595796
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "66": {
+    "name": "Iowa State University",
+    "anchor_university": "Iowa State University",
+    "school_key": 163,
+    "costar_university": "Iowa State University",
+    "include_graduates": false,
+    "county_fips": [
+      "19169"
+    ],
+    "campuses": {
+      "Iowa State University": [
+        42.0266187,
+        -93.6464654
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "86": {
+    "name": "University of Missouri",
+    "anchor_university": "University of Missouri",
+    "school_key": 265,
+    "costar_university": "University of Missouri at Columbia",
+    "include_graduates": false,
+    "county_fips": [
+      "29019"
+    ],
+    "campuses": {
+      "University of Missouri": [
+        38.9403808,
+        -92.3277375
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "100": {
+    "name": "North Carolina State University",
+    "anchor_university": "North Carolina State University",
+    "school_key": 374,
+    "costar_university": "North Carolina State University",
+    "include_graduates": false,
+    "county_fips": [
+      "37183"
+    ],
+    "campuses": {
+      "North Carolina State University": [
+        35.7846633,
+        -78.6820946
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "118": {
+    "name": "Indiana University Bloomington",
+    "anchor_university": "Indiana University Bloomington",
+    "school_key": 155,
+    "costar_university": "Indiana University at Bloomington",
+    "include_graduates": false,
+    "county_fips": [
+      "18105"
+    ],
+    "campuses": {
+      "Indiana University Bloomington": [
+        39.1784384,
+        -86.5133166
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "121": {
+    "name": "Vanderbilt University",
+    "anchor_university": "Vanderbilt University",
+    "school_key": 485,
+    "costar_university": "Vanderbilt University",
+    "include_graduates": false,
+    "county_fips": [
+      "47037"
+    ],
+    "campuses": {
+      "Vanderbilt University": [
+        36.1447034,
+        -86.8026551
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "122": {
+    "name": "University of Oklahoma",
+    "anchor_university": "University of Oklahoma",
+    "school_key": 416,
+    "costar_university": "University of Oklahoma",
+    "include_graduates": false,
+    "county_fips": [
+      "40027",
+      "40087"
+    ],
+    "campuses": {
+      "University of Oklahoma": [
+        35.2058936,
+        -97.4457137
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "141": {
+    "name": "University of Central Florida",
+    "anchor_university": "University of Central Florida",
+    "school_key": 106,
+    "costar_university": "University of Central Florida",
+    "include_graduates": false,
+    "county_fips": [
+      "12095",
+      "12117"
+    ],
+    "campuses": {
+      "University of Central Florida": [
+        28.6024274,
+        -81.2000599
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "146": {
+    "name": "Duke University",
+    "anchor_university": "Duke University",
+    "school_key": 368,
+    "costar_university": "Duke University",
+    "include_graduates": false,
+    "county_fips": [
+      "37063"
+    ],
+    "campuses": {
+      "Duke University": [
+        36.0014258,
+        -78.9382286
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "155": {
+    "name": "Ohio State University",
+    "anchor_university": "Ohio State University",
+    "school_key": 388,
+    "costar_university": "The Ohio State University",
+    "include_graduates": false,
+    "county_fips": [
+      "39049"
+    ],
+    "campuses": {
+      "Ohio State University": [
+        40.0141905,
+        -83.0309143
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "180": {
+    "name": "University of Arkansas",
+    "anchor_university": "University of Arkansas",
+    "school_key": 25,
+    "costar_university": "University of Arkansas",
+    "include_graduates": false,
+    "county_fips": [
+      "05143"
+    ],
+    "campuses": {
+      "University of Arkansas": [
+        36.0678324,
+        -94.1736551
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "185": {
+    "name": "University of Minnesota Twin Cities",
+    "anchor_university": "University of Minnesota Twin Cities",
+    "school_key": 241,
+    "costar_university": "University of Minnesota",
+    "include_graduates": false,
+    "county_fips": [
+      "27053",
+      "27123"
+    ],
+    "campuses": {
+      "University of Minnesota Twin Cities": [
+        44.97399,
+        -93.2277285
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "294": {
+    "name": "Baylor University",
+    "anchor_university": "Baylor University",
+    "school_key": 502,
+    "costar_university": "Baylor University",
+    "include_graduates": false,
+    "county_fips": [
+      "48309"
+    ],
+    "campuses": {
+      "Baylor University": [
+        31.5497007,
+        -97.1143046
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "334": {
+    "name": "University of Wisconsin Madison",
+    "anchor_university": "University of Wisconsin Madison",
+    "school_key": 584,
+    "costar_university": "University of Wisconsin at Madison",
+    "include_graduates": false,
+    "county_fips": [
+      "55025"
+    ],
+    "campuses": {
+      "University of Wisconsin Madison": [
+        43.076592,
+        -89.4124875
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "353": {
+    "name": "University of Louisville",
+    "anchor_university": "University of Louisville",
+    "school_key": 177,
+    "costar_university": "University of Louisville",
+    "include_graduates": false,
+    "county_fips": [
+      "21111"
+    ],
+    "campuses": {
+      "University of Louisville": [
+        38.2122761,
+        -85.7585023
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "364": {
+    "name": "University of Iowa",
+    "anchor_university": "University of Iowa",
+    "school_key": 164,
+    "costar_university": "The University of Iowa",
+    "include_graduates": false,
+    "county_fips": [
+      "19103"
+    ],
+    "campuses": {
+      "University of Iowa": [
+        41.6626963,
+        -91.5548998
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "383": {
+    "name": "University of Kansas",
+    "anchor_university": "University of Kansas",
+    "school_key": 169,
+    "costar_university": "The University of Kansas",
+    "include_graduates": false,
+    "county_fips": [
+      "20045"
+    ],
+    "campuses": {
+      "University of Kansas": [
+        38.9543439,
+        -95.2557961
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "418": {
+    "name": "University of South Florida",
+    "anchor_university": "University of South Florida",
+    "school_key": 105,
+    "costar_university": "University of South Florida at Tampa",
+    "include_graduates": false,
+    "county_fips": [
+      "12057"
+    ],
+    "campuses": {
+      "University of South Florida": [
+        28.0587031,
+        -82.4138539
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "553": {
+    "name": "University of Tennessee",
+    "anchor_university": "University of Tennessee",
+    "school_key": 492,
+    "costar_university": "The University of Tennessee, Knoxville",
+    "include_graduates": false,
+    "county_fips": [
+      "47093"
+    ],
+    "campuses": {
+      "University of Tennessee": [
+        35.9544013,
+        -83.9294564
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "567": {
+    "name": "University of Kentucky",
+    "anchor_university": "University of Kentucky",
+    "school_key": 176,
+    "costar_university": "University of Kentucky",
+    "include_graduates": false,
+    "county_fips": [
+      "21067"
+    ],
+    "campuses": {
+      "University of Kentucky": [
+        38.0306511,
+        -84.5039697
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "568": {
+    "name": "University of Virginia",
+    "anchor_university": "University of Virginia",
+    "school_key": 560,
+    "costar_university": "University of Virginia",
+    "include_graduates": false,
+    "county_fips": [
+      "51003",
+      "51540"
+    ],
+    "campuses": {
+      "University of Virginia": [
+        38.0335529,
+        -78.5079772
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "590": {
+    "name": "University of Florida",
+    "anchor_university": "University of Florida",
+    "school_key": 107,
+    "costar_university": "University of Florida",
+    "include_graduates": false,
+    "county_fips": [
+      "12001"
+    ],
+    "campuses": {
+      "University of Florida": [
+        29.6436325,
+        -82.3549302
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "611": {
+    "name": "Purdue University",
+    "anchor_university": "Purdue University",
+    "school_key": 145,
+    "costar_university": "Purdue University",
+    "include_graduates": false,
+    "county_fips": [
+      "18157"
+    ],
+    "campuses": {
+      "Purdue University": [
+        40.4237054,
+        -86.9211946
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "629": {
+    "name": "University of Nebraska Lincoln",
+    "anchor_university": "University of Nebraska Lincoln",
+    "school_key": 273,
+    "costar_university": "University of Nebraska-Lincoln",
+    "include_graduates": false,
+    "county_fips": [
+      "31109"
+    ],
+    "campuses": {
+      "University of Nebraska Lincoln": [
+        40.8201966,
+        -96.7004763
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "667": {
+    "name": "Wake Forest University",
+    "anchor_university": "Wake Forest University",
+    "school_key": 379,
+    "costar_university": "Wake Forest University",
+    "include_graduates": false,
+    "county_fips": [
+      "37067"
+    ],
+    "campuses": {
+      "Wake Forest University": [
+        36.1340985,
+        -80.2778951
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "732": {
+    "name": "Syracuse University",
+    "anchor_university": "Syracuse University",
+    "school_key": 362,
+    "costar_university": "Syracuse University",
+    "include_graduates": false,
+    "county_fips": [
+      "36067"
+    ],
+    "campuses": {
+      "Syracuse University": [
+        43.0391534,
+        -76.1351158
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "823": {
+    "name": "Oklahoma State University",
+    "anchor_university": "Oklahoma State University",
+    "school_key": 411,
+    "costar_university": "Oklahoma State University",
+    "include_graduates": false,
+    "county_fips": [
+      "40119"
+    ],
+    "campuses": {
+      "Oklahoma State University": [
+        36.1270236,
+        -97.0737222
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "896": {
+    "name": "University of Notre Dame",
+    "anchor_university": "University of Notre Dame",
+    "school_key": 156,
+    "costar_university": "University of Notre Dame",
+    "include_graduates": false,
+    "county_fips": [
+      "18141"
+    ],
+    "campuses": {
+      "University of Notre Dame": [
+        41.7055716,
+        -86.2353388
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "940": {
+    "name": "University of Washington",
+    "anchor_university": "University of Washington",
+    "school_key": 565,
+    "costar_university": "University of Washington at Seattle",
+    "include_graduates": false,
+    "county_fips": [
+      "53033"
+    ],
+    "campuses": {
+      "University of Washington": [
+        47.6553351,
+        -122.3035199
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "946": {
+    "name": "University of Southern California",
+    "anchor_university": "University of Southern California",
+    "school_key": 31,
+    "costar_university": "University of Southern California",
+    "include_graduates": false,
+    "county_fips": [
+      "06037"
+    ],
+    "campuses": {
+      "University of Southern California": [
+        34.0223519,
+        -118.285117
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "960": {
+    "name": "Oregon State University",
+    "anchor_university": "Oregon State University",
+    "school_key": 423,
+    "costar_university": "Oregon State University",
+    "include_graduates": false,
+    "county_fips": [
+      "41003",
+      "41043"
+    ],
+    "campuses": {
+      "Oregon State University": [
+        44.5637806,
+        -123.2794443
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "975": {
+    "name": "University of California San Diego",
+    "anchor_university": "University of California San Diego",
+    "school_key": 38,
+    "costar_university": "University of California, San Diego",
+    "include_graduates": false,
+    "county_fips": [
+      "06073"
+    ],
+    "campuses": {
+      "University of California San Diego": [
+        32.8800604,
+        -117.2340135
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "977": {
+    "name": "University of Colorado Boulder",
+    "anchor_university": "University of Colorado Boulder",
+    "school_key": 69,
+    "costar_university": "University of Colorado at Boulder",
+    "include_graduates": false,
+    "county_fips": [
+      "08013"
+    ],
+    "campuses": {
+      "University of Colorado Boulder": [
+        40.007581,
+        -105.2659417
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "1002": {
+    "name": "Texas Tech University",
+    "anchor_university": "Texas Tech University",
+    "school_key": 522,
+    "costar_university": "Texas Tech University",
+    "include_graduates": false,
+    "county_fips": [
+      "48303"
+    ],
+    "campuses": {
+      "Texas Tech University": [
+        33.5842591,
+        -101.8782822
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "1005": {
+    "name": "University of Arizona",
+    "anchor_university": "University of Arizona",
+    "school_key": 20,
+    "costar_university": "University of Arizona",
+    "include_graduates": false,
+    "county_fips": [
+      "04019"
+    ],
+    "campuses": {
+      "University of Arizona": [
+        32.2318851,
+        -110.9501094
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "1006": {
+    "name": "University of California Berkeley",
+    "anchor_university": "University of California Berkeley",
+    "school_key": 62,
+    "costar_university": "University of California, Berkeley",
+    "include_graduates": false,
+    "county_fips": [
+      "06001",
+      "06013"
+    ],
+    "campuses": {
+      "University of California Berkeley": [
+        37.8718992,
+        -122.2585399
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "1012": {
+    "name": "University of Utah",
+    "anchor_university": "University of Utah",
+    "school_key": 533,
+    "costar_university": "The University of Utah",
+    "include_graduates": false,
+    "county_fips": [
+      "49035"
+    ],
+    "campuses": {
+      "University of Utah": [
+        40.7649368,
+        -111.8421021
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "1152": {
+    "name": "Arizona State University",
+    "anchor_university": "Arizona State University",
+    "school_key": 19,
+    "costar_university": "Arizona State University",
+    "include_graduates": false,
+    "county_fips": [
+      "04013"
+    ],
+    "campuses": {
+      "Arizona State University": [
+        33.4242399,
+        -111.9280527
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    }
+  },
+  "1299": {
+    "name": "University of Oregon",
+    "anchor_university": "University of Oregon",
+    "school_key": 424,
+    "costar_university": "University of Oregon",
+    "include_graduates": false,
+    "county_fips": [
+      "41039"
+    ],
+    "campuses": {
+      "University of Oregon": [
+        44.0448302,
+        -123.0726055
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "1560": {
+    "name": "Michigan State University",
+    "anchor_university": "Michigan State University",
+    "school_key": 232,
+    "costar_university": "Michigan State University",
+    "include_graduates": false,
+    "county_fips": [
+      "26065"
+    ],
+    "campuses": {
+      "Michigan State University": [
+        42.701848,
+        -84.4821719
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "1804": {
+    "name": "Louisiana State University",
+    "anchor_university": "Louisiana State University",
+    "school_key": 180,
+    "costar_university": "Louisiana State University",
+    "include_graduates": false,
+    "county_fips": [
+      "22033",
+      "22121"
+    ],
+    "campuses": {
+      "Louisiana State University": [
+        30.4132579,
+        -91.1800023
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "2282": {
+    "name": "Kansas State University",
+    "anchor_university": "Kansas State University",
+    "school_key": 167,
+    "costar_university": "Kansas State University",
+    "include_graduates": false,
+    "county_fips": [
+      "20149",
+      "20161"
+    ],
+    "campuses": {
+      "Kansas State University": [
+        39.1974437,
+        -96.5847249
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "2294": {
+    "name": "University of Maryland College Park",
+    "anchor_university": "University of Maryland College Park",
+    "school_key": 204,
+    "costar_university": "University of Maryland",
+    "include_graduates": false,
+    "county_fips": [
+      "24031",
+      "24033"
+    ],
+    "campuses": {
+      "University of Maryland College Park": [
+        38.9869183,
+        -76.9425543
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "2344": {
+    "name": "University of North Carolina at Chapel Hill",
+    "anchor_university": "University of North Carolina at Chapel Hill",
+    "school_key": 375,
+    "costar_university": "University of North Carolina at Chapel Hill",
+    "include_graduates": false,
+    "county_fips": [
+      "37063",
+      "37135"
+    ],
+    "campuses": {
+      "University of North Carolina at Chapel Hill": [
+        35.9049122,
+        -79.0469134
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "2354": {
+    "name": "University of Cincinnati",
+    "anchor_university": "University of Cincinnati",
+    "school_key": 400,
+    "costar_university": "University of Cincinnati",
+    "include_graduates": false,
+    "county_fips": [
+      "21037",
+      "39061"
+    ],
+    "campuses": {
+      "University of Cincinnati": [
+        39.1329219,
+        -84.5149504
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "2375": {
+    "name": "Penn State",
+    "anchor_university": "Penn State",
+    "school_key": 455,
+    "costar_university": "Pennsylvania State University",
+    "include_graduates": false,
+    "county_fips": [
+      "42027"
+    ],
+    "campuses": {
+      "Penn State": [
+        40.7982133,
+        -77.8599084
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "2392": {
+    "name": "Brigham Young University",
+    "anchor_university": "Brigham Young University",
+    "school_key": 530,
+    "costar_university": "Brigham Young University",
+    "include_graduates": false,
+    "county_fips": [
+      "49049"
+    ],
+    "campuses": {
+      "Brigham Young University": [
+        40.2518435,
+        -111.6493156
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "2400": {
+    "name": "Virginia Polytechnic Institute and State University",
+    "anchor_university": "Virginia Polytechnic Institute and State University",
+    "school_key": 557,
+    "costar_university": "Virginia Polytechnic Institute and State University",
+    "include_graduates": false,
+    "county_fips": [
+      "51121"
+    ],
+    "campuses": {
+      "Virginia Polytechnic Institute and State University": [
+        37.2283843,
+        -80.4234167
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "2407": {
+    "name": "West Virginia University",
+    "anchor_university": "West Virginia University",
+    "school_key": 579,
+    "costar_university": "West Virginia University",
+    "include_graduates": false,
+    "county_fips": [
+      "54061"
+    ],
+    "campuses": {
+      "West Virginia University": [
+        39.6361396,
+        -79.9559358
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  },
+  "2417": {
+    "name": "Rutgers University",
+    "anchor_university": "Rutgers University",
+    "school_key": 598,
+    "costar_university": "Rutgers University",
+    "include_graduates": false,
+    "county_fips": [
+      "34023",
+      "34035"
+    ],
+    "campuses": {
+      "Rutgers University": [
+        40.5008186,
+        -74.4495878
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    }
+  },
+  "2418": {
+    "name": "University of Connecticut",
+    "anchor_university": "University of Connecticut",
+    "school_key": 599,
+    "costar_university": "University of Connecticut",
+    "include_graduates": false,
+    "county_fips": [
+      "09110",
+      "09150"
+    ],
+    "campuses": {
+      "University of Connecticut": [
+        41.8077414,
+        -72.2539805
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    }
+  },
+  "2487": {
+    "name": "Stanford University",
+    "anchor_university": "Stanford University",
+    "school_key": 681,
+    "costar_university": "Stanford University",
+    "include_graduates": false,
+    "county_fips": [
+      "06081",
+      "06085"
+    ],
+    "campuses": {
+      "Stanford University": [
+        37.42766051485058,
+        -122.17006674799468
+      ]
+    },
+    "ring_miles": [
+      0.5,
+      1.0,
+      2.0
+    ],
+    "years": [
+      2024
+    ],
+    "scope": {
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  }
+}

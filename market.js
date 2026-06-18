@@ -47,6 +47,12 @@ let unitMixParityChart = null;  // Chart instance for the bed/bath parity pie
 let unitMixParityType = "all";  // bedroom-type filter for the parity pie
 let pipeCharts = {};  // Pipeline tab: canvas id → Chart instance
 let pipelineDistance = "all";  // "0.5" | "1" | "all" - campus-distance band
+let shadowMarketData = null;
+let shadowMarketMap = null;
+let shadowMarketOverlay = null;
+let shadowMarketLoadPromise = null;
+let shadowMarketBoundaryData = null;
+let shadowMarketBoundaryLoaded = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
@@ -98,6 +104,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindTabs();
   bindUnitMixToggle();
   bindPipelineToggle();
+  bindShadowMarketControls();
   // Comp charts are hidden under the Comps tab on load; size will be 0
   // until the tab is shown, so we re-render via bindTabs. Build once now so
   // selection state is wired up.
@@ -943,6 +950,8 @@ function bindTabs() {
         renderCompCharts();
       } else if (target === "pipeline") {
         renderPipeline();
+      } else if (target === "shadow-market") {
+        renderShadowMarketTab();
       } else if (target === "university") {
         renderUniversityTab();
       }
@@ -953,6 +962,373 @@ function bindTabs() {
   const hash = location.hash.replace(/^#/, "");
   const initial = [...tabs].find((t) => t.dataset.tab === hash);
   if (initial && hash !== "market") initial.click();
+}
+
+function bindShadowMarketControls() {
+  const metric = document.getElementById("shadow-market-metric");
+  if (metric) metric.addEventListener("change", renderShadowMarketMap);
+}
+
+/* ----- Shadow Market Analysis tab ---------------------------- */
+
+const SHADOW_MARKET_METRICS = {
+  shadow_pop: {
+    label: "Census shadow-population distribution",
+    description: "Census block-group proxy used to show the relative neighborhood distribution",
+  },
+  shadow_hhs: {
+    label: "Census shadow households",
+    description: "Renter households age 15–24 adjusted to sub-50-unit inventory",
+  },
+  renter_15_24: {
+    label: "Renter households age 15–24",
+    description: "Raw ACS renter households with a householder age 15–24",
+  },
+  renter_units_sub50: {
+    label: "Sub-50 renter inventory",
+    description: "Census renter units in buildings with fewer than 50 units",
+  },
+};
+
+const SHADOW_RING_COLORS = ["#a95818", "#c79830", "#16352e", "#5a544f"];
+
+function positionShadowMarketTooltip(layer) {
+  if (!shadowMarketMap || !layer) return;
+  const tooltip = layer.getTooltip();
+  if (!tooltip) return;
+
+  const point = shadowMarketMap.latLngToContainerPoint(layer.getLatLng());
+  const mapSize = shadowMarketMap.getSize();
+  const verticalGuard = 175;
+  let direction;
+  if (point.y < verticalGuard) {
+    direction = "bottom";
+  } else if (point.y > mapSize.y - verticalGuard) {
+    direction = "top";
+  } else {
+    direction = point.x < mapSize.x / 2 ? "right" : "left";
+  }
+  tooltip.options.direction = direction;
+  tooltip.options.offset = L.point(
+    direction === "top" || direction === "bottom" ? 0 : 10,
+    direction === "top" || direction === "bottom" ? 10 : 0,
+  );
+  tooltip.update();
+  requestAnimationFrame(() => {
+    const element = tooltip.getElement();
+    if (!element) return;
+    const mapRect = shadowMarketMap.getContainer().getBoundingClientRect();
+    const tooltipRect = element.getBoundingClientRect();
+    const padding = 8;
+    let dx = 0;
+    let dy = 0;
+    if (tooltipRect.left < mapRect.left + padding) {
+      dx = mapRect.left + padding - tooltipRect.left;
+    } else if (tooltipRect.right > mapRect.right - padding) {
+      dx = mapRect.right - padding - tooltipRect.right;
+    }
+    if (tooltipRect.top < mapRect.top + padding) {
+      dy = mapRect.top + padding - tooltipRect.top;
+    } else if (tooltipRect.bottom > mapRect.bottom - padding) {
+      dy = mapRect.bottom - padding - tooltipRect.bottom;
+    }
+    if (dx || dy) {
+      const currentPosition = L.DomUtil.getPosition(element);
+      if (currentPosition) {
+        L.DomUtil.setPosition(
+          element,
+          currentPosition.add(L.point(dx, dy)),
+        );
+      }
+    }
+  });
+}
+
+async function loadShadowMarketBoundary() {
+  if (shadowMarketBoundaryLoaded) return shadowMarketBoundaryData;
+  shadowMarketBoundaryLoaded = true;
+  try {
+    const response = await fetch(
+      `assets/campus-boundaries/${MARKET.market_key}.geojson`,
+      { cache: "no-cache" },
+    );
+    if (response.ok) shadowMarketBoundaryData = await response.json();
+  } catch {
+    shadowMarketBoundaryData = null;
+  }
+  return shadowMarketBoundaryData;
+}
+
+async function renderShadowMarketTab() {
+  if (shadowMarketData) {
+    if (shadowMarketMap) setTimeout(() => shadowMarketMap.invalidateSize(), 0);
+    return;
+  }
+  if (shadowMarketLoadPromise) return shadowMarketLoadPromise;
+
+  const loading = document.getElementById("shadow-market-loading");
+  const content = document.getElementById("shadow-market-content");
+  const empty = document.getElementById("shadow-market-empty");
+  loading.hidden = false;
+  content.hidden = true;
+  empty.hidden = true;
+
+  shadowMarketLoadPromise = (async () => {
+    try {
+      const response = await fetch(
+        `assets/shadow-market/${MARKET.market_key}.json`,
+        { cache: "no-cache" },
+      );
+      if (response.status === 404) {
+        loading.hidden = true;
+        empty.hidden = false;
+        return;
+      }
+      if (!response.ok) throw new Error(`HTTP ${response.status}`);
+
+      const payload = await response.json();
+      if (Number(payload.market_key) !== Number(MARKET.market_key)) {
+        throw new Error("Market key does not match the current dashboard market");
+      }
+      shadowMarketData = payload;
+      await loadShadowMarketBoundary();
+      renderShadowMarketSummary();
+      loading.hidden = true;
+      content.hidden = false;
+      renderShadowMarketMap();
+    } catch (error) {
+      loading.hidden = true;
+      empty.hidden = false;
+      empty.textContent = `Couldn't load shadow-market analysis — ${error.message}`;
+    } finally {
+      shadowMarketLoadPromise = null;
+    }
+  })();
+  return shadowMarketLoadPromise;
+}
+
+function renderShadowMarketSummary() {
+  const data = shadowMarketData;
+  const official = data.official;
+  const total = official.total;
+  document.getElementById("shadow-kpi-pop").textContent = fmtInt(total.shadow_pop);
+  document.getElementById("shadow-kpi-pop-sub").textContent =
+    `approved ${official.college_age} estimate · ACS ${data.year}`;
+  document.getElementById("shadow-kpi-buildings").textContent = fmtInt(total.buildings);
+  document.getElementById("shadow-kpi-buildings-sub").textContent =
+    `${fmtInt(total.costar_beds)} beds · 5–49-unit multifamily`;
+  document.getElementById("shadow-kpi-costar-units").textContent = fmtInt(total.costar_units);
+  document.getElementById("shadow-kpi-census-units").textContent = fmtInt(total.census_2to4_units);
+  document.getElementById("shadow-market-summary").textContent =
+    `${data.anchor_university} · CoStar + Census · ACS ${data.year} · methodology v${official.methodology_version}`;
+
+  const body = document.getElementById("shadow-market-rings");
+  body.innerHTML = official.ring_labels.map((label) => {
+    const ring = official.rings[label] || {};
+    return `<tr>
+      <td>${escapeHtml(label.replace("mi", " mi"))}</td>
+      <td>${fmtInt(ring.buildings)}</td>
+      <td>${fmtInt(ring.costar_units)}</td>
+      <td>${fmtInt(ring.census_2to4_units)}</td>
+      <td>${fmtInt(ring.total_units)}</td>
+      <td>${fmtInt(ring.est_pop)}</td>
+      <td>${fmtInt(ring.shadow_pop)}</td>
+    </tr>`;
+  }).join("");
+}
+
+function renderShadowMarketMap() {
+  if (!shadowMarketData || typeof L === "undefined") return;
+
+  const metricKey = document.getElementById("shadow-market-metric").value;
+  const metric = SHADOW_MARKET_METRICS[metricKey];
+  const data = shadowMarketData;
+  const official = data.official;
+  const mapData = data.distribution_proxy;
+  const mapPoints = mapData.points;
+
+  if (!shadowMarketMap) {
+    shadowMarketMap = L.map("shadow-market-map", {
+      center: Object.values(official.campuses)[0],
+      zoom: 13,
+      scrollWheelZoom: true,
+      minZoom: 8,
+      worldCopyJump: false,
+      maxBounds: [[-85, -180], [85, 180]],
+      maxBoundsViscosity: 1,
+    });
+
+    const baseLayers = {
+      "Street": L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+        attribution: "© OpenStreetMap contributors",
+        maxZoom: 19,
+        noWrap: true,
+      }),
+      "Satellite": L.tileLayer(
+        "https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}",
+        { attribution: "Tiles © Esri, Maxar, Earthstar Geographics", maxZoom: 19, noWrap: true },
+      ),
+      "Light": L.tileLayer(
+        "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+        { attribution: "© OSM · © CARTO", subdomains: "abcd", maxZoom: 19, noWrap: true },
+      ),
+    };
+    baseLayers.Street.addTo(shadowMarketMap);
+    L.control.layers(baseLayers, null, {
+      position: "topright",
+      collapsed: true,
+    }).addTo(shadowMarketMap);
+    addFullscreenControl(shadowMarketMap);
+    shadowMarketOverlay = L.layerGroup().addTo(shadowMarketMap);
+    shadowMarketMap.createPane("shadowCampusBoundaryPane");
+    const boundaryPane = shadowMarketMap.getPane("shadowCampusBoundaryPane");
+    boundaryPane.style.zIndex = 425;
+    boundaryPane.style.pointerEvents = "none";
+  } else {
+    shadowMarketOverlay.clearLayers();
+  }
+
+  const bounds = L.latLngBounds();
+  Object.entries(official.campuses).forEach(([campusName, coords]) => {
+    [...official.ring_miles].reverse().forEach((miles, reverseIndex) => {
+      const index = official.ring_miles.length - 1 - reverseIndex;
+      const color = SHADOW_RING_COLORS[index % SHADOW_RING_COLORS.length];
+      const circle = L.circle(coords, {
+        radius: miles * 1609.34,
+        color,
+        fillColor: color,
+        fillOpacity: 0.025,
+        opacity: 0.8,
+        weight: 2,
+      }).bindTooltip(`${official.ring_labels[index]} from ${campusName}`);
+      shadowMarketOverlay.addLayer(circle);
+      bounds.extend(circle.getBounds());
+    });
+  });
+
+  const positivePoints = mapPoints.filter((point) => Number(point[metricKey]) > 0);
+  const sortedValues = positivePoints
+    .map((point) => Number(point[metricKey]))
+    .sort((a, b) => a - b);
+  const displayCapIndex = Math.max(0, Math.ceil(sortedValues.length * 0.90) - 1);
+  const displayCap = sortedValues[displayCapIndex] || 1;
+  const heatPoints = positivePoints.map((point) => [
+    point.lat,
+    point.lon,
+    Math.min(1, Math.pow(Number(point[metricKey]) / displayCap, 0.42)),
+  ]);
+
+  if (typeof L.heatLayer === "function" && heatPoints.length) {
+    shadowMarketOverlay.addLayer(L.heatLayer(heatPoints, {
+      radius: 46,
+      blur: 22,
+      maxZoom: 16,
+      minOpacity: 0.50,
+      max: 1,
+      gradient: {
+        0.08: "#1d4ed8",
+        0.25: "#06b6d4",
+        0.45: "#84cc16",
+        0.65: "#facc15",
+        0.82: "#f97316",
+        1.0: "#dc2626",
+      },
+    }));
+  }
+
+  if (shadowMarketBoundaryData) {
+    const boundaryLayer = L.geoJSON(shadowMarketBoundaryData, {
+      pane: "shadowCampusBoundaryPane",
+      style: {
+        color: "#d32f2f",
+        weight: 2,
+        opacity: 0.95,
+        fillColor: "#d32f2f",
+        fillOpacity: 0.18,
+      },
+      interactive: false,
+    });
+    shadowMarketOverlay.addLayer(boundaryLayer);
+  }
+
+  positivePoints.forEach((point) => {
+    const tooltip = `
+      <div class="map-popup">
+        <div class="map-popup-head">
+          <div class="map-popup-eyebrow">Census block-group distribution</div>
+          <div class="map-popup-title">${escapeHtml(point.name)}</div>
+        </div>
+        <div class="map-popup-body">
+          <div class="map-popup-row">
+            <span class="map-popup-row-label">${escapeHtml(metric.label)}</span>
+            <span class="map-popup-row-value">${fmtInt(point[metricKey])}</span>
+          </div>
+          <div class="map-popup-row">
+            <span class="map-popup-row-label">Shadow population</span>
+            <span class="map-popup-row-value">${fmtInt(point.shadow_pop)}</span>
+          </div>
+          <div class="map-popup-row">
+            <span class="map-popup-row-label">Renters age 15–24</span>
+            <span class="map-popup-row-value">${fmtInt(point.renter_15_24)}</span>
+          </div>
+          <div class="map-popup-row">
+            <span class="map-popup-row-label">Sub-50 renter units</span>
+            <span class="map-popup-row-value">${fmtInt(point.renter_units_sub50)}</span>
+          </div>
+          <div class="map-popup-address">${escapeHtml(point.ring)} · ${fmtNum(point.distance_mi, 2)} mi to campus</div>
+        </div>
+      </div>`;
+    const pointMarker = L.circleMarker([point.lat, point.lon], {
+      radius: 6,
+      color: C.slate,
+      opacity: 0.28,
+      fillColor: "#ffffff",
+      fillOpacity: 0.08,
+      weight: 1,
+    }).bindTooltip(tooltip, {
+      className: "market-popup-wrapper shadow-market-tooltip",
+      direction: "auto",
+      offset: [10, 0],
+      sticky: false,
+      opacity: 1,
+    });
+    pointMarker.on("mouseover", () => positionShadowMarketTooltip(pointMarker));
+    shadowMarketOverlay.addLayer(pointMarker);
+  });
+
+  Object.entries(official.campuses).forEach(([campusName, coords]) => {
+    const marker = L.marker(coords, {
+      icon: campusMarkerIcon(true, MARKET.market_key, campusName),
+      zIndexOffset: 1000,
+    }).bindPopup(`<div class="map-popup">
+      <div class="map-popup-head">
+        <div class="map-popup-eyebrow">Anchor university</div>
+        <div class="map-popup-title">${escapeHtml(campusName)}</div>
+      </div>
+    </div>`);
+    shadowMarketOverlay.addLayer(marker);
+    bounds.extend(coords);
+  });
+
+  if (bounds.isValid()) {
+    shadowMarketMap.fitBounds(bounds, { padding: [35, 35], maxZoom: 14 });
+  }
+  setTimeout(() => shadowMarketMap.invalidateSize(), 0);
+
+  const ringLegend = official.ring_labels.map((label, index) => `
+    <span class="shadow-market-ring-key">
+      <span class="shadow-market-ring-swatch" style="background:${SHADOW_RING_COLORS[index % SHADOW_RING_COLORS.length]}"></span>
+      ${escapeHtml(label)}
+    </span>`).join("");
+  document.getElementById("shadow-market-legend").innerHTML = `
+    <strong>${escapeHtml(metric.label)}:</strong> ${fmtInt(mapData.total[metricKey])}
+    across ${fmtInt(mapData.total.block_groups)} Census block groups (ACS ${data.year})<br>
+    <strong>Visualization only:</strong> Census distribution proxy. Official KPI and
+    ring totals use the approved CoStar 5–49 + Census 2–4 methodology.<br>
+    <strong>Heat:</strong> Low <span class="shadow-market-gradient"></span> High
+    (90th percentile display cap: ${fmtInt(displayCap)})<br>
+    <strong>Definition:</strong> ${escapeHtml(metric.description)}<br>
+    <strong>Distance rings:</strong> ${ringLegend}`;
 }
 
 function bindPipelineToggle() {
@@ -1311,9 +1687,9 @@ function phasePill(phase) {
   </span>`;
 }
 
-function campusMarkerIcon(isAnchor, marketKey) {
-  // If we have a logo for this market AND this is the anchor campus,
-  // use the logo inside a circular badge. Otherwise fall back to the SVG icon.
+function campusMarkerIcon(isAnchor, marketKey, universityName = "University") {
+  // Anchor campuses use the dashboard logo when available and a readable
+  // university-name badge otherwise. Non-anchor campuses use the SVG icon.
   if (isAnchor && marketKey != null && LOGOS.has(marketKey)) {
     const file = LOGOS.get(marketKey);
     const url = `assets/campus-logos/${encodeURIComponent(file)}`;
@@ -1332,6 +1708,14 @@ function campusMarkerIcon(isAnchor, marketKey) {
       html: `<div class="logo-pin-bubble"><img src="${url}" alt="" style="${imgStyle}"></div>`,
       iconSize: [120, 56],
       iconAnchor: [60, 56],
+    });
+  }
+  if (isAnchor) {
+    return L.divIcon({
+      className: "leaflet-campus-label-pin",
+      html: `<div class="campus-label-bubble">${escapeHtml(universityName)}</div>`,
+      iconSize: [170, 64],
+      iconAnchor: [85, 64],
     });
   }
   return L.divIcon({
@@ -1365,9 +1749,25 @@ async function buildMap({ containerId, propertyFilter, markerStore }) {
   const propsWithCoords = PROPERTIES.filter(
     (p) => p.latitude != null && p.longitude != null && propertyFilter(p),
   );
-  const allCampuses = CAMPUSES.filter(
+  const campusByLocation = new Map();
+  CAMPUSES.filter(
     (c) => c.campus_lat != null && c.campus_lng != null,
-  );
+  ).forEach((campus) => {
+    const key = [
+      campus.school_key,
+      campus.university_name,
+      campus.campus_lat,
+      campus.campus_lng,
+    ].join("|");
+    const existing = campusByLocation.get(key);
+    if (
+      !existing
+      || Number(campus.enrollment_year || 0) > Number(existing.enrollment_year || 0)
+    ) {
+      campusByLocation.set(key, campus);
+    }
+  });
+  const allCampuses = [...campusByLocation.values()];
 
   if (propsWithCoords.length === 0 && allCampuses.length === 0) {
     container.innerHTML = `<div class="empty-state">No geocoded properties or campuses for this market.</div>`;
@@ -1442,7 +1842,7 @@ async function buildMap({ containerId, propertyFilter, markerStore }) {
   allCampuses.forEach((c) => {
     const isAnchor = c.university_name === MARKET.anchor_university;
     const marker = L.marker([c.campus_lat, c.campus_lng], {
-      icon: campusMarkerIcon(isAnchor, MARKET.market_key),
+      icon: campusMarkerIcon(isAnchor, MARKET.market_key, c.university_name),
       zIndexOffset: isAnchor ? 1000 : 500,
     }).addTo(mapInst);
     marker.bindPopup(`

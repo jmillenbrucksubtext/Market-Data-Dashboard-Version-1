@@ -37,3 +37,6 @@ b.schema/output/*.error.txt
 # Local-only easter eggs / experiments. The weekly refresh pushes with
 # `git add -A`, so anything meant to stay off the live site must be ignored.
 *.local.js
+
+# Census/TIGER response cache used by the shadow-market batch generator
+shadow_market/.cache/

@@ -1,0 +1,1526 @@
+{
+  "scope_rule": "Unique dashboard market_key where anchor_university is in POWER4_ANCHORS or is_pursuit equals 1",
+  "market_count": 69,
+  "power4_count": 65,
+  "subtext30_count": 30,
+  "pursuit_count": 28,
+  "markets": [
+    {
+      "market_key": 11,
+      "anchor_university": "Clemson University",
+      "city": "Clemson",
+      "state_abbr": "SC",
+      "school_key": 470,
+      "costar_university": "Clemson University",
+      "campus": [
+        34.6761105,
+        -82.8366374
+      ],
+      "counties": [
+        {
+          "fips": "45007",
+          "name": "Anderson County"
+        },
+        {
+          "fips": "45073",
+          "name": "Oconee County"
+        },
+        {
+          "fips": "45077",
+          "name": "Pickens County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 12,
+      "anchor_university": "University of Georgia",
+      "city": "Athens",
+      "state_abbr": "GA",
+      "school_key": 120,
+      "costar_university": "University of Georgia",
+      "campus": [
+        33.9480053,
+        -83.3773221
+      ],
+      "counties": [
+        {
+          "fips": "13059",
+          "name": "Clarke County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 13,
+      "anchor_university": "Auburn University",
+      "city": "Auburn",
+      "state_abbr": "AL",
+      "school_key": 7,
+      "costar_university": "Auburn University",
+      "campus": [
+        32.5933574,
+        -85.4951663
+      ],
+      "counties": [
+        {
+          "fips": "01081",
+          "name": "Lee County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 14,
+      "anchor_university": "University of Alabama",
+      "city": "Tuscaloosa",
+      "state_abbr": "AL",
+      "school_key": 11,
+      "costar_university": "The University of Alabama",
+      "campus": [
+        33.2140233,
+        -87.5391418
+      ],
+      "counties": [
+        {
+          "fips": "01125",
+          "name": "Tuscaloosa County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 15,
+      "anchor_university": "University of Mississippi",
+      "city": "Oxford",
+      "state_abbr": "MS",
+      "school_key": 254,
+      "costar_university": "The University of Mississippi",
+      "campus": [
+        34.3647324,
+        -89.538443
+      ],
+      "counties": [
+        {
+          "fips": "28071",
+          "name": "Lafayette County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 17,
+      "anchor_university": "Georgia Institute of Technology",
+      "city": "Atlanta",
+      "state_abbr": "GA",
+      "school_key": 110,
+      "costar_university": "Georgia Institute of Technology",
+      "campus": [
+        33.7756178,
+        -84.396285
+      ],
+      "counties": [
+        {
+          "fips": "13121",
+          "name": "Fulton County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 18,
+      "anchor_university": "Florida State University",
+      "city": "Tallahassee",
+      "state_abbr": "FL",
+      "school_key": 95,
+      "costar_university": "Florida State University",
+      "campus": [
+        30.4418778,
+        -84.2984889
+      ],
+      "counties": [
+        {
+          "fips": "12073",
+          "name": "Leon County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 20,
+      "anchor_university": "University of South Carolina",
+      "city": "columbia",
+      "state_abbr": "SC",
+      "school_key": 476,
+      "costar_university": "University of South Carolina",
+      "campus": [
+        33.996112,
+        -81.0274276
+      ],
+      "counties": [
+        {
+          "fips": "45063",
+          "name": "Lexington County"
+        },
+        {
+          "fips": "45079",
+          "name": "Richland County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 21,
+      "anchor_university": "Mississippi State University",
+      "city": "Starkville",
+      "state_abbr": "MS",
+      "school_key": 253,
+      "costar_university": "Mississippi State University",
+      "campus": [
+        33.4551742,
+        -88.7943766
+      ],
+      "counties": [
+        {
+          "fips": "28105",
+          "name": "Oktibbeha County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 24,
+      "anchor_university": "Texas A&M University",
+      "city": "College Station",
+      "state_abbr": "TX",
+      "school_key": 516,
+      "costar_university": "Texas A&M University",
+      "campus": [
+        30.618531,
+        -96.336499
+      ],
+      "counties": [
+        {
+          "fips": "48041",
+          "name": "Brazos County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 25,
+      "anchor_university": "University of Michigan",
+      "city": "Ann Arbor",
+      "state_abbr": "MI",
+      "school_key": 236,
+      "costar_university": "University of Michigan at Ann Arbor",
+      "campus": [
+        42.277145,
+        -83.740782
+      ],
+      "counties": [
+        {
+          "fips": "26161",
+          "name": "Washtenaw County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 27,
+      "anchor_university": "University of Texas at Austin",
+      "city": "Austin",
+      "state_abbr": "TX",
+      "school_key": 512,
+      "costar_university": "University of Texas at Austin",
+      "campus": [
+        30.2850284,
+        -97.7335226
+      ],
+      "counties": [
+        {
+          "fips": "48453",
+          "name": "Travis County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 31,
+      "anchor_university": "University of Houston",
+      "city": "Houston",
+      "state_abbr": "TX",
+      "school_key": 509,
+      "costar_university": "University of Houston",
+      "campus": [
+        29.7199489,
+        -95.3422334
+      ],
+      "counties": [
+        {
+          "fips": "48201",
+          "name": "Harris County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 37,
+      "anchor_university": "Southern Methodist University",
+      "city": "Dallas",
+      "state_abbr": "TX",
+      "school_key": 497,
+      "costar_university": "Southern Methodist University",
+      "campus": [
+        32.8412178,
+        -96.7845175
+      ],
+      "counties": [
+        {
+          "fips": "48113",
+          "name": "Dallas County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 43,
+      "anchor_university": "Northwestern University",
+      "city": "evanston",
+      "state_abbr": "IL",
+      "school_key": 141,
+      "costar_university": "Northwestern University",
+      "campus": [
+        42.0564594,
+        -87.675267
+      ],
+      "counties": [
+        {
+          "fips": "17031",
+          "name": "Cook County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 48,
+      "anchor_university": "University of Illinois at Urbana-Champaign",
+      "city": "Champaign",
+      "state_abbr": "IL",
+      "school_key": 143,
+      "costar_university": "University of Illinois at Urbana, Champaign",
+      "campus": [
+        40.1019523,
+        -88.2271615
+      ],
+      "counties": [
+        {
+          "fips": "17019",
+          "name": "Champaign County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 52,
+      "anchor_university": "University of Pittsburgh",
+      "city": "Pittsburgh",
+      "state_abbr": "PA",
+      "school_key": 443,
+      "costar_university": "University of Pittsburgh",
+      "campus": [
+        40.4443533,
+        -79.960835
+      ],
+      "counties": [
+        {
+          "fips": "42003",
+          "name": "Allegheny County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 60,
+      "anchor_university": "Texas Christian University",
+      "city": "Fort Worth",
+      "state_abbr": "TX",
+      "school_key": 520,
+      "costar_university": "Texas Christian University",
+      "campus": [
+        32.7083275,
+        -97.3595796
+      ],
+      "counties": [
+        {
+          "fips": "48439",
+          "name": "Tarrant County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 66,
+      "anchor_university": "Iowa State University",
+      "city": "Ames",
+      "state_abbr": "IA",
+      "school_key": 163,
+      "costar_university": "Iowa State University",
+      "campus": [
+        42.0266187,
+        -93.6464654
+      ],
+      "counties": [
+        {
+          "fips": "19169",
+          "name": "Story County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 86,
+      "anchor_university": "University of Missouri",
+      "city": "Columbia",
+      "state_abbr": "MO",
+      "school_key": 265,
+      "costar_university": "University of Missouri at Columbia",
+      "campus": [
+        38.9403808,
+        -92.3277375
+      ],
+      "counties": [
+        {
+          "fips": "29019",
+          "name": "Boone County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 100,
+      "anchor_university": "North Carolina State University",
+      "city": "Raleigh",
+      "state_abbr": "NC",
+      "school_key": 374,
+      "costar_university": "North Carolina State University",
+      "campus": [
+        35.7846633,
+        -78.6820946
+      ],
+      "counties": [
+        {
+          "fips": "37183",
+          "name": "Wake County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 118,
+      "anchor_university": "Indiana University Bloomington",
+      "city": "Bloomington",
+      "state_abbr": "IN",
+      "school_key": 155,
+      "costar_university": "Indiana University at Bloomington",
+      "campus": [
+        39.1784384,
+        -86.5133166
+      ],
+      "counties": [
+        {
+          "fips": "18105",
+          "name": "Monroe County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 121,
+      "anchor_university": "Vanderbilt University",
+      "city": "Nashville",
+      "state_abbr": "TN",
+      "school_key": 485,
+      "costar_university": "Vanderbilt University",
+      "campus": [
+        36.1447034,
+        -86.8026551
+      ],
+      "counties": [
+        {
+          "fips": "47037",
+          "name": "Davidson County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 122,
+      "anchor_university": "University of Oklahoma",
+      "city": "Norman",
+      "state_abbr": "OK",
+      "school_key": 416,
+      "costar_university": "University of Oklahoma",
+      "campus": [
+        35.2058936,
+        -97.4457137
+      ],
+      "counties": [
+        {
+          "fips": "40027",
+          "name": "Cleveland County"
+        },
+        {
+          "fips": "40087",
+          "name": "McClain County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 141,
+      "anchor_university": "University of Central Florida",
+      "city": "Orlando",
+      "state_abbr": "FL",
+      "school_key": 106,
+      "costar_university": "University of Central Florida",
+      "campus": [
+        28.6024274,
+        -81.2000599
+      ],
+      "counties": [
+        {
+          "fips": "12095",
+          "name": "Orange County"
+        },
+        {
+          "fips": "12117",
+          "name": "Seminole County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 146,
+      "anchor_university": "Duke University",
+      "city": "Durham",
+      "state_abbr": "NC",
+      "school_key": 368,
+      "costar_university": "Duke University",
+      "campus": [
+        36.0014258,
+        -78.9382286
+      ],
+      "counties": [
+        {
+          "fips": "37063",
+          "name": "Durham County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 155,
+      "anchor_university": "Ohio State University",
+      "city": "Columbus",
+      "state_abbr": "OH",
+      "school_key": 388,
+      "costar_university": "The Ohio State University",
+      "campus": [
+        40.0141905,
+        -83.0309143
+      ],
+      "counties": [
+        {
+          "fips": "39049",
+          "name": "Franklin County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 180,
+      "anchor_university": "University of Arkansas",
+      "city": "Fayetteville",
+      "state_abbr": "AR",
+      "school_key": 25,
+      "costar_university": "University of Arkansas",
+      "campus": [
+        36.0678324,
+        -94.1736551
+      ],
+      "counties": [
+        {
+          "fips": "05143",
+          "name": "Washington County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 185,
+      "anchor_university": "University of Minnesota Twin Cities",
+      "city": "Minneapolis",
+      "state_abbr": "MN",
+      "school_key": 241,
+      "costar_university": "University of Minnesota",
+      "campus": [
+        44.97399,
+        -93.2277285
+      ],
+      "counties": [
+        {
+          "fips": "27053",
+          "name": "Hennepin County"
+        },
+        {
+          "fips": "27123",
+          "name": "Ramsey County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 294,
+      "anchor_university": "Baylor University",
+      "city": "Waco",
+      "state_abbr": "TX",
+      "school_key": 502,
+      "costar_university": "Baylor University",
+      "campus": [
+        31.5497007,
+        -97.1143046
+      ],
+      "counties": [
+        {
+          "fips": "48309",
+          "name": "McLennan County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 334,
+      "anchor_university": "University of Wisconsin Madison",
+      "city": "Madison",
+      "state_abbr": "WI",
+      "school_key": 584,
+      "costar_university": "University of Wisconsin at Madison",
+      "campus": [
+        43.076592,
+        -89.4124875
+      ],
+      "counties": [
+        {
+          "fips": "55025",
+          "name": "Dane County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 353,
+      "anchor_university": "University of Louisville",
+      "city": "Louisville",
+      "state_abbr": "KY",
+      "school_key": 177,
+      "costar_university": "University of Louisville",
+      "campus": [
+        38.2122761,
+        -85.7585023
+      ],
+      "counties": [
+        {
+          "fips": "21111",
+          "name": "Jefferson County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 364,
+      "anchor_university": "University of Iowa",
+      "city": "Iowa City",
+      "state_abbr": "IA",
+      "school_key": 164,
+      "costar_university": "The University of Iowa",
+      "campus": [
+        41.6626963,
+        -91.5548998
+      ],
+      "counties": [
+        {
+          "fips": "19103",
+          "name": "Johnson County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 383,
+      "anchor_university": "University of Kansas",
+      "city": "Lawrence",
+      "state_abbr": "KS",
+      "school_key": 169,
+      "costar_university": "The University of Kansas",
+      "campus": [
+        38.9543439,
+        -95.2557961
+      ],
+      "counties": [
+        {
+          "fips": "20045",
+          "name": "Douglas County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 418,
+      "anchor_university": "University of South Florida",
+      "city": "Tampa",
+      "state_abbr": "FL",
+      "school_key": 105,
+      "costar_university": "University of South Florida at Tampa",
+      "campus": [
+        28.0587031,
+        -82.4138539
+      ],
+      "counties": [
+        {
+          "fips": "12057",
+          "name": "Hillsborough County"
+        }
+      ],
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 553,
+      "anchor_university": "University of Tennessee",
+      "city": "Knoxville",
+      "state_abbr": "TN",
+      "school_key": 492,
+      "costar_university": "The University of Tennessee, Knoxville",
+      "campus": [
+        35.9544013,
+        -83.9294564
+      ],
+      "counties": [
+        {
+          "fips": "47093",
+          "name": "Knox County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 567,
+      "anchor_university": "University of Kentucky",
+      "city": "Lexington",
+      "state_abbr": "KY",
+      "school_key": 176,
+      "costar_university": "University of Kentucky",
+      "campus": [
+        38.0306511,
+        -84.5039697
+      ],
+      "counties": [
+        {
+          "fips": "21067",
+          "name": "Fayette County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 568,
+      "anchor_university": "University of Virginia",
+      "city": "Charlottesville",
+      "state_abbr": "VA",
+      "school_key": 560,
+      "costar_university": "University of Virginia",
+      "campus": [
+        38.0335529,
+        -78.5079772
+      ],
+      "counties": [
+        {
+          "fips": "51003",
+          "name": "Albemarle County"
+        },
+        {
+          "fips": "51540",
+          "name": "Charlottesville city"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 590,
+      "anchor_university": "University of Florida",
+      "city": "Gainesville",
+      "state_abbr": "FL",
+      "school_key": 107,
+      "costar_university": "University of Florida",
+      "campus": [
+        29.6436325,
+        -82.3549302
+      ],
+      "counties": [
+        {
+          "fips": "12001",
+          "name": "Alachua County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 611,
+      "anchor_university": "Purdue University",
+      "city": "West Lafayette",
+      "state_abbr": "IN",
+      "school_key": 145,
+      "costar_university": "Purdue University",
+      "campus": [
+        40.4237054,
+        -86.9211946
+      ],
+      "counties": [
+        {
+          "fips": "18157",
+          "name": "Tippecanoe County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 629,
+      "anchor_university": "University of Nebraska Lincoln",
+      "city": "Lincoln",
+      "state_abbr": "NE",
+      "school_key": 273,
+      "costar_university": "University of Nebraska-Lincoln",
+      "campus": [
+        40.8201966,
+        -96.7004763
+      ],
+      "counties": [
+        {
+          "fips": "31109",
+          "name": "Lancaster County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 667,
+      "anchor_university": "Wake Forest University",
+      "city": "Winston Salem",
+      "state_abbr": "NC",
+      "school_key": 379,
+      "costar_university": "Wake Forest University",
+      "campus": [
+        36.1340985,
+        -80.2778951
+      ],
+      "counties": [
+        {
+          "fips": "37067",
+          "name": "Forsyth County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 732,
+      "anchor_university": "Syracuse University",
+      "city": "Syracuse",
+      "state_abbr": "NY",
+      "school_key": 362,
+      "costar_university": "Syracuse University",
+      "campus": [
+        43.0391534,
+        -76.1351158
+      ],
+      "counties": [
+        {
+          "fips": "36067",
+          "name": "Onondaga County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 823,
+      "anchor_university": "Oklahoma State University",
+      "city": "Stillwater",
+      "state_abbr": "OK",
+      "school_key": 411,
+      "costar_university": "Oklahoma State University",
+      "campus": [
+        36.1270236,
+        -97.0737222
+      ],
+      "counties": [
+        {
+          "fips": "40119",
+          "name": "Payne County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 896,
+      "anchor_university": "University of Notre Dame",
+      "city": "South Bend",
+      "state_abbr": "IN",
+      "school_key": 156,
+      "costar_university": "University of Notre Dame",
+      "campus": [
+        41.7055716,
+        -86.2353388
+      ],
+      "counties": [
+        {
+          "fips": "18141",
+          "name": "St. Joseph County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 940,
+      "anchor_university": "University of Washington",
+      "city": "Seattle",
+      "state_abbr": "WA",
+      "school_key": 565,
+      "costar_university": "University of Washington at Seattle",
+      "campus": [
+        47.6553351,
+        -122.3035199
+      ],
+      "counties": [
+        {
+          "fips": "53033",
+          "name": "King County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 946,
+      "anchor_university": "University of Southern California",
+      "city": "Los Angeles",
+      "state_abbr": "CA",
+      "school_key": 31,
+      "costar_university": "University of Southern California",
+      "campus": [
+        34.0223519,
+        -118.285117
+      ],
+      "counties": [
+        {
+          "fips": "06037",
+          "name": "Los Angeles County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 960,
+      "anchor_university": "Oregon State University",
+      "city": "Corvallis",
+      "state_abbr": "OR",
+      "school_key": 423,
+      "costar_university": "Oregon State University",
+      "campus": [
+        44.5637806,
+        -123.2794443
+      ],
+      "counties": [
+        {
+          "fips": "41003",
+          "name": "Benton County"
+        },
+        {
+          "fips": "41043",
+          "name": "Linn County"
+        }
+      ],
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 975,
+      "anchor_university": "University of California San Diego",
+      "city": "San Diego",
+      "state_abbr": "CA",
+      "school_key": 38,
+      "costar_university": "University of California, San Diego",
+      "campus": [
+        32.8800604,
+        -117.2340135
+      ],
+      "counties": [
+        {
+          "fips": "06073",
+          "name": "San Diego County"
+        }
+      ],
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 977,
+      "anchor_university": "University of Colorado Boulder",
+      "city": "Boulder",
+      "state_abbr": "CO",
+      "school_key": 69,
+      "costar_university": "University of Colorado at Boulder",
+      "campus": [
+        40.007581,
+        -105.2659417
+      ],
+      "counties": [
+        {
+          "fips": "08013",
+          "name": "Boulder County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 1002,
+      "anchor_university": "Texas Tech University",
+      "city": "Lubbock",
+      "state_abbr": "TX",
+      "school_key": 522,
+      "costar_university": "Texas Tech University",
+      "campus": [
+        33.5842591,
+        -101.8782822
+      ],
+      "counties": [
+        {
+          "fips": "48303",
+          "name": "Lubbock County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 1005,
+      "anchor_university": "University of Arizona",
+      "city": "Tucson",
+      "state_abbr": "AZ",
+      "school_key": 20,
+      "costar_university": "University of Arizona",
+      "campus": [
+        32.2318851,
+        -110.9501094
+      ],
+      "counties": [
+        {
+          "fips": "04019",
+          "name": "Pima County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 1006,
+      "anchor_university": "University of California Berkeley",
+      "city": "Berkeley",
+      "state_abbr": "CA",
+      "school_key": 62,
+      "costar_university": "University of California, Berkeley",
+      "campus": [
+        37.8718992,
+        -122.2585399
+      ],
+      "counties": [
+        {
+          "fips": "06001",
+          "name": "Alameda County"
+        },
+        {
+          "fips": "06013",
+          "name": "Contra Costa County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 1012,
+      "anchor_university": "University of Utah",
+      "city": "Salt Lake City",
+      "state_abbr": "UT",
+      "school_key": 533,
+      "costar_university": "The University of Utah",
+      "campus": [
+        40.7649368,
+        -111.8421021
+      ],
+      "counties": [
+        {
+          "fips": "49035",
+          "name": "Salt Lake County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 1152,
+      "anchor_university": "Arizona State University",
+      "city": "Tempe",
+      "state_abbr": "AZ",
+      "school_key": 19,
+      "costar_university": "Arizona State University",
+      "campus": [
+        33.4242399,
+        -111.9280527
+      ],
+      "counties": [
+        {
+          "fips": "04013",
+          "name": "Maricopa County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": false
+    },
+    {
+      "market_key": 1299,
+      "anchor_university": "University of Oregon",
+      "city": "Eugene",
+      "state_abbr": "OR",
+      "school_key": 424,
+      "costar_university": "University of Oregon",
+      "campus": [
+        44.0448302,
+        -123.0726055
+      ],
+      "counties": [
+        {
+          "fips": "41039",
+          "name": "Lane County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 1560,
+      "anchor_university": "Michigan State University",
+      "city": "East Lansing",
+      "state_abbr": "MI",
+      "school_key": 232,
+      "costar_university": "Michigan State University",
+      "campus": [
+        42.701848,
+        -84.4821719
+      ],
+      "counties": [
+        {
+          "fips": "26065",
+          "name": "Ingham County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 1804,
+      "anchor_university": "Louisiana State University",
+      "city": "Baton Rouge",
+      "state_abbr": "LA",
+      "school_key": 180,
+      "costar_university": "Louisiana State University",
+      "campus": [
+        30.4132579,
+        -91.1800023
+      ],
+      "counties": [
+        {
+          "fips": "22033",
+          "name": "East Baton Rouge Parish"
+        },
+        {
+          "fips": "22121",
+          "name": "West Baton Rouge Parish"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 2282,
+      "anchor_university": "Kansas State University",
+      "city": "Manhattan",
+      "state_abbr": "KS",
+      "school_key": 167,
+      "costar_university": "Kansas State University",
+      "campus": [
+        39.1974437,
+        -96.5847249
+      ],
+      "counties": [
+        {
+          "fips": "20149",
+          "name": "Pottawatomie County"
+        },
+        {
+          "fips": "20161",
+          "name": "Riley County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 2294,
+      "anchor_university": "University of Maryland College Park",
+      "city": "College Park",
+      "state_abbr": "MD",
+      "school_key": 204,
+      "costar_university": "University of Maryland",
+      "campus": [
+        38.9869183,
+        -76.9425543
+      ],
+      "counties": [
+        {
+          "fips": "24031",
+          "name": "Montgomery County"
+        },
+        {
+          "fips": "24033",
+          "name": "Prince George's County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 2344,
+      "anchor_university": "University of North Carolina at Chapel Hill",
+      "city": "Chapel Hill",
+      "state_abbr": "NC",
+      "school_key": 375,
+      "costar_university": "University of North Carolina at Chapel Hill",
+      "campus": [
+        35.9049122,
+        -79.0469134
+      ],
+      "counties": [
+        {
+          "fips": "37063",
+          "name": "Durham County"
+        },
+        {
+          "fips": "37135",
+          "name": "Orange County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 2354,
+      "anchor_university": "University of Cincinnati",
+      "city": "Cincinnati",
+      "state_abbr": "OH",
+      "school_key": 400,
+      "costar_university": "University of Cincinnati",
+      "campus": [
+        39.1329219,
+        -84.5149504
+      ],
+      "counties": [
+        {
+          "fips": "21037",
+          "name": "Campbell County"
+        },
+        {
+          "fips": "39061",
+          "name": "Hamilton County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 2375,
+      "anchor_university": "Penn State",
+      "city": "State College",
+      "state_abbr": "PA",
+      "school_key": 455,
+      "costar_university": "Pennsylvania State University",
+      "campus": [
+        40.7982133,
+        -77.8599084
+      ],
+      "counties": [
+        {
+          "fips": "42027",
+          "name": "Centre County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 2392,
+      "anchor_university": "Brigham Young University",
+      "city": "Provo",
+      "state_abbr": "UT",
+      "school_key": 530,
+      "costar_university": "Brigham Young University",
+      "campus": [
+        40.2518435,
+        -111.6493156
+      ],
+      "counties": [
+        {
+          "fips": "49049",
+          "name": "Utah County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 2400,
+      "anchor_university": "Virginia Polytechnic Institute and State University",
+      "city": "Blacksburg",
+      "state_abbr": "VA",
+      "school_key": 557,
+      "costar_university": "Virginia Polytechnic Institute and State University",
+      "campus": [
+        37.2283843,
+        -80.4234167
+      ],
+      "counties": [
+        {
+          "fips": "51121",
+          "name": "Montgomery County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 2407,
+      "anchor_university": "West Virginia University",
+      "city": "Morgantown",
+      "state_abbr": "WV",
+      "school_key": 579,
+      "costar_university": "West Virginia University",
+      "campus": [
+        39.6361396,
+        -79.9559358
+      ],
+      "counties": [
+        {
+          "fips": "54061",
+          "name": "Monongalia County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    },
+    {
+      "market_key": 2417,
+      "anchor_university": "Rutgers University",
+      "city": "New Brunswick",
+      "state_abbr": "NJ",
+      "school_key": 598,
+      "costar_university": "Rutgers University",
+      "campus": [
+        40.5008186,
+        -74.4495878
+      ],
+      "counties": [
+        {
+          "fips": "34023",
+          "name": "Middlesex County"
+        },
+        {
+          "fips": "34035",
+          "name": "Somerset County"
+        }
+      ],
+      "power4": true,
+      "subtext30": true,
+      "pursuit": true
+    },
+    {
+      "market_key": 2418,
+      "anchor_university": "University of Connecticut",
+      "city": "Mansfield",
+      "state_abbr": "CT",
+      "school_key": 599,
+      "costar_university": "University of Connecticut",
+      "campus": [
+        41.8077414,
+        -72.2539805
+      ],
+      "counties": [
+        {
+          "fips": "09110",
+          "name": "Capitol Planning Region"
+        },
+        {
+          "fips": "09150",
+          "name": "Northeastern Connecticut Planning Region"
+        }
+      ],
+      "power4": false,
+      "subtext30": false,
+      "pursuit": true
+    },
+    {
+      "market_key": 2487,
+      "anchor_university": "Stanford University",
+      "city": "stanford",
+      "state_abbr": "CA",
+      "school_key": 681,
+      "costar_university": "Stanford University",
+      "campus": [
+        37.42766051485058,
+        -122.17006674799468
+      ],
+      "counties": [
+        {
+          "fips": "06081",
+          "name": "San Mateo County"
+        },
+        {
+          "fips": "06085",
+          "name": "Santa Clara County"
+        }
+      ],
+      "power4": true,
+      "subtext30": false,
+      "pursuit": false
+    }
+  ]
+}

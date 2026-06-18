@@ -51,6 +51,8 @@ let shadowMarketData = null;
 let shadowMarketMap = null;
 let shadowMarketOverlay = null;
 let shadowMarketLoadPromise = null;
+let shadowMarketBoundaryData = null;
+let shadowMarketBoundaryLoaded = false;
 
 document.addEventListener("DOMContentLoaded", async () => {
   const params = new URLSearchParams(location.search);
@@ -990,6 +992,73 @@ const SHADOW_MARKET_METRICS = {
 
 const SHADOW_RING_COLORS = ["#a95818", "#c79830", "#16352e", "#5a544f"];
 
+function positionShadowMarketTooltip(layer) {
+  if (!shadowMarketMap || !layer) return;
+  const tooltip = layer.getTooltip();
+  if (!tooltip) return;
+
+  const point = shadowMarketMap.latLngToContainerPoint(layer.getLatLng());
+  const mapSize = shadowMarketMap.getSize();
+  const verticalGuard = 175;
+  let direction;
+  if (point.y < verticalGuard) {
+    direction = "bottom";
+  } else if (point.y > mapSize.y - verticalGuard) {
+    direction = "top";
+  } else {
+    direction = point.x < mapSize.x / 2 ? "right" : "left";
+  }
+  tooltip.options.direction = direction;
+  tooltip.options.offset = L.point(
+    direction === "top" || direction === "bottom" ? 0 : 10,
+    direction === "top" || direction === "bottom" ? 10 : 0,
+  );
+  tooltip.update();
+  requestAnimationFrame(() => {
+    const element = tooltip.getElement();
+    if (!element) return;
+    const mapRect = shadowMarketMap.getContainer().getBoundingClientRect();
+    const tooltipRect = element.getBoundingClientRect();
+    const padding = 8;
+    let dx = 0;
+    let dy = 0;
+    if (tooltipRect.left < mapRect.left + padding) {
+      dx = mapRect.left + padding - tooltipRect.left;
+    } else if (tooltipRect.right > mapRect.right - padding) {
+      dx = mapRect.right - padding - tooltipRect.right;
+    }
+    if (tooltipRect.top < mapRect.top + padding) {
+      dy = mapRect.top + padding - tooltipRect.top;
+    } else if (tooltipRect.bottom > mapRect.bottom - padding) {
+      dy = mapRect.bottom - padding - tooltipRect.bottom;
+    }
+    if (dx || dy) {
+      const currentPosition = L.DomUtil.getPosition(element);
+      if (currentPosition) {
+        L.DomUtil.setPosition(
+          element,
+          currentPosition.add(L.point(dx, dy)),
+        );
+      }
+    }
+  });
+}
+
+async function loadShadowMarketBoundary() {
+  if (shadowMarketBoundaryLoaded) return shadowMarketBoundaryData;
+  shadowMarketBoundaryLoaded = true;
+  try {
+    const response = await fetch(
+      `assets/campus-boundaries/${MARKET.market_key}.geojson`,
+      { cache: "no-cache" },
+    );
+    if (response.ok) shadowMarketBoundaryData = await response.json();
+  } catch {
+    shadowMarketBoundaryData = null;
+  }
+  return shadowMarketBoundaryData;
+}
+
 async function renderShadowMarketTab() {
   if (shadowMarketData) {
     if (shadowMarketMap) setTimeout(() => shadowMarketMap.invalidateSize(), 0);
@@ -1022,6 +1091,7 @@ async function renderShadowMarketTab() {
         throw new Error("Market key does not match the current dashboard market");
       }
       shadowMarketData = payload;
+      await loadShadowMarketBoundary();
       renderShadowMarketSummary();
       loading.hidden = true;
       content.hidden = false;
@@ -1110,6 +1180,10 @@ function renderShadowMarketMap() {
     }).addTo(shadowMarketMap);
     addFullscreenControl(shadowMarketMap);
     shadowMarketOverlay = L.layerGroup().addTo(shadowMarketMap);
+    shadowMarketMap.createPane("shadowCampusBoundaryPane");
+    const boundaryPane = shadowMarketMap.getPane("shadowCampusBoundaryPane");
+    boundaryPane.style.zIndex = 425;
+    boundaryPane.style.pointerEvents = "none";
   } else {
     shadowMarketOverlay.clearLayers();
   }
@@ -1162,6 +1236,21 @@ function renderShadowMarketMap() {
     }));
   }
 
+  if (shadowMarketBoundaryData) {
+    const boundaryLayer = L.geoJSON(shadowMarketBoundaryData, {
+      pane: "shadowCampusBoundaryPane",
+      style: {
+        color: "#d32f2f",
+        weight: 2,
+        opacity: 0.95,
+        fillColor: "#d32f2f",
+        fillOpacity: 0.18,
+      },
+      interactive: false,
+    });
+    shadowMarketOverlay.addLayer(boundaryLayer);
+  }
+
   positivePoints.forEach((point) => {
     const tooltip = `
       <div class="map-popup">
@@ -1189,25 +1278,27 @@ function renderShadowMarketMap() {
           <div class="map-popup-address">${escapeHtml(point.ring)} · ${fmtNum(point.distance_mi, 2)} mi to campus</div>
         </div>
       </div>`;
-    shadowMarketOverlay.addLayer(
-      L.circleMarker([point.lat, point.lon], {
-        radius: 6,
-        color: C.slate,
-        opacity: 0.28,
-        fillColor: "#ffffff",
-        fillOpacity: 0.08,
-        weight: 1,
-      }).bindTooltip(tooltip, {
-        className: "market-popup-wrapper",
-        maxWidth: 290,
-        sticky: true,
-      }),
-    );
+    const pointMarker = L.circleMarker([point.lat, point.lon], {
+      radius: 6,
+      color: C.slate,
+      opacity: 0.28,
+      fillColor: "#ffffff",
+      fillOpacity: 0.08,
+      weight: 1,
+    }).bindTooltip(tooltip, {
+      className: "market-popup-wrapper shadow-market-tooltip",
+      direction: "auto",
+      offset: [10, 0],
+      sticky: false,
+      opacity: 1,
+    });
+    pointMarker.on("mouseover", () => positionShadowMarketTooltip(pointMarker));
+    shadowMarketOverlay.addLayer(pointMarker);
   });
 
   Object.entries(official.campuses).forEach(([campusName, coords]) => {
     const marker = L.marker(coords, {
-      icon: campusMarkerIcon(true, MARKET.market_key),
+      icon: campusMarkerIcon(true, MARKET.market_key, campusName),
       zIndexOffset: 1000,
     }).bindPopup(`<div class="map-popup">
       <div class="map-popup-head">
@@ -1596,9 +1687,9 @@ function phasePill(phase) {
   </span>`;
 }
 
-function campusMarkerIcon(isAnchor, marketKey) {
-  // If we have a logo for this market AND this is the anchor campus,
-  // use the logo inside a circular badge. Otherwise fall back to the SVG icon.
+function campusMarkerIcon(isAnchor, marketKey, universityName = "University") {
+  // Anchor campuses use the dashboard logo when available and a readable
+  // university-name badge otherwise. Non-anchor campuses use the SVG icon.
   if (isAnchor && marketKey != null && LOGOS.has(marketKey)) {
     const file = LOGOS.get(marketKey);
     const url = `assets/campus-logos/${encodeURIComponent(file)}`;
@@ -1617,6 +1708,14 @@ function campusMarkerIcon(isAnchor, marketKey) {
       html: `<div class="logo-pin-bubble"><img src="${url}" alt="" style="${imgStyle}"></div>`,
       iconSize: [120, 56],
       iconAnchor: [60, 56],
+    });
+  }
+  if (isAnchor) {
+    return L.divIcon({
+      className: "leaflet-campus-label-pin",
+      html: `<div class="campus-label-bubble">${escapeHtml(universityName)}</div>`,
+      iconSize: [170, 64],
+      iconAnchor: [85, 64],
     });
   }
   return L.divIcon({
@@ -1650,9 +1749,25 @@ async function buildMap({ containerId, propertyFilter, markerStore }) {
   const propsWithCoords = PROPERTIES.filter(
     (p) => p.latitude != null && p.longitude != null && propertyFilter(p),
   );
-  const allCampuses = CAMPUSES.filter(
+  const campusByLocation = new Map();
+  CAMPUSES.filter(
     (c) => c.campus_lat != null && c.campus_lng != null,
-  );
+  ).forEach((campus) => {
+    const key = [
+      campus.school_key,
+      campus.university_name,
+      campus.campus_lat,
+      campus.campus_lng,
+    ].join("|");
+    const existing = campusByLocation.get(key);
+    if (
+      !existing
+      || Number(campus.enrollment_year || 0) > Number(existing.enrollment_year || 0)
+    ) {
+      campusByLocation.set(key, campus);
+    }
+  });
+  const allCampuses = [...campusByLocation.values()];
 
   if (propsWithCoords.length === 0 && allCampuses.length === 0) {
     container.innerHTML = `<div class="empty-state">No geocoded properties or campuses for this market.</div>`;
@@ -1727,7 +1842,7 @@ async function buildMap({ containerId, propertyFilter, markerStore }) {
   allCampuses.forEach((c) => {
     const isAnchor = c.university_name === MARKET.anchor_university;
     const marker = L.marker([c.campus_lat, c.campus_lng], {
-      icon: campusMarkerIcon(isAnchor, MARKET.market_key),
+      icon: campusMarkerIcon(isAnchor, MARKET.market_key, c.university_name),
       zIndexOffset: isAnchor ? 1000 : 500,
     }).addTo(mapInst);
     marker.bindPopup(`

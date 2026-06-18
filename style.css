@@ -1398,6 +1398,44 @@ h1, h2, h3, .serif {
   color: var(--surface);
 }
 
+/* Heatmap dots use hover tooltips rather than click popups. Leaflet defaults
+   tooltips to white-space: nowrap, which can push metric labels beyond the
+   card and map edge. Keep the card bounded and allow all content to wrap. */
+.leaflet-tooltip.shadow-market-tooltip {
+  width: min(280px, calc(100vw - 48px));
+  max-width: none;
+  padding: 0;
+  border: 1px solid var(--beige-deep);
+  border-radius: 10px;
+  background: var(--surface);
+  color: var(--slate);
+  box-shadow: 0 12px 32px rgba(43, 40, 37, 0.18),
+              0 2px 6px rgba(43, 40, 37, 0.10);
+  white-space: normal;
+  overflow: hidden;
+  pointer-events: none;
+}
+.leaflet-tooltip.shadow-market-tooltip::before {
+  border-color: transparent;
+}
+.leaflet-tooltip.shadow-market-tooltip .map-popup {
+  width: 100%;
+  max-width: 100%;
+  white-space: normal;
+}
+.leaflet-tooltip.shadow-market-tooltip .map-popup-title,
+.leaflet-tooltip.shadow-market-tooltip .map-popup-address,
+.leaflet-tooltip.shadow-market-tooltip .map-popup-row-label {
+  overflow-wrap: anywhere;
+}
+.leaflet-tooltip.shadow-market-tooltip .map-popup-row-label {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+.leaflet-tooltip.shadow-market-tooltip .map-popup-row-value {
+  flex: 0 0 auto;
+}
+
 /* Map popup content - property & campus pins on the market and competitive
    set maps. Mirrors the chart-bubble visual language (white card, thin
    border, brand typography) instead of the default Leaflet plain-text look. */
@@ -1791,6 +1829,51 @@ h1, h2, h3, .serif {
   width: auto !important;
   height: auto !important;
   object-fit: contain;
+}
+
+/* Clean text fallback for the few campuses without a logo asset. This uses
+   the existing dashboard university name instead of exposing the raw SVG
+   fallback as an unclear cluster of symbols. */
+.leaflet-campus-label-pin {
+  display: flex !important;
+  align-items: flex-end;
+  justify-content: center;
+  background: transparent;
+}
+.leaflet-campus-label-pin .campus-label-bubble {
+  position: relative;
+  max-width: 150px;
+  padding: 7px 10px;
+  border: 2px solid var(--lime);
+  border-radius: 8px;
+  background: var(--surface);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+  color: var(--everest);
+  font: 700 10px/1.2 "Pragmatica", sans-serif;
+  letter-spacing: 0.02em;
+  text-align: center;
+  white-space: normal;
+}
+.leaflet-campus-label-pin .campus-label-bubble::after {
+  content: "";
+  position: absolute;
+  bottom: -7px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 6px solid transparent;
+  border-right: 6px solid transparent;
+  border-top: 7px solid var(--lime);
+}
+.leaflet-campus-label-pin .campus-label-bubble::before {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  bottom: -4px;
+  left: 50%;
+  transform: translateX(-50%);
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 5px solid var(--surface);
 }
 
 /* Property table customizations -------------------------------- */

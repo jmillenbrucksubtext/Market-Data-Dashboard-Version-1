@@ -1,0 +1,252 @@
+{
+  "schools": [
+    {
+      "market_key": 1152,
+      "market_name": "Arizona State University",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 3,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 13,
+      "market_name": "Auburn University",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 4,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 11,
+      "market_name": "Clemson University",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 3,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 18,
+      "market_name": "Florida State University",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 9,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 17,
+      "market_name": "Georgia Institute of Technology",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 7,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 118,
+      "market_name": "Indiana University Bloomington",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 6,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 1804,
+      "market_name": "Louisiana State University",
+      "is_subtext30": 0,
+      "is_pursuit": 1,
+      "n_buildings": 1,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 155,
+      "market_name": "Ohio State University",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 6,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 2375,
+      "market_name": "Penn State",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 4,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 611,
+      "market_name": "Purdue University",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 3,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 24,
+      "market_name": "Texas A&M University",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 4,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 14,
+      "market_name": "University of Alabama",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 1,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 1005,
+      "market_name": "University of Arizona",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 2,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 180,
+      "market_name": "University of Arkansas",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 2,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 975,
+      "market_name": "University of California San Diego",
+      "is_subtext30": 0,
+      "is_pursuit": 1,
+      "n_buildings": 7,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 141,
+      "market_name": "University of Central Florida",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 7,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 977,
+      "market_name": "University of Colorado Boulder",
+      "is_subtext30": 0,
+      "is_pursuit": 1,
+      "n_buildings": 2,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 590,
+      "market_name": "University of Florida",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 7,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 12,
+      "market_name": "University of Georgia",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 5,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 48,
+      "market_name": "University of Illinois at Urbana-Champaign",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 3,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 567,
+      "market_name": "University of Kentucky",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 2,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 2294,
+      "market_name": "University of Maryland College Park",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 4,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 25,
+      "market_name": "University of Michigan",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 5,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 15,
+      "market_name": "University of Mississippi",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 2,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 2344,
+      "market_name": "University of North Carolina at Chapel Hill",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 1,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 52,
+      "market_name": "University of Pittsburgh",
+      "is_subtext30": 1,
+      "is_pursuit": 0,
+      "n_buildings": 1,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 20,
+      "market_name": "University of South Carolina",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 5,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 418,
+      "market_name": "University of South Florida",
+      "is_subtext30": 0,
+      "is_pursuit": 1,
+      "n_buildings": 3,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 553,
+      "market_name": "University of Tennessee",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 7,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 27,
+      "market_name": "University of Texas at Austin",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 8,
+      "as_of": "2026-06-01"
+    },
+    {
+      "market_key": 334,
+      "market_name": "University of Wisconsin Madison",
+      "is_subtext30": 1,
+      "is_pursuit": 1,
+      "n_buildings": 6,
+      "as_of": "2026-06-01"
+    }
+  ]
+}

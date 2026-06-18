@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market State - New Supply Report</title>
+  <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
+  <link rel="stylesheet" href="style.css?v=46">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+  <style>
+    :root {
+      --slate: #2b2825; --slate70: #5a544f; --slate50: #837c75;
+      --slate30: #b6b1ab; --everest: #16352e; --birch: #a95818;
+      --beige: #f7f1e3; --beige-deep: #ede5cf; --lime: #c1d100; --warn: #c79830;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    .ms-body {
+      font-family: "Pragmatica", -apple-system, "Segoe UI", sans-serif;
+      color: var(--slate); background: #f3eee2;
+      font-variant-numeric: tabular-nums;
+      padding: 22px 26px 60px;
+    }
+    .ms-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 16px; }
+    .ms-head h1 {
+      font-family: "Mencken Std", Georgia, serif;
+      font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.01em;
+    }
+    .ms-head p { margin: 4px 0 0; color: var(--slate70); font-size: 12.5px; max-width: 720px; }
+    .ms-asof { font-size: 11px; color: var(--slate50); white-space: nowrap; }
+    .ms-asof .v { font-weight: 700; color: var(--slate); }
+
+    .ms-levels { display: flex; gap: 6px; margin: 18px 0 12px; border-bottom: 2px solid var(--beige-deep); }
+    .ms-levels button {
+      border: none; background: none; padding: 9px 16px; cursor: pointer;
+      font: 700 13px "Pragmatica", sans-serif; color: var(--slate70);
+      border-bottom: 3px solid transparent; margin-bottom: -2px;
+    }
+    .ms-levels button.active { color: var(--everest); border-bottom-color: var(--everest); }
+
+    .ms-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 14px; margin-bottom: 18px; }
+    .ms-filter { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--slate50); display: inline-flex; align-items: center; gap: 7px; }
+    .ms-filter select {
+      font: 600 13px "Pragmatica", sans-serif; color: var(--slate);
+      padding: 6px 10px; border: 1px solid var(--slate30); border-radius: 7px; background: #fff; text-transform: none; letter-spacing: 0;
+    }
+    .ms-chips { display: inline-flex; gap: 5px; }
+    .ms-chip {
+      border: 1px solid var(--slate30); background: #fff; color: var(--slate70);
+      padding: 5px 11px; border-radius: 999px; font: 700 11px "Pragmatica", sans-serif; cursor: pointer;
+    }
+    .ms-chip.active { background: var(--everest); color: #fff; border-color: var(--everest); }
+    .ms-cohort { display: inline-flex; border: 1px solid var(--slate30); border-radius: 7px; overflow: hidden; }
+    .ms-cohort button { border: none; background: #fff; color: var(--slate70); padding: 6px 12px; cursor: pointer; font: 700 11px "Pragmatica", sans-serif; }
+    .ms-cohort button.active { background: var(--lime); color: var(--slate); }
+    .ms-cohort button + button { border-left: 1px solid var(--slate30); }
+    .ms-anchor { margin: 2px 0 14px; }
+    .ms-reportbar { margin: 0 0 16px; display: flex; gap: 9px; flex-wrap: wrap; }
+    .ms-reportbtn { display: inline-block; background: var(--everest); color: #fff; text-decoration: none;
+      padding: 8px 16px; border-radius: 999px; font: 700 12px "Pragmatica", sans-serif; }
+    .ms-reportbtn:hover { background: var(--slate); }
+    .ms-reportbtn-alt { background: var(--birch); }
+    .ms-reportbtn-alt:hover { background: #8a4712; }
+
+    .ms-kpis { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; margin-bottom: 18px; }
+    .ms-kpi { background: #fff; border: 1px solid var(--beige-deep); border-radius: 9px; padding: 11px 13px; }
+    .ms-kpi .l { font-size: 9.5px; font-weight: 700; letter-spacing: .07em; text-transform: uppercase; color: var(--slate50); }
+    .ms-kpi .v { font-size: 21px; font-weight: 700; margin-top: 3px; font-family: "Mencken Std", Georgia, serif; }
+    .ms-kpi .s { font-size: 10px; color: var(--slate50); margin-top: 1px; }
+
+    .ms-card { background: #fff; border: 1px solid var(--beige-deep); border-radius: 11px; padding: 14px 16px 16px; margin-bottom: 16px; }
+    .ms-card > h2 { font-family: "Mencken Std", Georgia, serif; font-size: 16px; margin: 0 0 2px; }
+    .ms-card > p.sub { margin: 0 0 12px; font-size: 11.5px; color: var(--slate70); }
+    .ms-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); gap: 16px; }
+    .ms-chart { min-width: 0; }
+    .ms-chart h3 { font-size: 11px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase; color: var(--slate70); margin: 0 0 8px; }
+    .ms-chart-wrap { position: relative; height: 240px; }
+    .ms-chart-wrap.tall { height: 300px; }
+
+    table.ms-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    table.ms-table thead th { text-align: right; padding: 7px 9px; background: var(--everest); color: #fff; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; font-weight: 700; position: sticky; top: 0; }
+    table.ms-table thead th:first-child { text-align: left; }
+    table.ms-table tbody td { text-align: right; padding: 6px 9px; border-bottom: 1px solid var(--beige-deep); color: var(--slate70); }
+    table.ms-table tbody td:first-child { text-align: left; font-weight: 700; color: var(--slate); }
+    table.ms-table tbody tr:nth-child(even) td { background: var(--beige); }
+    table.ms-table tbody tr.clickable { cursor: pointer; }
+    table.ms-table tbody tr.clickable:hover td { background: var(--beige-deep); }
+    .ms-tag { display: inline-block; border-radius: 999px; padding: 1px 7px; font-size: 9px; font-weight: 700; margin-left: 5px; }
+    .ms-tag.s30 { background: var(--lime); color: var(--slate); }
+    .ms-tag.pursuit { background: var(--everest); color: #fff; }
+    .ms-table-wrap { overflow: auto; max-height: 520px; }
+    .ms-empty { padding: 40px; text-align: center; color: var(--slate70); }
+    .ms-note { font-size: 10.5px; color: var(--slate50); margin-top: 8px; }
+    .ms-banner { background: var(--beige); border: 1px solid var(--beige-deep); border-left: 4px solid var(--birch);
+                 border-radius: 9px; padding: 11px 14px; margin-bottom: 16px; font-size: 11.5px; line-height: 1.5; color: var(--slate70); }
+    .ms-banner b { color: var(--slate); }
+  </style>
+</head>
+<body class="ms-body">
+  <div class="ms-top">
+    <div class="ms-head">
+      <h1 id="ms-h1">State of the Student Housing Market</h1>
+      <p id="ms-sub">New-supply cohort: buildings delivered 2023-2026, over 100 beds, within 1 mile of campus, across the Subtext-30 and Pursuit markets. Trends are read across delivery vintages.</p>
+    </div>
+    <div class="ms-asof">Data as of <span class="v" id="ms-asof">-</span></div>
+  </div>
+
+  <nav class="ms-levels" id="ms-levels">
+    <button data-level="national" class="active">National</button>
+    <button data-level="school">School</button>
+    <button data-level="property">Property</button>
+  </nav>
+
+  <div class="ms-filters">
+    <label class="ms-filter" id="ms-school-wrap" hidden>School <select id="ms-school"></select></label>
+    <label class="ms-filter" id="ms-building-wrap" hidden>Building <select id="ms-building"></select></label>
+    <div class="ms-chips" id="ms-vintages"></div>
+    <div class="ms-cohort" id="ms-cohort">
+      <button data-cohort="all" class="active">All</button>
+      <button data-cohort="s30">Subtext-30</button>
+      <button data-cohort="pursuit">Pursuit</button>
+    </div>
+  </div>
+
+  <div id="ms-content"><div class="ms-empty">Loading…</div></div>
+
+  <script src="market-state.js?v=15"></script>
+</body>
+</html>

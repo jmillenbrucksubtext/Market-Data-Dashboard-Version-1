@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Market State - Report</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+  @font-face { font-family:"Pragmatica"; src:url("assets/fonts/Pragmatica-Book.otf") format("opentype"); font-weight:400; font-display:swap; }
+  @font-face { font-family:"Pragmatica"; src:url("assets/fonts/Pragmatica-Bold.otf") format("opentype"); font-weight:700; font-display:swap; }
+  @font-face { font-family:"Mencken Std"; src:url("assets/fonts/MenckenStd-Bold.otf") format("opentype"); font-weight:700; font-display:swap; }
+  :root {
+    --slate:#2b2825; --slate70:#5a544f; --slate50:#837c75; --slate30:#b6b1ab;
+    --everest:#16352e; --birch:#a95818; --beige:#f7f1e3; --beige-deep:#ede5cf;
+    --lime:#c1d100; --warn:#c79830;
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { font-family:"Pragmatica",-apple-system,"Segoe UI",sans-serif; font-size:10.5px; color:var(--slate);
+         background:#d8d4ce; font-variant-numeric:tabular-nums; -webkit-print-color-adjust:exact; print-color-adjust:exact; }
+  .sheet { width:8.5in; min-height:11in; margin:18px auto; padding:0.5in 0.55in; background:#fff;
+           box-shadow:0 4px 18px rgba(43,40,37,.25); display:flex; flex-direction:column; }
+  @page { size:letter; margin:0; }
+  @media print {
+    body { background:#fff; }
+    .sheet { margin:0; box-shadow:none; page-break-after:always; min-height:0; height:10.98in; overflow:hidden; }
+    .sheet:last-of-type { page-break-after:avoid; }
+    .print-btn, #loading { display:none !important; }
+  }
+  .print-btn { position:fixed; top:14px; right:16px; z-index:10; background:var(--everest); color:#fff; border:none;
+               border-radius:999px; padding:10px 20px; font:700 13px "Pragmatica",sans-serif; cursor:pointer;
+               box-shadow:0 3px 10px rgba(43,40,37,.35); }
+  .print-btn:hover { background:var(--slate); }
+  .rep-head { display:flex; justify-content:space-between; align-items:flex-end; border-bottom:3px solid var(--everest);
+              padding-bottom:10px; margin-bottom:14px; }
+  .rep-eyebrow { font-size:9px; font-weight:700; letter-spacing:.18em; text-transform:uppercase; color:var(--birch); margin-bottom:4px; }
+  .rep-title { font-family:"Mencken Std",Georgia,serif; font-size:25px; font-weight:700; line-height:1.1; letter-spacing:-0.01em; }
+  .rep-sub { font-size:11px; color:var(--slate70); margin-top:3px; }
+  .rep-meta { text-align:right; font-size:9.5px; color:var(--slate50); }
+  .sec { font-family:"Mencken Std",Georgia,serif; font-size:14px; font-weight:700; border-bottom:1px solid var(--beige-deep);
+         padding-bottom:4px; margin:14px 0 8px; }
+  .sec:first-of-type { margin-top:0; }
+  .kpis { display:grid; grid-template-columns:repeat(5,1fr); gap:7px; }
+  .kpi { background:var(--beige); border:1px solid var(--beige-deep); border-radius:6px; padding:7px 9px; }
+  .kpi-label { font-size:7.5px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; color:var(--slate50); }
+  .kpi-value { font-size:16px; font-weight:700; margin-top:2px; }
+  .kpi-sub { font-size:8px; color:var(--slate50); margin-top:1px; }
+  .charts2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+  .chart-card { border:1px solid var(--beige-deep); border-radius:6px; padding:8px 10px 6px; }
+  .chart-card h4 { font-size:9px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; color:var(--slate70); margin-bottom:4px; }
+  .chart-box { position:relative; height:200px; }
+  .chart-box-tall { height:255px; }
+  .chart-box-xl { height:360px; }
+  .narr { font-size:10px; color:var(--slate70); line-height:1.5; margin:6px 0; }
+  .narr b { color:var(--slate); }
+  .amen-block { padding:6px 0 7px; border-bottom:1px solid var(--beige-deep); }
+  .amen-block:first-of-type { padding-top:2px; }
+  .amen-name { font-size:10.5px; font-weight:700; color:var(--slate); }
+  .amen-vint { font-size:8.5px; font-weight:400; color:var(--slate50); margin-left:7px; letter-spacing:.02em; }
+  .amen-list { font-size:9.5px; color:var(--slate70); line-height:1.5; margin-top:2px; }
+  table { width:100%; border-collapse:collapse; font-size:8.5px; }
+  thead th { background:var(--everest); color:#fff; font-weight:700; padding:4px 6px; text-align:right; font-size:7.5px;
+             letter-spacing:.04em; text-transform:uppercase; }
+  thead th:first-child { text-align:left; }
+  tbody td { padding:3px 6px; text-align:right; border-bottom:1px solid var(--beige-deep); color:var(--slate70); }
+  tbody td:first-child { text-align:left; font-weight:700; color:var(--slate); }
+  tbody tr:nth-child(even) td { background:var(--beige); }
+  table.feetbl { table-layout:fixed; }
+  table.feetbl th { text-align:left; }
+  table.feetbl td { text-align:left; white-space:normal; vertical-align:top; overflow-wrap:break-word; line-height:1.35; }
+  .foot { margin-top:auto; padding-top:10px; border-top:1px solid var(--beige-deep); display:flex; justify-content:space-between;
+          font-size:8px; color:var(--slate50); }
+  #loading { text-align:center; padding:60px; color:var(--slate70); font-size:14px; }
+</style>
+</head>
+<body>
+<button class="print-btn" onclick="window.print()">Print / Save as PDF</button>
+<div id="loading">Building report…</div>
+<div id="root"></div>
+<script src="market-state-report.js?v=5"></script>
+</body>
+</html>

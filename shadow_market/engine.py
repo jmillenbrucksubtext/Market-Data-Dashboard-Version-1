@@ -7,6 +7,7 @@ import csv
 import json
 import math
 import os
+import re
 from pathlib import Path
 
 import requests
@@ -16,7 +17,7 @@ ACS_BASE = "https://api.census.gov/data/{year}/acs/acs5"
 CENSUS_REPORTER_URL = "https://api.censusreporter.org/1.0/data/show/latest"
 TIGERWEB_URL = (
     "https://tigerweb.geo.census.gov/arcgis/rest/services/"
-    "TIGERweb/tigerWMS_Census2020/MapServer/8/query"
+    "TIGERweb/tigerWMS_ACS2024/MapServer/10/query"
 )
 TABLE_IDS = ("B25007", "B25032", "B25033", "B01001")
 ACS_FIELDS = (
@@ -157,21 +158,18 @@ def fetch_acs(year: int, county_fips: list[str]) -> list[dict]:
 
     api_key = os.environ.get("CENSUS_API_KEY", "")
     records = []
-    try:
+    if api_key:
         for fips in county_fips:
             url = (
                 ACS_BASE.format(year=year)
                 + ACS_FIELDS
                 + f"&ucgid=pseudo(0500000US{fips}$1500000)"
             )
-            if api_key:
-                url += f"&key={api_key}"
+            url += f"&key={api_key}"
             response = requests.get(url, timeout=TIMEOUT)
             response.raise_for_status()
             records.extend(_parse_census_api(response.json()))
-    except (requests.RequestException, ValueError, KeyError):
-        if api_key:
-            raise
+    else:
         records = _fetch_census_reporter(year, county_fips)
 
     _cache_set(cache_key, records)
@@ -179,7 +177,7 @@ def fetch_acs(year: int, county_fips: list[str]) -> list[dict]:
 
 
 def fetch_centroids(county_fips: list[str]) -> dict[str, tuple[float, float]]:
-    cache_key = f"centroids_{'_'.join(sorted(county_fips))}"
+    cache_key = f"centroids_acs2024_{'_'.join(sorted(county_fips))}"
     cached = _cache_get(cache_key)
     if cached is not None:
         return {geoid: tuple(coords) for geoid, coords in cached.items()}
@@ -270,11 +268,17 @@ def _shadow_metrics(record: dict) -> dict:
 def _merged_census(config: dict, year: int) -> list[dict]:
     acs = fetch_acs(year, config["county_fips"])
     centroids = fetch_centroids(config["county_fips"])
-    return [
-        {**record, "lat": centroids[record["geoid"]][0], "lon": centroids[record["geoid"]][1]}
-        for record in acs
-        if record["geoid"] in centroids
-    ]
+    unique_records = {}
+    for record in acs:
+        geoid = record["geoid"]
+        if geoid not in centroids:
+            continue
+        unique_records[geoid] = {
+            **record,
+            "lat": centroids[geoid][0],
+            "lon": centroids[geoid][1],
+        }
+    return list(unique_records.values())
 
 
 def analyze(config: dict, year: int, merged: list[dict] | None = None) -> dict:
@@ -373,20 +377,64 @@ def analyze(config: dict, year: int, merged: list[dict] | None = None) -> dict:
     }
 
 
-def parse_costar_csv(
+def _normalized_text(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.casefold())
+
+
+def _costar_property_key(building: dict) -> tuple:
+    property_id = _normalized_text(building["property_id"])
+    if property_id:
+        return ("property_id", property_id)
+    return (
+        "location",
+        _normalized_text(building["address"]),
+        round(building["lat"], 6),
+        round(building["lon"], 6),
+    )
+
+
+def _merge_costar_duplicate(existing: dict, candidate: dict) -> dict:
+    """Keep one property and retain the most complete values from duplicates."""
+    preferred = candidate if (
+        candidate["units"],
+        candidate["beds"],
+        candidate["year_built"],
+        len(candidate["name"]),
+        len(candidate["address"]),
+    ) > (
+        existing["units"],
+        existing["beds"],
+        existing["year_built"],
+        len(existing["name"]),
+        len(existing["address"]),
+    ) else existing
+    other = existing if preferred is candidate else candidate
+    return {
+        **preferred,
+        "name": preferred["name"] or other["name"],
+        "address": preferred["address"] or other["address"],
+        "property_id": preferred["property_id"] or other["property_id"],
+        "units": max(existing["units"], candidate["units"]),
+        "beds": max(existing["beds"], candidate["beds"]),
+        "year_built": max(existing["year_built"], candidate["year_built"]),
+    }
+
+
+def load_costar_index(
     file_path: str | Path,
-    university_filter: str,
     min_units: int = 5,
     max_units: int = 49,
-) -> list[dict]:
-    """Read the approved CoStar segment without committing the raw export."""
-    buildings = []
+) -> dict[str, list[dict]]:
+    """Read and deduplicate approved CoStar inventory by exact university label."""
+    grouped: dict[str, dict[tuple, dict]] = {}
     with Path(file_path).open("r", encoding="latin-1", newline="") as handle:
         reader = csv.DictReader(handle)
         for row in reader:
             university = (row.get("University") or "").strip()
-            if university_filter.lower() not in university.lower():
+            if not university:
                 continue
+            university_key = university.casefold()
+            university_buildings = grouped.setdefault(university_key, {})
             name = (row.get("Property Name") or "").strip()
             if name.lower() == "demolished":
                 continue
@@ -403,7 +451,7 @@ def parse_costar_csv(
                 continue
             if not lat or not lon:
                 continue
-            buildings.append({
+            building = {
                 "name": name,
                 "address": (row.get("Property Address") or "").strip(),
                 "property_id": (row.get("PropertyID") or "").strip(),
@@ -412,8 +460,29 @@ def parse_costar_csv(
                 "lat": lat,
                 "lon": lon,
                 "year_built": _safe_int(row.get("Year Built")),
-            })
-    return buildings
+            }
+            property_key = _costar_property_key(building)
+            existing = university_buildings.get(property_key)
+            university_buildings[property_key] = (
+                _merge_costar_duplicate(existing, building)
+                if existing
+                else building
+            )
+    return {
+        university: list(buildings.values())
+        for university, buildings in grouped.items()
+    }
+
+
+def parse_costar_csv(
+    file_path: str | Path,
+    university_filter: str,
+    min_units: int = 5,
+    max_units: int = 49,
+) -> list[dict]:
+    """Return one deduplicated CoStar row for an exact university label."""
+    index = load_costar_index(file_path, min_units=min_units, max_units=max_units)
+    return index.get(university_filter.strip().casefold(), [])
 
 
 def _compute_bg_occupancy(record: dict) -> float:
@@ -481,20 +550,24 @@ def _empty_combined_ring() -> dict:
 def analyze_costar_combined(
     config: dict,
     year: int,
-    costar_csv: str | Path,
+    costar_csv: str | Path | None = None,
     merged: list[dict] | None = None,
+    buildings: list[dict] | None = None,
 ) -> dict:
     """Approved CoStar 5-49 + Census 2-4 combined methodology."""
     merged = merged or _merged_census(config, year)
     for record in merged:
         record["avg_occ_sub50"] = _compute_bg_occupancy(record)
 
-    buildings = parse_costar_csv(
-        costar_csv,
-        config["costar_university"],
-        min_units=5,
-        max_units=49,
-    )
+    if buildings is None:
+        if costar_csv is None:
+            raise ValueError("costar_csv or buildings is required")
+        buildings = parse_costar_csv(
+            costar_csv,
+            config["costar_university"],
+            min_units=5,
+            max_units=49,
+        )
     ring_miles = config["ring_miles"]
     ring_labels = _ring_labels(ring_miles)
     campuses = config["campuses"]
@@ -633,7 +706,7 @@ def analyze_costar_combined(
     points.sort(key=lambda point: point["shadow_pop"], reverse=True)
     return {
         "methodology": "costar_combined",
-        "methodology_version": 2,
+        "methodology_version": 3,
         "college_age": age_label,
         "year": year,
         "ring_miles": ring_miles,

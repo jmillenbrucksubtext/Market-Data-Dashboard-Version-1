@@ -9,9 +9,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 try:
-    from .engine import analyze, analyze_costar_combined, _merged_census
+    from .engine import (
+        _merged_census,
+        analyze,
+        analyze_costar_combined,
+        load_costar_index,
+    )
 except ImportError:
-    from engine import analyze, analyze_costar_combined, _merged_census
+    from engine import _merged_census, analyze, analyze_costar_combined, load_costar_index
 
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -29,13 +34,15 @@ def generate_market(
     year: int,
     output_dir: Path,
     costar_csv: Path,
+    costar_index: dict[str, list[dict]],
 ) -> Path:
     merged = _merged_census(config, year)
+    buildings = costar_index.get(config["costar_university"].casefold(), [])
     official = analyze_costar_combined(
         config,
         year,
-        costar_csv,
         merged=merged,
+        buildings=buildings,
     )
     distribution_proxy = analyze(config, year, merged=merged)
     core_payload = {
@@ -112,6 +119,7 @@ def main() -> int:
             "CoStar CSV not found. Pass --costar-csv or set COSTAR_CSV_PATH."
         )
     requested = args.market_key or sorted(configs, key=int)
+    costar_index = load_costar_index(costar_csv)
     for market_key in requested:
         if market_key not in configs:
             raise SystemExit(f"Unknown market_key: {market_key}")
@@ -127,6 +135,7 @@ def main() -> int:
             year,
             args.output_dir,
             costar_csv,
+            costar_index,
         )
         print(f"generated {output_path}")
     return 0

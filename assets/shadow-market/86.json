@@ -1,12 +1,12 @@
 {
   "market_key": 86,
   "school_key": 265,
-  "market_name": "Mizzou",
+  "market_name": "University of Missouri",
   "anchor_university": "University of Missouri",
   "year": 2024,
   "official": {
     "methodology": "costar_combined",
-    "methodology_version": 2,
+    "methodology_version": 3,
     "college_age": "18-21",
     "year": 2024,
     "ring_miles": [
@@ -1473,5 +1473,5 @@
     "modified_at": "2026-04-09T18:44:00+00:00",
     "university_filter": "University of Missouri at Columbia"
   },
-  "generated_at": "2026-06-18T16:41:57.661660+00:00"
+  "generated_at": "2026-06-18T17:03:11.206497+00:00"
 }

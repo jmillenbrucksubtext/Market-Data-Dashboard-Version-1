@@ -80,6 +80,13 @@ if ($py -ne 0) {
     exit $py
 }
 
+python -u shadow_market/build_configs.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+$shadowConfigPy = $LASTEXITCODE
+if ($shadowConfigPy -ne 0) {
+    Write-Log "FAIL shadow_market/build_configs.py exited $shadowConfigPy"
+    exit $shadowConfigPy
+}
+
 python -u shadow_market/generate.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
 $shadowPy = $LASTEXITCODE
 if ($shadowPy -ne 0) {

@@ -80,6 +80,7 @@
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
+            <button class="market-tab" data-tab="student-migration" role="tab" aria-selected="false">Student Migration</button>
             <button class="market-tab" data-tab="shadow-market" role="tab" aria-selected="false">Shadow Market Analysis</button>
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
@@ -606,6 +607,156 @@
           </section>
           </div> <!-- /.market-tab-panel[pipeline] -->
 
+          <!-- ============ STUDENT MIGRATION TAB ============ -->
+          <div class="market-tab-panel" data-panel="student-migration" hidden>
+            <div id="student-migration-loading" class="empty-state">
+              Loading student migration analysis…
+            </div>
+
+            <div id="student-migration-content" hidden>
+              <div class="student-migration-toolbar">
+                <label id="student-migration-school-control" class="student-migration-control" hidden>
+                  <span>University</span>
+                  <select id="student-migration-school"></select>
+                </label>
+              </div>
+
+              <div class="kpi-row student-migration-kpis">
+                <div class="kpi">
+                  <div class="kpi-label">Overall In-State Mix</div>
+                  <div class="kpi-value" id="student-migration-kpi-in-state">-</div>
+                  <div class="kpi-sub" id="student-migration-kpi-in-state-sub">share of all origins</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Overall Out-of-State Mix</div>
+                  <div class="kpi-value" id="student-migration-kpi-out-state">-</div>
+                  <div class="kpi-sub">share of all origins</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Origin States</div>
+                  <div class="kpi-value" id="student-migration-kpi-states">-</div>
+                  <div class="kpi-sub">states with a positive origin share</div>
+                </div>
+                <div class="kpi">
+                  <div class="kpi-label">Origin Metros</div>
+                  <div class="kpi-value" id="student-migration-kpi-metros">-</div>
+                  <div class="kpi-sub">mapped CBSA origin areas</div>
+                </div>
+              </div>
+
+              <div class="student-migration-map-grid">
+                <section class="card student-migration-card">
+                  <header class="card-header">
+                    <div>
+                      <h2>In-State Origin Heatmap</h2>
+                      <p id="student-migration-in-summary">In-state origins normalized to 100%.</p>
+                    </div>
+                  </header>
+                  <div class="card-body">
+                    <div id="student-migration-in-map" class="student-migration-map"></div>
+                    <div id="student-migration-in-legend" class="student-migration-legend"></div>
+                  </div>
+                </section>
+
+                <section class="card student-migration-card">
+                  <header class="card-header">
+                    <div>
+                      <h2>Out-of-State Origin Heatmap</h2>
+                      <p id="student-migration-out-summary">Out-of-state origins normalized to 100%.</p>
+                    </div>
+                  </header>
+                  <div class="card-body">
+                    <div id="student-migration-out-map" class="student-migration-map"></div>
+                    <div id="student-migration-out-legend" class="student-migration-legend"></div>
+                  </div>
+                </section>
+              </div>
+
+              <div class="student-migration-rankings">
+                <section class="card">
+                  <header class="card-header">
+                    <div>
+                      <h2>Top In-State Origin Metros</h2>
+                      <p>Share of the independently normalized in-state dataset.</p>
+                    </div>
+                  </header>
+                  <div class="card-body">
+                    <div class="table-wrap">
+                      <table class="comp-detail-table student-migration-table">
+                        <thead><tr><th>#</th><th>Origin metro</th><th>Share</th></tr></thead>
+                        <tbody id="student-migration-in-metros"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+
+                <section class="card">
+                  <header class="card-header">
+                    <div>
+                      <h2>Top Out-of-State Origin Metros</h2>
+                      <p>Share of the independently normalized out-of-state dataset.</p>
+                    </div>
+                  </header>
+                  <div class="card-body">
+                    <div class="table-wrap">
+                      <table class="comp-detail-table student-migration-table">
+                        <thead><tr><th>#</th><th>Origin metro</th><th>Share</th></tr></thead>
+                        <tbody id="student-migration-out-metros"></tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+
+              <section class="card student-migration-methodology">
+                <header class="card-header">
+                  <div>
+                    <h2>Methodology and Limitations</h2>
+                    <p>Two independently normalized student-origin distributions.</p>
+                  </div>
+                </header>
+                <div class="card-body student-migration-notes">
+                  <div>
+                    <h3>In-state dataset = 100%</h3>
+                    <p>
+                      Each in-state CBSA count is divided by total in-state
+                      origins for the selected university. All in-state origins,
+                      including unlocated CBSA codes, reconcile to 100%.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>Out-of-state dataset = 100%</h3>
+                    <p>
+                      Each out-of-state CBSA count is divided by total
+                      out-of-state origins. This map has its own scale and also
+                      reconciles independently to 100%.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>Metro geography</h3>
+                    <p>
+                      CBSA identifiers are plotted at Census Gazetteer internal
+                      points. Heat indicates relative origin share, not a
+                      precise household or student address.
+                    </p>
+                  </div>
+                  <div>
+                    <h3>Source limitations</h3>
+                    <p>
+                      The file does not contain a reporting period. Codes
+                      without a valid CBSA centroid remain in the 100% group
+                      reconciliation but are not assigned guessed locations.
+                    </p>
+                  </div>
+                </div>
+              </section>
+            </div>
+
+            <div id="student-migration-empty" class="empty-state" hidden>
+              Student migration data has not been generated for this market yet.
+            </div>
+          </div> <!-- /.market-tab-panel[student-migration] -->
+
           <!-- ============ SHADOW MARKET ANALYSIS TAB ============ -->
           <div class="market-tab-panel" data-panel="shadow-market" hidden>
             <div id="shadow-market-loading" class="empty-state">
@@ -907,7 +1058,8 @@
     </div>
   </div>
 
-  <script src="market.js?v=41" defer></script>
+  <script src="market.js?v=42" defer></script>
+  <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
   <script src="chart-download.js?v=4" defer></script>

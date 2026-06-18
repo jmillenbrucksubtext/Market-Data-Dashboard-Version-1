@@ -66,6 +66,7 @@
               <div class="toc-group-label">Market detail page</div>
               <a href="#market-tab">Market tab</a>
               <a href="#compset-tab">Competitive Set tab</a>
+              <a href="#student-migration-tab">Student Migration tab</a>
               <a href="#qualifier-sidebar">Qualifier sidebar (both tabs)</a>
             </div>
             <div class="toc-group">
@@ -155,7 +156,7 @@
               <header class="dict-page-header">
                 <span class="dict-page-tag dict-tag-market">Market detail page</span>
                 <h2><code>market.html?id=&lt;market_key&gt;</code></h2>
-                <p>Two tabs (Market / Competitive Set) plus a persistent Qualifier Scorecard sidebar.</p>
+                <p>Market, Competitive Set, Pipeline, Student Migration, Shadow Market, and University Information tabs plus a persistent Qualifier Scorecard sidebar.</p>
               </header>
 
               <section class="dict-tab" id="market-tab">
@@ -257,6 +258,34 @@
                     </tbody>
                   </table>
                   <p class="dict-aside">YoY / 2-Yr / 3-Yr growth in the footer is <strong>cumulative</strong> relative change vs the aggregate N years prior - not annualised. 2-Yr 2025 = <code>(2025 − 2023) / 2023</code>.</p>
+                </article>
+              </section>
+
+              <section class="dict-tab" id="student-migration-tab">
+                <header class="dict-tab-header">
+                  <span class="dict-tab-chip dict-chip-market-tab">Student Migration tab</span>
+                  <h3>Student Migration tab</h3>
+                  <p>Two separately normalized CBSA heatmaps built from the MigrationOnly source.</p>
+                </header>
+
+                <article class="dict-item">
+                  <h4>School matching</h4>
+                  <p><code>UNIQUEID</code> is matched exactly to <code>campus_locations.ipeds_id</code>. The generator fails on conflicting duplicate rows or ambiguous dashboard matches and writes a complete audit to <code>student_migration/audit.json</code>.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>In-state origin heatmap</h4>
+                  <p><code>in-state CBSA MigrantsIn / total in-state MigrantsIn</code>. The full in-state dataset reconciles to 100% independently of the overall in-state/out-of-state mix.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Out-of-state origin heatmap</h4>
+                  <p><code>out-of-state CBSA MigrantsIn / total out-of-state MigrantsIn</code>. This is a second independent 100% distribution with its own heat scale.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Geography and limitations</h4>
+                  <p><code>State</code> determines in-state versus out-of-state. <code>CBSAID</code> is plotted at the U.S. Census Bureau 2021 Gazetteer internal point. Codes <code>99999</code> and <code>NA</code> remain in the 100% reconciliation but are not assigned guessed map coordinates. The source does not contain a reporting-period field.</p>
                 </article>
               </section>
 

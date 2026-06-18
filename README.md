@@ -35,7 +35,9 @@ and the site reads that file on page load.
 │   ├── subtext-*.png       Brand logos
 │   ├── campus-logos/       University logos for the Subtext-30
 │   ├── campus-boundaries/  GeoJSON campus footprints (29 universities)
-│   └── campus-pois/        Per-school campus POIs for the University Information tab
+│   ├── campus-pois/        Per-school campus POIs for the University Information tab
+│   └── student-origin/     Per-market student migration percentages and CBSA points
+├── student_migration/      MigrationOnly generator, methodology, and audit
 ├── export-data.py          Runs the SQL queries → writes data.json + plans/
 ├── fetch-campus-logos.py   One-off: pulls Wikipedia logos for the Subtext-30
 ├── fetch-campus-boundaries.py  One-off: pulls OSM campus polygons
@@ -71,6 +73,12 @@ The script writes:
 - `assets/shadow-market/<market_key>.json` (Census block-group heatmap data
   and approved CoStar + Census combined analysis for markets configured in
   `shadow_market/markets.json`)
+- `assets/student-origin/<market_key>.json` (separate in-state and
+  out-of-state origin distributions, each independently normalized to 100%)
+
+The raw `MigrationOnly.csv` stays outside the public repository. Set
+`STUDENT_MIGRATION_CSV_PATH` or place it beside the repository before running
+`student_migration/generate.py` or `weekly-refresh.ps1`.
 
 Push the updated files to redeploy.
 

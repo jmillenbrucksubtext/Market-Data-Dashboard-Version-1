@@ -40,3 +40,10 @@ b.schema/output/*.error.txt
 
 # Census/TIGER response cache used by the shadow-market batch generator
 shadow_market/.cache/
+
+# Census Gazetteer cache used by the student-migration generator
+student_migration/.cache/
+
+# Raw student migration export stays outside the public repository
+/MigrationOnly.csv
+/MigrationOnly.xlsx

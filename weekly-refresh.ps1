@@ -57,6 +57,11 @@ $shadowBefore = if (Test-Path "assets\shadow-market") {
         Sort-Object Name |
         ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
 } else { "" }
+$studentMigrationBefore = if (Test-Path "assets\student-origin") {
+    (Get-ChildItem "assets\student-origin" -Filter *.json -File |
+        Sort-Object Name |
+        ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
+} else { "" }
 
 $env:SQLUSER     = $cred.UserName
 $env:SQLPASSWORD = $cred.GetNetworkCredential().Password
@@ -94,16 +99,39 @@ if ($shadowPy -ne 0) {
     exit $shadowPy
 }
 
+$studentMigrationSource = $env:STUDENT_MIGRATION_CSV_PATH
+if ([string]::IsNullOrWhiteSpace($studentMigrationSource)) {
+    $studentMigrationSource = Join-Path (Split-Path $PSScriptRoot -Parent) "MigrationOnly.csv"
+}
+if (Test-Path $studentMigrationSource) {
+    python -u student_migration/generate.py --source $studentMigrationSource 2>&1 |
+        ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } |
+        Out-Host
+    $studentMigrationPy = $LASTEXITCODE
+    if ($studentMigrationPy -ne 0) {
+        Write-Log "FAIL student_migration/generate.py exited $studentMigrationPy"
+        exit $studentMigrationPy
+    }
+} else {
+    Write-Log "student migration source not found; preserving existing student-origin assets"
+}
+
 $dataAfter = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SHA1).Hash } else { "" }
 $shadowAfter = if (Test-Path "assets\shadow-market") {
     (Get-ChildItem "assets\shadow-market" -Filter *.json -File |
         Sort-Object Name |
         ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
 } else { "" }
+$studentMigrationAfter = if (Test-Path "assets\student-origin") {
+    (Get-ChildItem "assets\student-origin" -Filter *.json -File |
+        Sort-Object Name |
+        ForEach-Object { (Get-FileHash $_.FullName -Algorithm SHA1).Hash }) -join "|"
+} else { "" }
 $dataChanged = $dataBefore -ne $dataAfter
 $shadowChanged = $shadowBefore -ne $shadowAfter
-$changed = $dataChanged -or $shadowChanged
-Write-Log "export complete (data.json changed: $dataChanged; shadow-market changed: $shadowChanged)"
+$studentMigrationChanged = $studentMigrationBefore -ne $studentMigrationAfter
+$changed = $dataChanged -or $shadowChanged -or $studentMigrationChanged
+Write-Log "export complete (data.json changed: $dataChanged; shadow-market changed: $shadowChanged; student-migration changed: $studentMigrationChanged)"
 
 if (-not $changed) {
     Write-Log "no change; skipping commit"

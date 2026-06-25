@@ -33,7 +33,7 @@ let planSortState = { col: "bedrooms", dir: "asc" };
 let activeBedroomFilters = new Set();  // empty Set = show all
 
 // Unit & Bed Mix section state (mirrors the market Comps-tab toggles).
-let unitMixMetric = "beds";            // "beds" | "units"
+let unitMixMetric = "units";           // "beds" | "units" - defaults to units
 let unitMixParityType = "all";         // "all" | a bedroom type
 let pmBarChart = null, pmSizeChart = null, pmPieChart = null, pmParityChart = null;
 
@@ -398,41 +398,22 @@ function renderUnitMix() {
   renderUnitMixSummaryTable(typesPresent, mix, metricLabel, total);
 }
 
-// Order of parity buckets within a bedroom type: en-suite first, shared-bath
-// second. Shared-bath units are a distinct category (a 4x4 is not a 4x2).
-const SIZE_BUCKETS = ["full", "shared"];
-
-// Flatten a size_by_type map into ordered category rows for the size chart.
-// Each row: { label, color, value (avg sf), units }.
-function unitSizeCategories(sizeData) {
-  const cats = [];
-  UNIT_MIX_TYPES.forEach((t) => {
-    const byBucket = sizeData[t];
-    if (!byBucket) return;
-    SIZE_BUCKETS.forEach((b) => {
-      const e = byBucket[b];
-      if (!e || !e.avg_sf) return;
-      const base = UNIT_TYPE_COLORS[t] || "#837c75";
-      cats.push({
-        label: b === "shared" ? `${t} (shared bath)` : t,
-        color: b === "shared" ? base + "99" : base,  // shared = lighter shade
-        value: e.avg_sf,
-        units: e.units || 0,
-      });
-    });
-  });
-  return cats;
-}
-
-// Average unit size (sf) for this property, by bedroom type and bed/bath
-// parity (en-suite vs shared-bath kept distinct). Independent of the By
-// Bed/By Unit toggle. Hidden when no floor plan carries a usable area.
+// Average unit size (sf) for this property by exact unit type (#BR / #BA),
+// so a 4x4 is a distinct bar from a 4x2. Independent of the By Bed/By Unit
+// toggle. Hidden when no floor plan carries a usable area.
 function renderUnitSizeBar() {
   const figure = document.getElementById("pm-size-figure");
   const canvas = document.getElementById("pm-size");
   if (!figure || !canvas) return;
 
-  const cats = unitSizeCategories(MIX.size_by_type || {});
+  const cats = (MIX.size_by_unit || [])
+    .filter((c) => c.avg_sf)
+    .map((c) => ({
+      label: c.label,
+      color: UNIT_TYPE_COLORS[c.cat] || "#837c75",
+      value: c.avg_sf,
+      units: c.units || 0,
+    }));
 
   if (cats.length === 0) {
     figure.style.display = "none";

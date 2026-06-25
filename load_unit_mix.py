@@ -80,6 +80,23 @@ def units_in_plan(plan: dict) -> float:
     return beds / b
 
 
+def unit_type_label(plan: dict):
+    """Exact unit type as "#BR / #BA" (e.g. "4BR / 2BA", "Studio / 1BA"), so a
+    4x4 is a distinct type from a 4x2. Returns (label, beds_sort, baths) where
+    beds_sort orders studios first; baths is None when the bath count is
+    missing (~0.05% of plans), in which case the label omits the bath part."""
+    if plan.get("is_studio") or bedroom_category(plan) == "Studio":
+        bedpart, beds_sort = "Studio", 0
+    else:
+        beds_sort = int(round(plan.get("bedrooms") or 0))
+        bedpart = f"{beds_sort}BR"
+    ba = plan.get("bathrooms")
+    if ba is None:
+        return bedpart, beds_sort, None
+    baths = float(ba)
+    return f"{bedpart} / {baths:g}BA", beds_sort, baths
+
+
 def has_bath_parity(plan: dict):
     """True/False if a floor plan gives every bedroom its own bath
     (bathrooms >= bedrooms); None when bath or bedroom count is missing."""
@@ -93,13 +110,12 @@ def has_bath_parity(plan: dict):
 def mix_for_property(plans: list[dict]) -> dict:
     beds_by_type: dict[str, float] = {}
     units_by_type: dict[str, float] = {}
-    # Average unit size (sf) split by bedroom type AND bed/bath parity, so a
-    # 4x4 (en-suite) is not lumped in with a 4x2 (shared bath). Keyed
-    # cat -> "full"|"shared" -> {sf-weighted-by-units, units}. Weighted by
-    # units so the mean reflects the actual stock; plans with no usable
-    # area_sf (~16%) are left out. Unknown parity defaults to the en-suite
-    # ("full") bucket.
-    size_raw: dict[str, dict[str, dict[str, float]]] = {}
+    # Average unit size (sf) by exact unit type ("#BR / #BA"), so a 4x4 is a
+    # distinct type from a 4x2. Keyed by display label -> sf (weighted by
+    # units) + units + beds/baths/cat for ordering and colour on the front
+    # end. Weighted by units so the mean reflects the actual stock; plans with
+    # no usable area_sf (~16%) are left out.
+    size_raw: dict[str, dict] = {}
     # Bed/bath parity per bedroom type: full = every bedroom has its own bath.
     # Plans missing a bath/bedroom count (~0.05%) are dropped from parity.
     parity_raw: dict[str, dict[str, float]] = {}
@@ -114,9 +130,13 @@ def mix_for_property(plans: list[dict]) -> dict:
 
         area = p.get("area_sf")
         if area and float(area) > 0 and units > 0:
-            sbucket = "shared" if par is False else "full"   # None/True -> full
-            slot = size_raw.setdefault(cat, {}).setdefault(
-                sbucket, {"sf": 0.0, "units": 0.0})
+            label, beds_sort, baths = unit_type_label(p)
+            slot = size_raw.get(label)
+            if slot is None:
+                slot = size_raw[label] = {
+                    "sf": 0.0, "units": 0.0,
+                    "beds": beds_sort, "baths": baths, "cat": cat,
+                }
             slot["sf"] += float(area) * units
             slot["units"] += units
 
@@ -137,30 +157,30 @@ def mix_for_property(plans: list[dict]) -> dict:
         for t in BED_TYPES if t in parity_raw
         and any(round(v) > 0 for v in parity_raw[t].values())
     }
-    # Units-weighted average size per (type, parity bucket). Each bucket keeps
-    # its unit count so the front end can re-weight the average across a
-    # selected comp set. Buckets with no area data drop out.
-    size_by_type: dict[str, dict] = {}
-    for t in BED_TYPES:
-        if t not in size_raw:
+    # Units-weighted average size per exact unit type. Each entry keeps its
+    # unit count so the front end can re-weight the average across a selected
+    # comp set, plus beds/baths/cat for ordering and colour. Sorted by beds
+    # then baths so the chart reads small-to-large.
+    size_by_unit = []
+    for label, raw in size_raw.items():
+        if raw["units"] <= 0:
             continue
-        buckets = {}
-        for b in ("full", "shared"):
-            raw = size_raw[t].get(b)
-            if raw and raw["units"] > 0:
-                buckets[b] = {
-                    "avg_sf": int(round(raw["sf"] / raw["units"])),
-                    "units": int(round(raw["units"])),
-                }
-        if buckets:
-            size_by_type[t] = buckets
+        size_by_unit.append({
+            "label": label,
+            "cat": raw["cat"],
+            "beds": raw["beds"],
+            "baths": raw["baths"],
+            "avg_sf": int(round(raw["sf"] / raw["units"])),
+            "units": int(round(raw["units"])),
+        })
+    size_by_unit.sort(key=lambda r: (r["beds"], r["baths"] if r["baths"] is not None else -1))
     return {
         "beds_by_type": {k: beds[k] for k in BED_TYPES if k in beds},
         "units_by_type": {k: units[k] for k in BED_TYPES if k in units},
         "total_beds": sum(beds.values()),
         "total_units": sum(units.values()),
         "parity_by_type": parity_by_type,
-        "size_by_type": size_by_type,
+        "size_by_unit": size_by_unit,
     }
 
 

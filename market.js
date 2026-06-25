@@ -39,7 +39,7 @@ let propertyMarkers = new Map();  // market map: property_key → leaflet marker
 let compSelection = new Set();  // property_keys currently checked on Comps tab
 let compSelectionInit = false;  // defaults applied once; user edits persist after
 let compCharts = {};  // canvas id → Chart instance
-let unitMixMetric = "beds";  // "beds" | "units" - Unit & Bed Mix toggle state
+let unitMixMetric = "units";  // "beds" | "units" - Unit & Bed Mix toggle state (defaults to units)
 let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
 let unitMixSizeChart = null; // Chart instance for the avg-unit-size grouped bar
 let unitMixPieChart = null;  // Chart instance for the per-building pie
@@ -2188,55 +2188,42 @@ function renderUnitMix() {
   renderUnitMixParityPie(selected);
 }
 
-// Order of parity buckets within a bedroom type: en-suite first, shared-bath
-// second. A shared-bath unit (e.g. 4x2) is a distinct category from an
-// en-suite one (4x4), per its own bed/bath parity.
-const SIZE_BUCKETS = ["full", "shared"];
-
-/* Average unit size (sf) by bedroom type and bed/bath parity, as a single
-   units-weighted average across the selected comps. For each category the
+/* Average unit size (sf) by exact unit type (#BR / #BA), as a single
+   units-weighted average across the selected comps. For each unit type the
    mean is sum(avg_sf * units) / sum(units) over the comps that report it, so
-   bigger comps pull the average proportionally. Sizes are independent of the
-   By Bed/By Unit toggle. Data: each comp's size_by_type (built in
-   load_unit_mix.py), which carries avg_sf + units per (type, parity bucket). */
+   bigger comps pull the average proportionally. A 4x4 is a distinct bar from
+   a 4x2. Independent of the By Bed/By Unit toggle. Data: each comp's
+   size_by_unit (built in load_unit_mix.py), carrying avg_sf + units +
+   beds/baths/cat per unit type. */
 function renderUnitSizeChart(selected) {
   const figure = document.getElementById("unitmix-size-figure");
   const canvas = document.getElementById("unitmix-size-chart");
   if (!figure || !canvas || typeof Chart === "undefined") return;
 
-  // Accumulate units-weighted size per (bedroom type, parity bucket).
-  const agg = {};  // key `${type}|${bucket}` -> { sf, units }
+  // Accumulate units-weighted size per exact unit type (keyed by label).
+  const agg = {};  // label -> { sf, units, beds, baths, cat }
   selected.forEach(({ mix }) => {
-    const sd = mix.size_by_type || {};
-    UNIT_MIX_TYPES.forEach((t) => {
-      const byBucket = sd[t];
-      if (!byBucket) return;
-      SIZE_BUCKETS.forEach((b) => {
-        const e = byBucket[b];
-        if (!e || !e.avg_sf || !e.units) return;
-        const key = t + "|" + b;
-        const a = agg[key] || (agg[key] = { sf: 0, units: 0 });
-        a.sf += e.avg_sf * e.units;
-        a.units += e.units;
+    (mix.size_by_unit || []).forEach((e) => {
+      if (!e.avg_sf || !e.units) return;
+      const a = agg[e.label] || (agg[e.label] = {
+        sf: 0, units: 0, beds: e.beds, baths: e.baths, cat: e.cat,
       });
+      a.sf += e.avg_sf * e.units;
+      a.units += e.units;
     });
   });
 
-  // Ordered categories: each bedroom type, en-suite then shared-bath.
-  const cats = [];
-  UNIT_MIX_TYPES.forEach((t) => {
-    SIZE_BUCKETS.forEach((b) => {
-      const a = agg[t + "|" + b];
-      if (!a || a.units <= 0) return;
-      const base = UNIT_TYPE_COLORS[t] || "#837c75";
-      cats.push({
-        label: b === "shared" ? `${t} (shared bath)` : t,
-        color: b === "shared" ? base + "99" : base,  // shared = lighter shade
-        value: Math.round(a.sf / a.units),
-        units: a.units,
-      });
-    });
-  });
+  // Ordered small-to-large by beds then baths.
+  const cats = Object.keys(agg)
+    .map((label) => ({ label, ...agg[label] }))
+    .filter((a) => a.units > 0)
+    .sort((x, y) => (x.beds - y.beds) || ((x.baths ?? -1) - (y.baths ?? -1)))
+    .map((a) => ({
+      label: a.label,
+      color: UNIT_TYPE_COLORS[a.cat] || "#837c75",
+      value: Math.round(a.sf / a.units),
+      units: a.units,
+    }));
 
   if (unitMixSizeChart) { unitMixSizeChart.destroy(); unitMixSizeChart = null; }
   if (cats.length === 0) {

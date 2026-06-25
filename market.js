@@ -2551,45 +2551,62 @@ function renderUnitMixPie(selected, field, noun) {
 }
 
 function renderUnitMixTables(selected, typesPresent, field, noun) {
-  // ---- Market summary: bedroom type × [count, % of total] --------------
-  const totals = {};
-  typesPresent.forEach((t) => {
-    totals[t] = selected.reduce((s, { mix }) => s + ((mix[field] || {})[t] || 0), 0);
+  // Broken out by EXACT unit type (#BR / #BA) across the selected comps, from
+  // mix_by_unit_type (complete beds + units per type). The By Bed/By Unit
+  // toggle picks the metric.
+  const metric = noun === "beds" ? "beds" : "units";
+  const nounLabel = noun === "beds" ? "Beds" : "Units";
+
+  // Ordered union of every unit type present across the selection.
+  const typeMeta = new Map();  // label -> { beds_sort, baths }
+  selected.forEach(({ mix }) => (mix.mix_by_unit_type || []).forEach((e) => {
+    if (!typeMeta.has(e.label)) typeMeta.set(e.label, { beds_sort: e.beds_sort, baths: e.baths });
+  }));
+  const types = [...typeMeta.keys()].sort((a, b) => {
+    const A = typeMeta.get(a), B = typeMeta.get(b);
+    return (A.beds_sort - B.beds_sort) || ((A.baths ?? -1) - (B.baths ?? -1));
   });
+
+  const countOf = (mix, label) => {
+    const e = (mix.mix_by_unit_type || []).find((x) => x.label === label);
+    return e ? (e[metric] || 0) : 0;
+  };
+  const totals = {};
+  types.forEach((t) => { totals[t] = selected.reduce((s, { mix }) => s + countOf(mix, t), 0); });
   const grand = Object.values(totals).reduce((s, v) => s + v, 0);
   const pct = (v) => (grand ? (v / grand * 100).toFixed(1) + "%" : "-");
 
-  const nounLabel = noun === "beds" ? "Beds" : "Units";
+  // ---- Market summary: unit type × [count, % of total] -----------------
   const summaryTable = document.getElementById("unitmix-summary-table");
   if (summaryTable) {
     if (grand === 0) {
       summaryTable.innerHTML = `<tbody><tr><td>No data for the current selection.</td></tr></tbody>`;
     } else {
-      const head = `<thead><tr><th class="property-cell">Type</th><th>${nounLabel}</th><th>% of total</th></tr></thead>`;
-      const body = typesPresent.map((t) =>
+      const head = `<thead><tr><th class="property-cell">Unit Type</th><th>${nounLabel}</th><th>% of total</th></tr></thead>`;
+      const body = types.map((t) =>
         `<tr><td class="property-cell">${t}</td><td>${fmtInt(totals[t])}</td><td>${pct(totals[t])}</td></tr>`
       ).join("");
-      const foot = `<tfoot><tr><td class="property-cell">Total</td><td>${fmtInt(grand)}</td><td>100.0%</td></tr></tfoot>`;
+      const foot = `<tfoot><tr class="agg-row"><td class="property-cell">Total</td><td>${fmtInt(grand)}</td><td>100.0%</td></tr></tfoot>`;
       summaryTable.innerHTML = head + `<tbody>${body}</tbody>` + foot;
     }
   }
 
-  // ---- Per-property matrix: property × bedroom type (+ total) ----------
+  // ---- Per-property matrix: property × unit type (+ total) -------------
   const matrix = document.getElementById("unitmix-matrix-table");
   if (matrix) {
-    if (selected.length === 0) {
+    if (selected.length === 0 || types.length === 0) {
       matrix.innerHTML = `<tbody><tr><td>No data for the current selection.</td></tr></tbody>`;
     } else {
-      const head = `<thead><tr><th class="property-cell">Property</th>${typesPresent.map((t) => `<th>${t}</th>`).join("")}<th>Total</th></tr></thead>`;
+      const head = `<thead><tr><th class="property-cell">Property</th>${types.map((t) => `<th>${t}</th>`).join("")}<th>Total</th></tr></thead>`;
       const rows = selected.map(({ prop, mix }) => {
-        const cells = typesPresent.map((t) => {
-          const v = (mix[field] || {})[t] || 0;
+        const cells = types.map((t) => {
+          const v = countOf(mix, t);
           return `<td>${v ? fmtInt(v) : "-"}</td>`;
         }).join("");
-        const rowTotal = typesPresent.reduce((s, t) => s + ((mix[field] || {})[t] || 0), 0);
+        const rowTotal = types.reduce((s, t) => s + countOf(mix, t), 0);
         return `<tr><td class="property-cell">${prop.property_name}</td>${cells}<td>${fmtInt(rowTotal)}</td></tr>`;
       }).join("");
-      const foot = `<tfoot><tr><td class="property-cell">Total</td>${typesPresent.map((t) => `<td>${fmtInt(totals[t])}</td>`).join("")}<td>${fmtInt(grand)}</td></tr></tfoot>`;
+      const foot = `<tfoot><tr class="agg-row"><td class="property-cell">Total</td>${types.map((t) => `<td>${fmtInt(totals[t])}</td>`).join("")}<td>${fmtInt(grand)}</td></tr></tfoot>`;
       matrix.innerHTML = head + `<tbody>${rows}</tbody>` + foot;
     }
   }

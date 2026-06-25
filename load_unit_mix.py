@@ -116,21 +116,34 @@ def mix_for_property(plans: list[dict]) -> dict:
     # end. Weighted by units so the mean reflects the actual stock; plans with
     # no usable area_sf (~16%) are left out.
     size_raw: dict[str, dict] = {}
+    # Complete beds/units by exact unit type ("#BR / #BA"), across ALL plans
+    # (unlike size_raw, which only counts plans that have a usable area_sf).
+    # Drives the Market Summary / By Property tables broken out by unit type.
+    utype_raw: dict[str, dict] = {}
     # Bed/bath parity per bedroom type: full = every bedroom has its own bath.
     # Plans missing a bath/bedroom count (~0.05%) are dropped from parity.
     parity_raw: dict[str, dict[str, float]] = {}
     for p in plans:
         cat = bedroom_category(p)
+        label, beds_sort, baths = unit_type_label(p)
         beds = p.get("beds_in_plan") or 0
         units = units_in_plan(p)
         beds_by_type[cat] = beds_by_type.get(cat, 0.0) + beds
         units_by_type[cat] = units_by_type.get(cat, 0.0) + units
 
+        ut = utype_raw.get(label)
+        if ut is None:
+            ut = utype_raw[label] = {
+                "beds": 0.0, "units": 0.0,
+                "beds_sort": beds_sort, "baths": baths, "cat": cat,
+            }
+        ut["beds"] += beds
+        ut["units"] += units
+
         par = has_bath_parity(p)
 
         area = p.get("area_sf")
         if area and float(area) > 0 and units > 0:
-            label, beds_sort, baths = unit_type_label(p)
             slot = size_raw.get(label)
             if slot is None:
                 slot = size_raw[label] = {
@@ -174,12 +187,29 @@ def mix_for_property(plans: list[dict]) -> dict:
             "units": int(round(raw["units"])),
         })
     size_by_unit.sort(key=lambda r: (r["beds"], r["baths"] if r["baths"] is not None else -1))
+    # Complete beds + units per exact unit type (all plans), sorted small to
+    # large. Front-end tables list every unit type across the selected comps.
+    mix_by_unit_type = []
+    for label, raw in utype_raw.items():
+        b, u = int(round(raw["beds"])), int(round(raw["units"]))
+        if b <= 0 and u <= 0:
+            continue
+        mix_by_unit_type.append({
+            "label": label,
+            "cat": raw["cat"],
+            "beds_sort": raw["beds_sort"],
+            "baths": raw["baths"],
+            "beds": b,
+            "units": u,
+        })
+    mix_by_unit_type.sort(key=lambda r: (r["beds_sort"], r["baths"] if r["baths"] is not None else -1))
     return {
         "beds_by_type": {k: beds[k] for k in BED_TYPES if k in beds},
         "units_by_type": {k: units[k] for k in BED_TYPES if k in units},
         "total_beds": sum(beds.values()),
         "total_units": sum(units.values()),
         "parity_by_type": parity_by_type,
+        "mix_by_unit_type": mix_by_unit_type,
         "size_by_unit": size_by_unit,
     }
 

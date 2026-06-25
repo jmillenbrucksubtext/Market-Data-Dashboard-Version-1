@@ -339,8 +339,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="fwd-score"><div class="rk">${M.fwd_rank != null ? "#" + M.fwd_rank : "N/A"}</div><div class="lbl">${M.fwd_rank != null ? `of ${rankN} markets${topPct != null ? ` · top ${topPct}%` : ""}` : "not ranked"}</div></div>
       <div class="fwd-drivers">${kpiCards(fwdDrivers)}</div>
     </div>
-    <div class="sub">Market Map</div>
-    <img id="report-market-map" class="map-img map-img-sm" alt="Market map (rendering…)">
     ${foot(1)}
   </div>
 
@@ -540,7 +538,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   };
   (async () => {
     try {
-      await renderMap(new Set(props.map((p) => p.property_key)), "report-market-map");   // all properties = market map
       await renderMap(new Set(comps.map((p) => p.property_key)), "report-comp-map");      // comp set
     } catch (e) { /* maps optional */ }
   })();

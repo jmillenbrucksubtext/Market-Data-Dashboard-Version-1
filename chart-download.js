@@ -195,8 +195,21 @@
     });
     var tableW = colW.reduce(function (a, b) { return a + b; }, 0);
 
+    // The title band must fit the (possibly long) title plus the right-aligned
+    // market name. Narrow tables (e.g. the 3-column unit-mix summaries) would
+    // otherwise overlap them, so widen the band to fit and centre the table
+    // underneath it.
+    var market = contextName();
+    meas.font = fonts.band;
+    var titleW = meas.measureText(title).width;
+    var marketW = 0;
+    if (market) { meas.font = fonts.bandSub; marketW = meas.measureText(market.toUpperCase()).width; }
+    var headerGap = market ? 24 * S : 0;
+    var bandW = Math.max(tableW, padX + titleW + headerGap + marketW + padX);
+    var tableX = margin + Math.round((bandW - tableW) / 2);
+
     var out = document.createElement("canvas");
-    out.width = tableW + margin * 2;
+    out.width = bandW + margin * 2;
     out.height = bandH + rows.length * rowH + margin * 2;
     var ctx = out.getContext("2d");
 
@@ -205,16 +218,14 @@
 
     // Title band - everest, white serif title, market name on the right
     ctx.fillStyle = "#16352e";
-    ctx.fillRect(margin, margin, tableW, bandH);
+    ctx.fillRect(margin, margin, bandW, bandH);
     ctx.fillStyle = "#ffffff";
     ctx.font = fonts.band;
     ctx.fillText(title, margin + padX, margin + bandH / 2 + 6 * S);
-    var market = contextName();
     if (market) {
       ctx.font = fonts.bandSub;
       ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
-      var mw = ctx.measureText(market.toUpperCase()).width;
-      ctx.fillText(market.toUpperCase(), margin + tableW - padX - mw, margin + bandH / 2 + 4 * S);
+      ctx.fillText(market.toUpperCase(), margin + bandW - padX - marketW, margin + bandH / 2 + 4 * S);
     }
 
     var y = margin + bandH;
@@ -222,25 +233,25 @@
       ctx.fillStyle = r.section === "thead" ? "#ede5cf"
         : r.section === "tfoot" ? (r.agg ? "#f1ecdd" : "#ffffff")
         : "#fbf5d9";
-      ctx.fillRect(margin, y, tableW, rowH);
+      ctx.fillRect(tableX, y, tableW, rowH);
       if (r.section === "tbody") {
         ctx.strokeStyle = "rgba(255, 255, 255, 0.85)";
         ctx.lineWidth = S;
         ctx.beginPath();
-        ctx.moveTo(margin, y + rowH);
-        ctx.lineTo(margin + tableW, y + rowH);
+        ctx.moveTo(tableX, y + rowH);
+        ctx.lineTo(tableX + tableW, y + rowH);
         ctx.stroke();
       }
       if (r.section === "tfoot" && r.agg) {
         ctx.strokeStyle = "#2b2825";
         ctx.lineWidth = 1.5 * S;
         ctx.beginPath();
-        ctx.moveTo(margin, y);
-        ctx.lineTo(margin + tableW, y);
+        ctx.moveTo(tableX, y);
+        ctx.lineTo(tableX + tableW, y);
         ctx.stroke();
       }
 
-      var x = margin, ci = 0;
+      var x = tableX, ci = 0;
       var baseline = y + rowH / 2 + 4.5 * S;
       r.cells.forEach(function (c) {
         var w = 0;

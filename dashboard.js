@@ -143,7 +143,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   setFreshness();
-  populateMarketSearchOptions();
+  buildMarketSearchIndex();
+  bindMarketSearch();
   bindUI();
   bindNav();
   bindAnalysisSort();
@@ -375,31 +376,95 @@ function visibleScorecardRows() {
   return rows;
 }
 
-/* Autocomplete suggestions for the market search box - the ENTIRE tracked
-   universe (every scorecard market), independent of the map toggles. The
-   option value is the university name (what the filter matches); the label
-   shows city/state. */
-function populateMarketSearchOptions() {
-  const dl = document.getElementById("market-options");
-  if (!dl) return;
+/* Custom autocomplete for the market search box. Suggestions are drawn from
+   the ENTIRE tracked universe (every scorecard market), independent of the
+   map toggles. Behavior: nothing shows until the first character is typed,
+   at most 5 suggestions appear, and clicking one opens that market's page. */
+let MARKET_SEARCH = [];          // [{ key, name, place, hay }]
+const SEARCH_SUGGEST_MAX = 5;
+
+function buildMarketSearchIndex() {
   const seen = new Set();
-  const opts = DATA.tables.scorecard
-    .slice()
-    .sort((a, b) => (a.anchor_university || "").localeCompare(b.anchor_university || ""))
-    .map((r) => {
-      const name = r.anchor_university || "";
-      if (!name || seen.has(name)) return "";
-      seen.add(name);
-      const place = [r.city, r.state_abbr].filter(Boolean).join(", ");
-      return `<option value="${escapeHtml(name)}">${escapeHtml(place)}</option>`;
-    });
-  dl.innerHTML = opts.join("");
+  MARKET_SEARCH = DATA.tables.scorecard
+    .filter((r) => r.anchor_university && !seen.has(r.market_key) && seen.add(r.market_key))
+    .map((r) => ({
+      key: r.market_key,
+      name: r.anchor_university,
+      place: [r.city, r.state_abbr].filter(Boolean).join(", "),
+      hay: `${r.anchor_university} ${r.city || ""} ${r.state_abbr || ""}`.toLowerCase(),
+    }))
+    .sort((a, b) => a.name.localeCompare(b.name));
+}
+
+function currentSearchMatches() {
+  const q = document.getElementById("market-filter").value.trim().toLowerCase();
+  if (q.length < 1) return [];   // only suggest once the user has typed
+  return MARKET_SEARCH.filter((m) => m.hay.includes(q)).slice(0, SEARCH_SUGGEST_MAX);
+}
+
+function renderSearchSuggestions() {
+  const input = document.getElementById("market-filter");
+  const box = document.getElementById("market-suggest");
+  if (!input || !box) return;
+  const matches = currentSearchMatches();
+  if (!matches.length) {
+    box.hidden = true;
+    box.innerHTML = "";
+    input.setAttribute("aria-expanded", "false");
+    return;
+  }
+  box.innerHTML = matches.map((m) =>
+    `<button type="button" class="search-suggest-item" role="option" data-key="${m.key}">
+       <span class="search-suggest-name">${escapeHtml(m.name)}</span>
+       <span class="search-suggest-place">${escapeHtml(m.place)}</span>
+     </button>`).join("");
+  box.hidden = false;
+  input.setAttribute("aria-expanded", "true");
+}
+
+function openMarket(key) {
+  if (key != null) window.location.href = `market.html?id=${key}`;
+}
+
+function bindMarketSearch() {
+  const input = document.getElementById("market-filter");
+  const box = document.getElementById("market-suggest");
+  if (!input || !box) return;
+
+  // Click a suggestion -> open that market directly.
+  box.addEventListener("mousedown", (e) => {
+    const item = e.target.closest(".search-suggest-item");
+    if (!item) return;
+    e.preventDefault();             // keep focus; fire before input blur
+    openMarket(Number(item.dataset.key));
+  });
+
+  input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      const top = currentSearchMatches()[0];
+      if (top) { e.preventDefault(); openMarket(top.key); }
+    } else if (e.key === "Escape") {
+      box.hidden = true;
+      input.setAttribute("aria-expanded", "false");
+    }
+  });
+
+  // Re-show on focus only if there is already a query.
+  input.addEventListener("focus", renderSearchSuggestions);
+  // Hide when focus leaves the search box (slight delay so clicks register).
+  input.addEventListener("blur", () => setTimeout(() => {
+    box.hidden = true;
+    input.setAttribute("aria-expanded", "false");
+  }, 150));
 }
 
 /* ----- UI bindings ------------------------------------------- */
 
 function bindUI() {
-  document.getElementById("market-filter").addEventListener("input", renderAll);
+  document.getElementById("market-filter").addEventListener("input", () => {
+    renderAll();
+    renderSearchSuggestions();
+  });
   const cb = document.getElementById("subtext30-only");
   const label = document.getElementById("subtext-toggle-label");
   cb.addEventListener("change", () => {

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Dashboard</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=54">
+  <link rel="stylesheet" href="style.css?v=55">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -69,9 +69,9 @@
 
       <header class="topbar">
         <div class="search">
-          <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off" list="market-options">
-          <datalist id="market-options"></datalist>
+          <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="market-suggest">
           <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
+          <div class="search-suggest" id="market-suggest" role="listbox" hidden></div>
         </div>
 
         <a class="dispatch-ticker" id="dispatch-ticker" href="https://subtext-dispatch.jacksubtextuse.workers.dev/" target="_blank" rel="noopener" hidden>
@@ -675,7 +675,7 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=23"></script>
+  <script src="dashboard.js?v=24"></script>
   <script src="chart-download.js?v=5"></script>
   <!-- Sidebar easter-egg ads: LOI-O-MATIC and the Memo Chef -->
   <script src="loi-o-matic.js?v=7" defer></script>

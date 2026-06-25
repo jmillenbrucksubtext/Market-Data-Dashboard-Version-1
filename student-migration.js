@@ -139,6 +139,20 @@ function renderStudentMigrationRankings() {
     "out_of_state_group_share",
     "No mapped out-of-state metro origins.",
   );
+  renderStudentMigrationStates(school.states);
+}
+
+function renderStudentMigrationStates(states) {
+  const rows = (states || [])
+    .filter((state) => Number(state.share) > 0)
+    .sort((a, b) => Number(b.share) - Number(a.share));
+  document.getElementById("student-migration-states").innerHTML = rows.length
+    ? rows.map((state, index) => `<tr>
+        <td>${index + 1}</td>
+        <td>${escapeHtml(state.name)}${state.is_home_state ? " (home state)" : ""}</td>
+        <td>${studentMigrationPct(state.share, 2)}</td>
+      </tr>`).join("")
+    : `<tr><td colspan="3">No origin state data.</td></tr>`;
 }
 
 function renderStudentMigrationRanking(elementId, points, shareKey, emptyText) {

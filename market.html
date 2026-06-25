@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=58">
+  <link rel="stylesheet" href="style.css?v=59">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -570,14 +570,26 @@
                   <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-deliveries"></canvas></div>
                 </figure>
               </div>
-              <!-- Row 3: supply & demand - (on-campus + existing + pipeline beds) / FTE -->
+              <!-- Row 3: uncaptured demand - FTE demand vs captured supply
+                   (on-campus + existing + pipeline beds), own distance filter -->
               <div class="pipeline-row pipeline-row-bottom">
-                <figure class="perf-chart">
+                <figure class="perf-chart sd-figure">
                   <figcaption class="perf-title">
-                    <span class="perf-title-text">Supply &amp; Demand</span>
-                    <span class="perf-title-sub">(on-campus + existing + pipeline beds) &divide; FTE, by distance to campus</span>
+                    <span class="perf-title-text">Uncaptured Demand</span>
+                    <span class="perf-title-sub">FTE demand met by on-campus, existing &amp; pipeline beds</span>
                   </figcaption>
-                  <div id="pipe-supplydemand" class="table-wrap"></div>
+                  <div class="sd-scope-row">
+                    <div class="perf-scope-toggle sd-scope-toggle" role="group" aria-label="Filter supply &amp; demand by distance to campus">
+                      <button type="button" class="sd-scope-btn active" data-sd="all">Total market</button>
+                      <button type="button" class="sd-scope-btn" data-sd="1">&le;1 mi</button>
+                      <button type="button" class="sd-scope-btn" data-sd="0.5">&le;&frac12; mi</button>
+                      <button type="button" class="sd-scope-btn" data-sd="1-2015">&le;1 mi, 2015+</button>
+                    </div>
+                  </div>
+                  <div class="sd-body">
+                    <div id="pipe-sd-callout" class="sd-callout"></div>
+                    <div class="perf-chart-wrap sd-chart-wrap"><canvas id="pipe-supplydemand"></canvas></div>
+                  </div>
                 </figure>
               </div>
             </div>
@@ -685,48 +697,24 @@
                 </section>
               </div>
 
-              <section class="card student-migration-methodology">
-                <header class="card-header">
-                  <div>
-                    <h2>Methodology and Limitations</h2>
-                    <p>Two independently normalized student-origin distributions.</p>
+              <div class="student-migration-states">
+                <section class="card">
+                  <header class="card-header">
+                    <div>
+                      <h2>Origin States</h2>
+                      <p>Total share of all origins accumulated by state (sums to 100%).</p>
+                    </div>
+                  </header>
+                  <div class="card-body">
+                    <div class="table-wrap">
+                      <table class="comp-detail-table student-migration-table">
+                        <thead><tr><th>#</th><th>Origin state</th><th>Share of all origins</th></tr></thead>
+                        <tbody id="student-migration-states"></tbody>
+                      </table>
+                    </div>
                   </div>
-                </header>
-                <div class="card-body student-migration-notes">
-                  <div>
-                    <h3>In-state dataset = 100%</h3>
-                    <p>
-                      Each in-state CBSA count is divided by total in-state
-                      origins for the selected university. All in-state origins,
-                      including unlocated CBSA codes, reconcile to 100%.
-                    </p>
-                  </div>
-                  <div>
-                    <h3>Out-of-state dataset = 100%</h3>
-                    <p>
-                      Each out-of-state CBSA count is divided by total
-                      out-of-state origins. This map has its own scale and also
-                      reconciles independently to 100%.
-                    </p>
-                  </div>
-                  <div>
-                    <h3>Metro geography</h3>
-                    <p>
-                      CBSA identifiers are plotted at Census Gazetteer internal
-                      points. Heat indicates relative origin share, not a
-                      precise household or student address.
-                    </p>
-                  </div>
-                  <div>
-                    <h3>Source limitations</h3>
-                    <p>
-                      The file does not contain a reporting period. Codes
-                      without a valid CBSA centroid remain in the 100% group
-                      reconciliation but are not assigned guessed locations.
-                    </p>
-                  </div>
-                </div>
-              </section>
+                </section>
+              </div>
             </div>
 
             <div id="student-migration-empty" class="empty-state" hidden>
@@ -811,113 +799,6 @@
                       </thead>
                       <tbody id="shadow-market-rings"></tbody>
                     </table>
-                  </div>
-                </div>
-              </section>
-
-              <section class="card shadow-methodology-card">
-                <header class="card-header">
-                  <div>
-                    <h2>How the Shadow Market Estimate Works</h2>
-                    <p>
-                      The approved CoStar + Census methodology for estimating
-                      college-age renters outside large purpose-built properties.
-                    </p>
-                  </div>
-                </header>
-                <div class="card-body">
-                  <div class="shadow-methodology-grid">
-                    <article class="shadow-methodology-step">
-                      <span class="shadow-methodology-number">1</span>
-                      <div>
-                        <h3>Capture CoStar multifamily inventory</h3>
-                        <p>
-                          CoStar multifamily properties with 5–49 units are included.
-                          Properties typed as student housing, demolished properties,
-                          and buildings with 50 or more units are excluded.
-                        </p>
-                        <code>approved CoStar inventory = multifamily properties with 5–49 units</code>
-                      </div>
-                    </article>
-                    <article class="shadow-methodology-step">
-                      <span class="shadow-methodology-number">2</span>
-                      <div>
-                        <h3>Add the small-property gap</h3>
-                        <p>
-                          Census renter inventory in 2–4-unit structures is added
-                          because CoStar does not comprehensively capture those
-                          properties. One-unit rentals are intentionally excluded
-                          because they materially overstated the population.
-                        </p>
-                        <code>combined units = CoStar 5–49 units + Census 2–4 units</code>
-                      </div>
-                    </article>
-                    <article class="shadow-methodology-step">
-                      <span class="shadow-methodology-number">3</span>
-                      <div>
-                        <h3>Estimate renter population</h3>
-                        <p>
-                          Each CoStar building is matched to its nearest Census block
-                          group. Census population and unit tables provide average
-                          occupancy for renter inventory below 50 units. The same
-                          local occupancy is applied to CoStar units and Census
-                          2–4-unit inventory.
-                        </p>
-                        <code>estimated population = combined units × local sub-50 occupancy</code>
-                      </div>
-                    </article>
-                    <article class="shadow-methodology-step">
-                      <span class="shadow-methodology-number">4</span>
-                      <div>
-                        <h3>Isolate the college-age renter share</h3>
-                        <p>
-                          The Census renter share age 15–24 is narrowed to the
-                          approved 18–21 age window using local population age
-                          distributions. That percentage is applied independently
-                          within each block group before results are summed.
-                        </p>
-                        <code>shadow population = estimated population × renter 15–24 share × age 18–21 tightening</code>
-                      </div>
-                    </article>
-                  </div>
-
-                  <div class="shadow-methodology-notes">
-                    <div>
-                      <h3>Geography and distance</h3>
-                      <p>
-                        Calculations are performed separately for each Census block
-                        group. Each block group is represented by its Census centroid
-                        and assigned once to the nearest campus distance ring.
-                      </p>
-                    </div>
-                    <div>
-                      <h3>How to interpret the heatmap</h3>
-                      <p>
-                        The heatmap uses the broader Census block-group distribution
-                        because it produced the more accurate neighborhood pattern
-                        during market validation. The KPI cards and ring table still
-                        use the approved CoStar + Census calculation. The map is a
-                        distribution aid, not a separate official total or exact
-                        student-address map.
-                      </p>
-                    </div>
-                    <div>
-                      <h3>Primary Census tables</h3>
-                      <p>
-                        ACS 5-Year tables B25007 (renter age), B25032 (renter units
-                        by structure size), and B25033 (renter population by
-                        structure size). B01001 narrows age 15–24 to ages 18–21.
-                      </p>
-                    </div>
-                    <div>
-                      <h3>Scope and overlap controls</h3>
-                      <p>
-                        Each dashboard market is generated once by market key and
-                        uses only its anchor university. Repeated campus records are
-                        collapsed, CoStar properties are deduplicated by PropertyID
-                        or location, and every Census block group is assigned once.
-                      </p>
-                    </div>
                   </div>
                 </div>
               </section>
@@ -1106,7 +987,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=52" defer></script>
+  <script src="market.js?v=53" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>

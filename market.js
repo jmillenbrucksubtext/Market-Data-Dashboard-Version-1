@@ -52,6 +52,7 @@ let unitMixParityChart = null;  // Chart instance for the bed/bath parity pie
 let unitMixParityType = "all";  // bedroom-type filter for the parity pie
 let pipeCharts = {};  // Pipeline tab: canvas id → Chart instance
 let pipelineDistance = "all";  // "0.5" | "1" | "all" - campus-distance band
+let sdScope = "all";  // Supply & Demand panel band: "all" | "1" | "0.5" | "1-2015"
 let shadowMarketData = null;
 let shadowMarketMap = null;
 let shadowMarketOverlay = null;
@@ -1358,6 +1359,16 @@ function bindPipelineToggle() {
       renderPipeline();
     });
   });
+  // The Supply & Demand panel carries its own distance filter (it adds a
+  // "1 mi, 2015+" vintage band the pipeline toggle lacks) and re-renders only
+  // its own chart, not the whole tab.
+  document.querySelectorAll(".sd-scope-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      if (btn.dataset.sd === sdScope) return;
+      sdScope = btn.dataset.sd;
+      renderSupplyDemand();
+    });
+  });
 }
 
 /* ----- Pipeline tab ------------------------------------------ */
@@ -1578,28 +1589,43 @@ function renderPipeline() {
   renderSupplyDemand();
 }
 
-/* ----- Supply & Demand panel (Pipeline tab) ------------------
-   (on-campus + existing + pipeline beds) / FTE, shown as one table across
-   three campus-distance bands. "Existing" = delivered/leasing PBSH beds
-   (stabilized + lease-up) and "Pipeline" = not-yet-delivered beds (under
-   construction + planned) - the same Delivered/Projected split the Deliveries
-   Over Time chart uses, so lease-up is never double-counted. On-campus beds and
-   FTE are market constants; existing and pipeline vary by band. Independent of
-   the tab's distance toggle - always shows all three bands. */
-const SD_BANDS = [
-  { label: "&le; ½ mi",        lim: 0.5, minYear: 0 },
-  { label: "&le; 1 mi",            lim: 1.0, minYear: 0 },
-  { label: "&le; 1 mi, 2015+",     lim: 1.0, minYear: 2015 },
-];
+/* ----- Uncaptured Demand panel (Pipeline tab) ----------------
+   Demand = FTE enrollment. Supply = on-campus + existing + pipeline beds, where
+   "Existing" = delivered/leasing PBSH (stabilized + lease-up) and "Pipeline" =
+   not-yet-delivered (under construction + planned) - the same Delivered/
+   Projected split the Deliveries chart uses, so lease-up is never double-
+   counted. Uncaptured demand = max(0, FTE - supply), the unmet bed demand.
+   A single stacked bar shows how FTE demand is filled by each supply layer with
+   the remainder as the headline; its own distance filter (state `sdScope`)
+   re-scopes the off-campus supply, adding a "1 mi, 2015+" vintage band the main
+   pipeline toggle lacks. On-campus beds and FTE are market constants. */
+const SD_SCOPES = {
+  "all":    { lim: null, minYear: 0,    label: "market-wide" },
+  "1":      { lim: 1.0,  minYear: 0,    label: "within 1 mi of campus" },
+  "0.5":    { lim: 0.5,  minYear: 0,    label: "within ½ mi of campus" },
+  "1-2015": { lim: 1.0,  minYear: 2015, label: "within 1 mi, built 2015+" },
+};
 const SD_EXISTING_PHASES = new Set(["stable", "lease up"]);
 const SD_PIPELINE_PHASES = new Set(["under construction", "planned"]);
+const SD_COLORS = {
+  onCampus:   "#16352e",  // everest
+  existing:   "#7fb0a4",  // light teal - delivered
+  pipeline:   "#a95818",  // rust - not yet delivered
+  uncaptured: "#e7dcbf",  // sand - unmet demand (the open gap)
+};
 
 function renderSupplyDemand() {
-  const host = document.getElementById("pipe-supplydemand");
-  if (!host) return;
+  if (typeof Chart === "undefined") return;
+  const canvas = document.getElementById("pipe-supplydemand");
+  if (!canvas) return;
+  const callout = document.getElementById("pipe-sd-callout");
 
+  // Reflect the active band on the panel's own toggle.
+  document.querySelectorAll(".sd-scope-btn")
+    .forEach((b) => b.classList.toggle("active", b.dataset.sd === sdScope));
+
+  const scope = SD_SCOPES[sdScope] || SD_SCOPES.all;
   const fte = MARKET.enr_full_time || null;
-  const dash = "&ndash;";
 
   // On-campus beds across every tracked school in the market (reported figure
   // preferred, computed share-of-enrollment estimate as fallback).
@@ -1607,40 +1633,95 @@ function renderSupplyDemand() {
     .filter((r) => r.market_key === MARKET.market_key)
     .reduce((s, r) => s + (r.beds_on_campus_reported || r.beds_on_campus_computed || 0), 0);
 
-  // Off-campus beds in a phase set within a distance band, optionally
-  // restricted to a build-year floor for the vintage band.
-  const bedsFor = (phases, lim, minYear) => PROPERTIES
+  // Off-campus beds in a phase set within the active band. lim == null means
+  // the whole market - no distance limit, and properties with no campus
+  // distance on file are still counted.
+  const bedsFor = (phases) => PROPERTIES
     .filter((p) => phases.has(p.phase)
-      && p.milesToClosestCampus != null && p.milesToClosestCampus <= lim
-      && (p.yearBuilt || 0) >= minYear)
+      && (scope.lim == null || (p.milesToClosestCampus != null && p.milesToClosestCampus <= scope.lim))
+      && (p.yearBuilt || 0) >= scope.minYear)
     .reduce((s, p) => s + (p.beds || 0), 0);
 
-  const cols = SD_BANDS.map((b) => {
-    const existing = bedsFor(SD_EXISTING_PHASES, b.lim, b.minYear);
-    const pipeline = bedsFor(SD_PIPELINE_PHASES, b.lim, b.minYear);
-    const supply = onCampus + existing + pipeline;
-    return { existing, pipeline, supply, ratio: fte ? supply / fte : null };
+  const existing = bedsFor(SD_EXISTING_PHASES);
+  const pipeline = bedsFor(SD_PIPELINE_PHASES);
+  const supply = onCampus + existing + pipeline;
+  const uncaptured = fte ? Math.max(0, fte - supply) : null;
+  const surplus = fte ? Math.max(0, supply - fte) : null;
+
+  // Headline callout: the uncaptured bed count, share of FTE, and context.
+  if (callout) {
+    if (!fte) {
+      callout.innerHTML = `<div class="sd-callout-note">No FTE enrollment on file &ndash; demand cannot be computed.</div>`;
+    } else if (uncaptured > 0) {
+      callout.innerHTML =
+        `<div class="sd-callout-num">${fmtInt(uncaptured)}</div>`
+        + `<div class="sd-callout-label">uncaptured beds of demand</div>`
+        + `<div class="sd-callout-sub">${fmtPct(uncaptured / fte, 0)} of ${fmtInt(fte)} FTE is unmet by the `
+        + `${fmtInt(supply)} beds of supply ${scope.label}.</div>`;
+    } else {
+      callout.innerHTML =
+        `<div class="sd-callout-num sd-callout-num-zero">0</div>`
+        + `<div class="sd-callout-label">uncaptured beds of demand</div>`
+        + `<div class="sd-callout-sub">Supply (${fmtInt(supply)} beds) meets all ${fmtInt(fte)} FTE `
+        + `${surplus ? `with ${fmtInt(surplus)} beds to spare ` : ""}${scope.label}.</div>`;
+    }
+  }
+
+  // Single stacked horizontal bar: FTE demand filled by each supply layer,
+  // with the uncaptured remainder as the trailing open segment.
+  const segs = [
+    { key: "onCampus", label: "On-campus", value: onCampus },
+    { key: "existing", label: "Existing beds", value: existing },
+    { key: "pipeline", label: "Pipeline beds", value: pipeline },
+  ];
+  if (uncaptured && uncaptured > 0) {
+    segs.push({ key: "uncaptured", label: "Uncaptured demand", value: uncaptured });
+  }
+  const barTotal = segs.reduce((s, x) => s + x.value, 0) || 1;
+
+  if (pipeCharts["pipe-supplydemand"]) pipeCharts["pipe-supplydemand"].destroy();
+  pipeCharts["pipe-supplydemand"] = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: [""],
+      datasets: segs.map((s) => ({
+        label: s.label,
+        data: [s.value],
+        backgroundColor: SD_COLORS[s.key],
+        borderColor: s.key === "uncaptured" ? "#cdbf95" : "#fff",
+        borderWidth: s.key === "uncaptured" ? 1 : 2,
+        maxBarThickness: 64,
+        datalabels: {
+          color: s.key === "uncaptured" ? "#5a544f" : "#fff",
+          font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+          formatter: (v) => (v && v / barTotal >= 0.05) ? fmtInt(v) : "",
+        },
+      })),
+    },
+    options: {
+      indexAxis: "y",
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 4, bottom: 4 } },
+      plugins: {
+        legend: { position: "bottom",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 10 } },
+        tooltip: { callbacks: {
+          label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.x)} beds`
+            + (fte ? ` (${fmtPct(c.parsed.x / fte, 0)} of FTE)` : ""),
+        } },
+        datalabels: { display: true },
+      },
+      scales: {
+        x: { stacked: true, beginAtZero: true, grid: { color: "#f5efde", drawTicks: false },
+             border: { display: false }, ticks: { color: "#5a544f", font: { size: 11 },
+             callback: (v) => fmtInt(v) } },
+        y: { stacked: true, grid: { display: false, drawBorder: false }, border: { display: false },
+             ticks: { display: false } },
+      },
+    },
   });
-
-  const row = (label, vals, cls = "") =>
-    `<tr${cls ? ` class="${cls}"` : ""}><td class="property-cell">${label}</td>`
-    + vals.map((v) => `<td>${v}</td>`).join("") + "</tr>";
-
-  const head = `<thead><tr><th class="property-cell">Metric</th>`
-    + SD_BANDS.map((b) => `<th>${b.label}</th>`).join("") + "</tr></thead>";
-
-  const body =
-      row("On-campus beds", cols.map(() => onCampus ? fmtInt(onCampus) : dash))
-    + row("Existing beds", cols.map((c) => fmtInt(c.existing)))
-    + row("Pipeline beds", cols.map((c) => fmtInt(c.pipeline)))
-    + row("Total supply", cols.map((c) => fmtInt(c.supply)), "sd-row-total")
-    + row("FTE enrollment", cols.map(() => fte ? fmtInt(fte) : dash));
-
-  const foot = "<tfoot>"
-    + row("Beds &divide; FTE", cols.map((c) => fte ? fmtPct(c.ratio, 0) : dash))
-    + "</tfoot>";
-
-  host.innerHTML = `<table class="comp-detail-table sd-table">${head}<tbody>${body}</tbody>${foot}</table>`;
 }
 
 /* ----- Map (Leaflet) ----------------------------------------- */

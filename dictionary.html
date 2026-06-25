@@ -67,6 +67,7 @@
               <a href="#market-tab">Market tab</a>
               <a href="#compset-tab">Competitive Set tab</a>
               <a href="#student-migration-tab">Student Migration tab</a>
+              <a href="#shadow-market-tab">Shadow Market tab</a>
               <a href="#qualifier-sidebar">Qualifier sidebar (both tabs)</a>
             </div>
             <div class="toc-group">
@@ -285,7 +286,59 @@
 
                 <article class="dict-item">
                   <h4>Geography and limitations</h4>
-                  <p><code>State</code> determines in-state versus out-of-state. <code>CBSAID</code> is plotted at the U.S. Census Bureau 2021 Gazetteer internal point. Codes <code>99999</code> and <code>NA</code> remain in the 100% reconciliation but are not assigned guessed map coordinates. The source does not contain a reporting-period field.</p>
+                  <p><code>State</code> determines in-state versus out-of-state. <code>CBSAID</code> is plotted at the U.S. Census Bureau 2021 Gazetteer internal point; heat indicates relative origin share, not a precise household or student address. Codes <code>99999</code> and <code>NA</code> remain in the 100% reconciliation but are not assigned guessed map coordinates. The source does not contain a reporting-period field.</p>
+                </article>
+              </section>
+
+              <section class="dict-tab" id="shadow-market-tab">
+                <header class="dict-tab-header">
+                  <span class="dict-tab-chip dict-chip-market-tab">Shadow Market tab</span>
+                  <h3>How the Shadow Market Estimate Works</h3>
+                  <p>The approved CoStar + Census methodology for estimating college-age renters outside large purpose-built properties.</p>
+                </header>
+
+                <article class="dict-item">
+                  <h4>Step 1 - Capture CoStar multifamily inventory</h4>
+                  <p>CoStar multifamily properties with 5–49 units are included. Properties typed as student housing, demolished properties, and buildings with 50 or more units are excluded.</p>
+                  <code>approved CoStar inventory = multifamily properties with 5–49 units</code>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Step 2 - Add the small-property gap</h4>
+                  <p>Census renter inventory in 2–4-unit structures is added because CoStar does not comprehensively capture those properties. One-unit rentals are intentionally excluded because they materially overstated the population.</p>
+                  <code>combined units = CoStar 5–49 units + Census 2–4 units</code>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Step 3 - Estimate renter population</h4>
+                  <p>Each CoStar building is matched to its nearest Census block group. Census population and unit tables provide average occupancy for renter inventory below 50 units. The same local occupancy is applied to CoStar units and Census 2–4-unit inventory.</p>
+                  <code>estimated population = combined units × local sub-50 occupancy</code>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Step 4 - Isolate the college-age renter share</h4>
+                  <p>The Census renter share age 15–24 is narrowed to the approved 18–21 age window using local population age distributions. That percentage is applied independently within each block group before results are summed.</p>
+                  <code>shadow population = estimated population × renter 15–24 share × age 18–21 tightening</code>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Geography and distance</h4>
+                  <p>Calculations are performed separately for each Census block group. Each block group is represented by its Census centroid and assigned once to the nearest campus distance ring.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>How to interpret the heatmap</h4>
+                  <p>The heatmap uses the broader Census block-group distribution because it produced the more accurate neighborhood pattern during market validation. The KPI cards and ring table still use the approved CoStar + Census calculation. The map is a distribution aid, not a separate official total or exact student-address map.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Primary Census tables</h4>
+                  <p>ACS 5-Year tables B25007 (renter age), B25032 (renter units by structure size), and B25033 (renter population by structure size). B01001 narrows age 15–24 to ages 18–21.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Scope and overlap controls</h4>
+                  <p>Each dashboard market is generated once by market key and uses only its anchor university. Repeated campus records are collapsed, CoStar properties are deduplicated by PropertyID or location, and every Census block group is assigned once.</p>
                 </article>
               </section>
 

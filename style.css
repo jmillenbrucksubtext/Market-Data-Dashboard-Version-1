@@ -2453,7 +2453,8 @@ h1, h2, h3, .serif {
   box-shadow: 0 1px 2px rgba(22, 53, 46, 0.12);
 }
 .perf-scope-btn,
-.pipeline-scope-btn {
+.pipeline-scope-btn,
+.sd-scope-btn {
   appearance: none;
   background: transparent;
   border: none;
@@ -2467,11 +2468,14 @@ h1, h2, h3, .serif {
   transition: background 0.12s, color 0.12s;
 }
 .perf-scope-btn + .perf-scope-btn,
-.pipeline-scope-btn + .pipeline-scope-btn { border-left: 1px solid var(--everest); }
+.pipeline-scope-btn + .pipeline-scope-btn,
+.sd-scope-btn + .sd-scope-btn { border-left: 1px solid var(--everest); }
 .perf-scope-btn:hover,
-.pipeline-scope-btn:hover { color: var(--everest); }
+.pipeline-scope-btn:hover,
+.sd-scope-btn:hover { color: var(--everest); }
 .perf-scope-btn.active,
-.pipeline-scope-btn.active { background: var(--lime); color: var(--everest); }
+.pipeline-scope-btn.active,
+.sd-scope-btn.active { background: var(--lime); color: var(--everest); }
 @media (max-width: 640px) {
   .perf-scope-control { width: 100%; }
 }
@@ -2490,14 +2494,58 @@ h1, h2, h3, .serif {
 .pipeline-projects-card { align-self: start; }
 .pipeline-projects-card .table-wrap { max-height: 312px; overflow-y: auto; }
 
-/* Supply & Demand table (Pipeline tab) */
-.sd-table { margin-top: 8px; }
-.sd-table .sd-row-total td {
-  font-weight: 700;
-  color: var(--slate);
-  border-top: 1.5px solid var(--slate-15);
+/* Uncaptured Demand panel (Pipeline tab) */
+.sd-scope-row { margin: 10px 0 4px; }
+.sd-scope-toggle { font-size: 0; }
+@media (max-width: 560px) {
+  .sd-scope-toggle { display: flex; flex-wrap: wrap; }
 }
-.sd-table tfoot td { color: var(--everest); }
+.sd-body {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  align-items: center;
+  margin-top: 12px;
+}
+@media (min-width: 760px) {
+  .sd-body { grid-template-columns: minmax(150px, 0.5fr) minmax(0, 1fr); }
+}
+.sd-callout {
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.sd-callout-num {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 40px;
+  line-height: 1;
+  color: var(--birch, #a95818);
+}
+.sd-callout-num-zero { color: var(--everest); }
+.sd-callout-label {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+  margin-top: 6px;
+}
+.sd-callout-sub {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--slate-70);
+  margin-top: 10px;
+}
+.sd-callout-note {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 13px;
+  color: var(--slate-70);
+}
+.sd-chart-wrap { height: 150px; }
 
 /* Student Migration tab -------------------------------------- */
 .student-migration-toolbar {
@@ -2542,6 +2590,7 @@ h1, h2, h3, .serif {
   gap: 18px;
 }
 .student-migration-rankings { margin-top: 18px; }
+.student-migration-states { margin-top: 18px; }
 .student-migration-card { overflow: visible; }
 .student-migration-map {
   width: 100%;
@@ -2584,31 +2633,6 @@ h1, h2, h3, .serif {
 .student-migration-table td:first-child {
   width: 38px;
   color: var(--slate-70);
-}
-.student-migration-methodology { margin-bottom: 0; }
-.student-migration-notes {
-  display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 18px;
-}
-.student-migration-notes > div {
-  padding: 16px;
-  border: 1px solid var(--beige-deep);
-  border-radius: 6px;
-  background: var(--beige);
-}
-.student-migration-notes h3 {
-  margin: 0 0 7px;
-  color: var(--slate);
-  font-family: "Pragmatica", sans-serif;
-  font-size: 13px;
-}
-.student-migration-notes p {
-  margin: 0;
-  color: var(--slate-70);
-  font-family: "Pragmatica", sans-serif;
-  font-size: 12px;
-  line-height: 1.55;
 }
 .leaflet-tooltip.student-migration-tooltip {
   max-width: min(330px, calc(100vw - 48px));
@@ -2778,7 +2802,6 @@ h1, h2, h3, .serif {
     min-width: 0;
   }
   .student-migration-map { height: 500px; }
-  .student-migration-notes { grid-template-columns: 1fr; }
   .shadow-market-kpis { grid-template-columns: 1fr; }
   .shadow-market-header { display: block; }
   .shadow-market-metric-control { margin-top: 12px; min-width: 0; }

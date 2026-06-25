@@ -2333,6 +2333,54 @@ h1, h2, h3, .serif {
 .unitmix-tables-grid { margin-top: 18px; }
 .unitmix-pies-row { margin-top: 18px; }
 
+/* Market Performance distance filter - made deliberately prominent so it
+   reads as the section's primary control. Labelled, larger hit targets, and
+   a lime active state that pops against the beige card. */
+.perf-scope-control {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.perf-scope-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+}
+.perf-scope-toggle {
+  display: inline-flex;
+  border: 1.5px solid var(--everest);
+  border-radius: 8px;
+  overflow: hidden;
+  background: var(--bg);
+  box-shadow: 0 1px 2px rgba(22, 53, 46, 0.12);
+}
+.perf-scope-btn {
+  appearance: none;
+  background: transparent;
+  border: none;
+  padding: 9px 18px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12.5px;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  color: var(--slate-70);
+  cursor: pointer;
+  transition: background 0.12s, color 0.12s;
+}
+.perf-scope-btn + .perf-scope-btn { border-left: 1px solid var(--everest); }
+.perf-scope-btn:hover { color: var(--everest); }
+.perf-scope-btn.active { background: var(--lime); color: var(--everest); }
+@media (max-width: 640px) {
+  .perf-scope-control { width: 100%; }
+}
+
 /* Pipeline tab: two rows of paired panels (doughnut + project list, then two
    trend charts). Stacks to one column on narrow screens. */
 .pipeline-row {

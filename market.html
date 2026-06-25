@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=52">
+  <link rel="stylesheet" href="style.css?v=54">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -204,11 +204,17 @@
                 <h2>Market Performance</h2>
                 <p>This market vs the Subtext-30 average. Each year is anchored to the same calendar date as the latest snapshot for apples-to-apples year-over-year.</p>
               </div>
-              <div class="unitmix-toggle perf-scope-toggle" role="group" aria-label="Performance scope">
-                <button type="button" class="unitmix-toggle-btn perf-scope-btn active" data-scope="market">Market</button>
-                <button type="button" class="unitmix-toggle-btn perf-scope-btn" data-scope="1mi">&le;1 mi</button>
-                <button type="button" class="unitmix-toggle-btn perf-scope-btn" data-scope="0.5mi">&le;&frac12; mi</button>
-                <button type="button" class="unitmix-toggle-btn perf-scope-btn" data-scope="1mi2015">&le;1 mi &middot; 2015+</button>
+              <div class="perf-scope-control">
+                <span class="perf-scope-label">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+                  Filter by distance
+                </span>
+                <div class="perf-scope-toggle" role="group" aria-label="Filter market performance by distance to campus">
+                  <button type="button" class="perf-scope-btn active" data-scope="market">Market</button>
+                  <button type="button" class="perf-scope-btn" data-scope="1mi">&le;1 mi</button>
+                  <button type="button" class="perf-scope-btn" data-scope="0.5mi">&le;&frac12; mi</button>
+                  <button type="button" class="perf-scope-btn" data-scope="1mi2015">&le;1 mi &middot; 2015+</button>
+                </div>
               </div>
             </header>
             <div class="card-body">
@@ -1047,7 +1053,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=46" defer></script>
+  <script src="market.js?v=47" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>

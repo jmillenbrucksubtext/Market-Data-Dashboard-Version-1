@@ -134,6 +134,32 @@ const PERF = {
   },
 };
 
+// Base titles for the four performance charts, and the suffix appended per
+// active distance/vintage filter (blank for the whole-market default).
+const PERF_TITLES = {
+  "perf-rent":        "Market Rent",
+  "perf-rent-growth": "Market Rent Growth",
+  "perf-occupancy":   "Market Occupancy",
+  "perf-prelease":    "Market Pre-lease",
+};
+const PERF_SCOPE_LABELS = {
+  "market":   "",
+  "1mi":      "1 Mile",
+  "0.5mi":    "0.5 Mile",
+  "1mi2015":  "1 Mile, 2015+",
+};
+
+// Stamp the active filter name into a performance chart's title, e.g.
+// "Market Rent - 1 Mile". The whole-market default keeps the base title.
+function setPerfTitle(canvasId) {
+  const base = PERF_TITLES[canvasId];
+  if (!base) return;
+  const el = document.getElementById(canvasId)?.closest("figure")?.querySelector(".perf-title-text");
+  if (!el) return;
+  const suffix = PERF_SCOPE_LABELS[perfScope] || "";
+  el.textContent = suffix ? `${base} - ${suffix}` : base;
+}
+
 // Power 4 anchor universities (2024-25 conference alignment), matched against
 // scorecard.anchor_university. Kept in sync with dashboard.js POWER4_ANCHORS.
 const POWER4_ANCHORS = new Set([
@@ -309,6 +335,7 @@ function renderPerformance() {
   function renderTimeSeries(canvasId, field, valueFmt, { transform = (v) => v, yMax = null } = {}) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || !years.length) return;
+    setPerfTitle(canvasId);
     const myData = scopeSeries(field).map((v) => v == null ? null : transform(v));
     const s30Data = s30YearMean(field).map((v) => v == null ? null : transform(v));
     const p4Data = p4YearMean(field).map((v) => v == null ? null : transform(v));
@@ -359,6 +386,7 @@ function renderPerformance() {
   // Rent growth: compute YoY from consecutive years, drop the first year.
   const rentGrowthCtx = document.getElementById("perf-rent-growth");
   if (rentGrowthCtx && myHistory.length > 1) {
+    setPerfTitle("perf-rent-growth");
     const myRentSeries = scopeSeries("avg_rent_per_bed");
     const s30RentSeries = s30YearMean("avg_rent_per_bed");
     const p4RentSeries = p4YearMean("avg_rent_per_bed");

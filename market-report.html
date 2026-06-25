@@ -110,6 +110,9 @@
   .map-img-sm { max-height: 3.2in; }
 
   .pipe-band { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+  .charts-pipe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  .charts-pipe > .chart-card { min-width: 0; }
+  .charts-pipe canvas { max-width: 100%; }
 
   /* Profile mini-table */
   .prof-table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
@@ -234,8 +237,67 @@ document.addEventListener("DOMContentLoaded", async () => {
   const asOf = M.data_as_of ? new Date(M.data_as_of) : new Date();
   const asOfText = asOf.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
+  /* ---- Supply pipeline detail (mirrors the dashboard Pipeline tab) ---- */
+  const PIPE_PHASE_LABEL = { "planned": "Planned", "under construction": "Under Construction", "lease up": "Lease Up", "stable": "Stabilized" };
+  const SD_EXISTING = new Set(["stable", "lease up"]);          // delivered / leasing
+  const SD_PIPELINE = new Set(["under construction", "planned"]); // not yet delivered
+  const inScope = (p, lim, minYear) =>
+    (lim == null || (p.milesToClosestCampus != null && p.milesToClosestCampus <= lim))
+    && (p.yearBuilt || 0) >= (minYear || 0);
+  const bedsBy = (phases, lim, minYear) => props
+    .filter((p) => phases.has(p.phase) && inScope(p, lim, minYear))
+    .reduce((s, p) => s + (p.beds || 0), 0);
+
+  // Doughnut: pipeline beds by phase, per proximity band
+  const PIPE_BANDS = [
+    { id: "market", l: "Total Market", lim: null },
+    { id: "1mi", l: "Within 1 Mile", lim: 1.0 },
+    { id: "05mi", l: "Within ½ Mile", lim: 0.5 },
+  ];
+  const pipeDoughnut = (lim) => ({
+    lu: bedsBy(new Set(["lease up"]), lim, 0),
+    uc: bedsBy(new Set(["under construction"]), lim, 0),
+    planned: bedsBy(new Set(["planned"]), lim, 0),
+  });
+
+  // New Projects table (pipeline phases), market-wide, by completion then beds
+  const PIPE_PHASES = new Set(["under construction", "lease up", "planned"]);
+  const PIPE_ROW_CAP = 13;
+  const pipeProjects = props
+    .filter((p) => PIPE_PHASES.has(p.phase))
+    .sort((a, b) => (a.yearBuilt || 9999) - (b.yearBuilt || 9999) || (b.beds || 0) - (a.beds || 0));
+  const pipeProjBeds = pipeProjects.reduce((s, p) => s + (p.beds || 0), 0);
+
+  // Deliveries by year built: Delivered (stabilized + lease-up) vs Projected (UC + planned)
+  const delivByYear = {};
+  props.forEach((p) => {
+    const y = p.yearBuilt, b = p.beds || 0; if (!y || !b) return;
+    const e = delivByYear[y] || (delivByYear[y] = { d: 0, p: 0 });
+    if (SD_EXISTING.has(p.phase)) e.d += b; else if (SD_PIPELINE.has(p.phase)) e.p += b;
+  });
+  const delivYears = Object.keys(delivByYear).map(Number).sort((a, b) => a - b);
+  const delivTotD = delivYears.reduce((s, y) => s + delivByYear[y].d, 0);
+  const delivTotP = delivYears.reduce((s, y) => s + delivByYear[y].p, 0);
+
+  // Uncaptured demand by proximity band: (on-campus + existing + pipeline) vs FTE
+  const onCampusBeds = uiRows.reduce((s, r) => s + (r.beds_on_campus_reported || r.beds_on_campus_computed || 0), 0);
+  const fteDemand = M.enr_full_time || null;
+  const SD_SCOPES = [
+    { id: "market", l: "Total Market", lim: null, minYear: 0 },
+    { id: "1mi", l: "Within 1 Mile", lim: 1.0, minYear: 0 },
+    { id: "05mi", l: "Within ½ Mile", lim: 0.5, minYear: 0 },
+    { id: "1mi2015", l: "1 Mile · 2015+", lim: 1.0, minYear: 2015 },
+  ];
+  const sdCols = SD_SCOPES.map((sc) => {
+    const existing = bedsBy(SD_EXISTING, sc.lim, sc.minYear);
+    const pipeline = bedsBy(SD_PIPELINE, sc.lim, sc.minYear);
+    const supply = onCampusBeds + existing + pipeline;
+    const uncap = fteDemand ? Math.max(0, fteDemand - supply) : null;
+    return { existing, pipeline, supply, uncap, uncapPct: fteDemand ? uncap / fteDemand : null };
+  });
+
   /* ---- shared bits ---- */
-  const TOTAL = 8;
+  const TOTAL = 9;
   const runHead = `<div class="run-head"><span>Subtext Living · Market Report · <b>${esc(M.anchor_university)}</b></span><span>${esc(M.city)}, ${esc(M.state_abbr)} · ${asOfText}</span></div>`;
   const mainHead = (num, title, sub) => `
     <div class="main-head">
@@ -372,9 +434,53 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="kpi"><div class="kpi-label">Under Construction</div><div class="kpi-value">${fmtInt(M.beds_under_construction)}</div><div class="kpi-sub">≈ 6-24 months</div></div>
       <div class="kpi"><div class="kpi-label">Planned</div><div class="kpi-value">${fmtInt(M.beds_planned)}</div><div class="kpi-sub">permitted / announced</div></div>
     </div>
-    <div class="sub">Deliveries Over Time - beds by year built</div>
-    <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
+    <div class="sub">Total Pipeline Beds by Phase &amp; Proximity</div>
+    <div class="legend"><span><i style="background:${C.everest}"></i>Lease Up</span><span><i style="background:${C.birch}"></i>Under Construction</span><span><i style="background:${C.slate30}"></i>Planned</span></div>
+    <div class="charts-pipe">
+      ${PIPE_BANDS.map((b) => `<div class="chart-card"><h4>${b.l}</h4><div class="chart-box-sm"><canvas id="ch-pipe-${b.id}"></canvas></div></div>`).join("")}
+    </div>
+    <div class="sub">New Projects${pipeProjects.length > PIPE_ROW_CAP ? ` · top ${PIPE_ROW_CAP} of ${pipeProjects.length} by completion` : ""}</div>
+    <table class="dt">
+      <thead><tr><th>Property</th><th>Phase</th><th>Completion</th><th>Beds</th></tr></thead>
+      <tbody>${pipeProjects.length ? pipeProjects.slice(0, PIPE_ROW_CAP).map((p) => `<tr><td>${esc(p.property_name || "(unnamed)")}</td><td>${PIPE_PHASE_LABEL[p.phase] || esc(p.phase)}</td><td>${p.yearBuilt ?? "-"}</td><td>${fmtInt(p.beds)}</td></tr>`).join("") : '<tr><td colspan="4">No pipeline projects on record for this market.</td></tr>'}</tbody>
+      ${pipeProjects.length ? `<tfoot><tr><td>${pipeProjects.length} project${pipeProjects.length === 1 ? "" : "s"}</td><td></td><td></td><td>${fmtInt(pipeProjBeds)}</td></tr></tfoot>` : ""}
+    </table>
     ${foot(7)}
+  </div>
+
+  <div class="sheet">
+    ${runHead}
+    ${mainHead("04", "Supply Pipeline", "Deliveries over time &amp; uncaptured demand")}
+    <div class="two-col">
+      <div>
+        <div class="sub">Deliveries Over Time - beds by year built</div>
+        <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
+      </div>
+      <div>
+        <div class="sub">Deliveries by Year</div>
+        <table class="dt">
+          <thead><tr><th>Year</th><th>Delivered</th><th>Projected</th><th>Total</th></tr></thead>
+          <tbody>${delivYears.length ? delivYears.map((y) => `<tr><td>${y}</td><td>${delivByYear[y].d ? fmtInt(delivByYear[y].d) : "-"}</td><td>${delivByYear[y].p ? fmtInt(delivByYear[y].p) : "-"}</td><td>${fmtInt(delivByYear[y].d + delivByYear[y].p)}</td></tr>`).join("") : '<tr><td colspan="4">No deliveries on record.</td></tr>'}</tbody>
+          ${delivYears.length ? `<tfoot><tr><td>Total</td><td>${fmtInt(delivTotD)}</td><td>${fmtInt(delivTotP)}</td><td>${fmtInt(delivTotD + delivTotP)}</td></tr></tfoot>` : ""}
+        </table>
+      </div>
+    </div>
+    <div class="sub">Uncaptured Demand by Proximity - (on-campus + existing + pipeline beds) vs FTE</div>
+    <table class="dt">
+      <thead><tr><th>Metric</th>${SD_SCOPES.map((sc) => `<th>${sc.l}</th>`).join("")}</tr></thead>
+      <tbody>
+        <tr><td>On-campus beds</td>${sdCols.map(() => `<td>${onCampusBeds ? fmtInt(onCampusBeds) : "-"}</td>`).join("")}</tr>
+        <tr><td>Existing beds</td>${sdCols.map((c) => `<td>${fmtInt(c.existing)}</td>`).join("")}</tr>
+        <tr><td>Pipeline beds</td>${sdCols.map((c) => `<td>${fmtInt(c.pipeline)}</td>`).join("")}</tr>
+        <tr><td>Total supply</td>${sdCols.map((c) => `<td>${fmtInt(c.supply)}</td>`).join("")}</tr>
+        <tr><td>FTE demand</td>${sdCols.map(() => `<td>${fteDemand ? fmtInt(fteDemand) : "-"}</td>`).join("")}</tr>
+      </tbody>
+      <tfoot>
+        <tr><td>Uncaptured beds</td>${sdCols.map((c) => `<td>${c.uncap == null ? "-" : fmtInt(c.uncap)}</td>`).join("")}</tr>
+        <tr><td>Uncaptured % of FTE</td>${sdCols.map((c) => `<td>${c.uncapPct == null ? "-" : fmtPct0(c.uncapPct)}</td>`).join("")}</tr>
+      </tfoot>
+    </table>
+    ${foot(8)}
   </div>
 
   <div class="sheet">
@@ -400,7 +506,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         </table>
       </div>
     </div>
-    ${foot(8)}
+    ${foot(9)}
   </div>`;
 
   document.getElementById("report-loading").style.display = "none";
@@ -497,23 +603,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Deliveries over time
+  // Pipeline beds by phase, per proximity band (doughnuts with a center total)
+  const PIPE_TOTALS = {};
+  const pipeCenter = {
+    id: "pipeCenter",
+    afterDraw(chart) {
+      const t = PIPE_TOTALS[chart.canvas.id]; if (t == null) return;
+      const { ctx, chartArea } = chart; if (!chartArea) return;
+      const cx = (chartArea.left + chartArea.right) / 2, cy = (chartArea.top + chartArea.bottom) / 2;
+      ctx.save(); ctx.textAlign = "center";
+      ctx.fillStyle = C.slate50; ctx.font = "700 6.5px Pragmatica, sans-serif";
+      ctx.fillText("BEDS", cx, cy - 6);
+      ctx.fillStyle = C.everest; ctx.font = "700 14px 'Mencken Std', Georgia, serif";
+      ctx.fillText(fmtInt(t), cx, cy + 8);
+      ctx.restore();
+    },
+  };
+  PIPE_BANDS.forEach((b) => {
+    const el = document.getElementById(`ch-pipe-${b.id}`); if (!el) return;
+    const d = pipeDoughnut(b.lim), total = d.lu + d.uc + d.planned;
+    PIPE_TOTALS[el.id] = total;
+    new Chart(el.getContext("2d"), {
+      type: "doughnut",
+      data: { labels: ["Lease Up", "Under Construction", "Planned"], datasets: [{
+        data: total > 0 ? [d.lu, d.uc, d.planned] : [],
+        backgroundColor: [C.everest, C.birch, C.slate30], borderColor: "#fff", borderWidth: 2,
+      }] },
+      options: baseOpts({
+        cutout: "60%",
+        plugins: { legend: { display: false }, tooltip: { enabled: false },
+          datalabels: { color: "#fff", font: { size: 7, weight: 700, family: "Pragmatica, sans-serif" },
+            formatter: (v) => (v && total && v / total >= 0.08) ? fmtInt(v) : "" } },
+      }),
+      plugins: [ChartDataLabels, pipeCenter],
+    });
+  });
+
+  // Deliveries over time: Delivered (stabilized + lease-up) vs Projected (UC + planned),
+  // with the per-year total labelled atop each stacked bar (matches the dashboard).
   {
     const el = document.getElementById("ch-deliv");
     if (el) {
-      const thisYear = new Date().getFullYear(), byYear = {};
-      props.forEach((p) => { const y = p.yearBuilt; if (!y || y < 2010) return; (byYear[y] = byYear[y] || { d: 0, p: 0 }); if (y > thisYear) byYear[y].p += (p.beds || 0); else byYear[y].d += (p.beds || 0); });
-      const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
+      const yearTotal = (i) => (delivByYear[delivYears[i]].d || 0) + (delivByYear[delivYears[i]].p || 0);
       new Chart(el.getContext("2d"), {
         type: "bar",
-        data: { labels: years, datasets: [
-          { label: "Delivered", data: years.map((y) => byYear[y].d || null), backgroundColor: C.slate30 },
-          { label: "Projected", data: years.map((y) => byYear[y].p || null), backgroundColor: C.everest },
+        data: { labels: delivYears, datasets: [
+          { label: "Delivered", data: delivYears.map((y) => delivByYear[y].d || null), backgroundColor: C.slate30, datalabels: { display: false } },
+          { label: "Projected", data: delivYears.map((y) => delivByYear[y].p || null), backgroundColor: C.everest,
+            datalabels: { anchor: "end", align: "end", offset: 1, clamp: true,
+              color: C.slate, font: { size: 7, weight: 700, family: "Pragmatica, sans-serif" },
+              display: (ctx) => yearTotal(ctx.dataIndex) > 0,
+              formatter: (v, ctx) => fmtInt(yearTotal(ctx.dataIndex)) } },
         ] },
         options: baseOpts({
+          layout: { padding: { top: 14 } },
           plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
           scales: { x: { stacked: true, grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } }, y: { stacked: true, beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, callback: (v) => Math.round(v / 1000) + "k" } } },
         }),
+        plugins: [ChartDataLabels],
       });
     }
   }

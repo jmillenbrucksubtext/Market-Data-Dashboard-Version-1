@@ -1539,13 +1539,24 @@ function renderPipeline() {
         labels: years,
         datasets: [
           { label: "Beds Delivered", backgroundColor: PIPE_COLORS.delivered,
-            data: years.map((y) => delivered[y] || 0), borderRadius: 2 },
+            data: years.map((y) => delivered[y] || 0), borderRadius: 2,
+            datalabels: { display: false } },
           { label: "Projected Deliveries", backgroundColor: PIPE_COLORS.projected,
-            data: years.map((y) => projected[y] || 0), borderRadius: 2 },
+            data: years.map((y) => projected[y] || 0), borderRadius: 2,
+            // Total beds for the year, sitting atop the stacked bar. Projected is
+            // the top segment, so anchoring here puts the label at the stack top
+            // even when projected (or delivered) is zero for that year.
+            datalabels: {
+              anchor: "end", align: "end", offset: 2, clip: false,
+              color: "#2b2825", font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+              display: (ctx) => ((delivered[years[ctx.dataIndex]] || 0) + (projected[years[ctx.dataIndex]] || 0)) > 0,
+              formatter: (v, ctx) => fmtInt((delivered[years[ctx.dataIndex]] || 0) + (projected[years[ctx.dataIndex]] || 0)),
+            } },
         ],
       },
       options: {
         responsive: true, maintainAspectRatio: false,
+        layout: { padding: { top: 20 } },
         plugins: {
           legend: { position: "bottom",
             labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",

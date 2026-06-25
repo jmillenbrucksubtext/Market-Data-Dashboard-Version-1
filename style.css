@@ -2476,8 +2476,8 @@ h1, h2, h3, .serif {
   .perf-scope-control { width: 100%; }
 }
 
-/* Pipeline tab: two rows of paired panels (doughnut + project list, then two
-   trend charts). Stacks to one column on narrow screens. */
+/* Pipeline tab: a paired top row (doughnut + project list) then a full-width
+   deliveries trend chart. Stacks to one column on narrow screens. */
 .pipeline-row {
   display: grid;
   grid-template-columns: 1fr;
@@ -2486,7 +2486,6 @@ h1, h2, h3, .serif {
 .pipeline-row-bottom { margin-top: 18px; }
 @media (min-width: 920px) {
   .pipeline-row-top { grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); }
-  .pipeline-row-bottom { grid-template-columns: 1fr 1fr; }
 }
 .pipeline-projects-card { align-self: start; }
 .pipeline-projects-card .table-wrap { max-height: 312px; overflow-y: auto; }

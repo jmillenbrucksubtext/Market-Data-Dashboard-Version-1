@@ -1361,10 +1361,10 @@ function bindPipelineToggle() {
 }
 
 /* ----- Pipeline tab ------------------------------------------ */
-// Four panels mirroring the Development Pipeline view: total pipeline beds by
-// phase (doughnut), the project list, deliveries by year, and same-store vs
-// new-delivery rate growth. Scoped to the current market. Charts lazy-render
-// on tab show (a canvas sized while hidden renders at 0x0).
+// Three panels mirroring the Development Pipeline view: total pipeline beds by
+// phase (doughnut), the project list, and deliveries by year. Scoped to the
+// current market. Charts lazy-render on tab show (a canvas sized while hidden
+// renders at 0x0).
 
 const PIPE_PHASE_LABELS = {
   "planned": "Planned",
@@ -1378,16 +1378,7 @@ const PIPE_COLORS = {
   lease_up: "#16352e",           // everest
   delivered: "#7fb0a4",          // light teal - already delivered
   projected: "#16352e",          // everest - not yet delivered
-  newdeliv: "#a95818",           // rust - new-delivery rent line
 };
-
-function bedWeightedRent(rows) {
-  let num = 0, den = 0;
-  rows.forEach((r) => {
-    if (r.avg_rent_per_bed && r.beds) { num += r.avg_rent_per_bed * r.beds; den += r.beds; }
-  });
-  return den ? num / den : null;
-}
 
 // Keep only properties within the active campus-distance band. Properties
 // missing a distance are dropped from the ½-mi and 1-mi bands, kept in Total.
@@ -1419,7 +1410,6 @@ function renderPipeline() {
   setPipeTitle("pipe-totalbeds-title", "Total Pipeline Beds");
   setPipeTitle("pipe-projects-title", "New Projects");
   setPipeTitle("pipe-deliveries-title", "Deliveries Over Time");
-  setPipeTitle("pipe-rate-title", "Same-Store Rate Growth");
 
   const scoped = withinDistance(PROPERTIES);
 
@@ -1570,55 +1560,6 @@ function renderPipeline() {
                border: { display: false }, ticks: { color: "#5a544f", font: { size: 11 },
                callback: (v) => fmtInt(v) } },
         },
-      },
-    });
-  }
-
-  // ---- Panel 4: Same-Store Rate Growth (annual, bed-weighted) -----------
-  const hist = DATA.tables.property_history || [];
-  const stableKeys = new Set(scoped.filter((p) => p.phase === "stable").map((p) => p.property_key));
-  const newKeys = new Set(scoped.filter((p) => p.phase === "lease up").map((p) => p.property_key));
-  const histYears = [...new Set(hist
-    .filter((r) => stableKeys.has(r.property_key) || newKeys.has(r.property_key))
-    .map((r) => r.year_))].sort((a, b) => a - b);
-  const rentBy = (keys) => histYears.map((y) =>
-    bedWeightedRent(hist.filter((r) => r.year_ === y && keys.has(r.property_key))));
-  const stableRents = rentBy(stableKeys);
-  const newRents = rentBy(newKeys);
-  const hasNew = newRents.some((v) => v != null);
-
-  const rateDatasets = [{
-    label: "Stabilized Properties", data: stableRents,
-    borderColor: PIPE_COLORS.lease_up, backgroundColor: PIPE_COLORS.lease_up,
-    borderWidth: 2.5, pointRadius: 3, tension: 0.25, spanGaps: true,
-  }];
-  if (hasNew) rateDatasets.push({
-    label: "New Deliveries", data: newRents,
-    borderColor: PIPE_COLORS.newdeliv, backgroundColor: PIPE_COLORS.newdeliv,
-    borderWidth: 2.5, pointRadius: 3, tension: 0.25, spanGaps: true,
-  });
-
-  if (pipeCharts["pipe-rate"]) pipeCharts["pipe-rate"].destroy();
-  const rateCanvas = document.getElementById("pipe-rate");
-  if (rateCanvas) {
-    pipeCharts["pipe-rate"] = new Chart(rateCanvas.getContext("2d"), {
-      type: "line",
-      data: { labels: histYears, datasets: rateDatasets },
-      options: {
-        responsive: true, maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom",
-            labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
-                      boxWidth: 18, boxHeight: 2, padding: 10, usePointStyle: true } },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : "$" + fmtInt(c.parsed.y)}` } },
-          datalabels: { display: false },
-        },
-        scales: {
-          x: { grid: { display: false }, ticks: { color: "#5a544f", font: { size: 11 } } },
-          y: { beginAtZero: false, grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
-               ticks: { color: "#5a544f", font: { size: 11 }, callback: (v) => "$" + fmtInt(v) } },
-        },
-        interaction: { mode: "index", intersect: false },
       },
     });
   }

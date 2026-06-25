@@ -143,6 +143,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   setFreshness();
+  populateMarketSearchOptions();
   bindUI();
   bindNav();
   bindAnalysisSort();
@@ -312,20 +313,24 @@ function visibleScorecardRows() {
   const pursuit = document.getElementById("pursuit-only").checked;
 
   if (q) {
+    // A search reaches the entire tracked universe - the map toggles
+    // (Subtext-30 / Power 4 / Pursuit) are bypassed so any market can be
+    // found, not just the ones currently filtered onto the map.
     rows = rows.filter((r) =>
       (r.anchor_university || "").toLowerCase().includes(q) ||
       (r.city || "").toLowerCase().includes(q) ||
       (r.state_abbr || "").toLowerCase().includes(q),
     );
-  }
-  if (subtext30) {
-    rows = rows.filter((r) => r.is_subtext30 === 1);
-  }
-  if (power4) {
-    rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
-  }
-  if (pursuit) {
-    rows = rows.filter((r) => r.is_pursuit === 1);
+  } else {
+    if (subtext30) {
+      rows = rows.filter((r) => r.is_subtext30 === 1);
+    }
+    if (power4) {
+      rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
+    }
+    if (pursuit) {
+      rows = rows.filter((r) => r.is_pursuit === 1);
+    }
   }
 
   // Attach yoy_rent_growth from rent_yoy
@@ -368,6 +373,27 @@ function visibleScorecardRows() {
     return String(av).localeCompare(String(bv)) * sign;
   });
   return rows;
+}
+
+/* Autocomplete suggestions for the market search box - the ENTIRE tracked
+   universe (every scorecard market), independent of the map toggles. The
+   option value is the university name (what the filter matches); the label
+   shows city/state. */
+function populateMarketSearchOptions() {
+  const dl = document.getElementById("market-options");
+  if (!dl) return;
+  const seen = new Set();
+  const opts = DATA.tables.scorecard
+    .slice()
+    .sort((a, b) => (a.anchor_university || "").localeCompare(b.anchor_university || ""))
+    .map((r) => {
+      const name = r.anchor_university || "";
+      if (!name || seen.has(name)) return "";
+      seen.add(name);
+      const place = [r.city, r.state_abbr].filter(Boolean).join(", ");
+      return `<option value="${escapeHtml(name)}">${escapeHtml(place)}</option>`;
+    });
+  dl.innerHTML = opts.join("");
 }
 
 /* ----- UI bindings ------------------------------------------- */
@@ -550,10 +576,11 @@ function deckCleanScale(axisOpts = {}) {
 }
 
 function renderPenetration(rows) {
+  const ctx = document.getElementById("penetration-chart");
+  if (!ctx) return;  // chart removed from the Industry tab
   const top = rows.filter((r) => r.penetration_ratio != null)
     .sort((a, b) => a.penetration_ratio - b.penetration_ratio)
     .slice(0, 30);
-  const ctx = document.getElementById("penetration-chart");
   if (charts.penetration) charts.penetration.destroy();
   charts.penetration = new Chart(ctx, {
     type: "bar",
@@ -816,6 +843,7 @@ function renderRentGrowth(rows) {
 
 function renderVelocity() {
   const select = document.getElementById("velocity-market");
+  if (!select) return;  // chart removed from the Industry tab
   if (select.options.length === 0) {
     // List markets that have prelease data - labeled by anchor university.
     const present = [...new Set(DATA.tables.prelease_velocity.map((r) => r.market_key))];
@@ -1214,11 +1242,9 @@ function renderAll() {
   renderIndustryMap();
   renderKpis(rows);
   renderScorecard(rows);
-  renderPenetration(rows);
   renderSupply(rows);
   renderDemand(rows);
   renderPricing(rows);
-  renderVelocity();
   renderAnalysisFilter();
   renderAnalysis();
 }

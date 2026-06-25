@@ -58,7 +58,8 @@
 
       <header class="topbar">
         <div class="search">
-          <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off">
+          <input id="market-filter" type="text" placeholder="Search for a market or university..." autocomplete="off" list="market-options">
+          <datalist id="market-options"></datalist>
           <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
         </div>
 
@@ -206,24 +207,6 @@
           </header>
           <div class="card-body">
             <div class="perf-grid">
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Penetration Ratio</span>
-                  <span class="perf-title-sub">Top 30 under-supplied · beds ÷ enrollment</span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="penetration-chart"></canvas></div>
-              </figure>
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Pre-leasing Velocity</span>
-                  <span class="perf-title-controls">
-                    <select id="velocity-market" class="select"></select>
-                  </span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="velocity-chart"></canvas></div>
-              </figure>
 
               <figure class="perf-chart perf-chart-wide">
                 <figcaption class="perf-title">
@@ -609,7 +592,7 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=20"></script>
+  <script src="dashboard.js?v=23"></script>
   <script src="chart-download.js?v=5"></script>
   <!-- Sidebar easter-egg ads: LOI-O-MATIC and the Memo Chef -->
   <script src="loi-o-matic.js?v=1" defer></script>

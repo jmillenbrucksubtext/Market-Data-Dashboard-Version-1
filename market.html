@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=56">
+  <link rel="stylesheet" href="style.css?v=58">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -935,6 +935,32 @@
           <!-- Headline KPI strip - filled by market.js per selected school -->
           <div class="kpi-row kpi-row-uni" id="uni-kpis"></div>
 
+          <!-- Undergraduate Student Profile - underwriting template: residency
+               split, retention, on-campus, tuition, room & board, vs Subtext
+               targets, plus a residency doughnut. Built by renderUniProfile()
+               from university_info. Rows without a data source show n/a. -->
+          <section class="card uni-profile-card">
+            <header class="card-header">
+              <div>
+                <h2>Undergraduate Student Profile</h2>
+                <p id="uni-profile-sub">-</p>
+              </div>
+            </header>
+            <div class="card-body">
+              <div class="uni-profile-grid">
+                <div class="table-wrap">
+                  <table id="uni-profile-table" class="uni-profile-table" data-dl-title="Undergraduate Student Profile"></table>
+                </div>
+                <figure class="perf-chart">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Undergrad Residency</span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="uni-residency-pie"></canvas></div>
+                </figure>
+              </div>
+            </div>
+          </section>
+
           <!-- Institutional statistics - groups built by market.js from
                university_info (dbo.Schools_Denormal) + enrollment_history
                (dbo.Enrollments_Manual, the current-year authority). -->
@@ -1059,7 +1085,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=49" defer></script>
+  <script src="market.js?v=50" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>

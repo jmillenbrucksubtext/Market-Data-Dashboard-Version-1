@@ -41,6 +41,7 @@ let compSelectionInit = false;  // defaults applied once; user edits persist aft
 let compCharts = {};  // canvas id → Chart instance
 let perfScope = "market";  // Market Performance filter: market | 1mi | 0.5mi | 1mi2015
 let perfCharts = {};       // tracked Market Performance chart instances (re-rendered on filter change)
+let uniResidencyChart = null;  // University tab: undergrad residency doughnut
 let unitMixMetric = "units";  // "beds" | "units" - Unit & Bed Mix toggle state (defaults to units)
 let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
 let unitMixSizeChart = null; // Chart instance for the avg-unit-size grouped bar
@@ -3276,8 +3277,121 @@ function selectUniversity(schoolKey) {
   });
 
   renderUniKpis(school);
+  renderUniProfile(school);
   renderUniStats(school);
   renderUniMap(school);
+}
+
+/* Undergraduate Student Profile - the underwriting template (residency split,
+   retention, on-campus, tuition, room & board) measured against Subtext
+   targets, plus a residency doughnut. Built from university_info. Rows with no
+   data source (International %, retention, Greek life, HS GPA) show n/a. */
+function renderUniProfile(school) {
+  const tableEl = document.getElementById("uni-profile-table");
+  const subEl = document.getElementById("uni-profile-sub");
+  if (!tableEl) return;
+  const info = school.info;
+
+  if (!info) {
+    if (subEl) subEl.textContent = `${school.university_name} - no institutional stats on file.`;
+    tableEl.innerHTML = `<tbody><tr><td class="property-cell">No institutional data for this campus.</td></tr></tbody>`;
+    if (uniResidencyChart) { uniResidencyChart.destroy(); uniResidencyChart = null; }
+    return;
+  }
+  if (subEl) {
+    subEl.textContent =
+      `${school.university_name} · undergraduate profile${info.enrollment_year ? ` · ${info.enrollment_year}` : ""}`
+      + ` · vs Subtext targets · source dbo.Schools_Denormal`;
+  }
+
+  const ug = (info.enr_ft_undergrad || 0) + (info.enr_pt_undergrad || 0);
+  const inPct = info.pct_in_state, outPct = info.pct_out_of_state;
+  const inCt = (inPct != null && ug) ? Math.round(inPct * ug) : null;
+  const outCt = (outPct != null && ug) ? Math.round(outPct * ug) : null;
+  const roomBoard = ((info.rate_room_yearly || 0) + (info.rate_board_yearly || 0)) || null;
+  const age = info.student_age_avg;
+
+  const NA = `<span class="uni-na">n/a</span>`;
+  const pctTxt = (p) => p == null ? NA : (p * 100).toFixed(1) + "%";
+  // Target cell: state is "met" (dark), "miss" (red), or "na" (grey, no value).
+  const tgt = (text, state) => `<td class="uni-target uni-target-${state}">${text}</td>`;
+  const evalT = (val, pass) => val == null ? "na" : (pass ? "met" : "miss");
+  // count | share | target row
+  const split = (metric, ct, pct, targetCell) =>
+    `<tr><td class="property-cell">${metric}</td><td>${ct == null ? NA : fmtInt(ct)}</td>` +
+    `<td>${pctTxt(pct)}</td>${targetCell}</tr>`;
+  // value spanning count+share | target row
+  const span = (metric, val, targetCell) =>
+    `<tr><td class="property-cell">${metric}</td><td colspan="2">${val}</td>${targetCell}</tr>`;
+
+  const ageVal = age == null ? NA : (age % 1 === 0 ? String(Math.round(age)) : fmtNum(age, 1));
+
+  const head = `<thead><tr><th class="property-cell" colspan="3">Undergraduate Student Profile</th><th>Targets</th></tr></thead>`;
+  const body = [
+    split("In-State", inCt, inPct, tgt("&lt;90%", evalT(inPct, inPct != null && inPct < 0.90))),
+    split("Out-Of-State", outCt, outPct, tgt("&gt;10%", evalT(outPct, outPct != null && outPct > 0.10))),
+    split("International Students", null, null, tgt("&gt;5%", "na")),
+    span("Freshman Retention Rate", NA, tgt("&gt;85%", "na")),
+    span("% of Undergrads in Greek Life", NA, "<td></td>"),
+    span("Average Age of Undergrad", ageVal, tgt("&lt;22", evalT(age, age != null && age < 22))),
+    span("% Living On-Campus (UG)", info.pct_on_campus != null ? `${(info.pct_on_campus * 100).toFixed(0)}%` : NA, "<td></td>"),
+    span("In-State Tuition", fmtUsd(nzMoney(info.tuition_in_state)), "<td></td>"),
+    span("Out-Of-State Tuition", fmtUsd(nzMoney(info.tuition_out_of_state)), "<td></td>"),
+    span("Room &amp; Board (On-Campus)", fmtUsd(roomBoard), "<td></td>"),
+    span("Avg HS GPA - Incoming Freshmen", NA, "<td></td>"),
+  ].join("");
+  tableEl.innerHTML = head + `<tbody>${body}</tbody>`;
+
+  renderResidencyPie(inPct, outPct);
+}
+
+function renderResidencyPie(inPct, outPct) {
+  const canvas = document.getElementById("uni-residency-pie");
+  if (!canvas || typeof Chart === "undefined") return;
+  if (uniResidencyChart) { uniResidencyChart.destroy(); uniResidencyChart = null; }
+  if (inPct == null && outPct == null) {
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  const labels = ["In-State", "Out-Of-State"];
+  const data = [inPct || 0, outPct || 0];
+  const total = data.reduce((s, v) => s + v, 0) || 1;
+  uniResidencyChart = new Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: ["#16352e", "#a95818"],   // everest in-state, rust out
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "52%",
+      layout: { padding: 6 },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 10 },
+        },
+        tooltip: {
+          callbacks: { label: (c) => `${c.label}: ${(c.parsed / total * 100).toFixed(1)}%` },
+        },
+        datalabels: {
+          color: "#fff",
+          font: { weight: 700, size: 12, family: "Pragmatica, sans-serif" },
+          formatter: (v) => {
+            const pct = v / total * 100;
+            return pct < 4 ? "" : `${pct.toFixed(1)}%`;
+          },
+        },
+      },
+    },
+  });
 }
 
 /* Latest + prior year from enrollment_history for one school. */

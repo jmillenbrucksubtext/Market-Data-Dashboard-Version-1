@@ -2092,6 +2092,52 @@ h1, h2, h3, .serif {
 }
 .filter-search input::placeholder { color: var(--slate-50); }
 
+/* Undergraduate Student Profile (University tab) ---------------- */
+.uni-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  align-items: start;
+}
+@media (min-width: 920px) {
+  .uni-profile-grid { grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr); }
+}
+.uni-profile-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+}
+.uni-profile-table thead th {
+  background: var(--everest);
+  color: var(--surface);
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 13.5px;
+  text-align: right;
+  padding: 9px 12px;
+}
+.uni-profile-table thead th.property-cell { text-align: left; }
+.uni-profile-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  text-align: right;
+  color: var(--slate);
+  white-space: nowrap;
+}
+.uni-profile-table tbody td.property-cell {
+  text-align: left;
+  font-weight: 600;
+  white-space: normal;
+}
+.uni-profile-table tbody tr:last-child td { border-bottom: none; }
+.uni-target { font-weight: 700; }
+/* Scoped under the table so these win over `.uni-profile-table tbody td`. */
+.uni-profile-table .uni-target-met  { color: var(--slate); }
+.uni-profile-table .uni-target-miss { color: var(--bad); }
+.uni-profile-table .uni-target-na   { color: var(--slate-50); font-weight: 600; }
+.uni-na { color: var(--slate-50); }
+
 /* Qualifier scorecard ------------------------------------------ */
 
 .qualifier-score-badge {

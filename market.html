@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=55">
+  <link rel="stylesheet" href="style.css?v=56">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -425,11 +425,11 @@
               </div>
               <div class="comp-tables-grid unitmix-tables-grid">
                 <div class="comp-table-card">
-                  <div class="comp-table-title" id="unitmix-summary-title">Market Summary</div>
+                  <div class="comp-table-title"><span id="unitmix-summary-title">Market Summary</span></div>
                   <div class="table-wrap"><table id="unitmix-summary-table" class="comp-detail-table"></table></div>
                 </div>
                 <div class="comp-table-card">
-                  <div class="comp-table-title" id="unitmix-matrix-title">By Property</div>
+                  <div class="comp-table-title"><span id="unitmix-matrix-title">By Property</span></div>
                   <div class="table-wrap"><table id="unitmix-matrix-table" class="comp-detail-table"></table></div>
                 </div>
               </div>
@@ -534,10 +534,16 @@
                 <h2>Development Pipeline</h2>
                 <p id="pipeline-summary">Planned, under-construction, and lease-up supply for this market.</p>
               </div>
-              <div class="unitmix-toggle pipeline-distance-toggle" role="group" aria-label="Distance to campus">
-                <button type="button" class="unitmix-toggle-btn" data-dist="0.5">Within &frac12; mi</button>
-                <button type="button" class="unitmix-toggle-btn" data-dist="1">Within 1 mi</button>
-                <button type="button" class="unitmix-toggle-btn active" data-dist="all">Total market</button>
+              <div class="perf-scope-control">
+                <span class="perf-scope-label">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 3H2l8 9.46V19l4 2v-8.54z"/></svg>
+                  Filter by distance
+                </span>
+                <div class="perf-scope-toggle pipeline-distance-toggle" role="group" aria-label="Filter pipeline by distance to campus">
+                  <button type="button" class="pipeline-scope-btn active" data-dist="all">Market</button>
+                  <button type="button" class="pipeline-scope-btn" data-dist="1">&le;1 mi</button>
+                  <button type="button" class="pipeline-scope-btn" data-dist="0.5">&le;&frac12; mi</button>
+                </div>
               </div>
             </header>
             <div class="card-body">
@@ -545,12 +551,12 @@
               <div class="pipeline-row pipeline-row-top">
                 <figure class="perf-chart pipeline-totalbeds-figure">
                   <figcaption class="perf-title">
-                    <span class="perf-title-text">Total Pipeline Beds</span>
+                    <span class="perf-title-text" id="pipe-totalbeds-title">Total Pipeline Beds</span>
                   </figcaption>
                   <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-totalbeds"></canvas></div>
                 </figure>
                 <div class="comp-table-card pipeline-projects-card">
-                  <div class="comp-table-title">New Projects</div>
+                  <div class="comp-table-title"><span id="pipe-projects-title">New Projects</span></div>
                   <div class="table-wrap"><table id="pipe-projects" class="comp-detail-table"></table></div>
                 </div>
               </div>
@@ -558,14 +564,14 @@
               <div class="pipeline-row pipeline-row-bottom">
                 <figure class="perf-chart">
                   <figcaption class="perf-title">
-                    <span class="perf-title-text">Deliveries Over Time</span>
+                    <span class="perf-title-text" id="pipe-deliveries-title">Deliveries Over Time</span>
                     <span class="perf-title-sub">beds by year built</span>
                   </figcaption>
                   <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-deliveries"></canvas></div>
                 </figure>
                 <figure class="perf-chart">
                   <figcaption class="perf-title">
-                    <span class="perf-title-text">Same-Store Rate Growth</span>
+                    <span class="perf-title-text" id="pipe-rate-title">Same-Store Rate Growth</span>
                     <span class="perf-title-sub">avg rent / bed · annual</span>
                   </figcaption>
                   <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pipe-rate"></canvas></div>
@@ -1053,10 +1059,10 @@
     </div>
   </div>
 
-  <script src="market.js?v=48" defer></script>
+  <script src="market.js?v=49" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
-  <script src="chart-download.js?v=5" defer></script>
+  <script src="chart-download.js?v=6" defer></script>
 </body>
 </html>

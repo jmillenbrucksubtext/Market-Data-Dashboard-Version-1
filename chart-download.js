@@ -64,9 +64,11 @@
     var sub = subEl ? subEl.textContent.trim() : "";
     var legend = caption ? legendItems(caption) : [];
 
+    // Market/university name so a downloaded chart is self-identifying.
+    var market = contextName();
     var scale = canvas.clientWidth ? canvas.width / canvas.clientWidth : 2;
     var pad = Math.round(20 * scale);
-    var bandH = Math.round(34 * scale);
+    var bandH = Math.round((market ? 50 : 34) * scale);
     var gap = Math.round(12 * scale);
 
     var out = document.createElement("canvas");
@@ -104,6 +106,13 @@
       ctx.font = "500 " + Math.round(11 * scale) + "px 'Pragmatica', sans-serif";
       ctx.fillStyle = "#837c75";
       ctx.fillText(sub, rightX - ctx.measureText(sub).width, baseline);
+    }
+
+    // Market/university name on a second line beneath the title.
+    if (market) {
+      ctx.font = "600 " + Math.round(10.5 * scale) + "px 'Pragmatica', sans-serif";
+      ctx.fillStyle = "#5a544f";
+      ctx.fillText(market.toUpperCase(), pad, pad + Math.round(34 * scale));
     }
 
     ctx.strokeStyle = "#ede5cf";

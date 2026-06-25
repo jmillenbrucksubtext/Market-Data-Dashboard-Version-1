@@ -95,6 +95,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   document.getElementById("market-loading").style.display = "none";
   document.getElementById("market-view").style.display = "block";
 
+  syncTopbarHeight();
+  window.addEventListener("resize", syncTopbarHeight);
+
   setFreshness();
   renderHeader();
   renderKpis();
@@ -458,6 +461,13 @@ function bindPerfScope() {
 }
 
 /* ----- Helpers ----------------------------------------------- */
+
+// Pin the sticky market header right below the (sticky) topbar by mirroring
+// the topbar's rendered height into a CSS variable.
+function syncTopbarHeight() {
+  const tb = document.querySelector(".topbar");
+  if (tb) document.documentElement.style.setProperty("--topbar-h", tb.offsetHeight + "px");
+}
 
 function showError(msg) {
   document.getElementById("market-loading").style.display = "none";
@@ -1339,7 +1349,7 @@ function renderShadowMarketMap() {
 }
 
 function bindPipelineToggle() {
-  document.querySelectorAll(".pipeline-distance-toggle .unitmix-toggle-btn").forEach((btn) => {
+  document.querySelectorAll(".pipeline-scope-btn").forEach((btn) => {
     btn.addEventListener("click", () => {
       if (btn.dataset.dist === pipelineDistance) return;
       pipelineDistance = btn.dataset.dist;
@@ -1391,10 +1401,24 @@ function renderPipeline() {
 
   // Reflect the active distance band on the toggle and scope every panel to
   // properties within that radius of campus.
-  document.querySelectorAll(".pipeline-distance-toggle .unitmix-toggle-btn")
+  document.querySelectorAll(".pipeline-scope-btn")
     .forEach((b) => b.classList.toggle("active", b.dataset.dist === pipelineDistance));
   const distLabel = pipelineDistance === "all" ? "market-wide"
     : pipelineDistance === "0.5" ? "within ½ mi of campus" : "within 1 mi of campus";
+
+  // Reflect the active distance band in each panel title, e.g.
+  // "Total Pipeline Beds - 1 Mile". The market-wide default keeps the base.
+  const distSuffix = pipelineDistance === "all" ? ""
+    : pipelineDistance === "0.5" ? "0.5 Mile" : "1 Mile";
+  const setPipeTitle = (id, base) => {
+    const el = document.getElementById(id);
+    if (el) el.textContent = distSuffix ? `${base} - ${distSuffix}` : base;
+  };
+  setPipeTitle("pipe-totalbeds-title", "Total Pipeline Beds");
+  setPipeTitle("pipe-projects-title", "New Projects");
+  setPipeTitle("pipe-deliveries-title", "Deliveries Over Time");
+  setPipeTitle("pipe-rate-title", "Same-Store Rate Growth");
+
   const scoped = withinDistance(PROPERTIES);
 
   // Pipeline projects (within band) - the single source for every panel so

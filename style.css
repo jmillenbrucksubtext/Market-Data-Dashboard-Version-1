@@ -1004,6 +1004,18 @@ h1, h2, h3, .serif {
   justify-content: space-between;
   gap: 18px;
 }
+/* Keep the market name pinned below the topbar so every tab's charts and
+   tables always show which market you are in. --topbar-h is measured in
+   market.js (falls back to a sensible default). */
+#market-view .market-header {
+  position: sticky;
+  top: var(--topbar-h, 52px);
+  z-index: 1500;
+  background: var(--bg);
+  margin: 0 0 18px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--beige-deep);
+}
 
 /* Two-column layout for market detail: main content + sticky right sidebar */
 .market-grid {
@@ -2394,7 +2406,8 @@ h1, h2, h3, .serif {
   background: var(--bg);
   box-shadow: 0 1px 2px rgba(22, 53, 46, 0.12);
 }
-.perf-scope-btn {
+.perf-scope-btn,
+.pipeline-scope-btn {
   appearance: none;
   background: transparent;
   border: none;
@@ -2407,9 +2420,12 @@ h1, h2, h3, .serif {
   cursor: pointer;
   transition: background 0.12s, color 0.12s;
 }
-.perf-scope-btn + .perf-scope-btn { border-left: 1px solid var(--everest); }
-.perf-scope-btn:hover { color: var(--everest); }
-.perf-scope-btn.active { background: var(--lime); color: var(--everest); }
+.perf-scope-btn + .perf-scope-btn,
+.pipeline-scope-btn + .pipeline-scope-btn { border-left: 1px solid var(--everest); }
+.perf-scope-btn:hover,
+.pipeline-scope-btn:hover { color: var(--everest); }
+.perf-scope-btn.active,
+.pipeline-scope-btn.active { background: var(--lime); color: var(--everest); }
 @media (max-width: 640px) {
   .perf-scope-control { width: 100%; }
 }

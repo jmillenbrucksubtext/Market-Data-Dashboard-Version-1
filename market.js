@@ -39,6 +39,8 @@ let propertyMarkers = new Map();  // market map: property_key → leaflet marker
 let compSelection = new Set();  // property_keys currently checked on Comps tab
 let compSelectionInit = false;  // defaults applied once; user edits persist after
 let compCharts = {};  // canvas id → Chart instance
+let perfScope = "market";  // Market Performance filter: market | 1mi | 0.5mi | 1mi2015
+let perfCharts = {};       // tracked Market Performance chart instances (re-rendered on filter change)
 let unitMixMetric = "units";  // "beds" | "units" - Unit & Bed Mix toggle state (defaults to units)
 let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
 let unitMixSizeChart = null; // Chart instance for the avg-unit-size grouped bar
@@ -101,7 +103,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindPropertySort();
   renderLegend();
   renderPerformance();
-  renderEnrollment();
+  bindPerfScope();
   bindTabs();
   bindUnitMixToggle();
   bindPipelineToggle();
@@ -123,6 +125,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 const PERF = {
   anchorColor:  "#a95818",   // rust / birch - anchor market
   benchColor:   "#16352e",   // everest - Subtext-30 average
+  power4Color:  "#3d8aa6",   // blue - Power 4 university average
   pipeColors: {
     existing:           "#2b2825",  // slate
     lease_up:           "#16352e",  // everest
@@ -130,6 +133,43 @@ const PERF = {
     planned:            "#b6b1ab",  // slate30
   },
 };
+
+// Power 4 anchor universities (2024-25 conference alignment), matched against
+// scorecard.anchor_university. Kept in sync with dashboard.js POWER4_ANCHORS.
+const POWER4_ANCHORS = new Set([
+  // SEC
+  "University of Alabama", "University of Arkansas", "Auburn University",
+  "University of Florida", "University of Georgia", "University of Kentucky",
+  "Louisiana State University", "Mississippi State University",
+  "University of Mississippi", "University of Missouri", "University of Oklahoma",
+  "University of South Carolina", "University of Tennessee",
+  "Texas A&M University", "University of Texas at Austin", "Vanderbilt University",
+  // Big Ten
+  "University of Illinois at Urbana-Champaign", "Indiana University Bloomington",
+  "University of Iowa", "University of Maryland College Park",
+  "University of Michigan", "Michigan State University",
+  "University of Minnesota Twin Cities", "University of Nebraska Lincoln",
+  "Northwestern University", "Ohio State University", "University of Oregon",
+  "Penn State", "Purdue University", "Rutgers University",
+  "University of Southern California", "University of Washington",
+  "University of Wisconsin Madison",
+  // Big 12
+  "University of Arizona", "Arizona State University", "Baylor University",
+  "Brigham Young University", "University of Cincinnati",
+  "University of Colorado Boulder", "University of Houston",
+  "Iowa State University", "University of Kansas", "Kansas State University",
+  "Oklahoma State University", "Texas Christian University",
+  "Texas Tech University", "University of Central Florida",
+  "University of Utah", "West Virginia University",
+  // ACC
+  "University of California Berkeley", "Clemson University", "Duke University",
+  "Florida State University", "Georgia Institute of Technology",
+  "University of Louisville", "North Carolina State University",
+  "University of North Carolina at Chapel Hill", "University of Notre Dame",
+  "University of Pittsburgh", "Southern Methodist University",
+  "Stanford University", "Syracuse University", "University of Virginia",
+  "Virginia Polytechnic Institute and State University", "Wake Forest University",
+]);
 
 function s30Rows(table, joinKey = "market_key") {
   const s30Keys = new Set(
@@ -204,6 +244,10 @@ function renderPerformance() {
   const s30Keys = new Set(
     DATA.tables.scorecard.filter((r) => r.is_subtext30 === 1).map((r) => r.market_key)
   );
+  // Power 4 university markets, matched on anchor_university.
+  const p4Keys = new Set(
+    DATA.tables.scorecard.filter((r) => POWER4_ANCHORS.has(r.anchor_university)).map((r) => r.market_key)
+  );
   const myHistory = history.filter((r) => r.market_key === MARKET.market_key)
     .sort((a, b) => a.year_ - b.year_);
   const years = myHistory.map((r) => r.year_);
@@ -213,10 +257,11 @@ function renderPerformance() {
   // tracked at this snapshot."
   const cleanZero = (v) => (v == null || v === 0) ? null : Number(v);
 
-  function s30YearMean(field) {
+  // Per-year mean of `field` across a set of market keys, aligned to `years`.
+  function yearMean(keys, field) {
     const byYear = new Map();
     for (const r of history) {
-      if (!s30Keys.has(r.market_key)) continue;
+      if (!keys.has(r.market_key)) continue;
       const v = cleanZero(r[field]);
       if (v == null) continue;
       if (!byYear.has(r.year_)) byYear.set(r.year_, []);
@@ -227,16 +272,48 @@ function renderPerformance() {
       return xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : null;
     });
   }
+  const s30YearMean = (field) => yearMean(s30Keys, field);
+  const p4YearMean = (field) => yearMean(p4Keys, field);
+
+  // "This market" series for the active Market Performance filter. "market"
+  // uses the whole-market history; the distance/vintage scopes aggregate
+  // property_history (bed-weighted) across the matching subset of properties.
+  function scopeSeries(field) {
+    if (perfScope === "market") {
+      return myHistory.map((r) => cleanZero(r[field]));
+    }
+    const lim = perfScope === "0.5mi" ? 0.5 : 1;     // 1mi and 1mi2015 share 1mi
+    const minYear = perfScope === "1mi2015" ? 2015 : 0;
+    const propKeys = new Set(
+      PROPERTIES
+        .filter((p) => p.milesToClosestCampus != null && p.milesToClosestCampus <= lim
+          && (minYear === 0 || (p.yearBuilt || 0) >= minYear))
+        .map((p) => p.property_key)
+    );
+    const byYear = new Map();  // year -> { sum, w } (bed-weighted)
+    for (const r of (DATA.tables.property_history || [])) {
+      if (!propKeys.has(r.property_key)) continue;
+      const v = cleanZero(r[field]);
+      const w = r.beds || 0;
+      if (v == null || w <= 0) continue;
+      const e = byYear.get(r.year_) || { sum: 0, w: 0 };
+      e.sum += v * w; e.w += w;
+      byYear.set(r.year_, e);
+    }
+    return years.map((y) => {
+      const e = byYear.get(y);
+      return e && e.w > 0 ? e.sum / e.w : null;
+    });
+  }
 
   function renderTimeSeries(canvasId, field, valueFmt, { transform = (v) => v, yMax = null } = {}) {
     const ctx = document.getElementById(canvasId);
     if (!ctx || !years.length) return;
-    const myData = myHistory.map((r) => {
-      const v = cleanZero(r[field]);
-      return v == null ? null : transform(v);
-    });
+    const myData = scopeSeries(field).map((v) => v == null ? null : transform(v));
     const s30Data = s30YearMean(field).map((v) => v == null ? null : transform(v));
-    new Chart(ctx, {
+    const p4Data = p4YearMean(field).map((v) => v == null ? null : transform(v));
+    if (perfCharts[canvasId]) perfCharts[canvasId].destroy();
+    perfCharts[canvasId] = new Chart(ctx, {
       type: "bar",
       data: {
         labels: years.map(String),
@@ -244,6 +321,8 @@ function renderPerformance() {
           { label: MARKET.anchor_university || "This market", data: myData, backgroundColor: PERF.anchorColor, borderRadius: 2,
             categoryPercentage: 0.78, barPercentage: 0.95 },
           { label: "Subtext-30 avg",                          data: s30Data, backgroundColor: PERF.benchColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
+          { label: "Power 4 avg",                             data: p4Data, backgroundColor: PERF.power4Color, borderRadius: 2,
             categoryPercentage: 0.78, barPercentage: 0.95 },
         ],
       },
@@ -264,7 +343,10 @@ function renderPerformance() {
         scales: {
           x: { grid: { display: false }, border: { display: false },
                ticks: { font: { size: 11, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
-          y: { display: false, beginAtZero: true, max: yMax },
+          y: { display: true, beginAtZero: true, max: yMax,
+               grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+               ticks: { font: { size: 10, family: "Pragmatica, sans-serif" }, color: "#5a544f",
+                        maxTicksLimit: 5, callback: (v) => valueFmt(v) } },
         },
       },
     });
@@ -277,18 +359,19 @@ function renderPerformance() {
   // Rent growth: compute YoY from consecutive years, drop the first year.
   const rentGrowthCtx = document.getElementById("perf-rent-growth");
   if (rentGrowthCtx && myHistory.length > 1) {
-    const myRentSeries = myHistory.map((r) => cleanZero(r.avg_rent_per_bed));
+    const myRentSeries = scopeSeries("avg_rent_per_bed");
     const s30RentSeries = s30YearMean("avg_rent_per_bed");
+    const p4RentSeries = p4YearMean("avg_rent_per_bed");
     const growthYears = years.slice(1);
-    const myGrowth = growthYears.map((_, i) => {
-      const a = myRentSeries[i + 1], b = myRentSeries[i];
+    const yoy = (series, i) => {
+      const a = series[i + 1], b = series[i];
       return (a != null && b != null && b !== 0) ? (a - b) / b : null;
-    });
-    const s30Growth = growthYears.map((_, i) => {
-      const a = s30RentSeries[i + 1], b = s30RentSeries[i];
-      return (a != null && b != null && b !== 0) ? (a - b) / b : null;
-    });
-    new Chart(rentGrowthCtx, {
+    };
+    const myGrowth = growthYears.map((_, i) => yoy(myRentSeries, i));
+    const s30Growth = growthYears.map((_, i) => yoy(s30RentSeries, i));
+    const p4Growth = growthYears.map((_, i) => yoy(p4RentSeries, i));
+    if (perfCharts[ "perf-rent-growth" ]) perfCharts["perf-rent-growth"].destroy();
+    perfCharts["perf-rent-growth"] = new Chart(rentGrowthCtx, {
       type: "bar",
       data: {
         labels: growthYears.map(String),
@@ -296,6 +379,8 @@ function renderPerformance() {
           { label: MARKET.anchor_university || "This market", data: myGrowth.map((v) => v == null ? null : v * 100),  backgroundColor: PERF.anchorColor, borderRadius: 2,
             categoryPercentage: 0.78, barPercentage: 0.95 },
           { label: "Subtext-30 avg",                          data: s30Growth.map((v) => v == null ? null : v * 100), backgroundColor: PERF.benchColor, borderRadius: 2,
+            categoryPercentage: 0.78, barPercentage: 0.95 },
+          { label: "Power 4 avg",                             data: p4Growth.map((v) => v == null ? null : v * 100), backgroundColor: PERF.power4Color, borderRadius: 2,
             categoryPercentage: 0.78, barPercentage: 0.95 },
         ],
       },
@@ -318,141 +403,30 @@ function renderPerformance() {
         scales: {
           x: { grid: { display: false }, border: { display: false },
                ticks: { font: { size: 11, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
-          y: { display: false, suggestedMin: -5 },
+          y: { display: true, suggestedMin: -5,
+               grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+               ticks: { font: { size: 10, family: "Pragmatica, sans-serif" }, color: "#5a544f",
+                        maxTicksLimit: 6, callback: (v) => `${v}%` } },
         },
       },
     });
   }
 
-  // 5) Penetration benchmark ------------------------------------------
-  const penRows = s30Rows("scorecard").map((r) => r.penetration_ratio).filter((v) => v != null);
-  const s30Pen = mean(penRows);
-  const myPen = MARKET.penetration_ratio;
-  const penCtx = document.getElementById("perf-penetration");
-  if (penCtx && (myPen != null || s30Pen != null)) {
-    new Chart(penCtx, {
-      type: "bar",
-      data: {
-        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
-        datasets: [{
-          data: [myPen, s30Pen],
-          backgroundColor: [PERF.anchorColor, PERF.benchColor],
-          borderRadius: 3,
-          categoryPercentage: 0.55,
-          barPercentage: 0.9,
-        }],
-      },
-      options: perfBaseOpts({ valueFmt: (v) => v == null ? "-" : fmtPct(v, 1) }),
-    });
-  }
+}
 
-  // 5) Bed supply: existing + pipeline ---------------------------------
-  // Two stacked horizontal bars: this market on top, Subtext-30 avg on bottom.
-  const pipeMap = new Map(DATA.tables.pipeline_beds.map((r) => [r.market_key, r]));
-  const myPipe = pipeMap.get(MARKET.market_key) || {};
-  const myExisting = MARKET.existing_beds || 0;
-  const myLease = myPipe.beds_lease_up || 0;
-  const myUC = myPipe.beds_under_construction || 0;
-  const myPlanned = myPipe.beds_planned || 0;
-
-  const s30Pipe = s30Rows("pipeline_beds");
-  const s30Existing = mean(s30Rows("existing_beds").map((r) => r.existing_beds));
-  const s30Lease = mean(s30Pipe.map((r) => r.beds_lease_up));
-  const s30UC = mean(s30Pipe.map((r) => r.beds_under_construction));
-  const s30Planned = mean(s30Pipe.map((r) => r.beds_planned));
-
-  // 6) Pre-leasing velocity: multi-cycle line for THIS market ---------
-  const velRows = (DATA.tables.prelease_velocity || []).filter((r) => r.market_key === MARKET.market_key);
-  const cycles = [...new Set(velRows.map((r) => r.leasing_cycle))].sort((a, b) => a - b);
-  // Keep the chart focused on the most recent three cycles (older lines
-  // crowd the view and obscure the YoY comparison that matters).
-  const recentCycles = cycles.slice(-3);
-  // Older → newer: slate → rust → everest. Latest cycle is emphasized.
-  const palette = ["#b6b1ab", "#a95818", "#16352e"];
-  const velCtx = document.getElementById("perf-velocity");
-  if (velCtx && recentCycles.length) {
-    const datasets = recentCycles.map((cycle, i) => {
-      const isLatest = i === recentCycles.length - 1;
-      const color = palette[(palette.length - recentCycles.length + i + palette.length) % palette.length];
-      const data = velRows.filter((r) => r.leasing_cycle === cycle)
-        .sort((a, b) => a.week_of_cycle - b.week_of_cycle)
-        .map((r) => ({ x: r.week_of_cycle, y: r.prelease_pct * 100 }));
-      return {
-        label: `Cycle ${cycle}`,
-        data,
-        borderColor: color,
-        backgroundColor: color,
-        borderWidth: isLatest ? 3 : 1.75,
-        pointRadius: isLatest ? 3 : 1.5,
-        pointBackgroundColor: color,
-        tension: 0.25,
-      };
+// Market Performance distance/vintage filter. Re-renders the rent, growth,
+// occupancy, and prelease charts against the chosen subset of the market.
+function bindPerfScope() {
+  const btns = document.querySelectorAll(".perf-scope-btn");
+  btns.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = btn.dataset.scope;
+      if (next === perfScope) return;
+      perfScope = next;
+      btns.forEach((b) => b.classList.toggle("active", b.dataset.scope === perfScope));
+      renderPerformance();
     });
-    new Chart(velCtx, {
-      type: "line",
-      data: { datasets },
-      options: {
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: {
-            position: "top", align: "end",
-            labels: { boxWidth: 16, boxHeight: 4, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", padding: 12 },
-          },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y.toFixed(1)}%` } },
-          datalabels: { display: false },
-        },
-        layout: { padding: { top: 4, right: 16, left: 8, bottom: 0 } },
-        scales: {
-          x: { type: "linear", min: 1, max: 53,
-               ticks: { stepSize: 8, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#5a544f", callback: (v) => `Wk ${v}` },
-               grid: { display: false },
-               border: { color: "#ede5cf" } },
-          y: { min: 0, max: 100,
-               ticks: { stepSize: 20, font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#5a544f", callback: (v) => `${v}%` },
-               grid: { color: "#f5efde", drawTicks: false },
-               border: { display: false } },
-        },
-      },
-    });
-  }
-
-  const supplyCtx = document.getElementById("perf-supply");
-  if (supplyCtx) {
-    new Chart(supplyCtx, {
-      type: "bar",
-      data: {
-        labels: [MARKET.anchor_university || "This market", "Subtext-30 avg"],
-        datasets: [
-          { label: "Existing",           backgroundColor: PERF.pipeColors.existing,           data: [myExisting, s30Existing], borderRadius: 2 },
-          { label: "Lease-up",           backgroundColor: PERF.pipeColors.lease_up,           data: [myLease,    s30Lease],    borderRadius: 2 },
-          { label: "Under construction", backgroundColor: PERF.pipeColors.under_construction, data: [myUC,       s30UC],       borderRadius: 2 },
-          { label: "Planned",            backgroundColor: PERF.pipeColors.planned,            data: [myPlanned,  s30Planned],  borderRadius: 2 },
-        ],
-      },
-      options: {
-        indexAxis: "y",
-        responsive: true,
-        maintainAspectRatio: false,
-        plugins: {
-          legend: { position: "bottom", labels: { font: { size: 11, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825", boxWidth: 12, boxHeight: 12, padding: 14 } },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.x)} beds` } },
-          datalabels: {
-            color: "#fff",
-            font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
-            formatter: (v) => (v != null && v >= 200) ? fmtInt(v) : "",  // hide labels on tiny segments
-          },
-        },
-        layout: { padding: { top: 4, right: 12, left: 4, bottom: 4 } },
-        scales: {
-          x: { stacked: true, display: false, beginAtZero: true },
-          y: { stacked: true, grid: { display: false, drawBorder: false },
-               border: { display: false },
-               ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
-        },
-      },
-    });
-  }
+  });
 }
 
 /* ----- Helpers ----------------------------------------------- */
@@ -731,8 +705,10 @@ function renderQualifiers() {
     } else {
       actualHtml = `<span class="qual-actual-${state}">${escapeHtml(r.actual_display)}</span>`;
     }
+    const icon = state === "pass" ? "&#10003;" : state === "na" ? "&ndash;" : "&#10007;";
     return `
       <li class="qual-row qual-${state}">
+        <span class="qual-status" aria-hidden="true">${icon}</span>
         <div class="qual-label">${escapeHtml(r.label)}</div>
         <div class="qual-actual">${actualHtml}</div>
       </li>`;
@@ -2245,7 +2221,7 @@ function renderUnitSizeChart(selected) {
       ctx.textAlign = "center";
       meta.data.forEach((bar, i) => {
         if (!values[i]) return;
-        ctx.fillText(fmtInt(values[i]), bar.x, bar.y - 6);
+        ctx.fillText(`${fmtInt(values[i])} SF`, bar.x, bar.y - 6);
       });
       ctx.restore();
     },
@@ -2409,82 +2385,115 @@ function populateUnitMixBuildingPicker(selected) {
   sel.value = String(unitMixPieBuilding);
 }
 
-function renderUnitMixPie(selected, field, noun) {
-  const canvas = document.getElementById("unitmix-pie");
-  if (!canvas || typeof Chart === "undefined") return;
-  const titleEl = document.getElementById("unitmix-pie-title");
+/* Nested unit-mix doughnut config. Inner ring = bedroom type; outer ring =
+   each type split into en-suite (solid) vs shared-bath (lighter shade). Both
+   rings derive from parity_by_type so they reconcile exactly. perType is
+   { type: {full, partial} } in the active metric. Returns a Chart.js config,
+   or null when there is nothing to draw. Shared by market + property pies. */
+function buildNestedMixConfig(perType, noun) {
+  const types = UNIT_MIX_TYPES.filter((t) => perType[t] && (perType[t].full + perType[t].partial) > 0);
+  const total = types.reduce((s, t) => s + perType[t].full + perType[t].partial, 0);
+  if (!total) return null;
 
-  // Resolve the scope: one building or the aggregate of all selected comps.
-  let buildingName = "Comp Set";
-  let mix = null;
-  if (unitMixPieBuilding === "all") {
-    const agg = {};
-    selected.forEach(({ mix: m }) => {
-      Object.entries(m[field] || {}).forEach(([t, v]) => { agg[t] = (agg[t] || 0) + v; });
-    });
-    mix = agg;
-  } else {
-    const hit = selected.find(({ prop }) => prop.property_key === unitMixPieBuilding);
-    if (hit) { mix = hit.mix[field] || {}; buildingName = hit.prop.property_name; }
-  }
+  const innerData = types.map((t) => perType[t].full + perType[t].partial);
+  const innerColors = types.map((t) => UNIT_TYPE_COLORS[t] || "#837c75");
 
-  const metricLabel = noun === "beds" ? "Beds" : "Units";
-  if (titleEl) titleEl.textContent = `${buildingName} (${metricLabel})`;
+  const outerData = [], outerColors = [], outerMeta = [];
+  types.forEach((t) => {
+    const base = UNIT_TYPE_COLORS[t] || "#837c75";
+    outerData.push(perType[t].full);    outerColors.push(base);          outerMeta.push({ type: t, kind: "en-suite", val: perType[t].full });
+    outerData.push(perType[t].partial); outerColors.push(base + "80");   outerMeta.push({ type: t, kind: "shared bath", val: perType[t].partial });
+  });
 
-  const types = UNIT_MIX_TYPES.filter((t) => mix && mix[t]);
-  const values = types.map((t) => mix[t]);
-  const total = values.reduce((s, v) => s + v, 0);
-
-  if (unitMixPieChart) unitMixPieChart.destroy();
-  if (!total) {
-    // Nothing to draw - leave an empty canvas.
-    unitMixPieChart = null;
-    const ctx = canvas.getContext("2d");
-    ctx.clearRect(0, 0, canvas.width, canvas.height);
-    return;
-  }
-
-  unitMixPieChart = new Chart(canvas.getContext("2d"), {
+  return {
     type: "doughnut",
     data: {
       labels: types,
-      datasets: [{
-        data: values,
-        backgroundColor: types.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
-        borderColor: "#fff",
-        borderWidth: 2,
-      }],
+      datasets: [
+        { data: innerData, backgroundColor: innerColors, borderColor: "#fff", borderWidth: 2,
+          datalabels: {
+            color: "#fff", textAlign: "center",
+            font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+            formatter: (v, ctx) => (v / total * 100) < 7 ? "" : types[ctx.dataIndex],
+          } },
+        { data: outerData, backgroundColor: outerColors, borderColor: "#fff", borderWidth: 2,
+          datalabels: {
+            color: "#2b2825", textAlign: "center",
+            font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+            // Quantify only the shared-bath segments that are big enough to read.
+            formatter: (v, ctx) => {
+              const m = outerMeta[ctx.dataIndex];
+              if (m.kind !== "shared bath") return "";
+              const pct = v / total * 100;
+              return pct < 5 ? "" : `${pct.toFixed(0)}%`;
+            },
+          } },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: "52%",
+      cutout: "40%",
       layout: { padding: 6 },
       plugins: {
         legend: {
           position: "right",
+          onClick: () => {},   // toggling is meaningless across two rings
           labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
                     boxWidth: 12, boxHeight: 12, padding: 9 },
         },
         tooltip: {
           callbacks: {
-            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
-          },
-        },
-        datalabels: {
-          color: "#fff",
-          font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
-          textAlign: "center",
-          // Label slices >= 6% with type + percent; hide slivers.
-          formatter: (v, ctx) => {
-            const pct = v / total * 100;
-            if (pct < 6) return "";
-            return `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct.toFixed(0)}%`;
+            label: (c) => {
+              if (c.datasetIndex === 0) {
+                return `${types[c.dataIndex]}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`;
+              }
+              const m = outerMeta[c.dataIndex];
+              return `${m.type} ${m.kind}: ${fmtInt(m.val)} ${noun}`;
+            },
           },
         },
       },
     },
-  });
+  };
+}
+
+function renderUnitMixPie(selected, field, noun) {
+  const canvas = document.getElementById("unitmix-pie");
+  if (!canvas || typeof Chart === "undefined") return;
+  const titleEl = document.getElementById("unitmix-pie-title");
+
+  const useBeds = noun === "beds";
+  const fullKey = useBeds ? "beds_full" : "units_full";
+  const partKey = useBeds ? "beds_partial" : "units_partial";
+
+  // Aggregate parity-by-type across the scope: one building or all comps.
+  let buildingName = "Comp Set";
+  const perType = {};
+  const addPbt = (pbt) => {
+    UNIT_MIX_TYPES.forEach((t) => {
+      const e = pbt[t]; if (!e) return;
+      const slot = perType[t] || (perType[t] = { full: 0, partial: 0 });
+      slot.full += e[fullKey] || 0;
+      slot.partial += e[partKey] || 0;
+    });
+  };
+  if (unitMixPieBuilding === "all") {
+    selected.forEach(({ mix }) => addPbt(mix.parity_by_type || {}));
+  } else {
+    const hit = selected.find(({ prop }) => prop.property_key === unitMixPieBuilding);
+    if (hit) { addPbt(hit.mix.parity_by_type || {}); buildingName = hit.prop.property_name; }
+  }
+
+  if (titleEl) titleEl.textContent = `${buildingName} (${useBeds ? "Beds" : "Units"})`;
+
+  if (unitMixPieChart) { unitMixPieChart.destroy(); unitMixPieChart = null; }
+  const config = buildNestedMixConfig(perType, noun);
+  if (!config) {
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  unitMixPieChart = new Chart(canvas.getContext("2d"), config);
 }
 
 function renderUnitMixTables(selected, typesPresent, field, noun) {
@@ -3172,6 +3181,11 @@ function uniSchools() {
 }
 
 function renderUniversityTab() {
+  // Enrollment history lives on this tab now; (re)draw each time it is shown
+  // so the charts size to the (previously hidden) container. renderEnrollment
+  // destroys and recreates its charts, so calling it repeatedly is safe.
+  renderEnrollment();
+
   if (uniState.initialized) return;
   uniState.initialized = true;
 

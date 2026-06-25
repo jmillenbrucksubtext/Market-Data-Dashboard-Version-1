@@ -1092,6 +1092,7 @@ h1, h2, h3, .serif {
 }
 .swatch-anchor { background: #a95818; }
 .swatch-bench  { background: #16352e; }
+.swatch-power4 { background: #3d8aa6; }
 
 .perf-grid {
   display: grid;
@@ -2050,42 +2051,63 @@ h1, h2, h3, .serif {
 
 .qualifier-score-badge {
   font-family: "Mencken Std", Georgia, serif;
-  font-size: 26px;
+  font-size: 30px;
   font-weight: 700;
   letter-spacing: -0.02em;
-  padding: 6px 16px;
-  border-radius: var(--radius-sm);
+  padding: 12px 20px;
+  border-radius: 14px;
   background: var(--bg);
   color: var(--slate);
-  min-width: 90px;
+  min-width: 108px;
   text-align: center;
+  border: 1.5px solid var(--beige-deep);
+  line-height: 1;
+  align-self: center;
 }
-.qualifier-score-badge[data-tier="good"] { background: var(--good-soft); color: var(--good); }
-.qualifier-score-badge[data-tier="warn"] { background: var(--warn-soft); color: var(--warn); }
-.qualifier-score-badge[data-tier="bad"]  { background: var(--bad-soft);  color: var(--bad); }
+.qualifier-score-badge[data-tier="good"] { background: var(--good-soft); color: var(--good); border-color: var(--good); }
+.qualifier-score-badge[data-tier="warn"] { background: var(--warn-soft); color: var(--warn); border-color: var(--warn); }
+.qualifier-score-badge[data-tier="bad"]  { background: var(--bad-soft);  color: var(--bad);  border-color: var(--bad); }
 .qualifier-score-badge[data-tier="na"]   { background: var(--slate-15); color: var(--slate-70); }
 
 .qualifier-list {
   list-style: none;
   margin: 0;
   padding: 0;
-  /* Now a full-width banner at the top of the Market tab: flow the rows into
+  /* Full-width banner at the top of the Market tab: flow the rows into
      responsive columns instead of one tall single column. */
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-  column-gap: 32px;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  column-gap: 36px;
 }
 .qual-row {
   display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  padding: 11px 0;
+  align-items: center;
+  gap: 11px;
+  padding: 10px 0;
   border-bottom: 1px solid var(--beige-deep);
+  transition: background 0.12s;
 }
+.qual-row:hover { background: rgba(0, 0, 0, 0.02); }
 /* In a multi-column grid the DOM-last row is not always the visually last in
    each column, so keep per-row dividers; they read as clean column rules. */
-.qual-row.qual-na { opacity: 0.55; }
+.qual-row.qual-na { opacity: 0.6; }
+
+/* Pass/fail/na status pip at the start of each row. */
+.qual-status {
+  flex: 0 0 auto;
+  width: 19px;
+  height: 19px;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1;
+}
+.qual-pass .qual-status { background: var(--good-soft); color: var(--good); }
+.qual-fail .qual-status { background: var(--bad-soft);  color: var(--bad); }
+.qual-na   .qual-status { background: var(--slate-15);  color: var(--slate-70); }
 .qual-label {
   font-weight: 700;
   color: var(--slate);

@@ -437,7 +437,7 @@ function renderUnitSizeBar() {
       meta.data.forEach((bar, i) => {
         const v = values[i];
         if (!v) return;
-        ctx.fillText(fmtInt(v), bar.x, bar.y - 6);
+        ctx.fillText(`${fmtInt(v)} SF`, bar.x, bar.y - 6);
       });
       ctx.restore();
     },
@@ -549,62 +549,97 @@ function renderUnitMixBar(typesPresent, mix, noun, metric) {
   });
 }
 
-// Unit-mix doughnut: slices = bedroom types for this property, coloured by
-// type, labelled with type + percent.
-function renderUnitMixPie(typesPresent, mix, noun) {
-  const canvas = document.getElementById("pm-pie");
-  if (!canvas) return;
+/* Nested unit-mix doughnut: inner ring = bedroom type, outer ring = each type
+   split into en-suite (solid) vs shared-bath (lighter shade). Both rings are
+   derived from this property's parity_by_type so they reconcile exactly. */
+function buildNestedMixConfig(perType, noun) {
+  const types = UNIT_MIX_TYPES.filter((t) => perType[t] && (perType[t].full + perType[t].partial) > 0);
+  const total = types.reduce((s, t) => s + perType[t].full + perType[t].partial, 0);
+  if (!total) return null;
 
-  const values = typesPresent.map((t) => mix[t]);
-  const total = values.reduce((s, v) => s + v, 0);
+  const innerData = types.map((t) => perType[t].full + perType[t].partial);
+  const innerColors = types.map((t) => UNIT_TYPE_COLORS[t] || "#837c75");
 
-  if (pmPieChart) pmPieChart.destroy();
-  if (!total) {
-    pmPieChart = null;
-    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
-    return;
-  }
+  const outerData = [], outerColors = [], outerMeta = [];
+  types.forEach((t) => {
+    const base = UNIT_TYPE_COLORS[t] || "#837c75";
+    outerData.push(perType[t].full);    outerColors.push(base);        outerMeta.push({ type: t, kind: "en-suite", val: perType[t].full });
+    outerData.push(perType[t].partial); outerColors.push(base + "80"); outerMeta.push({ type: t, kind: "shared bath", val: perType[t].partial });
+  });
 
-  pmPieChart = new Chart(canvas.getContext("2d"), {
+  return {
     type: "doughnut",
     data: {
-      labels: typesPresent,
-      datasets: [{
-        data: values,
-        backgroundColor: typesPresent.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
-        borderColor: "#fff",
-        borderWidth: 2,
-      }],
+      labels: types,
+      datasets: [
+        { data: innerData, backgroundColor: innerColors, borderColor: "#fff", borderWidth: 2,
+          datalabels: {
+            color: "#fff", textAlign: "center",
+            font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+            formatter: (v, ctx) => (v / total * 100) < 7 ? "" : types[ctx.dataIndex],
+          } },
+        { data: outerData, backgroundColor: outerColors, borderColor: "#fff", borderWidth: 2,
+          datalabels: {
+            color: "#2b2825", textAlign: "center",
+            font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+            formatter: (v, ctx) => {
+              const m = outerMeta[ctx.dataIndex];
+              if (m.kind !== "shared bath") return "";
+              const pct = v / total * 100;
+              return pct < 5 ? "" : `${pct.toFixed(0)}%`;
+            },
+          } },
+      ],
     },
     options: {
       responsive: true,
       maintainAspectRatio: false,
-      cutout: "52%",
+      cutout: "40%",
       layout: { padding: 6 },
       plugins: {
         legend: {
           position: "right",
+          onClick: () => {},
           labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
                     boxWidth: 12, boxHeight: 12, padding: 9 },
         },
         tooltip: {
           callbacks: {
-            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
-          },
-        },
-        datalabels: {
-          color: "#fff",
-          font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
-          textAlign: "center",
-          formatter: (v, ctx) => {
-            const pct = v / total * 100;
-            if (pct < 6) return "";
-            return `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct.toFixed(0)}%`;
+            label: (c) => {
+              if (c.datasetIndex === 0) {
+                return `${types[c.dataIndex]}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`;
+              }
+              const m = outerMeta[c.dataIndex];
+              return `${m.type} ${m.kind}: ${fmtInt(m.val)} ${noun}`;
+            },
           },
         },
       },
     },
+  };
+}
+
+function renderUnitMixPie(typesPresent, mix, noun) {
+  const canvas = document.getElementById("pm-pie");
+  if (!canvas) return;
+
+  const useBeds = noun === "beds";
+  const fullKey = useBeds ? "beds_full" : "units_full";
+  const partKey = useBeds ? "beds_partial" : "units_partial";
+  const pbt = MIX.parity_by_type || {};
+  const perType = {};
+  UNIT_MIX_TYPES.forEach((t) => {
+    const e = pbt[t]; if (!e) return;
+    perType[t] = { full: e[fullKey] || 0, partial: e[partKey] || 0 };
   });
+
+  if (pmPieChart) { pmPieChart.destroy(); pmPieChart = null; }
+  const config = buildNestedMixConfig(perType, noun);
+  if (!config) {
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+  pmPieChart = new Chart(canvas.getContext("2d"), config);
 }
 
 // Bed/bath parity picker: bedroom types present in this property's parity data.

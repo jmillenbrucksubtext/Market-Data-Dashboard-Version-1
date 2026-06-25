@@ -1574,6 +1574,58 @@ function renderPipeline() {
       },
     });
   }
+
+  renderSupplyDemand();
+}
+
+/* ----- Supply & Demand panel (Pipeline tab) ------------------
+   (existing beds + on-campus beds) / FTE, shown for three campus-distance
+   bands. "Existing" = stabilized + lease-up off-campus PBSH beds; on-campus
+   beds and FTE are market constants, so only the off-campus count varies by
+   band. Independent of the tab's distance toggle - always shows all three. */
+const SD_BANDS = [
+  { label: "&le; ½ mi",        lim: 0.5, minYear: 0 },
+  { label: "&le; 1 mi",            lim: 1.0, minYear: 0 },
+  { label: "&le; 1 mi, 2015+",     lim: 1.0, minYear: 2015 },
+];
+const SD_EXISTING_PHASES = new Set(["stable", "lease up"]);
+
+function renderSupplyDemand() {
+  const host = document.getElementById("pipe-supplydemand");
+  if (!host) return;
+
+  const fte = MARKET.enr_full_time || null;
+
+  // On-campus beds across every tracked school in the market (reported figure
+  // preferred, computed share-of-enrollment estimate as fallback).
+  const onCampus = (DATA.tables.university_info || [])
+    .filter((r) => r.market_key === MARKET.market_key)
+    .reduce((s, r) => s + (r.beds_on_campus_reported || r.beds_on_campus_computed || 0), 0);
+
+  // Existing (delivered + leasing) off-campus beds within a distance band,
+  // optionally restricted to a build-year floor for the vintage band.
+  const existingBeds = (lim, minYear) => PROPERTIES
+    .filter((p) => SD_EXISTING_PHASES.has(p.phase)
+      && p.milesToClosestCampus != null && p.milesToClosestCampus <= lim
+      && (p.yearBuilt || 0) >= minYear)
+    .reduce((s, p) => s + (p.beds || 0), 0);
+
+  host.innerHTML = SD_BANDS.map((b) => {
+    const off = existingBeds(b.lim, b.minYear);
+    const supply = off + onCampus;
+    const ratio = fte ? supply / fte : null;
+    return `<div class="sd-card">
+      <div class="sd-band">${b.label}</div>
+      <div class="sd-ratio">${fte ? fmtPct(ratio, 0) : "&ndash;"}</div>
+      <div class="sd-ratio-label">beds &divide; FTE</div>
+      <dl class="sd-breakdown">
+        <div><dt>Existing beds</dt><dd>${fmtInt(off)}</dd></div>
+        <div><dt>On-campus beds</dt><dd>${onCampus ? fmtInt(onCampus) : "&ndash;"}</dd></div>
+        <div class="sd-total"><dt>Total supply</dt><dd>${fmtInt(supply)}</dd></div>
+        <div><dt>FTE enrollment</dt><dd>${fte ? fmtInt(fte) : "&ndash;"}</dd></div>
+      </dl>
+    </div>`;
+  }).join("");
 }
 
 /* ----- Map (Leaflet) ----------------------------------------- */

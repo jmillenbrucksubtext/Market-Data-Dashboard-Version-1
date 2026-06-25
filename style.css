@@ -2490,6 +2490,61 @@ h1, h2, h3, .serif {
 .pipeline-projects-card { align-self: start; }
 .pipeline-projects-card .table-wrap { max-height: 312px; overflow-y: auto; }
 
+/* Supply & Demand stat cards (Pipeline tab) */
+.supplydemand-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+  margin-top: 8px;
+}
+@media (min-width: 720px) {
+  .supplydemand-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+.sd-card {
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+.sd-band {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+}
+.sd-ratio {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 34px;
+  line-height: 1.1;
+  color: var(--everest);
+  margin-top: 6px;
+}
+.sd-ratio-label {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--slate-70);
+  margin-bottom: 12px;
+}
+.sd-breakdown { margin: 0; }
+.sd-breakdown > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 5px 0;
+  border-top: 1px solid var(--beige-deep);
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12.5px;
+  font-variant-numeric: tabular-nums;
+  color: var(--slate-70);
+}
+.sd-breakdown dt { margin: 0; }
+.sd-breakdown dd { margin: 0; font-weight: 700; color: var(--slate); }
+.sd-breakdown .sd-total dd { color: var(--everest); }
+
 /* Student Migration tab -------------------------------------- */
 .student-migration-toolbar {
   display: flex;

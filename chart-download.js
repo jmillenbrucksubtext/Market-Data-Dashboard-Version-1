@@ -26,12 +26,18 @@
       String(d.getDate()).padStart(2, "0");
   }
 
-  /* market.html shows the market name in #market-name; on index.html this
-     is absent and the prefix is omitted. */
-  function pagePrefix() {
-    var el = document.getElementById("market-name");
+  /* Context label for filenames and the table title band: the market name on
+     market.html (#market-name), the property name on property.html
+     (#prop-name), absent on index.html. */
+  function contextName() {
+    var el = document.getElementById("market-name") || document.getElementById("prop-name");
     var name = el ? el.textContent.trim() : "";
-    return name && name !== "-" ? slug(name) + "-" : "";
+    return name && name !== "-" ? name : "";
+  }
+
+  function pagePrefix() {
+    var name = contextName();
+    return name ? slug(name) + "-" : "";
   }
 
   function legendItems(figcaption) {
@@ -194,9 +200,8 @@
     ctx.fillStyle = "#ffffff";
     ctx.font = fonts.band;
     ctx.fillText(title, margin + padX, margin + bandH / 2 + 6 * S);
-    var marketEl = document.getElementById("market-name");
-    var market = marketEl ? marketEl.textContent.trim() : "";
-    if (market && market !== "-") {
+    var market = contextName();
+    if (market) {
       ctx.font = fonts.bandSub;
       ctx.fillStyle = "rgba(255, 255, 255, 0.75)";
       var mw = ctx.measureText(market.toUpperCase()).width;
@@ -277,6 +282,18 @@
       if (!titleEl || !table || titleEl.querySelector(".table-dl-btn")) return;
       titleEl.appendChild(makeTableBtn(table, function () {
         return titleEl.textContent.trim();
+      }));
+    });
+
+    // Generic: any table flagged with data-dl-title gets a button in its
+    // card's header (e.g. the property page's Floor Plans table). The title
+    // for the export is taken from the attribute.
+    document.querySelectorAll("table[data-dl-title]").forEach(function (table) {
+      var card = table.closest(".card");
+      var header = card ? card.querySelector(".card-header") : null;
+      if (!header || header.querySelector(".table-dl-btn")) return;
+      header.appendChild(makeTableBtn(table, function () {
+        return table.getAttribute("data-dl-title") || "Table";
       }));
     });
   }

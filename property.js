@@ -398,25 +398,50 @@ function renderUnitMix() {
   renderUnitMixSummaryTable(typesPresent, mix, metricLabel, total);
 }
 
-// Average unit size (sf) by bedroom type for this property. Independent of
-// the By Bed/By Unit toggle (a unit's size is the same either way). Hidden
-// when no floor plan for this property carries a usable square footage.
+// Order of parity buckets within a bedroom type: en-suite first, shared-bath
+// second. Shared-bath units are a distinct category (a 4x4 is not a 4x2).
+const SIZE_BUCKETS = ["full", "shared"];
+
+// Flatten a size_by_type map into ordered category rows for the size chart.
+// Each row: { label, color, value (avg sf), units }.
+function unitSizeCategories(sizeData) {
+  const cats = [];
+  UNIT_MIX_TYPES.forEach((t) => {
+    const byBucket = sizeData[t];
+    if (!byBucket) return;
+    SIZE_BUCKETS.forEach((b) => {
+      const e = byBucket[b];
+      if (!e || !e.avg_sf) return;
+      const base = UNIT_TYPE_COLORS[t] || "#837c75";
+      cats.push({
+        label: b === "shared" ? `${t} (shared bath)` : t,
+        color: b === "shared" ? base + "99" : base,  // shared = lighter shade
+        value: e.avg_sf,
+        units: e.units || 0,
+      });
+    });
+  });
+  return cats;
+}
+
+// Average unit size (sf) for this property, by bedroom type and bed/bath
+// parity (en-suite vs shared-bath kept distinct). Independent of the By
+// Bed/By Unit toggle. Hidden when no floor plan carries a usable area.
 function renderUnitSizeBar() {
   const figure = document.getElementById("pm-size-figure");
   const canvas = document.getElementById("pm-size");
   if (!figure || !canvas) return;
 
-  const sqft = MIX.sqft_by_type || {};
-  const sizeTypes = UNIT_MIX_TYPES.filter((t) => sqft[t]);
+  const cats = unitSizeCategories(MIX.size_by_type || {});
 
-  if (sizeTypes.length === 0) {
+  if (cats.length === 0) {
     figure.style.display = "none";
     if (pmSizeChart) { pmSizeChart.destroy(); pmSizeChart = null; }
     return;
   }
   figure.style.display = "";
 
-  const values = sizeTypes.map((t) => sqft[t]);
+  const values = cats.map((c) => c.value);
 
   const totalsPlugin = {
     id: "pmSizeTotals",
@@ -441,11 +466,11 @@ function renderUnitSizeBar() {
   pmSizeChart = new Chart(canvas.getContext("2d"), {
     type: "bar",
     data: {
-      labels: sizeTypes,
+      labels: cats.map((c) => c.label),
       datasets: [{
         label: "Avg SF",
         data: values,
-        backgroundColor: sizeTypes.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
+        backgroundColor: cats.map((c) => c.color),
         borderColor: "#fff",
         borderWidth: 1,
         borderRadius: 1,
@@ -464,7 +489,8 @@ function renderUnitSizeBar() {
       },
       scales: {
         x: { grid: { display: false, drawBorder: false }, border: { display: false },
-             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+             ticks: { font: { size: 12, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                      maxRotation: 30, minRotation: 0 } },
         y: { beginAtZero: true,
              title: { display: true, text: "Square Feet",
                       font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },

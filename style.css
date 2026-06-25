@@ -157,6 +157,12 @@ h1, h2, h3, .serif {
 .brand {
   padding: 6px 14px 12px;
 }
+/* Wordmark links home; keep the lime underline from .wordmark, drop the
+   default anchor underline. */
+.brand-link {
+  display: inline-block;
+  text-decoration: none;
+}
 .brand img {
   display: block;
   height: 44px;

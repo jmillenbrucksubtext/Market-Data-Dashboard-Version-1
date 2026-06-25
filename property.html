@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Property Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=50">
+  <link rel="stylesheet" href="style.css?v=51">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -16,7 +16,7 @@
 
     <aside class="sidebar">
       <div class="brand">
-        <span class="wordmark">SubHouse</span>
+        <a href="index.html" class="brand-link" aria-label="SubHouse home"><span class="wordmark">SubHouse</span></a>
       </div>
       <nav class="nav">
         <a class="nav-item active" href="index.html#industry">
@@ -122,7 +122,7 @@
             </header>
             <div class="filter-chips" id="bedroom-filter"></div>
             <div class="table-wrap">
-              <table id="plans">
+              <table id="plans" data-dl-title="Floor Plans">
                 <thead>
                   <tr>
                     <th data-sort="plan_name">Plan</th>
@@ -220,7 +220,7 @@
     </div>
   </div>
 
-  <script src="property.js?v=4" defer></script>
-  <script src="chart-download.js?v=4" defer></script>
+  <script src="property.js?v=5" defer></script>
+  <script src="chart-download.js?v=5" defer></script>
 </body>
 </html>

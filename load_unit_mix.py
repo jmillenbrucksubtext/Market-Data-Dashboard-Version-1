@@ -93,10 +93,13 @@ def has_bath_parity(plan: dict):
 def mix_for_property(plans: list[dict]) -> dict:
     beds_by_type: dict[str, float] = {}
     units_by_type: dict[str, float] = {}
-    # Average unit size (sf) per bedroom type, weighted by units so the mean
-    # reflects the actual unit stock. Plans with no usable area_sf (~16%) are
-    # left out of the average for their type.
-    sqft_raw: dict[str, dict[str, float]] = {}
+    # Average unit size (sf) split by bedroom type AND bed/bath parity, so a
+    # 4x4 (en-suite) is not lumped in with a 4x2 (shared bath). Keyed
+    # cat -> "full"|"shared" -> {sf-weighted-by-units, units}. Weighted by
+    # units so the mean reflects the actual stock; plans with no usable
+    # area_sf (~16%) are left out. Unknown parity defaults to the en-suite
+    # ("full") bucket.
+    size_raw: dict[str, dict[str, dict[str, float]]] = {}
     # Bed/bath parity per bedroom type: full = every bedroom has its own bath.
     # Plans missing a bath/bedroom count (~0.05%) are dropped from parity.
     parity_raw: dict[str, dict[str, float]] = {}
@@ -106,12 +109,17 @@ def mix_for_property(plans: list[dict]) -> dict:
         units = units_in_plan(p)
         beds_by_type[cat] = beds_by_type.get(cat, 0.0) + beds
         units_by_type[cat] = units_by_type.get(cat, 0.0) + units
+
+        par = has_bath_parity(p)
+
         area = p.get("area_sf")
         if area and float(area) > 0 and units > 0:
-            slot = sqft_raw.setdefault(cat, {"sf": 0.0, "units": 0.0})
+            sbucket = "shared" if par is False else "full"   # None/True -> full
+            slot = size_raw.setdefault(cat, {}).setdefault(
+                sbucket, {"sf": 0.0, "units": 0.0})
             slot["sf"] += float(area) * units
             slot["units"] += units
-        par = has_bath_parity(p)
+
         if par is None:
             continue
         bucket = "full" if par else "partial"
@@ -129,19 +137,30 @@ def mix_for_property(plans: list[dict]) -> dict:
         for t in BED_TYPES if t in parity_raw
         and any(round(v) > 0 for v in parity_raw[t].values())
     }
-    # Units-weighted average unit size per type; drop types with no area data.
-    sqft_by_type = {
-        t: int(round(sqft_raw[t]["sf"] / sqft_raw[t]["units"]))
-        for t in BED_TYPES
-        if t in sqft_raw and sqft_raw[t]["units"] > 0
-    }
+    # Units-weighted average size per (type, parity bucket). Each bucket keeps
+    # its unit count so the front end can re-weight the average across a
+    # selected comp set. Buckets with no area data drop out.
+    size_by_type: dict[str, dict] = {}
+    for t in BED_TYPES:
+        if t not in size_raw:
+            continue
+        buckets = {}
+        for b in ("full", "shared"):
+            raw = size_raw[t].get(b)
+            if raw and raw["units"] > 0:
+                buckets[b] = {
+                    "avg_sf": int(round(raw["sf"] / raw["units"])),
+                    "units": int(round(raw["units"])),
+                }
+        if buckets:
+            size_by_type[t] = buckets
     return {
         "beds_by_type": {k: beds[k] for k in BED_TYPES if k in beds},
         "units_by_type": {k: units[k] for k in BED_TYPES if k in units},
         "total_beds": sum(beds.values()),
         "total_units": sum(units.values()),
         "parity_by_type": parity_by_type,
-        "sqft_by_type": sqft_by_type,
+        "size_by_type": size_by_type,
     }
 
 

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=50">
+  <link rel="stylesheet" href="style.css?v=51">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -17,7 +17,7 @@
 
     <aside class="sidebar">
       <div class="brand">
-        <span class="wordmark">SubHouse</span>
+        <a href="index.html" class="brand-link" aria-label="SubHouse home"><span class="wordmark">SubHouse</span></a>
       </div>
 
       <nav class="nav">
@@ -448,7 +448,7 @@
               <figure class="perf-chart unitmix-bar-figure" id="unitmix-size-figure" style="margin-top:18px;">
                 <figcaption class="perf-title">
                   <span class="perf-title-text">Average Unit Size by Bedroom Type</span>
-                  <span class="perf-title-sub">square feet, by comp</span>
+                  <span class="perf-title-sub">weighted avg across selected comps · sf</span>
                 </figcaption>
                 <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-size-chart"></canvas></div>
               </figure>
@@ -1059,10 +1059,10 @@
     </div>
   </div>
 
-  <script src="market.js?v=43" defer></script>
+  <script src="market.js?v=44" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>
-  <script src="chart-download.js?v=4" defer></script>
+  <script src="chart-download.js?v=5" defer></script>
 </body>
 </html>

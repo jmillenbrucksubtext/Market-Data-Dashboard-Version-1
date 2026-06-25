@@ -2188,65 +2188,113 @@ function renderUnitMix() {
   renderUnitMixParityPie(selected);
 }
 
-/* Average unit size (sf) by bedroom type, grouped by selected comp. Sizes are
-   independent of the By Bed/By Unit toggle (a unit's size is the same either
-   way), so this draws the same regardless of metric. One grouped bar per comp
-   that has square footage on file; comps/types with no area data drop out.
-   Data: each comp's sqft_by_type (units-weighted avg, built in load_unit_mix.py). */
+// Order of parity buckets within a bedroom type: en-suite first, shared-bath
+// second. A shared-bath unit (e.g. 4x2) is a distinct category from an
+// en-suite one (4x4), per its own bed/bath parity.
+const SIZE_BUCKETS = ["full", "shared"];
+
+/* Average unit size (sf) by bedroom type and bed/bath parity, as a single
+   units-weighted average across the selected comps. For each category the
+   mean is sum(avg_sf * units) / sum(units) over the comps that report it, so
+   bigger comps pull the average proportionally. Sizes are independent of the
+   By Bed/By Unit toggle. Data: each comp's size_by_type (built in
+   load_unit_mix.py), which carries avg_sf + units per (type, parity bucket). */
 function renderUnitSizeChart(selected) {
   const figure = document.getElementById("unitmix-size-figure");
   const canvas = document.getElementById("unitmix-size-chart");
   if (!figure || !canvas || typeof Chart === "undefined") return;
 
-  // Bedroom types where at least one selected comp reports an average size.
-  const sizeTypes = UNIT_MIX_TYPES.filter((t) =>
-    selected.some(({ mix }) => (mix.sqft_by_type || {})[t]));
-
-  // One dataset per comp that has any size data; keep the comp's palette
-  // index so its colour matches the inventory stacked bar above.
-  const datasets = selected
-    .map(({ prop, mix }, i) => ({ prop, mix, i }))
-    .filter(({ mix }) => sizeTypes.some((t) => (mix.sqft_by_type || {})[t]))
-    .map(({ prop, mix, i }) => {
-      const color = UNIT_MIX_PALETTE[i % UNIT_MIX_PALETTE.length];
-      const isPipeline = !["stable", "lease up"].includes(prop.phase);
-      return {
-        label: prop.property_name + (isPipeline ? ` (${prop.phase})` : ""),
-        data: sizeTypes.map((t) => (mix.sqft_by_type || {})[t] ?? null),
-        backgroundColor: isPipeline ? color + "b3" : color,
-        borderColor: "#fff",
-        borderWidth: 1,
-        borderRadius: 1,
-      };
+  // Accumulate units-weighted size per (bedroom type, parity bucket).
+  const agg = {};  // key `${type}|${bucket}` -> { sf, units }
+  selected.forEach(({ mix }) => {
+    const sd = mix.size_by_type || {};
+    UNIT_MIX_TYPES.forEach((t) => {
+      const byBucket = sd[t];
+      if (!byBucket) return;
+      SIZE_BUCKETS.forEach((b) => {
+        const e = byBucket[b];
+        if (!e || !e.avg_sf || !e.units) return;
+        const key = t + "|" + b;
+        const a = agg[key] || (agg[key] = { sf: 0, units: 0 });
+        a.sf += e.avg_sf * e.units;
+        a.units += e.units;
+      });
     });
+  });
+
+  // Ordered categories: each bedroom type, en-suite then shared-bath.
+  const cats = [];
+  UNIT_MIX_TYPES.forEach((t) => {
+    SIZE_BUCKETS.forEach((b) => {
+      const a = agg[t + "|" + b];
+      if (!a || a.units <= 0) return;
+      const base = UNIT_TYPE_COLORS[t] || "#837c75";
+      cats.push({
+        label: b === "shared" ? `${t} (shared bath)` : t,
+        color: b === "shared" ? base + "99" : base,  // shared = lighter shade
+        value: Math.round(a.sf / a.units),
+        units: a.units,
+      });
+    });
+  });
 
   if (unitMixSizeChart) { unitMixSizeChart.destroy(); unitMixSizeChart = null; }
-  if (sizeTypes.length === 0 || datasets.length === 0) {
+  if (cats.length === 0) {
     figure.style.display = "none";
     return;
   }
   figure.style.display = "";
 
+  const values = cats.map((c) => c.value);
+  const totalsPlugin = {
+    id: "unitSizeTotals",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.fillStyle = "#16352e";
+      ctx.font = "700 13px Pragmatica, sans-serif";
+      ctx.textAlign = "center";
+      meta.data.forEach((bar, i) => {
+        if (!values[i]) return;
+        ctx.fillText(fmtInt(values[i]), bar.x, bar.y - 6);
+      });
+      ctx.restore();
+    },
+  };
+
   unitMixSizeChart = new Chart(canvas.getContext("2d"), {
     type: "bar",
-    data: { labels: sizeTypes, datasets },
+    data: {
+      labels: cats.map((c) => c.label),
+      datasets: [{
+        label: "Avg SF",
+        data: values,
+        backgroundColor: cats.map((c) => c.color),
+        borderColor: "#fff",
+        borderWidth: 1,
+        borderRadius: 1,
+      }],
+    },
     options: {
       responsive: true,
       maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
       plugins: {
-        legend: {
-          position: "bottom",
-          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
-                    boxWidth: 12, boxHeight: 12, padding: 10 },
-        },
+        legend: { display: false },
         tooltip: {
-          callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} sf` },
+          callbacks: {
+            label: (c) => `${fmtInt(c.parsed.y)} sf avg`,
+            afterLabel: (c) => `${fmtInt(cats[c.dataIndex].units)} units across comps`,
+          },
         },
         datalabels: { display: false },
       },
       scales: {
         x: { grid: { display: false, drawBorder: false }, border: { display: false },
-             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+             ticks: { font: { size: 12, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                      maxRotation: 30, minRotation: 0 } },
         y: { beginAtZero: true,
              title: { display: true, text: "Square Feet",
                       font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
@@ -2254,6 +2302,7 @@ function renderUnitSizeChart(selected) {
              ticks: { color: "#5a544f", font: { size: 11 } } },
       },
     },
+    plugins: [totalsPlugin],
   });
 }
 

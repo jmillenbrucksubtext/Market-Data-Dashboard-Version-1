@@ -17,16 +17,14 @@
     --beige: #f7f1e3; --beige-deep: #ede5cf; --lime: #c1d100;
     --warn: #c79830; --good-soft: #d8e3df; --bad-soft: #f0d9c4; --blue: #3d8aa6;
   }
-
   * { box-sizing: border-box; margin: 0; padding: 0; }
   body {
     font-family: "Pragmatica", -apple-system, "Segoe UI", sans-serif;
     font-size: 10.5px; color: var(--slate); background: #d8d4ce;
-    font-variant-numeric: tabular-nums;
-    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+    font-variant-numeric: tabular-nums; -webkit-print-color-adjust: exact; print-color-adjust: exact;
   }
   .sheet {
-    width: 8.5in; min-height: 11in; margin: 18px auto; padding: 0.5in 0.55in;
+    width: 8.5in; min-height: 11in; margin: 18px auto; padding: 0.55in 0.6in;
     background: #fff; box-shadow: 0 4px 18px rgba(43, 40, 37, 0.25);
     display: flex; flex-direction: column;
   }
@@ -37,93 +35,101 @@
     .sheet:last-of-type { page-break-after: avoid; }
     .print-btn, #report-loading { display: none !important; }
   }
-  .print-btn {
-    position: fixed; top: 14px; right: 16px; z-index: 10;
-    background: var(--everest); color: #fff; border: none; border-radius: 999px;
-    padding: 10px 20px; font: 700 13px "Pragmatica", sans-serif; cursor: pointer;
-    box-shadow: 0 3px 10px rgba(43, 40, 37, 0.35);
-  }
+  .print-btn { position: fixed; top: 14px; right: 16px; z-index: 10; background: var(--everest); color: #fff; border: none; border-radius: 999px; padding: 10px 20px; font: 700 13px "Pragmatica", sans-serif; cursor: pointer; box-shadow: 0 3px 10px rgba(43, 40, 37, 0.35); }
   .print-btn:hover { background: var(--slate); }
 
-  /* Report header */
-  .rep-head { display: flex; justify-content: space-between; align-items: flex-end; border-bottom: 3px solid var(--everest); padding-bottom: 10px; margin-bottom: 14px; }
-  .rep-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--birch); margin-bottom: 4px; }
-  .rep-title { font-family: "Mencken Std", Georgia, serif; font-size: 26px; font-weight: 700; letter-spacing: -0.01em; line-height: 1.1; }
-  .rep-sub { font-size: 11px; color: var(--slate-70); margin-top: 3px; }
-  .rep-meta { text-align: right; font-size: 9.5px; color: var(--slate-50); }
-  .rep-meta .chips { margin-bottom: 5px; }
-  .chip { display: inline-block; border-radius: 999px; padding: 3px 10px; font-size: 9px; font-weight: 700; letter-spacing: 0.04em; margin-left: 5px; }
+  /* Compact running header (top of every sheet) */
+  .run-head { display: flex; justify-content: space-between; align-items: baseline; font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--slate-50); border-bottom: 1px solid var(--beige-deep); padding-bottom: 5px; margin-bottom: 12px; }
+  .run-head b { color: var(--birch); }
+
+  /* Large main-section header */
+  .main-head { display: flex; align-items: flex-end; gap: 12px; border-bottom: 3px solid var(--everest); padding-bottom: 8px; margin-bottom: 16px; }
+  .main-head .num { font-family: "Mencken Std", Georgia, serif; font-size: 34px; font-weight: 700; line-height: 0.9; color: var(--birch); }
+  .main-head .ttl { font-family: "Mencken Std", Georgia, serif; font-size: 30px; font-weight: 700; line-height: 0.95; letter-spacing: -0.015em; color: var(--everest); }
+  .main-head .ttl small { display: block; font-family: "Pragmatica", sans-serif; font-size: 11px; font-weight: 700; letter-spacing: 0.02em; color: var(--slate-70); margin-top: 3px; }
+  .main-head .meta { margin-left: auto; text-align: right; font-size: 9px; color: var(--slate-50); }
+  .main-head .meta .chip { display: inline-block; border-radius: 999px; padding: 3px 9px; font-size: 8.5px; font-weight: 700; margin-left: 4px; }
   .chip-s30 { background: var(--lime); color: var(--slate); }
   .chip-rank { background: var(--beige-deep); color: var(--slate-70); }
 
-  /* Section titles */
-  .sec { font-family: "Mencken Std", Georgia, serif; font-size: 14px; font-weight: 700; border-bottom: 1px solid var(--beige-deep); padding-bottom: 4px; margin: 13px 0 8px; }
-  .sec:first-of-type { margin-top: 0; }
-  .sec-eyebrow { font-size: 8.5px; font-weight: 700; letter-spacing: 0.16em; text-transform: uppercase; color: var(--birch); margin-bottom: 2px; }
+  /* Title page hero */
+  .hero { display: flex; flex-direction: column; }
+  .hero .eyebrow { font-size: 10px; font-weight: 700; letter-spacing: 0.2em; text-transform: uppercase; color: var(--birch); }
+  .hero .name { font-family: "Mencken Std", Georgia, serif; font-size: 40px; font-weight: 700; line-height: 1.02; letter-spacing: -0.015em; margin-top: 4px; }
+  .hero .loc { font-size: 13px; color: var(--slate-70); margin-top: 4px; }
+
+  /* Subsection label */
+  .sub { font-family: "Mencken Std", Georgia, serif; font-size: 13px; font-weight: 700; color: var(--everest); margin: 15px 0 8px; }
+  .sub:first-child { margin-top: 0; }
 
   /* KPI grid */
-  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 7px; }
-  .kpi { background: var(--beige); border: 1px solid var(--beige-deep); border-radius: 6px; padding: 7px 9px; }
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
+  .kpi { background: var(--beige); border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px; }
   .kpi-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-50); }
-  .kpi-value { font-size: 16px; font-weight: 700; margin-top: 2px; }
-  .kpi-sub { font-size: 8px; color: var(--slate-50); margin-top: 1px; }
-  .kpi-up { color: var(--everest); }
-  .kpi-down { color: var(--birch); }
+  .kpi-value { font-size: 17px; font-weight: 700; margin-top: 3px; }
+  .kpi-sub { font-size: 8px; color: var(--slate-50); margin-top: 2px; }
+  .kpi-up { color: var(--everest); } .kpi-down { color: var(--birch); }
 
   /* Qualifier scorecard */
-  .qual-wrap { display: flex; gap: 12px; align-items: stretch; }
-  .qual-score { flex: 0 0 110px; background: var(--everest); color: #fff; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
-  .qual-score .pct { font-family: "Mencken Std", Georgia, serif; font-size: 30px; font-weight: 700; }
-  .qual-score .lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; text-align: center; margin-top: 3px; }
-  .qual-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 16px; }
-  .qual-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 3px 0; border-bottom: 1px dotted var(--beige-deep); font-size: 9.5px; }
-  .qual-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-right: 6px; }
-  .dot-pass { background: var(--everest); } .dot-fail { background: var(--birch); }
-  .dot-warn { background: var(--warn); } .dot-na { background: var(--slate-30); }
+  .qual-wrap { display: flex; gap: 14px; align-items: stretch; }
+  .qual-score { flex: 0 0 120px; background: var(--everest); color: #fff; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
+  .qual-score .pct { font-family: "Mencken Std", Georgia, serif; font-size: 34px; font-weight: 700; }
+  .qual-score .lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; text-align: center; margin-top: 4px; }
+  .qual-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
+  .qual-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--beige-deep); font-size: 9.5px; }
+  .qual-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-right: 7px; }
+  .dot-pass { background: var(--everest); } .dot-fail { background: var(--birch); } .dot-warn { background: var(--warn); } .dot-na { background: var(--slate-30); }
   .qual-row .ql { flex: 1; display: flex; align-items: center; color: var(--slate-70); }
   .qual-row .qv { font-weight: 700; white-space: nowrap; }
 
-  /* Forward ranking block */
-  .fwd-wrap { display: flex; gap: 12px; align-items: stretch; }
-  .fwd-score { flex: 0 0 130px; background: var(--beige-deep); border: 1px solid var(--slate-30); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10px; }
-  .fwd-score .rk { font-family: "Mencken Std", Georgia, serif; font-size: 30px; font-weight: 700; color: var(--everest); }
-  .fwd-score .lbl { font-size: 8px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-70); text-align: center; margin-top: 3px; }
-  .fwd-drivers { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; }
+  /* Forward ranking */
+  .fwd-wrap { display: flex; gap: 14px; align-items: stretch; }
+  .fwd-score { flex: 0 0 140px; background: var(--beige-deep); border: 1px solid var(--slate-30); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
+  .fwd-score .rk { font-family: "Mencken Std", Georgia, serif; font-size: 34px; font-weight: 700; color: var(--everest); }
+  .fwd-score .lbl { font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--slate-70); text-align: center; margin-top: 4px; }
+  .fwd-drivers { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
 
   /* Charts */
-  .charts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
-  .charts3 { display: grid; grid-template-columns: 1.3fr 1fr; gap: 10px; align-items: stretch; }
-  .chart-card { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px 6px; }
-  .chart-card h4 { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-70); margin-bottom: 4px; }
-  .chart-box { position: relative; height: 132px; }
-  .chart-box-tall { height: 168px; }
-  .chart-box-sm { height: 118px; }
-  .map-img { display: block; width: auto; max-width: 100%; max-height: 4.4in; margin: 0 auto; border: 1px solid var(--beige-deep); border-radius: 6px; background: var(--beige); min-height: 1in; }
-  .map-img-sm { max-height: 3.1in; }
+  .chart-card { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 9px 11px 7px; }
+  .chart-card h4 { font-size: 9px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: var(--slate-70); margin-bottom: 5px; }
+  .chart-box { position: relative; height: 140px; }
+  .chart-box-tall { position: relative; height: 178px; }
+  .chart-box-sm { position: relative; height: 120px; }
+  .charts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .charts3 { display: grid; grid-template-columns: 1.25fr 1fr; gap: 12px; align-items: stretch; }
+  .perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+  .perf-cell { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px 6px; }
+  .perf-cell h4 { font-size: 9.5px; font-weight: 700; color: var(--everest); margin-bottom: 4px; }
+  .perf-cell .perf-box { position: relative; height: 150px; }
+  .legend { display: flex; gap: 16px; align-items: center; font-size: 9px; color: var(--slate-70); margin: 0 0 10px; }
+  .legend span { display: inline-flex; align-items: center; gap: 5px; }
+  .legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
 
-  /* Pipeline band */
-  .pipe-band { display: grid; grid-template-columns: repeat(4, 1fr); gap: 7px; }
+  .map-img { display: block; width: 100%; max-width: 100%; max-height: 4.3in; object-fit: contain; margin: 0 auto; border: 1px solid var(--beige-deep); border-radius: 6px; background: var(--beige); min-height: 1in; }
+  .map-img-sm { max-height: 3.2in; }
+
+  .pipe-band { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
 
   /* Profile mini-table */
   .prof-table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
-  .prof-table td { padding: 4px 6px; border-bottom: 1px solid var(--beige-deep); }
+  .prof-table td { padding: 5px 7px; border-bottom: 1px solid var(--beige-deep); }
   .prof-table td.lbl { font-weight: 700; color: var(--slate); }
   .prof-table td.val { text-align: right; color: var(--slate-70); }
   .prof-table td.tgt { text-align: right; font-weight: 700; width: 46px; }
   .tgt-met { color: var(--slate); } .tgt-miss { color: var(--birch); } .tgt-na { color: var(--slate-50); font-weight: 600; }
 
-  /* Tables */
-  table { width: 100%; border-collapse: collapse; font-size: 9px; }
-  thead th { background: var(--everest); color: #fff; font-weight: 700; padding: 5px 7px; text-align: right; font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
-  thead th:first-child { text-align: left; }
-  tbody td { padding: 4px 7px; text-align: right; border-bottom: 1px solid var(--beige-deep); color: var(--slate-70); }
-  tbody td:first-child { text-align: left; font-weight: 700; color: var(--slate); }
-  tbody tr:nth-child(even) td { background: var(--beige); }
-  tfoot td { padding: 5px 7px; text-align: right; font-weight: 700; border-top: 2px solid var(--slate); background: var(--beige-deep); }
-  tfoot td:first-child { text-align: left; }
+  /* Data tables */
+  table.dt { width: 100%; border-collapse: collapse; font-size: 9px; }
+  table.dt thead th { background: var(--everest); color: #fff; font-weight: 700; padding: 6px 8px; text-align: right; font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; }
+  table.dt thead th:first-child { text-align: left; }
+  table.dt tbody td { padding: 5px 8px; text-align: right; border-bottom: 1px solid var(--beige-deep); color: var(--slate-70); }
+  table.dt tbody td:first-child { text-align: left; font-weight: 700; color: var(--slate); }
+  table.dt tbody tr:nth-child(even) td { background: var(--beige); }
+  table.dt tfoot td { padding: 6px 8px; text-align: right; font-weight: 700; border-top: 2px solid var(--slate); background: var(--beige-deep); }
+  table.dt tfoot td:first-child { text-align: left; }
 
-  .two-col { display: grid; grid-template-columns: 1.5fr 1fr; gap: 12px; align-items: start; }
-  .foot { margin-top: auto; padding-top: 10px; border-top: 1px solid var(--beige-deep); display: flex; justify-content: space-between; font-size: 8px; color: var(--slate-50); }
+  .two-col { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; align-items: start; }
+  .foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--beige-deep); display: flex; justify-content: space-between; font-size: 8px; color: var(--slate-50); }
   #report-loading { text-align: center; padding: 60px; color: var(--slate-70); font-size: 14px; }
 </style>
 </head>
@@ -137,10 +143,15 @@
 <script>
 "use strict";
 
-const C = {
-  slate: "#2b2825", slate70: "#5a544f", slate30: "#b6b1ab",
-  everest: "#16352e", birch: "#a95818", lime: "#c1d100", warn: "#c79830", blue: "#3d8aa6",
-};
+const POWER4_ANCHORS = new Set([
+  "University of Alabama","University of Arkansas","Auburn University","University of Florida","University of Georgia","University of Kentucky","Louisiana State University","Mississippi State University","University of Mississippi","University of Missouri","University of Oklahoma","University of South Carolina","University of Tennessee","Texas A&M University","University of Texas at Austin","Vanderbilt University",
+  "University of Illinois at Urbana-Champaign","Indiana University Bloomington","University of Iowa","University of Maryland College Park","University of Michigan","Michigan State University","University of Minnesota Twin Cities","University of Nebraska Lincoln","Northwestern University","Ohio State University","University of Oregon","Penn State","Purdue University","Rutgers University","University of Southern California","University of Washington","University of Wisconsin Madison",
+  "University of Arizona","Arizona State University","Baylor University","Brigham Young University","University of Cincinnati","University of Colorado Boulder","University of Houston","Iowa State University","University of Kansas","Kansas State University","Oklahoma State University","Texas Christian University","Texas Tech University","University of Central Florida","University of Utah","West Virginia University",
+  "University of California Berkeley","Clemson University","Duke University","Florida State University","Georgia Institute of Technology","University of Louisville","North Carolina State University","University of North Carolina at Chapel Hill","University of Notre Dame","University of Pittsburgh","Southern Methodist University","Stanford University","Syracuse University","University of Virginia","Virginia Polytechnic Institute and State University","Wake Forest University",
+]);
+
+const C = { slate: "#2b2825", slate70: "#5a544f", slate30: "#b6b1ab", everest: "#16352e", birch: "#a95818", lime: "#c1d100", warn: "#c79830", blue: "#3d8aa6" };
+const PERF = { anchor: C.birch, bench: C.everest, power4: C.blue };
 const fmtInt = (v) => v == null ? "-" : Math.round(v).toLocaleString("en-US");
 const fmtUsd = (v) => v == null || v === 0 ? "-" : "$" + Math.round(v).toLocaleString("en-US");
 const fmtPct1 = (v) => v == null ? "-" : (v * 100).toFixed(1) + "%";
@@ -148,17 +159,14 @@ const fmtPct0 = (v) => v == null ? "-" : Math.round(v * 100) + "%";
 const fmtSigned = (v) => v == null ? "-" : (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
 const esc = (t) => String(t ?? "").replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const nz = (v) => v == null || v === 0 || isNaN(v) ? null : v;
+const cleanZero = (v) => (v == null || v === 0) ? null : Number(v);
 
 document.addEventListener("DOMContentLoaded", async () => {
   const marketKey = Number(new URLSearchParams(location.search).get("id"));
   if (!marketKey) return fail("No market specified - open this page from a market's Report button.");
-
   let DATA;
-  try {
-    const res = await fetch("data.json", { cache: "no-cache" });
-    if (!res.ok) throw new Error("HTTP " + res.status);
-    DATA = await res.json();
-  } catch (e) { return fail("Couldn't load data.json - " + e); }
+  try { const res = await fetch("data.json", { cache: "no-cache" }); if (!res.ok) throw new Error("HTTP " + res.status); DATA = await res.json(); }
+  catch (e) { return fail("Couldn't load data.json - " + e); }
 
   const T = DATA.tables;
   const M = T.scorecard.find((r) => r.market_key === marketKey);
@@ -167,84 +175,76 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const quals = (T.market_qualifiers || []).find((r) => r.market_key === marketKey);
   const history = (T.market_history || []).filter((r) => r.market_key === marketKey).sort((a, b) => a.year_ - b.year_);
+  const histYears = history.map((r) => r.year_);
   const aff = (T.market_affluence || []).find((r) => r.market_key === marketKey);
   const props = (T.properties || []).filter((p) => p.market_key === marketKey);
   const comps = props.filter((p) => p.is_comp_set).sort((a, b) => (b.yearBuilt ?? -1) - (a.yearBuilt ?? -1));
+  const propHist = T.property_history || [];
 
-  // Subtext-30 per-year benchmark (simple mean across S30 markets)
+  // Benchmark market sets
   const s30Keys = new Set(T.scorecard.filter((r) => r.is_subtext30).map((r) => r.market_key));
-  const benchByYear = {};
-  (T.market_history || []).forEach((r) => { if (s30Keys.has(r.market_key)) (benchByYear[r.year_] = benchByYear[r.year_] || []).push(r); });
-  const bench = (field) => Object.keys(benchByYear).map(Number).sort((a, b) => a - b).map((y) => {
-    const vals = benchByYear[y].map((r) => r[field]).filter((v) => v != null);
-    return { year: y, value: vals.length ? vals.reduce((s, v) => s + v, 0) / vals.length : null };
-  });
+  const p4Keys = new Set(T.scorecard.filter((r) => POWER4_ANCHORS.has(r.anchor_university)).map((r) => r.market_key));
+  const allHist = T.market_history || [];
+  function yearMean(keys, field) {
+    const byYear = {};
+    allHist.forEach((r) => { if (!keys.has(r.market_key)) return; const v = cleanZero(r[field]); if (v == null) return; (byYear[r.year_] = byYear[r.year_] || []).push(v); });
+    return histYears.map((y) => { const xs = byYear[y] || []; return xs.length ? xs.reduce((s, v) => s + v, 0) / xs.length : null; });
+  }
+  // "This market" at a distance/vintage scope (bed-weighted property_history)
+  function scopeSeries(field, scope) {
+    if (scope === "market") return history.map((r) => cleanZero(r[field]));
+    const lim = scope === "0.5mi" ? 0.5 : 1;
+    const minYear = scope === "1mi2015" ? 2015 : 0;
+    const keys = new Set(props.filter((p) => p.milesToClosestCampus != null && p.milesToClosestCampus <= lim && (minYear === 0 || (p.yearBuilt || 0) >= minYear)).map((p) => p.property_key));
+    const byYear = {};
+    propHist.forEach((r) => { if (!keys.has(r.property_key)) return; const v = cleanZero(r[field]); const w = r.beds || 0; if (v == null || w <= 0) return; const e = byYear[r.year_] || (byYear[r.year_] = { s: 0, w: 0 }); e.s += v * w; e.w += w; });
+    return histYears.map((y) => { const e = byYear[y]; return e && e.w > 0 ? e.s / e.w : null; });
+  }
+  const s30Mean = {}, p4Mean = {};
+  ["avg_rent_per_bed", "occupancy", "prelease"].forEach((f) => { s30Mean[f] = yearMean(s30Keys, f); p4Mean[f] = yearMean(p4Keys, f); });
 
-  // Anchor university enrollment (the market's largest school)
+  // Anchor enrollment (largest school)
   const ehAll = (T.enrollment_history || []).filter((r) => r.market_key === marketKey);
-  const byIpeds = {};
-  ehAll.forEach((r) => (byIpeds[r.ipeds_id] = byIpeds[r.ipeds_id] || []).push(r));
+  const byIpeds = {}; ehAll.forEach((r) => (byIpeds[r.ipeds_id] = byIpeds[r.ipeds_id] || []).push(r));
   let anchorRows = [], best = -1;
-  Object.values(byIpeds).forEach((rows) => {
-    const latest = rows.reduce((a, b) => (a.year_ > b.year_ ? a : b));
-    if ((latest.total_enrollment || 0) > best) { best = latest.total_enrollment || 0; anchorRows = rows; }
-  });
+  Object.values(byIpeds).forEach((rows) => { const latest = rows.reduce((a, b) => (a.year_ > b.year_ ? a : b)); if ((latest.total_enrollment || 0) > best) { best = latest.total_enrollment || 0; anchorRows = rows; } });
   anchorRows.sort((a, b) => a.year_ - b.year_);
   const anchorIpeds = anchorRows.length ? anchorRows[0].ipeds_id : null;
   const anchorName = anchorRows.length ? anchorRows[0].university_name : M.anchor_university;
-
-  // Admissions history for the anchor school
   const adm = (T.admissions_history || []).filter((r) => r.ipeds_id === anchorIpeds).sort((a, b) => a.year_ - b.year_);
-
-  // university_info for the anchor (match by name, else largest enrollment, else first)
   const uiRows = (T.university_info || []).filter((r) => r.market_key === marketKey);
-  const uinfo = uiRows.find((r) => r.university_name === anchorName)
-    || uiRows.slice().sort((a, b) => (b.enrollment_total || 0) - (a.enrollment_total || 0))[0] || null;
+  const uinfo = uiRows.find((r) => r.university_name === anchorName) || uiRows.slice().sort((a, b) => (b.enrollment_total || 0) - (a.enrollment_total || 0))[0] || null;
 
-  // Comp-set unit mix - aggregate units by bedroom type across selected comps
+  // Comp unit mix by exact unit type
   const umByProp = {}; (T.unit_mix || []).forEach((r) => { umByProp[r.property_key] = r; });
-  const BED_TYPES = ["Studio", "1BR", "2BR", "3BR", "4BR", "5BR", "6BR+"];
-  const compUnitsByType = {};
-  comps.forEach((p) => {
-    const m = umByProp[p.property_key]; if (!m) return;
-    Object.entries(m.units_by_type || {}).forEach(([t, v]) => { compUnitsByType[t] = (compUnitsByType[t] || 0) + v; });
-  });
-  const compUnitTypes = BED_TYPES.filter((t) => compUnitsByType[t]);
-  const compUnitsTotal = compUnitTypes.reduce((s, t) => s + compUnitsByType[t], 0);
+  const utypeMeta = new Map(), utypeUnits = {};
+  comps.forEach((p) => { const m = umByProp[p.property_key]; if (!m) return; (m.mix_by_unit_type || []).forEach((e) => { if (!utypeMeta.has(e.label)) utypeMeta.set(e.label, { b: e.beds_sort, ba: e.baths }); utypeUnits[e.label] = (utypeUnits[e.label] || 0) + (e.units || 0); }); });
+  const utypes = [...utypeMeta.keys()].sort((a, b) => { const A = utypeMeta.get(a), B = utypeMeta.get(b); return (A.b - B.b) || ((A.ba ?? -1) - (B.ba ?? -1)); });
+  const utypeTotal = utypes.reduce((s, t) => s + utypeUnits[t], 0);
 
-  // Forward rank context
+  // Derived metrics
   const rankN = T.scorecard.filter((r) => r.fwd_rank != null).length;
   const topPct = M.fwd_rank != null && rankN ? Math.max(1, Math.round((M.fwd_rank / rankN) * 100)) : null;
-
   const last = history[history.length - 1], prev = history[history.length - 2];
   const rentYoy = last && prev && prev.avg_rent_per_bed > 0 ? last.avg_rent_per_bed / prev.avg_rent_per_bed - 1 : null;
-  const enrFirst = anchorRows[0], enrLast = anchorRows[anchorRows.length - 1];
-  const enrCagr = enrFirst && enrLast && enrFirst.total_enrollment > 0 && enrLast.year_ > enrFirst.year_
-    ? Math.pow(enrLast.total_enrollment / enrFirst.total_enrollment, 1 / (enrLast.year_ - enrFirst.year_)) - 1 : null;
+  const eF = anchorRows[0], eL = anchorRows[anchorRows.length - 1];
+  const enrCagr = eF && eL && eF.total_enrollment > 0 && eL.year_ > eF.year_ ? Math.pow(eL.total_enrollment / eF.total_enrollment, 1 / (eL.year_ - eF.year_)) - 1 : null;
   const pipePct = M.existing_beds > 0 ? M.beds_pipeline_total / M.existing_beds : null;
-
   const asOf = M.data_as_of ? new Date(M.data_as_of) : new Date();
   const asOfText = asOf.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
-  const genText = new Date().toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
 
-  /* ---- builders ---- */
-  const header = (page) => `
-    <div class="rep-head">
-      <div>
-        <div class="rep-eyebrow">Subtext Living · Market Report</div>
-        <div class="rep-title">${esc(M.anchor_university)}</div>
-        <div class="rep-sub">${esc(M.city)}, ${esc(M.state_abbr)}${M.region ? " · " + esc(M.region) : ""}</div>
-      </div>
-      <div class="rep-meta">
-        <div class="chips">
-          ${M.is_subtext30 ? '<span class="chip chip-s30">★ Subtext-30</span>' : ""}
-          ${M.fwd_rank ? `<span class="chip chip-rank">Forward rank #${M.fwd_rank}</span>` : ""}
-        </div>
-        <div>Data as of ${asOfText}</div>
-      </div>
+  /* ---- shared bits ---- */
+  const TOTAL = 8;
+  const runHead = `<div class="run-head"><span>Subtext Living · Market Report · <b>${esc(M.anchor_university)}</b></span><span>${esc(M.city)}, ${esc(M.state_abbr)} · ${asOfText}</span></div>`;
+  const mainHead = (num, title, sub) => `
+    <div class="main-head">
+      <div class="num">${num}</div>
+      <div class="ttl">${title}${sub ? `<small>${sub}</small>` : ""}</div>
+      <div class="meta">${M.is_subtext30 ? '<span class="chip chip-s30">★ Subtext-30</span>' : ""}${M.fwd_rank ? `<span class="chip chip-rank">Fwd rank #${M.fwd_rank}</span>` : ""}</div>
     </div>`;
-  const foot = (n, total) => `<div class="foot"><span>Subtext Living - Market Report · ${esc(M.anchor_university)}</span><span>Page ${n} of ${total}</span></div>`;
-  const TOTAL = 5;
+  const foot = (n) => `<div class="foot"><span>Subtext Living - Market Report · ${esc(M.anchor_university)}</span><span>Page ${n} of ${TOTAL}</span></div>`;
+  const kpiCards = (list) => list.map((k) => `<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value ${k.cls || ""}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
+  const perfLegend = `<div class="legend"><span><i style="background:${PERF.anchor}"></i>This market</span><span><i style="background:${PERF.bench}"></i>Subtext-30 avg</span><span><i style="background:${PERF.power4}"></i>Power 4 avg</span></div>`;
 
   const kpis = [
     { l: "Existing Beds", v: fmtInt(M.existing_beds), s: "purpose-built" },
@@ -258,22 +258,17 @@ document.addEventListener("DOMContentLoaded", async () => {
     { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
     { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "-", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data" },
   ];
-  const kpiCards = (list) => list.map((k) => `<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value ${k.cls || ""}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
-
   const qualRows = quals ? quals.results.map((r) => {
     const tier = (r.tier || r.status || "na").toLowerCase();
-    const dot = tier.startsWith("pass") ? "dot-pass" : tier.startsWith("fail") ? "dot-fail"
-      : tier.startsWith("warn") || tier.startsWith("near") ? "dot-warn" : "dot-na";
+    const dot = tier.startsWith("pass") ? "dot-pass" : tier.startsWith("fail") ? "dot-fail" : (tier.startsWith("warn") || tier.startsWith("near")) ? "dot-warn" : "dot-na";
     return `<div class="qual-row"><span class="ql"><span class="dot ${dot}"></span>${esc(r.label)}</span><span class="qv">${esc(r.actual_display ?? "-")}</span></div>`;
   }).join("") : "";
   const scorePct = quals && quals.evaluable > 0 ? Math.round((quals.passes / quals.evaluable) * 100) : null;
-
-  // Forward ranking drivers (the model weighs these; component scores aren't in the dataset)
   const fwdDrivers = [
     { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment" },
     { l: "Supply Pressure", v: pipePct != null ? fmtPct1(pipePct) : "-", s: "pipeline ÷ existing" },
     { l: "Rent Growth (YoY)", v: fmtSigned(rentYoy), s: "avg rent / bed" },
-    { l: "Enrollment CAGR", v: fmtSigned(enrCagr), s: anchorRows.length ? `${enrFirst.year_}-${enrLast.year_}` : "" },
+    { l: "Enrollment CAGR", v: fmtSigned(enrCagr), s: anchorRows.length ? `${eF.year_}-${eL.year_}` : "" },
     { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted" },
     { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
   ];
@@ -281,11 +276,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Student profile rows
   const ug = uinfo ? (uinfo.enr_ft_undergrad || 0) + (uinfo.enr_pt_undergrad || 0) : 0;
   const inPct = uinfo ? uinfo.pct_in_state : null, outPct = uinfo ? uinfo.pct_out_of_state : null;
-  const inCt = (inPct != null && ug) ? Math.round(inPct * ug) : null;
-  const outCt = (outPct != null && ug) ? Math.round(outPct * ug) : null;
+  const inCt = (inPct != null && ug) ? Math.round(inPct * ug) : null, outCt = (outPct != null && ug) ? Math.round(outPct * ug) : null;
   const roomBoard = uinfo ? ((uinfo.rate_room_yearly || 0) + (uinfo.rate_board_yearly || 0)) || null : null;
   const age = uinfo ? uinfo.student_age_avg : null;
-  const tcell = (txt, state) => `<td class="tgt ${state}">${txt}</td>`;
+  const tcell = (txt, st) => `<td class="tgt ${st}">${txt}</td>`;
   const tEval = (val, ok) => val == null ? "tgt-na" : (ok ? "tgt-met" : "tgt-miss");
   const profRows = uinfo ? [
     `<tr><td class="lbl">In-State</td><td class="val">${inCt == null ? "-" : fmtInt(inCt)} · ${fmtPct1(inPct)}</td>${tcell("&lt;90%", tEval(inPct, inPct != null && inPct < 0.90))}</tr>`,
@@ -297,171 +291,159 @@ document.addEventListener("DOMContentLoaded", async () => {
     `<tr><td class="lbl">Room &amp; Board</td><td class="val">${fmtUsd(roomBoard)}</td><td class="tgt"></td></tr>`,
   ].join("") : `<tr><td colspan="3">No institutional data on file.</td></tr>`;
 
-  // Comp set table + aggregates
-  const compRows = comps.map((p) => `
-    <tr>
-      <td>${esc(p.property_name || "(unnamed)")}</td>
-      <td>${p.yearBuilt ?? "-"}</td><td>${fmtInt(p.beds)}</td>
-      <td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "-"}</td>
-      <td>${p.avg_rent > 0 ? fmtUsd(p.avg_rent) : "-"}</td>
-      <td>${p.avg_rent_per_sf > 0 ? "$" + p.avg_rent_per_sf.toFixed(2) : "-"}</td>
-      <td>${fmtPct1(p.occupancy)}</td><td>${fmtPct1(p.prelease)}</td>
-    </tr>`).join("");
+  // Comp table + aggregates
+  const compRows = comps.map((p) => `<tr><td>${esc(p.property_name || "(unnamed)")}</td><td>${p.yearBuilt ?? "-"}</td><td>${fmtInt(p.beds)}</td><td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "-"}</td><td>${p.avg_rent > 0 ? fmtUsd(p.avg_rent) : "-"}</td><td>${p.avg_rent_per_sf > 0 ? "$" + p.avg_rent_per_sf.toFixed(2) : "-"}</td><td>${fmtPct1(p.occupancy)}</td><td>${fmtPct1(p.prelease)}</td></tr>`).join("");
   const wAvg = (key) => { let n = 0, d = 0; comps.forEach((p) => { if (p[key] != null && p.beds) { n += p[key] * p.beds; d += p.beds; } }); return d > 0 ? n / d : null; };
   const totBeds = comps.reduce((s, p) => s + (p.beds || 0), 0);
+  const compMixRows = utypes.map((t) => `<tr><td>${t}</td><td>${fmtInt(utypeUnits[t])}</td><td>${utypeTotal ? (utypeUnits[t] / utypeTotal * 100).toFixed(1) + "%" : "-"}</td></tr>`).join("");
 
-  const compMixRows = compUnitTypes.map((t) =>
-    `<tr><td>${t}</td><td>${fmtInt(compUnitsByType[t])}</td><td>${compUnitsTotal ? (compUnitsByType[t] / compUnitsTotal * 100).toFixed(1) + "%" : "-"}</td></tr>`).join("");
+  // Fundamentals metric/scope definitions
+  const METRICS = [
+    { key: "rent", field: "avg_rent_per_bed", title: "Market Rent", unit: "per bed", growth: false, pct: false },
+    { key: "growth", field: "avg_rent_per_bed", title: "Market Rate Growth", unit: "year-over-year", growth: true, pct: false },
+    { key: "occ", field: "occupancy", title: "Market Occupancy", unit: "bed-weighted", growth: false, pct: true },
+    { key: "prelease", field: "prelease", title: "Market Pre-lease", unit: "latest cycle", growth: false, pct: true },
+  ];
+  const SCOPES = [{ id: "market", l: "Total Market" }, { id: "1mi", l: "Within 1 Mile" }, { id: "0.5mi", l: "Within ½ Mile" }, { id: "1mi2015", l: "Within 1 Mile · 2015+" }];
+  const fundSheet = (m, page) => `
+    <div class="sheet">
+      ${runHead}
+      ${mainHead("03", "Market Fundamentals", `${m.title} · ${m.unit} · vs Subtext-30 &amp; Power 4`)}
+      ${perfLegend}
+      <div class="perf-grid">
+        ${SCOPES.map((sc) => `<div class="perf-cell"><h4>${m.title} - ${sc.l}</h4><div class="perf-box"><canvas id="ch-${m.key}-${sc.id}"></canvas></div></div>`).join("")}
+      </div>
+      ${foot(page)}
+    </div>`;
 
-  /* ---- render sheets ---- */
+  /* ---- render ---- */
   document.getElementById("report-root").innerHTML = `
-  <!-- SHEET 1: OVERVIEW -->
   <div class="sheet">
-    ${header(1)}
+    <div class="hero">
+      <div class="eyebrow">Subtext Living · Market Report</div>
+      <div class="name">${esc(M.anchor_university)}</div>
+      <div class="loc">${esc(M.city)}, ${esc(M.state_abbr)}${M.region ? " · " + esc(M.region) : ""} · Data as of ${asOfText}</div>
+    </div>
+    ${mainHead("01", "Overview", "Qualifiers · key metrics · forward ranking").replace('<div class="main-head">', '<div class="main-head" style="margin-top:14px">')}
     ${quals ? `
-    <div class="sec-eyebrow">Intro · Overview</div>
-    <div class="sec" style="margin-top:0">Subtext Qualifier Scorecard</div>
+    <div class="sub">Subtext Qualifier Scorecard</div>
     <div class="qual-wrap">
       <div class="qual-score"><div class="pct">${scorePct != null ? scorePct + "%" : "-"}</div><div class="lbl">${quals.passes.toFixed(1)} of ${quals.evaluable} qualifiers passing</div></div>
       <div class="qual-grid">${qualRows}</div>
     </div>` : ""}
-
-    <div class="sec">Key Metrics</div>
+    <div class="sub">Key Metrics</div>
     <div class="kpis">${kpiCards(kpis)}</div>
-
-    <div class="sec">Forward Ranking Model</div>
+    <div class="sub">Forward Ranking Model</div>
     <div class="fwd-wrap">
-      <div class="fwd-score">
-        <div class="rk">${M.fwd_rank != null ? "#" + M.fwd_rank : "N/A"}</div>
-        <div class="lbl">${M.fwd_rank != null ? `of ${rankN} markets${topPct != null ? ` · top ${topPct}%` : ""}` : "not ranked"}</div>
-      </div>
+      <div class="fwd-score"><div class="rk">${M.fwd_rank != null ? "#" + M.fwd_rank : "N/A"}</div><div class="lbl">${M.fwd_rank != null ? `of ${rankN} markets${topPct != null ? ` · top ${topPct}%` : ""}` : "not ranked"}</div></div>
       <div class="fwd-drivers">${kpiCards(fwdDrivers)}</div>
     </div>
-
-    <div class="sec">Market Map</div>
-    <img id="report-map-1" class="map-img map-img-sm" alt="Market map (rendering…)">
-    ${foot(1, TOTAL)}
+    <div class="sub">Market Map</div>
+    <img id="report-market-map" class="map-img map-img-sm" alt="Market map (rendering…)">
+    ${foot(1)}
   </div>
 
-  <!-- SHEET 2: UNIVERSITY INFORMATION -->
   <div class="sheet">
-    ${header(2)}
-    <div class="sec-eyebrow">University Information</div>
-    <div class="sec" style="margin-top:0">Enrollment History - ${esc(anchorName)}</div>
+    ${runHead}
+    ${mainHead("02", "University Information", esc(anchorName))}
+    <div class="sub">Enrollment History - Total, Full-Time &amp; Freshman</div>
     <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-enr"></canvas></div></div>
-
-    <div class="sec">Applications, Acceptance &amp; Yield</div>
-    ${adm.length ? `<div class="chart-card"><div class="chart-box-tall"><canvas id="ch-adm"></canvas></div></div>`
-      : `<div class="chart-card"><div style="padding:20px;text-align:center;color:var(--slate-50)">No admissions history on file for this institution.</div></div>`}
-
-    <div class="sec">Undergraduate Student Profile</div>
+    <div class="sub">Applications, Acceptance &amp; Yield</div>
+    ${adm.length ? `<div class="chart-card"><div class="chart-box-tall"><canvas id="ch-adm"></canvas></div></div>` : `<div class="chart-card"><div style="padding:24px;text-align:center;color:var(--slate-50)">No admissions history on file for this institution.</div></div>`}
+    <div class="sub">Undergraduate Student Profile</div>
     <div class="charts3">
       <div class="chart-card"><table class="prof-table">${profRows}</table></div>
       <div class="chart-card"><h4>Undergrad Residency</h4><div class="chart-box-sm"><canvas id="ch-resid"></canvas></div></div>
     </div>
-    ${foot(2, TOTAL)}
+    ${foot(2)}
   </div>
 
-  <!-- SHEET 3: MARKET FUNDAMENTALS -->
-  <div class="sheet">
-    ${header(3)}
-    <div class="sec-eyebrow">Market Fundamentals · vs Subtext-30</div>
-    <div class="sec" style="margin-top:0">Rent &amp; Rate Growth</div>
-    <div class="charts2">
-      <div class="chart-card"><h4>Market Rent (per bed)</h4><div class="chart-box"><canvas id="ch-rent"></canvas></div></div>
-      <div class="chart-card"><h4>Market Rate Growth (YoY)</h4><div class="chart-box"><canvas id="ch-growth"></canvas></div></div>
-    </div>
-    <div class="sec">Occupancy &amp; Pre-lease</div>
-    <div class="charts2">
-      <div class="chart-card"><h4>Market Occupancy</h4><div class="chart-box"><canvas id="ch-occ"></canvas></div></div>
-      <div class="chart-card"><h4>Market Pre-lease</h4><div class="chart-box"><canvas id="ch-prelease"></canvas></div></div>
-    </div>
-    ${foot(3, TOTAL)}
-  </div>
+  ${fundSheet(METRICS[0], 3)}
+  ${fundSheet(METRICS[1], 4)}
+  ${fundSheet(METRICS[2], 5)}
+  ${fundSheet(METRICS[3], 6)}
 
-  <!-- SHEET 4: PIPELINE -->
   <div class="sheet">
-    ${header(4)}
-    <div class="sec-eyebrow">Supply Pipeline</div>
-    <div class="sec" style="margin-top:0">Pipeline by Phase</div>
+    ${runHead}
+    ${mainHead("04", "Supply Pipeline", `${fmtInt(M.beds_pipeline_total)} pipeline beds · ${pipePct != null ? fmtPct1(pipePct) : "-"} of existing`)}
+    <div class="sub">Pipeline by Phase</div>
     <div class="pipe-band">
       <div class="kpi"><div class="kpi-label">Existing</div><div class="kpi-value">${fmtInt(M.existing_beds)}</div><div class="kpi-sub">stabilized beds</div></div>
       <div class="kpi"><div class="kpi-label">Lease-up</div><div class="kpi-value">${fmtInt(M.beds_lease_up)}</div><div class="kpi-sub">delivering now</div></div>
       <div class="kpi"><div class="kpi-label">Under Construction</div><div class="kpi-value">${fmtInt(M.beds_under_construction)}</div><div class="kpi-sub">≈ 6-24 months</div></div>
       <div class="kpi"><div class="kpi-label">Planned</div><div class="kpi-value">${fmtInt(M.beds_planned)}</div><div class="kpi-sub">permitted / announced</div></div>
     </div>
-    <div class="sec">Deliveries Over Time</div>
-    <div class="chart-card"><h4>Beds by year built · ${fmtInt(M.beds_pipeline_total)} pipeline beds (${pipePct != null ? fmtPct1(pipePct) : "-"} of existing)</h4><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
-    ${foot(4, TOTAL)}
+    <div class="sub">Deliveries Over Time - beds by year built</div>
+    <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
+    ${foot(7)}
   </div>
 
-  <!-- SHEET 5: COMPETITIVE SET -->
   <div class="sheet">
-    ${header(5)}
-    <div class="sec-eyebrow">Competitive Set · ${comps.length} selected propert${comps.length === 1 ? "y" : "ies"}</div>
-    <div class="sec" style="margin-top:0">Comp Set Map</div>
-    <img id="report-map-2" class="map-img" alt="Competitive set map (rendering…)">
+    ${runHead}
+    ${mainHead("05", "Competitive Set", `${comps.length} selected propert${comps.length === 1 ? "y" : "ies"} · ${fmtInt(totBeds)} beds`)}
+    <div class="sub">Comp Set Map</div>
+    <img id="report-comp-map" class="map-img" alt="Competitive set map (rendering…)">
     <div class="two-col">
       <div>
-        <div class="sec">Comp Set</div>
-        <table>
+        <div class="sub">Competitive Set</div>
+        <table class="dt">
           <thead><tr><th>Property</th><th>Built</th><th>Beds</th><th>Mi</th><th>Avg Rent</th><th>Rent/SF</th><th>Occ</th><th>Pre-lse</th></tr></thead>
           <tbody>${compRows || '<tr><td colspan="8">No comp-set properties on file.</td></tr>'}</tbody>
           ${comps.length ? `<tfoot><tr><td>Bed-weighted · ${comps.length} comps</td><td></td><td>${fmtInt(totBeds)}</td><td></td><td>${fmtUsd(wAvg("avg_rent"))}</td><td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "-"}</td><td>${fmtPct1(wAvg("occupancy"))}</td><td>${fmtPct1(wAvg("prelease"))}</td></tr></tfoot>` : ""}
         </table>
       </div>
       <div>
-        <div class="sec">Unit Mix</div>
-        <table>
-          <thead><tr><th>Type</th><th>Units</th><th>%</th></tr></thead>
+        <div class="sub">Unit Mix</div>
+        <table class="dt">
+          <thead><tr><th>Unit Type</th><th>Units</th><th>%</th></tr></thead>
           <tbody>${compMixRows || '<tr><td colspan="3">No floor-plan data.</td></tr>'}</tbody>
-          ${compUnitsTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(compUnitsTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
+          ${utypeTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(utypeTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
         </table>
       </div>
     </div>
-    ${foot(5, TOTAL)}
+    ${foot(8)}
   </div>`;
 
   document.getElementById("report-loading").style.display = "none";
 
   /* ---- charts ---- */
-  const lineOpts = (fmt, isPct) => ({
+  const baseOpts = (extra) => Object.assign({
     responsive: true, maintainAspectRatio: false, animation: false, devicePixelRatio: 2,
-    plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 14, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
-    scales: {
-      x: { ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } },
-      y: { beginAtZero: false, ...(isPct ? { max: 1 } : {}), ticks: { color: C.slate70, font: { size: 8 }, callback: fmt }, grid: { color: "rgba(0,0,0,0.05)" } },
-    },
+    plugins: { legend: { display: false }, tooltip: { enabled: false } },
+  }, extra);
+  const lineOpts = (fmt, isPct) => baseOpts({
+    plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
+    scales: { x: { ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } }, y: { beginAtZero: false, ...(isPct ? { max: 1 } : {}), ticks: { color: C.slate70, font: { size: 8 }, callback: fmt }, grid: { color: "rgba(0,0,0,0.05)" } } },
   });
 
-  function drawVsBench(canvasId, field, fmt, isPct, deriveGrowth) {
-    const el = document.getElementById(canvasId);
-    if (!el || typeof Chart === "undefined") return;
-    let mineSeries = history.map((r) => ({ year: r.year_, value: r[field] }));
-    let bSeries = bench(field);
-    if (deriveGrowth) {
-      const yoy = (arr) => arr.map((d, i) => i === 0 ? { year: d.year, value: null }
-        : { year: d.year, value: (d.value != null && arr[i - 1].value) ? d.value / arr[i - 1].value - 1 : null }).slice(1);
-      mineSeries = yoy(mineSeries); bSeries = yoy(bSeries);
+  // Market Performance: grouped bars (This/S30/P4) per metric per scope
+  function makePerfChart(m, scope) {
+    const el = document.getElementById(`ch-${m.key}-${scope.id}`);
+    if (!el) return;
+    let mine = scopeSeries(m.field, scope.id), s30 = (s30Mean[m.field] || []).slice(), p4 = (p4Mean[m.field] || []).slice();
+    let labels = histYears.slice();
+    if (m.growth) {
+      const g = (a) => a.map((v, i) => i === 0 ? null : (v != null && a[i - 1]) ? (v / a[i - 1] - 1) : null);
+      mine = g(mine).slice(1); s30 = g(s30).slice(1); p4 = g(p4).slice(1); labels = histYears.slice(1);
     }
-    const years = [...new Set([...mineSeries.map((d) => d.year), ...bSeries.map((d) => d.year)])].sort((x, y) => x - y);
-    const mv = Object.fromEntries(mineSeries.map((d) => [d.year, d.value]));
-    const bv = Object.fromEntries(bSeries.map((d) => [d.year, d.value]));
+    const sc = (m.growth || m.pct) ? 100 : 1;
+    const fmtTick = m.growth ? (v) => Math.round(v) + "%" : m.pct ? (v) => Math.round(v) + "%" : (v) => "$" + Math.round(v).toLocaleString();
     new Chart(el.getContext("2d"), {
-      type: "line",
-      data: { labels: years, datasets: [
-        { label: "This market", data: years.map((y) => mv[y] ?? null), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
-        { label: "Subtext-30 avg", data: years.map((y) => bv[y] ?? null), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true },
+      type: "bar",
+      data: { labels, datasets: [
+        { label: "This market", data: mine.map((v) => v == null ? null : v * sc), backgroundColor: PERF.anchor, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
+        { label: "Subtext-30 avg", data: s30.map((v) => v == null ? null : v * sc), backgroundColor: PERF.bench, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
+        { label: "Power 4 avg", data: p4.map((v) => v == null ? null : v * sc), backgroundColor: PERF.power4, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
       ] },
-      options: lineOpts(fmt, isPct && !deriveGrowth),
+      options: baseOpts({ scales: {
+        x: { grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } },
+        y: { beginAtZero: !m.growth, ...(m.pct ? { max: 100 } : {}), grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, maxTicksLimit: 5, callback: fmtTick } },
+      } }),
     });
   }
-  drawVsBench("ch-rent", "avg_rent_per_bed", (v) => "$" + Math.round(v).toLocaleString(), false);
-  drawVsBench("ch-growth", "avg_rent_per_bed", (v) => Math.round(v * 100) + "%", false, true);
-  drawVsBench("ch-occ", "occupancy", (v) => Math.round(v * 100) + "%", true);
-  drawVsBench("ch-prelease", "prelease", (v) => Math.round(v * 100) + "%", true);
+  METRICS.forEach((m) => SCOPES.forEach((sc) => makePerfChart(m, sc)));
 
-  // Enrollment (Total / FTE / Freshman)
+  // Enrollment
   if (anchorRows.length) {
     const el = document.getElementById("ch-enr");
     if (el) new Chart(el.getContext("2d"), {
@@ -475,31 +457,20 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // Applications, Acceptance & Yield combo
+  // Admissions combo
   if (adm.length) {
     const el = document.getElementById("ch-adm");
-    if (el) {
-      const labels = adm.map((r) => "'" + String(r.year_).slice(-2));
-      const acc = adm.map((r) => r.applications ? r.admitted / r.applications * 100 : null);
-      const yld = adm.map((r) => r.admitted ? r.enrolled / r.admitted * 100 : null);
-      const appsK = adm.map((r) => r.applications != null ? r.applications / 1000 : null);
-      new Chart(el.getContext("2d"), {
-        data: { labels, datasets: [
-          { type: "bar", label: "Yield", data: yld, yAxisID: "pct", backgroundColor: C.blue, order: 2 },
-          { type: "bar", label: "Acceptance", data: acc, yAxisID: "pct", backgroundColor: C.birch, order: 2 },
-          { type: "line", label: "Applications (000s)", data: appsK, yAxisID: "apps", order: 1, borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2.5, pointRadius: 2, tension: 0.25 },
-        ] },
-        options: {
-          responsive: true, maintainAspectRatio: false, animation: false, devicePixelRatio: 2,
-          plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
-          scales: {
-            x: { ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } },
-            pct: { position: "left", beginAtZero: true, max: 100, ticks: { color: C.slate70, font: { size: 8 }, stepSize: 25, callback: (v) => v + "%" }, grid: { color: "rgba(0,0,0,0.05)" } },
-            apps: { position: "right", beginAtZero: true, ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } },
-          },
-        },
-      });
-    }
+    if (el) new Chart(el.getContext("2d"), {
+      data: { labels: adm.map((r) => "'" + String(r.year_).slice(-2)), datasets: [
+        { type: "bar", label: "Yield", data: adm.map((r) => r.admitted ? r.enrolled / r.admitted * 100 : null), yAxisID: "pct", backgroundColor: C.blue, order: 2 },
+        { type: "bar", label: "Acceptance", data: adm.map((r) => r.applications ? r.admitted / r.applications * 100 : null), yAxisID: "pct", backgroundColor: C.birch, order: 2 },
+        { type: "line", label: "Applications (000s)", data: adm.map((r) => r.applications != null ? r.applications / 1000 : null), yAxisID: "apps", order: 1, borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2.5, pointRadius: 2, tension: 0.25 },
+      ] },
+      options: baseOpts({
+        plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
+        scales: { x: { grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } }, pct: { position: "left", beginAtZero: true, max: 100, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, stepSize: 25, callback: (v) => v + "%" } }, apps: { position: "right", beginAtZero: true, grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } } },
+      }),
+    });
   }
 
   // Residency doughnut
@@ -508,17 +479,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (el) new Chart(el.getContext("2d"), {
       type: "doughnut",
       data: { labels: ["In-State", "Out-Of-State"], datasets: [{ data: [inPct || 0, outPct || 0], backgroundColor: [C.everest, C.birch], borderColor: "#fff", borderWidth: 2 }] },
-      options: { responsive: true, maintainAspectRatio: false, animation: false, devicePixelRatio: 2, cutout: "52%",
-        plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 10, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } } },
+      options: baseOpts({ cutout: "52%", plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 10, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } } }),
     });
   }
 
-  // Deliveries over time (beds by year built; delivered vs projected)
+  // Deliveries over time
   {
     const el = document.getElementById("ch-deliv");
     if (el) {
-      const thisYear = new Date().getFullYear();
-      const byYear = {};
+      const thisYear = new Date().getFullYear(), byYear = {};
       props.forEach((p) => { const y = p.yearBuilt; if (!y || y < 2010) return; (byYear[y] = byYear[y] || { d: 0, p: 0 }); if (y > thisYear) byYear[y].p += (p.beds || 0); else byYear[y].d += (p.beds || 0); });
       const years = Object.keys(byYear).map(Number).sort((a, b) => a - b);
       new Chart(el.getContext("2d"), {
@@ -527,18 +496,18 @@ document.addEventListener("DOMContentLoaded", async () => {
           { label: "Delivered", data: years.map((y) => byYear[y].d || null), backgroundColor: C.slate30 },
           { label: "Projected", data: years.map((y) => byYear[y].p || null), backgroundColor: C.everest },
         ] },
-        options: { responsive: true, maintainAspectRatio: false, animation: false, devicePixelRatio: 2,
+        options: baseOpts({
           plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
-          scales: { x: { stacked: true, ticks: { color: C.slate70, font: { size: 8 } }, grid: { display: false } }, y: { stacked: true, beginAtZero: true, ticks: { color: C.slate70, font: { size: 8 }, callback: (v) => Math.round(v / 1000) + "k" }, grid: { color: "rgba(0,0,0,0.05)" } } } },
+          scales: { x: { stacked: true, grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } }, y: { stacked: true, beginAtZero: true, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, callback: (v) => Math.round(v / 1000) + "k" } } },
+        }),
       });
     }
   }
 
-  /* ---- comp / market map (comp-map.js → off-screen canvas → image) ---- */
+  /* ---- maps via comp-map.js: market-wide (all props) for overview, comps for comp set ---- */
   window.MARKET = M;
   window.PROPERTIES = props;
   window.CAMPUSES = (T.campus_locations || []).filter((c) => c.market_key === marketKey);
-  window.compSelection = new Set(comps.map((p) => p.property_key));
   const PHASE_STYLES = {
     "stable": { shape: "diamond", color: "#16352e", label: "Stabilized" },
     "lease up": { shape: "square", color: "#c1d100", label: "Lease Up" },
@@ -546,15 +515,18 @@ document.addEventListener("DOMContentLoaded", async () => {
     "planned": { shape: "pentagon", color: "#5a544f", label: "Planned" },
   };
   window.phaseStyle = (phase) => PHASE_STYLES[(phase || "").toLowerCase()] || { shape: "circle", color: "#b6b1ab", label: "Unknown" };
+  const renderMap = async (selection, imgId) => {
+    if (!window.CompMap || selection.size === 0) return;
+    window.compSelection = selection;
+    await window.CompMap.refresh();
+    const cv = document.getElementById("comp-map-canvas"), img = document.getElementById(imgId);
+    if (cv && img) img.src = cv.toDataURL("image/png");
+  };
   (async () => {
     try {
-      if (!window.CompMap || props.length === 0) return;
-      await window.CompMap.refresh();
-      const mapCanvas = document.getElementById("comp-map-canvas");
-      if (!mapCanvas) return;
-      const url = mapCanvas.toDataURL("image/png");
-      ["report-map-1", "report-map-2"].forEach((id) => { const img = document.getElementById(id); if (img) img.src = url; });
-    } catch (e) { /* map optional */ }
+      await renderMap(new Set(props.map((p) => p.property_key)), "report-market-map");   // all properties = market map
+      await renderMap(new Set(comps.map((p) => p.property_key)), "report-comp-map");      // comp set
+    } catch (e) { /* maps optional */ }
   })();
 });
 

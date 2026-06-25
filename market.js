@@ -41,6 +41,7 @@ let compSelectionInit = false;  // defaults applied once; user edits persist aft
 let compCharts = {};  // canvas id → Chart instance
 let unitMixMetric = "beds";  // "beds" | "units" - Unit & Bed Mix toggle state
 let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
+let unitMixSizeChart = null; // Chart instance for the avg-unit-size grouped bar
 let unitMixPieChart = null;  // Chart instance for the per-building pie
 let unitMixPieBuilding = null;  // property_key (number) or "all" - pie scope
 let unitMixParityChart = null;  // Chart instance for the bed/bath parity pie
@@ -2180,10 +2181,80 @@ function renderUnitMix() {
   });
 
   renderUnitMixTables(selected, typesPresent, field, noun);
+  renderUnitSizeChart(selected);
   populateUnitMixBuildingPicker(selected);
   renderUnitMixPie(selected, field, noun);
   populateUnitMixParityPicker(selected);
   renderUnitMixParityPie(selected);
+}
+
+/* Average unit size (sf) by bedroom type, grouped by selected comp. Sizes are
+   independent of the By Bed/By Unit toggle (a unit's size is the same either
+   way), so this draws the same regardless of metric. One grouped bar per comp
+   that has square footage on file; comps/types with no area data drop out.
+   Data: each comp's sqft_by_type (units-weighted avg, built in load_unit_mix.py). */
+function renderUnitSizeChart(selected) {
+  const figure = document.getElementById("unitmix-size-figure");
+  const canvas = document.getElementById("unitmix-size-chart");
+  if (!figure || !canvas || typeof Chart === "undefined") return;
+
+  // Bedroom types where at least one selected comp reports an average size.
+  const sizeTypes = UNIT_MIX_TYPES.filter((t) =>
+    selected.some(({ mix }) => (mix.sqft_by_type || {})[t]));
+
+  // One dataset per comp that has any size data; keep the comp's palette
+  // index so its colour matches the inventory stacked bar above.
+  const datasets = selected
+    .map(({ prop, mix }, i) => ({ prop, mix, i }))
+    .filter(({ mix }) => sizeTypes.some((t) => (mix.sqft_by_type || {})[t]))
+    .map(({ prop, mix, i }) => {
+      const color = UNIT_MIX_PALETTE[i % UNIT_MIX_PALETTE.length];
+      const isPipeline = !["stable", "lease up"].includes(prop.phase);
+      return {
+        label: prop.property_name + (isPipeline ? ` (${prop.phase})` : ""),
+        data: sizeTypes.map((t) => (mix.sqft_by_type || {})[t] ?? null),
+        backgroundColor: isPipeline ? color + "b3" : color,
+        borderColor: "#fff",
+        borderWidth: 1,
+        borderRadius: 1,
+      };
+    });
+
+  if (unitMixSizeChart) { unitMixSizeChart.destroy(); unitMixSizeChart = null; }
+  if (sizeTypes.length === 0 || datasets.length === 0) {
+    figure.style.display = "none";
+    return;
+  }
+  figure.style.display = "";
+
+  unitMixSizeChart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: { labels: sizeTypes, datasets },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 10 },
+        },
+        tooltip: {
+          callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} sf` },
+        },
+        datalabels: { display: false },
+      },
+      scales: {
+        x: { grid: { display: false, drawBorder: false }, border: { display: false },
+             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        y: { beginAtZero: true,
+             title: { display: true, text: "Square Feet",
+                      font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
+             grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+             ticks: { color: "#5a544f", font: { size: 11 } } },
+      },
+    },
+  });
 }
 
 // Parity slice colours: full = everest (good), none = birch (shared baths).

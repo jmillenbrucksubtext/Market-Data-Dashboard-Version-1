@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=49">
+  <link rel="stylesheet" href="style.css?v=50">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -85,12 +85,24 @@
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University Information</button>
           </nav>
 
-          <!-- Two-column layout: main content + sticky qualifier sidebar -->
-          <div class="market-grid">
-          <div class="market-main">
-
           <!-- ============ MARKET TAB ============ -->
           <div class="market-tab-panel" data-panel="market">
+
+          <!-- Subtext Qualifier Scorecard - pinned to the top of the Market
+               tab only (previously a sticky right-hand sidebar across every
+               tab). Populated by market.js into #qualifier-list. -->
+          <section class="card qualifier-card">
+            <header class="card-header">
+              <div>
+                <h2>Subtext Qualifier Scorecard</h2>
+                <p id="qualifier-summary">-</p>
+              </div>
+              <div id="qualifier-score-badge" class="qualifier-score-badge">-</div>
+            </header>
+            <div class="card-body">
+              <ul class="qualifier-list" id="qualifier-list"></ul>
+            </div>
+          </section>
 
           <!-- KPI strip (9 cards, wraps to 2 rows on smaller screens) -->
           <div class="kpi-row kpi-row-9">
@@ -432,6 +444,13 @@
                   <span class="perf-title-text">Inventory by Bedroom Type</span>
                 </figcaption>
                 <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-chart"></canvas></div>
+              </figure>
+              <figure class="perf-chart unitmix-bar-figure" id="unitmix-size-figure" style="margin-top:18px;">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Average Unit Size by Bedroom Type</span>
+                  <span class="perf-title-sub">square feet, by comp</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="unitmix-size-chart"></canvas></div>
               </figure>
               <div class="unitmix-charts-row unitmix-pies-row">
                 <figure class="perf-chart unitmix-pie-figure">
@@ -1032,24 +1051,6 @@
             </p>
           </footer>
 
-          </div> <!-- /.market-main -->
-
-          <aside class="market-sidebar">
-            <section class="card qualifier-card">
-              <header class="card-header">
-                <div>
-                  <h2>Subtext Qualifier Scorecard</h2>
-                  <p id="qualifier-summary">-</p>
-                </div>
-                <div id="qualifier-score-badge" class="qualifier-score-badge">-</div>
-              </header>
-              <div class="card-body">
-                <ul class="qualifier-list" id="qualifier-list"></ul>
-              </div>
-            </section>
-          </aside>
-
-          </div> <!-- /.market-grid -->
         </div>
 
         <div id="market-error" class="empty-state" style="display: none;"></div>
@@ -1058,7 +1059,7 @@
     </div>
   </div>
 
-  <script src="market.js?v=42" defer></script>
+  <script src="market.js?v=43" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=9" defer></script>
   <script src="uni-map.js?v=2" defer></script>

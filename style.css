@@ -2063,6 +2063,11 @@ h1, h2, h3, .serif {
   list-style: none;
   margin: 0;
   padding: 0;
+  /* Now a full-width banner at the top of the Market tab: flow the rows into
+     responsive columns instead of one tall single column. */
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  column-gap: 32px;
 }
 .qual-row {
   display: flex;
@@ -2072,7 +2077,8 @@ h1, h2, h3, .serif {
   padding: 11px 0;
   border-bottom: 1px solid var(--beige-deep);
 }
-.qual-row:last-child { border-bottom: none; }
+/* In a multi-column grid the DOM-last row is not always the visually last in
+   each column, so keep per-row dividers; they read as clean column rules. */
 .qual-row.qual-na { opacity: 0.55; }
 .qual-label {
   font-weight: 700;

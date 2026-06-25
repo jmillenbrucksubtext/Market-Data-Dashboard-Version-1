@@ -28,8 +28,14 @@ let DATA = null;
 let PROP = null;
 let MARKET = null;
 let PLANS = [];
+let MIX = null;                        // this property's tables.unit_mix row
 let planSortState = { col: "bedrooms", dir: "asc" };
 let activeBedroomFilters = new Set();  // empty Set = show all
+
+// Unit & Bed Mix section state (mirrors the market Comps-tab toggles).
+let unitMixMetric = "beds";            // "beds" | "units"
+let unitMixParityType = "all";         // "all" | a bedroom type
+let pmBarChart = null, pmSizeChart = null, pmPieChart = null, pmParityChart = null;
 
 const BR_CATEGORY_ORDER = ["studio", "1", "2", "3", "4", "5", "6+"];
 
@@ -65,6 +71,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   MARKET = DATA.tables.scorecard.find((r) => r.market_key === PROP.market_key);
 
+  MIX = (DATA.tables.unit_mix || []).find((r) => r.property_key === propertyKey) || null;
+
   try {
     const pRes = await fetch(`plans/${propertyKey}.json`, { cache: "no-cache" });
     if (pRes.ok) {
@@ -82,6 +90,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderBedroomFilter();
   renderPlans();
   bindPlanSort();
+  bindUnitMixToggle();
+  renderUnitMix();
 
   if (typeof L === "undefined") {
     await new Promise((r) => window.addEventListener("load", r, { once: true }));
@@ -315,6 +325,408 @@ function renderPlans() {
     : `${rows.length} of ${PLANS.length} floor plans`;
   document.getElementById("plan-count").textContent =
     `${totalLabel} · sorted by ${planSortState.col} ${planSortState.dir}`;
+}
+
+/* ----- Unit & Bed Mix --------------------------------------- */
+// The market Comps-tab "Unit & Bed Mix" section, scoped to this one
+// property: a bar of beds/units by bedroom type, a unit-mix doughnut, a
+// bed/bath parity doughnut (filterable by bedroom type), and a summary
+// table. Toggles between authoritative bed counts and derived unit counts.
+// Data: this property's row in tables.unit_mix (MIX). Mirrors renderUnitMix()
+// et al. in market.js so the two views stay visually consistent.
+
+const UNIT_MIX_TYPES = ["Studio", "1BR", "2BR", "3BR", "4BR", "5BR", "6BR+"];
+
+// Fixed colour per bedroom type (matches market.js UNIT_TYPE_COLORS).
+const UNIT_TYPE_COLORS = {
+  "Studio": "#6d5b8e",
+  "1BR": "#3d8aa6",
+  "2BR": "#4f7a6f",
+  "3BR": "#c7973f",
+  "4BR": "#a95818",
+  "5BR": "#16352e",
+  "6BR+": "#9c4a3c",
+};
+
+// Parity slice colours: full = everest (good), none = birch (shared baths).
+const PARITY_COLORS = { full: "#16352e", partial: "#a95818" };
+
+function renderUnitMix() {
+  const card = document.getElementById("unitmix-card");
+  if (!card) return;
+
+  // No floor-plan mix for this property → hide the whole section.
+  if (!MIX || typeof Chart === "undefined") {
+    card.style.display = "none";
+    return;
+  }
+  card.style.display = "";
+
+  // The doughnuts draw on-slice labels via chartjs-plugin-datalabels, which
+  // does not auto-register with Chart.js v4. Register once (the bar opts out
+  // with datalabels:{display:false}, so labels can't leak onto it).
+  if (window.ChartDataLabels) Chart.register(window.ChartDataLabels);
+
+  const metric = unitMixMetric;                          // "beds" | "units"
+  const field = metric === "beds" ? "beds_by_type" : "units_by_type";
+  const noun = metric === "beds" ? "beds" : "units";
+  const metricLabel = metric === "beds" ? "Beds" : "Units";
+  const mix = MIX[field] || {};
+
+  const typesPresent = UNIT_MIX_TYPES.filter((t) => mix[t]);
+  const total = typesPresent.reduce((s, t) => s + (mix[t] || 0), 0);
+
+  // Summary line + toggle/title sync.
+  const summaryEl = document.getElementById("pm-summary");
+  if (summaryEl) {
+    summaryEl.textContent = total === 0
+      ? "No floor-plan data recorded for this property."
+      : `${fmtInt(total)} ${noun} across ${typesPresent.length} bedroom type${typesPresent.length === 1 ? "" : "s"}.`;
+  }
+  document.querySelectorAll(".unitmix-toggle-btn").forEach((b) =>
+    b.classList.toggle("active", b.dataset.mix === metric));
+  const pieTitle = document.getElementById("pm-pie-title");
+  if (pieTitle) pieTitle.textContent = `Unit Mix (${metricLabel})`;
+  const sumTitle = document.getElementById("pm-summary-title");
+  if (sumTitle) sumTitle.textContent = `${metricLabel} by Type`;
+
+  renderUnitMixBar(typesPresent, mix, noun, metric);
+  renderUnitSizeBar();
+  renderUnitMixPie(typesPresent, mix, noun);
+  populateUnitMixParityPicker();
+  renderUnitMixParityPie();
+  renderUnitMixSummaryTable(typesPresent, mix, metricLabel, total);
+}
+
+// Average unit size (sf) by bedroom type for this property. Independent of
+// the By Bed/By Unit toggle (a unit's size is the same either way). Hidden
+// when no floor plan for this property carries a usable square footage.
+function renderUnitSizeBar() {
+  const figure = document.getElementById("pm-size-figure");
+  const canvas = document.getElementById("pm-size");
+  if (!figure || !canvas) return;
+
+  const sqft = MIX.sqft_by_type || {};
+  const sizeTypes = UNIT_MIX_TYPES.filter((t) => sqft[t]);
+
+  if (sizeTypes.length === 0) {
+    figure.style.display = "none";
+    if (pmSizeChart) { pmSizeChart.destroy(); pmSizeChart = null; }
+    return;
+  }
+  figure.style.display = "";
+
+  const values = sizeTypes.map((t) => sqft[t]);
+
+  const totalsPlugin = {
+    id: "pmSizeTotals",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.fillStyle = "#16352e";
+      ctx.font = "700 13px Pragmatica, sans-serif";
+      ctx.textAlign = "center";
+      meta.data.forEach((bar, i) => {
+        const v = values[i];
+        if (!v) return;
+        ctx.fillText(fmtInt(v), bar.x, bar.y - 6);
+      });
+      ctx.restore();
+    },
+  };
+
+  if (pmSizeChart) pmSizeChart.destroy();
+  pmSizeChart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: sizeTypes,
+      datasets: [{
+        label: "Avg SF",
+        data: values,
+        backgroundColor: sizeTypes.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
+        borderColor: "#fff",
+        borderWidth: 1,
+        borderRadius: 1,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (c) => `${fmtInt(c.parsed.y)} sf avg` },
+        },
+        datalabels: { display: false },
+      },
+      scales: {
+        x: { grid: { display: false, drawBorder: false }, border: { display: false },
+             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        y: { beginAtZero: true,
+             title: { display: true, text: "Square Feet",
+                      font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
+             grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+             ticks: { color: "#5a544f", font: { size: 11 } } },
+      },
+    },
+    plugins: [totalsPlugin],
+  });
+}
+
+// Bar: x = bedroom type, one value per type, coloured by type. The count
+// sits above each bar (datalabels stay off, like the market stacked bar).
+function renderUnitMixBar(typesPresent, mix, noun, metric) {
+  const canvas = document.getElementById("pm-bar");
+  if (!canvas) return;
+
+  const values = typesPresent.map((t) => mix[t] || 0);
+
+  const totalsPlugin = {
+    id: "pmBarTotals",
+    afterDatasetsDraw(chart) {
+      const { ctx } = chart;
+      const meta = chart.getDatasetMeta(0);
+      if (!meta || !meta.data) return;
+      ctx.save();
+      ctx.fillStyle = "#16352e";
+      ctx.font = "700 13px Pragmatica, sans-serif";
+      ctx.textAlign = "center";
+      meta.data.forEach((bar, i) => {
+        const v = values[i];
+        if (!v) return;
+        ctx.fillText(fmtInt(v), bar.x, bar.y - 6);
+      });
+      ctx.restore();
+    },
+  };
+
+  if (pmBarChart) pmBarChart.destroy();
+  pmBarChart = new Chart(canvas.getContext("2d"), {
+    type: "bar",
+    data: {
+      labels: typesPresent,
+      datasets: [{
+        label: metric === "beds" ? "Beds" : "Units",
+        data: values,
+        backgroundColor: typesPresent.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
+        borderColor: "#fff",
+        borderWidth: 1,
+        borderRadius: 1,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 22 } },
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: { label: (c) => `${fmtInt(c.parsed.y)} ${noun}` },
+        },
+        datalabels: { display: false },
+      },
+      scales: {
+        x: { grid: { display: false, drawBorder: false }, border: { display: false },
+             ticks: { font: { size: 13, weight: 600, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        y: { beginAtZero: true,
+             title: { display: true, text: metric === "beds" ? "Bed Count" : "Unit Count",
+                      font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
+             grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+             ticks: { color: "#5a544f", font: { size: 11 } } },
+      },
+    },
+    plugins: [totalsPlugin],
+  });
+}
+
+// Unit-mix doughnut: slices = bedroom types for this property, coloured by
+// type, labelled with type + percent.
+function renderUnitMixPie(typesPresent, mix, noun) {
+  const canvas = document.getElementById("pm-pie");
+  if (!canvas) return;
+
+  const values = typesPresent.map((t) => mix[t]);
+  const total = values.reduce((s, v) => s + v, 0);
+
+  if (pmPieChart) pmPieChart.destroy();
+  if (!total) {
+    pmPieChart = null;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  pmPieChart = new Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels: typesPresent,
+      datasets: [{
+        data: values,
+        backgroundColor: typesPresent.map((t) => UNIT_TYPE_COLORS[t] || "#837c75"),
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "52%",
+      layout: { padding: 6 },
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 9 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
+          },
+        },
+        datalabels: {
+          color: "#fff",
+          font: { weight: 700, size: 11, family: "Pragmatica, sans-serif" },
+          textAlign: "center",
+          formatter: (v, ctx) => {
+            const pct = v / total * 100;
+            if (pct < 6) return "";
+            return `${ctx.chart.data.labels[ctx.dataIndex]}\n${pct.toFixed(0)}%`;
+          },
+        },
+      },
+    },
+  });
+}
+
+// Bed/bath parity picker: bedroom types present in this property's parity data.
+function populateUnitMixParityPicker() {
+  const sel = document.getElementById("pm-parity-type");
+  if (!sel) return;
+  const pbt = MIX.parity_by_type || {};
+  const present = UNIT_MIX_TYPES.filter((t) => pbt[t]);
+  if (unitMixParityType !== "all" && !present.includes(unitMixParityType)) {
+    unitMixParityType = "all";
+  }
+  const opts = [`<option value="all">All bedroom types</option>`].concat(
+    present.map((t) => `<option value="${t}">${t}</option>`));
+  sel.innerHTML = opts.join("");
+  sel.value = unitMixParityType;
+}
+
+// Parity doughnut: share of beds (or units) where every bedroom has its own
+// bath. Filterable by bedroom type.
+function renderUnitMixParityPie() {
+  const canvas = document.getElementById("pm-parity-pie");
+  if (!canvas) return;
+  const titleEl = document.getElementById("pm-parity-title");
+
+  const useBeds = unitMixMetric === "beds";
+  const fullKey = useBeds ? "beds_full" : "units_full";
+  const partialKey = useBeds ? "beds_partial" : "units_partial";
+  const noun = useBeds ? "beds" : "units";
+  const metricLabel = useBeds ? "Beds" : "Units";
+
+  const pbt = MIX.parity_by_type || {};
+  const types = unitMixParityType === "all" ? Object.keys(pbt) : [unitMixParityType];
+  let full = 0, partial = 0;
+  types.forEach((t) => {
+    if (!pbt[t]) return;
+    full += pbt[t][fullKey] || 0;
+    partial += pbt[t][partialKey] || 0;
+  });
+  const total = full + partial;
+
+  const scope = unitMixParityType === "all" ? "" : ` - ${unitMixParityType}`;
+  if (titleEl) titleEl.textContent = `Bed / Bath Parity${scope} (${metricLabel})`;
+
+  if (pmParityChart) pmParityChart.destroy();
+  if (!total) {
+    pmParityChart = null;
+    canvas.getContext("2d").clearRect(0, 0, canvas.width, canvas.height);
+    return;
+  }
+
+  pmParityChart = new Chart(canvas.getContext("2d"), {
+    type: "doughnut",
+    data: {
+      labels: ["Full parity", "No parity"],
+      datasets: [{
+        data: [full, partial],
+        backgroundColor: [PARITY_COLORS.full, PARITY_COLORS.partial],
+        borderColor: "#fff",
+        borderWidth: 2,
+      }],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      cutout: "52%",
+      layout: { padding: 6 },
+      plugins: {
+        legend: {
+          position: "right",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 12, boxHeight: 12, padding: 9 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => `${c.label}: ${fmtInt(c.parsed)} ${noun} (${(c.parsed / total * 100).toFixed(1)}%)`,
+          },
+        },
+        datalabels: {
+          color: "#fff",
+          font: { weight: 700, size: 12, family: "Pragmatica, sans-serif" },
+          textAlign: "center",
+          formatter: (v) => {
+            const pct = v / total * 100;
+            if (pct < 6) return "";
+            return `${pct.toFixed(0)}%`;
+          },
+        },
+      },
+    },
+  });
+}
+
+// Summary table: bedroom type × [count, % of total].
+function renderUnitMixSummaryTable(typesPresent, mix, metricLabel, total) {
+  const table = document.getElementById("pm-summary-table");
+  if (!table) return;
+
+  if (total === 0) {
+    table.innerHTML = `<tbody><tr><td>No floor-plan data for this property.</td></tr></tbody>`;
+    return;
+  }
+  const pct = (v) => (total ? (v / total * 100).toFixed(1) + "%" : "-");
+  const head = `<thead><tr><th class="property-cell">Type</th><th>${metricLabel}</th><th>% of total</th></tr></thead>`;
+  const body = typesPresent.map((t) =>
+    `<tr><td class="property-cell">${t}</td><td>${fmtInt(mix[t] || 0)}</td><td>${pct(mix[t] || 0)}</td></tr>`
+  ).join("");
+  const foot = `<tfoot><tr class="agg-row"><td class="property-cell">Total</td><td>${fmtInt(total)}</td><td>100.0%</td></tr></tfoot>`;
+  table.innerHTML = head + `<tbody>${body}</tbody>` + foot;
+}
+
+function bindUnitMixToggle() {
+  document.querySelectorAll(".unitmix-toggle-btn").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const next = btn.dataset.mix;
+      if (next === unitMixMetric) return;
+      unitMixMetric = next;
+      renderUnitMix();
+    });
+  });
+
+  // Bedroom-type filter for the parity pie. The <select> persists across
+  // renders (only its options are rebuilt), so this listener stays attached.
+  const parSel = document.getElementById("pm-parity-type");
+  if (parSel) {
+    parSel.addEventListener("change", () => {
+      unitMixParityType = parSel.value;
+      renderUnitMixParityPie();
+    });
+  }
 }
 
 /* ----- Map -------------------------------------------------- */

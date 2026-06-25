@@ -5,8 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Property Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=42">
+  <link rel="stylesheet" href="style.css?v=50">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" defer></script>
 </head>
 <body>
@@ -140,6 +142,70 @@
             </div>
           </section>
 
+          <!-- Unit & Bed Mix: this property's composition by bedroom type.
+               Mirrors the market Comps-tab section, scoped to one building.
+               Toggle switches the whole section between authoritative bed
+               counts and derived unit counts. Rendered by the unit-mix block
+               in property.js from tables.unit_mix. Hidden when this property
+               has no floor-plan mix data. -->
+          <section class="card" id="unitmix-card" style="display:none;">
+            <header class="card-header">
+              <div>
+                <h2>Unit &amp; Bed Mix</h2>
+                <p id="pm-summary">Inventory by bedroom type for this property.</p>
+              </div>
+              <div class="unitmix-toggle" role="group" aria-label="Mix metric">
+                <button type="button" class="unitmix-toggle-btn active" data-mix="beds">By Bed</button>
+                <button type="button" class="unitmix-toggle-btn" data-mix="units">By Unit</button>
+              </div>
+            </header>
+            <div class="card-body">
+              <figure class="perf-chart unitmix-bar-figure">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Inventory by Bedroom Type</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pm-bar"></canvas></div>
+              </figure>
+              <figure class="perf-chart unitmix-bar-figure" id="pm-size-figure" style="margin-top:18px;">
+                <figcaption class="perf-title">
+                  <span class="perf-title-text">Average Unit Size by Bedroom Type</span>
+                  <span class="perf-title-sub">square feet</span>
+                </figcaption>
+                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pm-size"></canvas></div>
+              </figure>
+              <div class="unitmix-charts-row unitmix-pies-row">
+                <figure class="perf-chart unitmix-pie-figure">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text" id="pm-pie-title">Unit Mix</span>
+                  </figcaption>
+                  <!-- Spacer keeps this pie's canvas top-aligned with the
+                       parity pie, which carries a real controls row. -->
+                  <div class="unitmix-pie-controls" aria-hidden="true" style="visibility:hidden;">
+                    <label class="unitmix-pie-label">.</label>
+                    <select class="select" tabindex="-1"></select>
+                  </div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pm-pie"></canvas></div>
+                </figure>
+                <figure class="perf-chart unitmix-pie-figure">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text" id="pm-parity-title">Bed / Bath Parity</span>
+                  </figcaption>
+                  <div class="unitmix-pie-controls">
+                    <label class="unitmix-pie-label" for="pm-parity-type">Bedroom type</label>
+                    <select id="pm-parity-type" class="select" aria-label="Bedroom type"></select>
+                  </div>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="pm-parity-pie"></canvas></div>
+                </figure>
+              </div>
+              <div class="comp-tables-grid" style="margin-top:18px;">
+                <div class="comp-table-card">
+                  <div class="comp-table-title" id="pm-summary-title">Summary</div>
+                  <div class="table-wrap"><table id="pm-summary-table" class="comp-detail-table"></table></div>
+                </div>
+              </div>
+            </div>
+          </section>
+
           <footer class="page-footer">
             <p>
               Source: <code>dbo.Properties</code> (snapshot) +
@@ -154,6 +220,7 @@
     </div>
   </div>
 
-  <script src="property.js?v=2" defer></script>
+  <script src="property.js?v=4" defer></script>
+  <script src="chart-download.js?v=4" defer></script>
 </body>
 </html>

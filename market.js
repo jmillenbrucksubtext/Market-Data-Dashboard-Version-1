@@ -42,6 +42,7 @@ let compCharts = {};  // canvas id → Chart instance
 let perfScope = "market";  // Market Performance filter: market | 1mi | 0.5mi | 1mi2015
 let perfCharts = {};       // tracked Market Performance chart instances (re-rendered on filter change)
 let uniResidencyChart = null;  // University tab: undergrad residency doughnut
+let uniAdmissionsChart = null; // University tab: applications/acceptance/yield combo
 let unitMixMetric = "units";  // "beds" | "units" - Unit & Bed Mix toggle state (defaults to units)
 let unitMixChart = null;     // Chart instance for the unit-mix stacked bar
 let unitMixSizeChart = null; // Chart instance for the avg-unit-size grouped bar
@@ -3278,8 +3279,96 @@ function selectUniversity(schoolKey) {
 
   renderUniKpis(school);
   renderUniProfile(school);
+  renderUniAdmissions(school);
   renderUniStats(school);
   renderUniMap(school);
+}
+
+/* Applications, Acceptance & Yield - acceptance (admitted/applied) and yield
+   (enrolled/admitted) as bars on the % axis, total applications as a line on
+   the right (thousands) axis. Data: tables.admissions_history (IPEDS ADM),
+   joined by ipeds_id. Hidden when the school has no admissions history. */
+function renderUniAdmissions(school) {
+  const card = document.getElementById("uni-admissions-card");
+  const canvas = document.getElementById("uni-admissions-chart");
+  const subEl = document.getElementById("uni-admissions-sub");
+  if (!card || !canvas || typeof Chart === "undefined") return;
+
+  const rows = (DATA.tables.admissions_history || [])
+    .filter((r) => r.ipeds_id === school.ipeds_id)
+    .sort((a, b) => a.year_ - b.year_);
+
+  if (uniAdmissionsChart) { uniAdmissionsChart.destroy(); uniAdmissionsChart = null; }
+  if (rows.length === 0) { card.style.display = "none"; return; }
+  card.style.display = "";
+
+  if (subEl) {
+    subEl.textContent =
+      `${school.university_name} · first-time first-year · ${rows[0].year_}-${rows[rows.length - 1].year_} · source IPEDS ADM`;
+  }
+
+  const labels = rows.map((r) => `'${String(r.year_).slice(-2)}`);
+  const accept = rows.map((r) => (r.applications ? (r.admitted / r.applications) * 100 : null));
+  const yieldPct = rows.map((r) => (r.admitted ? (r.enrolled / r.admitted) * 100 : null));
+  const appsK = rows.map((r) => (r.applications != null ? r.applications / 1000 : null));
+
+  const barLabels = {
+    anchor: "end", align: "end", offset: 1, clip: false,
+    color: "#2b2825", font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+    formatter: (v) => v == null ? "" : `${v.toFixed(0)}%`,
+  };
+
+  uniAdmissionsChart = new Chart(canvas.getContext("2d"), {
+    data: {
+      labels,
+      datasets: [
+        { type: "bar", label: "Enrollment Yield", data: yieldPct, yAxisID: "pct", order: 2,
+          backgroundColor: "#3d8aa6", borderRadius: 2, categoryPercentage: 0.7, barPercentage: 0.9,
+          datalabels: barLabels },
+        { type: "bar", label: "Acceptance Rate", data: accept, yAxisID: "pct", order: 2,
+          backgroundColor: "#a95818", borderRadius: 2, categoryPercentage: 0.7, barPercentage: 0.9,
+          datalabels: barLabels },
+        { type: "line", label: "Total Applications (Thousands)", data: appsK, yAxisID: "apps", order: 1,
+          borderColor: "#16352e", backgroundColor: "#16352e", borderWidth: 3,
+          pointRadius: 3, pointBackgroundColor: "#16352e", tension: 0.25,
+          datalabels: { align: "top", offset: 4, clip: false, color: "#16352e",
+            font: { weight: 700, size: 10, family: "Pragmatica, sans-serif" },
+            formatter: (v) => v == null ? "" : v.toFixed(1) } },
+      ],
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      layout: { padding: { top: 22, right: 6, left: 4, bottom: 4 } },
+      plugins: {
+        legend: {
+          position: "bottom",
+          labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
+                    boxWidth: 14, boxHeight: 10, padding: 14 },
+        },
+        tooltip: {
+          callbacks: {
+            label: (c) => c.dataset.yAxisID === "apps"
+              ? `${c.dataset.label}: ${fmtInt(c.parsed.y * 1000)} applications`
+              : `${c.dataset.label}: ${c.parsed.y == null ? "-" : c.parsed.y.toFixed(1) + "%"}`,
+          },
+        },
+      },
+      scales: {
+        x: { grid: { display: false }, border: { display: false },
+             ticks: { font: { size: 12, weight: 700, family: "Pragmatica, sans-serif" }, color: "#2b2825" } },
+        pct: { type: "linear", position: "left", beginAtZero: true, max: 100,
+               grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+               ticks: { font: { size: 10, family: "Pragmatica, sans-serif" }, color: "#5a544f",
+                        stepSize: 20, callback: (v) => `${v}%` } },
+        apps: { type: "linear", position: "right", beginAtZero: true,
+                grid: { display: false }, border: { display: false },
+                title: { display: true, text: "Applications (000s)",
+                         font: { size: 10, family: "Pragmatica, sans-serif" }, color: "#5a544f" },
+                ticks: { font: { size: 10, family: "Pragmatica, sans-serif" }, color: "#5a544f" } },
+      },
+    },
+  });
 }
 
 /* Undergraduate Student Profile - the underwriting template (residency split,

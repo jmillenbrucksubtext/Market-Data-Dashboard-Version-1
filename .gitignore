@@ -47,3 +47,6 @@ student_migration/.cache/
 # Raw student migration export stays outside the public repository
 /MigrationOnly.csv
 /MigrationOnly.xlsx
+
+# IPEDS download cache for build_admissions_repository.py
+_ipeds_cache/

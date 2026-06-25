@@ -1407,6 +1407,34 @@ def _q_income(market, _props_by_market):
     )
 
 
+# --- Power 4 / R1 + forward-ranking qualifiers ------------------------
+# Anchor classification and the qualifier-result shape live in
+# university_classification.py so the standalone data.json patcher
+# (load_university_qualifiers.py) produces identical results.
+
+_POWER4_CACHE = None
+
+
+def _power4_anchors_cached():
+    global _POWER4_CACHE
+    if _POWER4_CACHE is None:
+        from university_classification import load_power4_anchors
+        _POWER4_CACHE = load_power4_anchors()
+    return _POWER4_CACHE
+
+
+def _q_power4_r1(market, _props_by_market):
+    from university_classification import power4_r1_result
+    return power4_r1_result(market.get("anchor_university"), _power4_anchors_cached())
+
+
+def _q_fwd_top50(market, _props_by_market):
+    # fwd_rank is stamped onto the scorecard from forward-model.html earlier in
+    # main(), before compute_qualifiers runs.
+    from university_classification import forward_top50_result
+    return forward_top50_result(market.get("fwd_rank"))
+
+
 # Display order matches the Excel sheet.
 QUALIFIER_EVALUATORS = [
     _q_rent_market,
@@ -1420,6 +1448,8 @@ QUALIFIER_EVALUATORS = [
     _q_pipeline,
     _q_uncaptured_demand,
     _q_income,
+    _q_power4_r1,
+    _q_fwd_top50,
 ]
 
 

@@ -293,7 +293,7 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip dict-chip-sidebar">Sidebar (both tabs)</span>
                   <h3>Subtext Qualifier Scorecard</h3>
-                  <p>Eleven pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> - partial credit on multi-year qualifiers.</p>
+                  <p>Thirteen pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> - partial credit on multi-year qualifiers.</p>
                 </header>
 
                 <article class="dict-item">
@@ -306,11 +306,13 @@
                       <tr><td>Market occupancy above 90%</td><td><code>occupancy &gt; 0.90</code></td><td>MarketReports.occupancy</td></tr>
                       <tr><td>FTE growth since 2022 above 3%</td><td><code>(current_fte − baseline_2022_fte) / baseline_2022_fte &gt; 0.03</code></td><td>fte_history</td></tr>
                       <tr><td>FTE growth YoY positive</td><td><code>(current_fte − prior_fte) / prior_fte &gt; 0</code>. <strong>Prior = most recent snapshot whose enr_full_time differs from current</strong>, not literal T-1yr - sidesteps IPEDS publish cadence.</td><td>fte_history</td></tr>
-                      <tr><td>YoY rent growth ≥3% for trailing 3 years</td><td><strong>All three</strong> trailing YoY rates ≥ 3%. <strong>Partial credit:</strong> each year contributes 1/3 of the qualifier's 1/11 weight.</td><td>market_history.avg_rent_per_bed</td></tr>
+                      <tr><td>YoY rent growth ≥3% for trailing 3 years</td><td><strong>All three</strong> trailing YoY rates ≥ 3%. <strong>Partial credit:</strong> each year contributes 1/3 of the qualifier's 1/13 weight.</td><td>market_history.avg_rent_per_bed</td></tr>
                       <tr><td>Market prelease not lagging prior year by &gt;5%</td><td>Same-week-of-cycle delta this year vs prior cycle ≥ −0.05</td><td>prelease_velocity</td></tr>
                       <tr><td>Pipeline ≤ 10% of existing supply</td><td><code>beds_pipeline_total / existing_beds ≤ 0.10</code></td><td>MarketReports</td></tr>
                       <tr><td>Uncaptured demand within 1 mile above 30%</td><td><code>1 − (Σ beds in PBSH within 1 mi) / enr_full_time &gt; 0.30</code></td><td>Properties + FTE</td></tr>
                       <tr><td>Avg income of median zipcodes above $85K</td><td><code>mean_origin_income &gt; $85,000</code></td><td>Migration CSV</td></tr>
+                      <tr><td>Power 4 or R1 university</td><td>Anchor university is a Power 4 conference member <strong>or</strong> a Carnegie 2025 R1. City-only markets are NA.</td><td><code>scorecard.anchor_university</code> via <code>university_classification.py</code> (Power 4 from <code>dashboard.js</code>)</td></tr>
+                      <tr><td>Subtext Top 50 forward-ranking market</td><td>Forward-model list rank ≤ 50 (cell shows the rank #). Markets absent from the forward model are NA.</td><td><code>scorecard.fwd_rank</code> (forward-model.html)</td></tr>
                     </tbody>
                   </table>
                 </article>
@@ -349,7 +351,7 @@
                 <article class="dict-item">
                   <p>Each qualifier has a <code>credit_fraction ∈ [0, 1]</code>:</p>
                   <ul class="dict-list-bullets">
-                    <li>Binary qualifiers (10 of 11): 0 or 1.</li>
+                    <li>Binary qualifiers (12 of 13): 0 or 1.</li>
                     <li>Multi-component qualifiers with a <code>breakdown</code> list (rent_growth_3yr): <code>passing_components / total_components</code> - e.g. 2 of 3 trailing years ≥ 3% → 0.667 credit.</li>
                     <li>NA qualifiers are excluded entirely.</li>
                   </ul>

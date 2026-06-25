@@ -1648,20 +1648,26 @@ function renderSupplyDemand() {
   const uncaptured = fte ? Math.max(0, fte - supply) : null;
   const surplus = fte ? Math.max(0, supply - fte) : null;
 
-  // Headline callout: the uncaptured bed count, share of FTE, and context.
+  // Headline callout: the uncaptured share of FTE as the hero figure, the bed
+  // count beside it (pct | beds), then context.
+  const headline = (pct, beds, zero) =>
+    `<div class="sd-callout-headline">`
+    + `<span class="sd-callout-num${zero ? " sd-callout-num-zero" : ""}">${pct}</span>`
+    + `<span class="sd-callout-sep">|</span>`
+    + `<span class="sd-callout-beds">${beds} beds</span>`
+    + `</div>`
+    + `<div class="sd-callout-label">uncaptured demand</div>`;
   if (callout) {
     if (!fte) {
       callout.innerHTML = `<div class="sd-callout-note">No FTE enrollment on file &ndash; demand cannot be computed.</div>`;
     } else if (uncaptured > 0) {
       callout.innerHTML =
-        `<div class="sd-callout-num">${fmtInt(uncaptured)}</div>`
-        + `<div class="sd-callout-label">uncaptured beds of demand</div>`
-        + `<div class="sd-callout-sub">${fmtPct(uncaptured / fte, 0)} of ${fmtInt(fte)} FTE is unmet by the `
+        headline(fmtPct(uncaptured / fte, 0), fmtInt(uncaptured), false)
+        + `<div class="sd-callout-sub">of ${fmtInt(fte)} FTE is unmet by the `
         + `${fmtInt(supply)} beds of supply ${scope.label}.</div>`;
     } else {
       callout.innerHTML =
-        `<div class="sd-callout-num sd-callout-num-zero">0</div>`
-        + `<div class="sd-callout-label">uncaptured beds of demand</div>`
+        headline("0%", "0", true)
         + `<div class="sd-callout-sub">Supply (${fmtInt(supply)} beds) meets all ${fmtInt(fte)} FTE `
         + `${surplus ? `with ${fmtInt(surplus)} beds to spare ` : ""}${scope.label}.</div>`;
     }

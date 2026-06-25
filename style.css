@@ -2516,14 +2516,34 @@ h1, h2, h3, .serif {
   border-radius: 10px;
   padding: 16px 18px;
 }
+.sd-callout-headline {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+}
 .sd-callout-num {
   font-family: "Mencken Std", Georgia, serif;
   font-weight: 700;
-  font-size: 40px;
+  font-size: 56px;
   line-height: 1;
   color: var(--birch, #a95818);
 }
 .sd-callout-num-zero { color: var(--everest); }
+.sd-callout-sep {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 300;
+  font-size: 34px;
+  line-height: 1;
+  color: var(--slate-30);
+}
+.sd-callout-beds {
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 26px;
+  line-height: 1;
+  color: var(--slate);
+}
 .sd-callout-label {
   font-family: "Pragmatica", sans-serif;
   font-weight: 700;

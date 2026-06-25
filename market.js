@@ -28,10 +28,10 @@ let MARKET = null;
 let PROPERTIES = [];
 let CAMPUSES = [];
 let LOGOS = new Map();   // market_key → logo filename (e.g., "14.png")
-// Per-table sort state: the comp-set table defaults to year built
-// (newest first); the all-properties table keeps pre-lease.
+// Per-table sort state: both tables default to year built (newest deals on
+// top).
 let propSortStates = {
-  "properties-all":   { col: "prelease",  dir: "desc" },
+  "properties-all":   { col: "yearBuilt", dir: "desc" },
   "properties-comps": { col: "yearBuilt", dir: "desc" },
 };
 let map = null;

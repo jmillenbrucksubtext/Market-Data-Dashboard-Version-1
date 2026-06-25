@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>SubHouse - Market Report</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
 <script src="comp-map.js?v=9" defer></script>
 <style>
   @font-face { font-family: "Pragmatica"; src: url("assets/fonts/Pragmatica-Book.otf") format("opentype"); font-weight: 400; font-style: normal; font-display: swap; }
@@ -97,10 +98,10 @@
   .chart-box-sm { position: relative; height: 120px; }
   .charts2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
   .charts3 { display: grid; grid-template-columns: 1.25fr 1fr; gap: 12px; align-items: stretch; }
-  .perf-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-  .perf-cell { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px 6px; }
-  .perf-cell h4 { font-size: 9.5px; font-weight: 700; color: var(--everest); margin-bottom: 4px; }
-  .perf-cell .perf-box { position: relative; height: 150px; }
+  .perf-grid { display: grid; grid-template-columns: 1fr; gap: 11px; }
+  .perf-cell { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 7px 12px 6px; }
+  .perf-cell h4 { font-size: 9.5px; font-weight: 700; color: var(--everest); margin-bottom: 3px; }
+  .perf-cell .perf-box { position: relative; height: 158px; }
   .legend { display: flex; gap: 16px; align-items: center; font-size: 9px; color: var(--slate-70); margin: 0 0 10px; }
   .legend span { display: inline-flex; align-items: center; gap: 5px; }
   .legend i { width: 11px; height: 11px; border-radius: 2px; display: inline-block; }
@@ -428,17 +429,32 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
     const sc = (m.growth || m.pct) ? 100 : 1;
     const fmtTick = m.growth ? (v) => Math.round(v) + "%" : m.pct ? (v) => Math.round(v) + "%" : (v) => "$" + Math.round(v).toLocaleString();
+    const fmtLabel = m.growth ? (v) => (v >= 0 ? "" : "") + Math.round(v) + "%" : m.pct ? (v) => Math.round(v) + "%" : (v) => "$" + Math.round(v).toLocaleString();
     new Chart(el.getContext("2d"), {
       type: "bar",
       data: { labels, datasets: [
-        { label: "This market", data: mine.map((v) => v == null ? null : v * sc), backgroundColor: PERF.anchor, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
-        { label: "Subtext-30 avg", data: s30.map((v) => v == null ? null : v * sc), backgroundColor: PERF.bench, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
-        { label: "Power 4 avg", data: p4.map((v) => v == null ? null : v * sc), backgroundColor: PERF.power4, borderRadius: 1, categoryPercentage: 0.8, barPercentage: 0.96 },
+        { label: "This market", data: mine.map((v) => v == null ? null : v * sc), backgroundColor: PERF.anchor, borderRadius: 1, categoryPercentage: 0.82, barPercentage: 0.97 },
+        { label: "Subtext-30 avg", data: s30.map((v) => v == null ? null : v * sc), backgroundColor: PERF.bench, borderRadius: 1, categoryPercentage: 0.82, barPercentage: 0.97 },
+        { label: "Power 4 avg", data: p4.map((v) => v == null ? null : v * sc), backgroundColor: PERF.power4, borderRadius: 1, categoryPercentage: 0.82, barPercentage: 0.97 },
       ] },
-      options: baseOpts({ scales: {
-        x: { grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } },
-        y: { beginAtZero: !m.growth, ...(m.pct ? { max: 100 } : {}), grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, maxTicksLimit: 5, callback: fmtTick } },
-      } }),
+      options: baseOpts({
+        layout: { padding: { top: 16 } },
+        plugins: {
+          legend: { display: false }, tooltip: { enabled: false },
+          datalabels: {
+            color: C.slate, font: { size: 6.5, weight: 700, family: "Pragmatica, sans-serif" },
+            anchor: (c) => (c.dataset.data[c.dataIndex] ?? 0) >= 0 ? "end" : "start",
+            align: (c) => (c.dataset.data[c.dataIndex] ?? 0) >= 0 ? "end" : "start",
+            offset: 1, clamp: true,
+            formatter: (v) => v == null ? "" : fmtLabel(v),
+          },
+        },
+        scales: {
+          x: { grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } },
+          y: { beginAtZero: !m.growth, ...(m.pct ? { max: 100 } : {}), grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, maxTicksLimit: 5, callback: fmtTick } },
+        },
+      }),
+      plugins: [ChartDataLabels],
     });
   }
   METRICS.forEach((m) => SCOPES.forEach((sc) => makePerfChart(m, sc)));

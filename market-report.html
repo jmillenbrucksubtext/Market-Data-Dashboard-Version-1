@@ -113,6 +113,10 @@
   .charts-pipe { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
   .charts-pipe > .chart-card { min-width: 0; }
   .charts-pipe canvas { max-width: 100%; }
+  .charts-sd { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .charts-sd > .chart-card { min-width: 0; }
+  .charts-sd canvas { max-width: 100%; }
+  .chart-box-bar { position: relative; height: 92px; }
 
   /* Profile mini-table */
   .prof-table { width: 100%; border-collapse: collapse; font-size: 9.5px; }
@@ -465,7 +469,12 @@ document.addEventListener("DOMContentLoaded", async () => {
         </table>
       </div>
     </div>
-    <div class="sub">Uncaptured Demand by Proximity - (on-campus + existing + pipeline beds) vs FTE</div>
+    <div class="sub">Uncaptured Demand by Proximity - FTE demand filled by on-campus, existing &amp; pipeline beds</div>
+    <div class="legend"><span><i style="background:#16352e"></i>On-campus</span><span><i style="background:#7fb0a4"></i>Existing beds</span><span><i style="background:#a95818"></i>Pipeline beds</span><span><i style="background:#e7dcbf;border:1px solid #cdbf95"></i>Uncaptured demand</span></div>
+    <div class="charts-sd">
+      ${SD_SCOPES.map((sc, i) => `<div class="chart-card"><h4>${sc.l}${sdCols[i].uncapPct == null ? "" : ` &middot; ${sdCols[i].uncap > 0 ? fmtPct0(sdCols[i].uncapPct) + " uncaptured" : "demand met"}`}</h4><div class="chart-box-bar"><canvas id="ch-sd-${sc.id}"></canvas></div></div>`).join("")}
+    </div>
+    <div class="sub">Supply &amp; Demand Detail by Proximity</div>
     <table class="dt">
       <thead><tr><th>Metric</th>${SD_SCOPES.map((sc) => `<th>${sc.l}</th>`).join("")}</tr></thead>
       <tbody>
@@ -566,40 +575,62 @@ document.addEventListener("DOMContentLoaded", async () => {
   // Enrollment
   if (anchorRows.length) {
     const el = document.getElementById("ch-enr");
-    if (el) new Chart(el.getContext("2d"), {
-      type: "line",
-      data: { labels: anchorRows.map((r) => r.year_), datasets: [
-        { label: "Total", data: anchorRows.map((r) => r.total_enrollment), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
-        { label: "Full-time", data: anchorRows.map((r) => r.full_time_enrollment), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true },
-        { label: "Freshman", data: anchorRows.map((r) => r.freshman_enrollment), borderColor: C.warn, backgroundColor: C.warn, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true },
-      ] },
-      options: lineOpts((v) => Math.round(v / 1000) + "k", false),
+    // Compact per-point value labels (e.g. "28.4k"). Total sits above its line;
+    // Full-time below and Freshman above theirs so the close-running series don't collide.
+    const enrLbl = (align) => ({
+      align, anchor: "end", offset: 3, clip: false,
+      color: C.slate, font: { size: 6, weight: 700, family: "Pragmatica, sans-serif" },
+      formatter: (v) => v == null ? "" : (v / 1000).toFixed(1) + "k",
     });
+    if (el) {
+      const enrOpts = lineOpts((v) => Math.round(v / 1000) + "k", false);
+      enrOpts.layout = { padding: { top: 14, right: 12 } };
+      new Chart(el.getContext("2d"), {
+        type: "line",
+        data: { labels: anchorRows.map((r) => r.year_), datasets: [
+          { label: "Total", data: anchorRows.map((r) => r.total_enrollment), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true, datalabels: enrLbl("top") },
+          { label: "Full-time", data: anchorRows.map((r) => r.full_time_enrollment), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true, datalabels: enrLbl("bottom") },
+          { label: "Freshman", data: anchorRows.map((r) => r.freshman_enrollment), borderColor: C.warn, backgroundColor: C.warn, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true, datalabels: enrLbl("top") },
+        ] },
+        options: enrOpts,
+        plugins: [ChartDataLabels],
+      });
+    }
   }
 
   // Admissions combo
   if (adm.length) {
     const el = document.getElementById("ch-adm");
+    // Bars labelled with their % atop each column; the applications line labelled with its 000s value.
+    const admBarLbl = { anchor: "end", align: "end", offset: 1, clip: false,
+      color: C.slate, font: { size: 6.5, weight: 700, family: "Pragmatica, sans-serif" },
+      formatter: (v) => v == null ? "" : v.toFixed(0) + "%" };
     if (el) new Chart(el.getContext("2d"), {
       data: { labels: adm.map((r) => "'" + String(r.year_).slice(-2)), datasets: [
-        { type: "bar", label: "Yield", data: adm.map((r) => r.admitted ? r.enrolled / r.admitted * 100 : null), yAxisID: "pct", backgroundColor: C.blue, order: 2 },
-        { type: "bar", label: "Acceptance", data: adm.map((r) => r.applications ? r.admitted / r.applications * 100 : null), yAxisID: "pct", backgroundColor: C.birch, order: 2 },
-        { type: "line", label: "Applications (000s)", data: adm.map((r) => r.applications != null ? r.applications / 1000 : null), yAxisID: "apps", order: 1, borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2.5, pointRadius: 2, tension: 0.25 },
+        { type: "bar", label: "Yield", data: adm.map((r) => r.admitted ? r.enrolled / r.admitted * 100 : null), yAxisID: "pct", backgroundColor: C.blue, order: 2, datalabels: admBarLbl },
+        { type: "bar", label: "Acceptance", data: adm.map((r) => r.applications ? r.admitted / r.applications * 100 : null), yAxisID: "pct", backgroundColor: C.birch, order: 2, datalabels: admBarLbl },
+        { type: "line", label: "Applications (000s)", data: adm.map((r) => r.applications != null ? r.applications / 1000 : null), yAxisID: "apps", order: 1, borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2.5, pointRadius: 2, tension: 0.25,
+          datalabels: { anchor: "end", align: "top", offset: 4, clip: false, color: C.everest, font: { size: 6.5, weight: 700, family: "Pragmatica, sans-serif" }, formatter: (v) => v == null ? "" : v.toFixed(1) } },
       ] },
       options: baseOpts({
+        layout: { padding: { top: 16 } },
         plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 12, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } },
         scales: { x: { grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } }, pct: { position: "left", beginAtZero: true, max: 100, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 }, stepSize: 25, callback: (v) => v + "%" } }, apps: { position: "right", beginAtZero: true, grid: { display: false }, ticks: { color: C.slate70, font: { size: 8 } } } },
       }),
+      plugins: [ChartDataLabels],
     });
   }
 
   // Residency doughnut
   if (uinfo && (inPct != null || outPct != null)) {
     const el = document.getElementById("ch-resid");
+    const residTotal = (inPct || 0) + (outPct || 0) || 1;
     if (el) new Chart(el.getContext("2d"), {
       type: "doughnut",
       data: { labels: ["In-State", "Out-Of-State"], datasets: [{ data: [inPct || 0, outPct || 0], backgroundColor: [C.everest, C.birch], borderColor: "#fff", borderWidth: 2 }] },
-      options: baseOpts({ cutout: "52%", plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 10, padding: 6, usePointStyle: true } }, tooltip: { enabled: false } } }),
+      options: baseOpts({ cutout: "52%", plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 10, padding: 6, usePointStyle: true } }, tooltip: { enabled: false },
+        datalabels: { color: "#fff", font: { size: 7.5, weight: 700, family: "Pragmatica, sans-serif" }, formatter: (v) => { const p = v / residTotal * 100; return p < 4 ? "" : p.toFixed(1) + "%"; } } } }),
+      plugins: [ChartDataLabels],
     });
   }
 
@@ -663,6 +694,47 @@ document.addEventListener("DOMContentLoaded", async () => {
         plugins: [ChartDataLabels],
       });
     }
+  }
+
+  // Uncaptured demand by proximity: one stacked horizontal bar per scope showing how
+  // FTE demand is filled by on-campus, existing & pipeline beds, with the unmet
+  // remainder as a trailing open segment (mirrors the dashboard Pipeline-tab panel).
+  {
+    const SD_COL = { onCampus: "#16352e", existing: "#7fb0a4", pipeline: "#a95818", uncaptured: "#e7dcbf" };
+    const sdMax = Math.max(fteDemand || 0, ...sdCols.map((c) => c.supply)) || 1;
+    SD_SCOPES.forEach((sc, i) => {
+      const el = document.getElementById(`ch-sd-${sc.id}`); if (!el) return;
+      const c = sdCols[i];
+      const segs = [
+        { k: "onCampus", label: "On-campus", v: onCampusBeds },
+        { k: "existing", label: "Existing beds", v: c.existing },
+        { k: "pipeline", label: "Pipeline beds", v: c.pipeline },
+      ];
+      if (c.uncap && c.uncap > 0) segs.push({ k: "uncaptured", label: "Uncaptured demand", v: c.uncap });
+      const barTotal = segs.reduce((s, x) => s + x.v, 0) || 1;
+      new Chart(el.getContext("2d"), {
+        type: "bar",
+        data: { labels: [""], datasets: segs.map((sg) => ({
+          label: sg.label, data: [sg.v], backgroundColor: SD_COL[sg.k],
+          borderColor: sg.k === "uncaptured" ? "#cdbf95" : "#fff", borderWidth: sg.k === "uncaptured" ? 1 : 2,
+          maxBarThickness: 30,
+          datalabels: { color: sg.k === "uncaptured" ? C.slate70 : "#fff",
+            font: { size: 7.5, weight: 700, family: "Pragmatica, sans-serif" },
+            formatter: (v) => (v && v / barTotal >= 0.07) ? fmtInt(v) : "" },
+        })) },
+        options: baseOpts({
+          indexAxis: "y",
+          layout: { padding: { right: 6 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: true } },
+          scales: {
+            x: { stacked: true, beginAtZero: true, suggestedMax: sdMax, grid: { color: "rgba(0,0,0,0.05)" },
+                 ticks: { color: C.slate70, font: { size: 7.5 }, maxTicksLimit: 6, callback: (v) => v >= 1000 ? Math.round(v / 1000) + "k" : v } },
+            y: { stacked: true, grid: { display: false }, ticks: { display: false } },
+          },
+        }),
+        plugins: [ChartDataLabels],
+      });
+    });
   }
 
   /* ---- maps via comp-map.js: market-wide (all props) for overview, comps for comp set ---- */

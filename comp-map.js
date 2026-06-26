@@ -967,5 +967,7 @@
     init();
   }
 
-  window.CompMap = { refresh: refresh };
+  // configure() lets a host page (e.g. the static report) set render options
+  // such as { compact: true } before calling refresh().
+  window.CompMap = { refresh: refresh, configure: function (opts) { Object.assign(state, opts || {}); } };
 })();

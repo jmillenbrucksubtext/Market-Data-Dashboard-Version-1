@@ -989,6 +989,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const renderMap = async (selection, imgId) => {
     if (!window.CompMap || selection.size === 0) return;
     window.compSelection = selection;
+    if (window.CompMap.configure) window.CompMap.configure({ compact: true });  // name + address callouts, no stats
     await window.CompMap.refresh();
     const cv = document.getElementById("comp-map-canvas"), img = document.getElementById(imgId);
     if (cv && img) img.src = cv.toDataURL("image/png");

@@ -526,8 +526,17 @@ function renderHeader() {
   document.getElementById("market-name").textContent = MARKET.anchor_university;
   const reportLink = document.getElementById("report-link");
   if (reportLink) {
-    reportLink.href = `market-report.html?id=${MARKET.market_key}`;
     reportLink.style.display = "";
+    // Build the report URL at click time so it carries the comps *currently*
+    // selected on the Comps tab (compSelection), not just the default comp set.
+    // Assigned (not addEventListener) so repeated header renders don't stack.
+    const syncReportHref = () => {
+      reportLink.href = `market-report.html?id=${MARKET.market_key}&comps=${[...compSelection].join(",")}`;
+    };
+    syncReportHref();
+    reportLink.onclick = syncReportHref;
+    reportLink.onauxclick = syncReportHref;     // middle-click / open-in-new-tab
+    reportLink.oncontextmenu = syncReportHref;   // right-click > open link
   }
   const region = MARKET.region ? ` · ${MARKET.region}` : "";
   document.getElementById("market-subtitle").textContent =

@@ -193,7 +193,14 @@ document.addEventListener("DOMContentLoaded", async () => {
   const histYears = history.map((r) => r.year_);
   const aff = (T.market_affluence || []).find((r) => r.market_key === marketKey);
   const props = (T.properties || []).filter((p) => p.market_key === marketKey);
-  const comps = props.filter((p) => p.is_comp_set).sort((a, b) => (b.yearBuilt ?? -1) - (a.yearBuilt ?? -1));
+  // Comps reflect the live dashboard selection when passed via ?comps=<keys>
+  // (present even if empty); otherwise fall back to the standard comp set.
+  const reportParams = new URLSearchParams(location.search);
+  const selKeys = reportParams.has("comps")
+    ? new Set(reportParams.get("comps").split(",").map(Number).filter((n) => !Number.isNaN(n)))
+    : null;
+  const comps = (selKeys ? props.filter((p) => selKeys.has(p.property_key)) : props.filter((p) => p.is_comp_set))
+    .sort((a, b) => (b.yearBuilt ?? -1) - (a.yearBuilt ?? -1));
   const propHist = T.property_history || [];
 
   // Benchmark market sets

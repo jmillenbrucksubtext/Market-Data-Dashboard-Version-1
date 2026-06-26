@@ -557,10 +557,14 @@ h1, h2, h3, .serif {
   font-weight: 700;
   letter-spacing: -0.01em;
 }
+/* The descriptive blurb beneath each section title is hidden via display:none.
+   Kept in the DOM (not deleted) because market.js / comp-map.js /
+   student-migration.js set .textContent on several of these by id. */
 .card-header p {
   margin: 4px 0 0;
   font-size: 12px;
   color: var(--slate-70);
+  display: none;
 }
 .card-controls {
   display: flex;

@@ -63,32 +63,34 @@
   .sub { font-family: "Mencken Std", Georgia, serif; font-size: 13px; font-weight: 700; color: var(--everest); margin: 15px 0 8px; }
   .sub:first-child { margin-top: 0; }
 
-  /* KPI grid */
-  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; }
-  .kpi { background: var(--beige); border: 1px solid var(--beige-deep); border-radius: 6px; padding: 8px 10px; }
+  /* KPI grid - white cards with a brand-coloured top accent + coloured value */
+  .kpis { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; }
+  .kpi { background: #fff; border: 1px solid var(--beige-deep); border-top: 3px solid var(--everest); border-radius: 6px; padding: 9px 11px 10px; box-shadow: 0 1px 2px rgba(43,40,37,0.05); }
   .kpi-label { font-size: 7.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--slate-50); }
-  .kpi-value { font-size: 17px; font-weight: 700; margin-top: 3px; }
-  .kpi-sub { font-size: 8px; color: var(--slate-50); margin-top: 2px; }
-  .kpi-up { color: var(--everest); } .kpi-down { color: var(--birch); }
+  .kpi-value { font-size: 19px; font-weight: 700; margin-top: 4px; color: var(--everest); line-height: 1; }
+  .kpi-sub { font-size: 8px; color: var(--slate-50); margin-top: 3px; }
+  .kpi-up { color: var(--everest) !important; } .kpi-down { color: var(--birch) !important; }
 
-  /* Qualifier scorecard */
-  .qual-wrap { display: flex; gap: 14px; align-items: stretch; }
-  .qual-score { flex: 0 0 120px; background: var(--everest); color: #fff; border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
-  .qual-score .pct { font-family: "Mencken Std", Georgia, serif; font-size: 34px; font-weight: 700; }
-  .qual-score .lbl { font-size: 8px; letter-spacing: 0.08em; text-transform: uppercase; opacity: 0.85; text-align: center; margin-top: 4px; }
-  .qual-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 2px 18px; }
-  .qual-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 4px 0; border-bottom: 1px dotted var(--beige-deep); font-size: 9.5px; }
-  .qual-row .dot { width: 8px; height: 8px; border-radius: 50%; flex: 0 0 auto; margin-right: 7px; }
-  .dot-pass { background: var(--everest); } .dot-fail { background: var(--birch); } .dot-warn { background: var(--warn); } .dot-na { background: var(--slate-30); }
-  .qual-row .ql { flex: 1; display: flex; align-items: center; color: var(--slate-70); }
-  .qual-row .qv { font-weight: 700; white-space: nowrap; }
+  /* Qualifier scorecard - roomy status cards, coloured by pass / fail / warn */
+  .qual-wrap { display: flex; gap: 16px; align-items: stretch; }
+  .qual-score { flex: 0 0 140px; background: linear-gradient(155deg, #1f4a3f 0%, var(--everest) 70%); color: #fff; border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 2px 8px rgba(22,53,46,0.22); }
+  .qual-score .pct { font-family: "Mencken Std", Georgia, serif; font-size: 44px; font-weight: 700; line-height: 0.9; }
+  .qual-score .lbl { font-size: 8.5px; letter-spacing: 0.06em; text-transform: uppercase; opacity: 0.9; text-align: center; margin-top: 8px; line-height: 1.35; }
+  .qual-grid { flex: 1; display: grid; grid-template-columns: 1fr 1fr; gap: 7px 12px; align-content: start; }
+  .qual-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 11px; background: #fff; border: 1px solid var(--beige-deep); border-left: 3px solid var(--slate-30); border-radius: 5px; font-size: 10px; }
+  .qual-row .ql { flex: 1; color: var(--slate-70); }
+  .qual-row .qv { font-weight: 700; white-space: nowrap; color: var(--slate); }
+  .qual-row.s-pass { border-left-color: var(--everest); } .qual-row.s-pass .qv { color: var(--everest); }
+  .qual-row.s-fail { border-left-color: var(--birch); }   .qual-row.s-fail .qv { color: var(--birch); }
+  .qual-row.s-warn { border-left-color: var(--warn); }    .qual-row.s-warn .qv { color: var(--warn); }
+  .qual-row.s-na   { border-left-color: var(--slate-30); } .qual-row.s-na .qv { color: var(--slate-50); }
 
-  /* Forward ranking */
-  .fwd-wrap { display: flex; gap: 14px; align-items: stretch; }
-  .fwd-score { flex: 0 0 140px; background: var(--beige-deep); border: 1px solid var(--slate-30); border-radius: 6px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 12px; }
-  .fwd-score .rk { font-family: "Mencken Std", Georgia, serif; font-size: 34px; font-weight: 700; color: var(--everest); }
-  .fwd-score .lbl { font-size: 8px; letter-spacing: 0.05em; text-transform: uppercase; color: var(--slate-70); text-align: center; margin-top: 4px; }
-  .fwd-drivers { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  /* Forward ranking - warm filled rank chip + coloured driver cards */
+  .fwd-wrap { display: flex; gap: 16px; align-items: stretch; }
+  .fwd-score { flex: 0 0 150px; background: linear-gradient(155deg, #c4692a 0%, var(--birch) 75%); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 16px; box-shadow: 0 2px 8px rgba(169,88,24,0.22); }
+  .fwd-score .rk { font-family: "Mencken Std", Georgia, serif; font-size: 44px; font-weight: 700; color: #fff; line-height: 0.9; }
+  .fwd-score .lbl { font-size: 8.5px; letter-spacing: 0.05em; text-transform: uppercase; color: rgba(255,255,255,0.9); text-align: center; margin-top: 8px; line-height: 1.35; }
+  .fwd-drivers { flex: 1; display: grid; grid-template-columns: repeat(3, 1fr); gap: 9px; }
 
   /* Charts */
   .chart-card { border: 1px solid var(--beige-deep); border-radius: 6px; padding: 9px 11px 7px; }
@@ -322,34 +324,37 @@ document.addEventListener("DOMContentLoaded", async () => {
       <div class="meta"></div>
     </div>`;
   const foot = (n) => `<div class="foot"><span>Subtext Living - Market Report · ${esc(M.anchor_university)}</span><span>Page ${n} of ${TOTAL}</span></div>`;
-  const kpiCards = (list) => list.map((k) => `<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value ${k.cls || ""}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
+  const kpiCards = (list) => list.map((k) => {
+    const accent = k.c || C.everest;
+    return `<div class="kpi" style="border-top-color:${accent}"><div class="kpi-label">${k.l}</div><div class="kpi-value ${k.cls || ""}"${k.cls ? "" : ` style="color:${accent}"`}>${k.v}</div><div class="kpi-sub">${k.s}</div></div>`;
+  }).join("");
   const perfLegend = `<div class="legend"><span><i style="background:${PERF.anchor}"></i>This market</span><span><i style="background:${PERF.bench}"></i>Subtext-30 avg</span><span><i style="background:${PERF.power4}"></i>Power 4 avg</span></div>`;
 
   const kpis = [
-    { l: "Existing Beds", v: fmtInt(M.existing_beds), s: "purpose-built" },
-    { l: "Pipeline Beds", v: fmtInt(M.beds_pipeline_total), s: pipePct != null ? fmtPct1(pipePct) + " of existing" : "" },
-    { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment" },
-    { l: "FTE Enrollment", v: fmtInt(M.enr_full_time), s: "current year" },
-    { l: "Total Enrollment", v: fmtInt(M.total_enrollment), s: "current year" },
-    { l: "Avg Rent / Bed", v: fmtUsd(M.avg_rent_per_bed), s: "latest snapshot" },
+    { l: "Existing Beds", v: fmtInt(M.existing_beds), s: "purpose-built", c: C.everest },
+    { l: "Pipeline Beds", v: fmtInt(M.beds_pipeline_total), s: pipePct != null ? fmtPct1(pipePct) + " of existing" : "", c: C.birch },
+    { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment", c: C.blue },
+    { l: "FTE Enrollment", v: fmtInt(M.enr_full_time), s: "current year", c: C.blue },
+    { l: "Total Enrollment", v: fmtInt(M.total_enrollment), s: "current year", c: C.blue },
+    { l: "Avg Rent / Bed", v: fmtUsd(M.avg_rent_per_bed), s: "latest snapshot", c: C.birch },
     { l: "Rent YoY", v: fmtSigned(rentYoy), s: prev ? `${prev.year_} → ${last.year_}` : "", cls: rentYoy == null ? "" : rentYoy >= 0 ? "kpi-up" : "kpi-down" },
-    { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted" },
-    { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
-    { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "-", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data" },
+    { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted", c: C.everest },
+    { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle", c: C.everest },
+    { l: "Mean Origin Income", v: aff ? fmtUsd(aff.mean_origin_income) : "-", s: aff ? fmtPct1(aff.pct_hiinc) + " high-income tracts" : "no migration data", c: C.warn },
   ];
   const qualRows = quals ? quals.results.map((r) => {
     const tier = (r.tier || r.status || "na").toLowerCase();
-    const dot = tier.startsWith("pass") ? "dot-pass" : tier.startsWith("fail") ? "dot-fail" : (tier.startsWith("warn") || tier.startsWith("near")) ? "dot-warn" : "dot-na";
-    return `<div class="qual-row"><span class="ql"><span class="dot ${dot}"></span>${esc(r.label)}</span><span class="qv">${esc(r.actual_display ?? "-")}</span></div>`;
+    const sk = tier.startsWith("pass") ? "pass" : tier.startsWith("fail") ? "fail" : (tier.startsWith("warn") || tier.startsWith("near")) ? "warn" : "na";
+    return `<div class="qual-row s-${sk}"><span class="ql">${esc(r.label)}</span><span class="qv">${esc(r.actual_display ?? "-")}</span></div>`;
   }).join("") : "";
   const scorePct = quals && quals.evaluable > 0 ? Math.round((quals.passes / quals.evaluable) * 100) : null;
   const fwdDrivers = [
-    { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment" },
-    { l: "Supply Pressure", v: pipePct != null ? fmtPct1(pipePct) : "-", s: "pipeline ÷ existing" },
-    { l: "Rent Growth (YoY)", v: fmtSigned(rentYoy), s: "avg rent / bed" },
-    { l: "Enrollment CAGR", v: fmtSigned(enrCagr), s: anchorRows.length ? `${eF.year_}-${eL.year_}` : "" },
-    { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted" },
-    { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle" },
+    { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment", c: C.blue },
+    { l: "Supply Pressure", v: pipePct != null ? fmtPct1(pipePct) : "-", s: "pipeline ÷ existing", c: C.birch },
+    { l: "Rent Growth (YoY)", v: fmtSigned(rentYoy), s: "avg rent / bed", c: C.birch },
+    { l: "Enrollment CAGR", v: fmtSigned(enrCagr), s: anchorRows.length ? `${eF.year_}-${eL.year_}` : "", c: C.blue },
+    { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted", c: C.everest },
+    { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle", c: C.everest },
   ];
 
   // Student profile rows

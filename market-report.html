@@ -280,8 +280,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (SD_EXISTING.has(p.phase)) e.d += b; else if (SD_PIPELINE.has(p.phase)) e.p += b;
   });
   const delivYears = Object.keys(delivByYear).map(Number).sort((a, b) => a - b);
-  const delivTotD = delivYears.reduce((s, y) => s + delivByYear[y].d, 0);
-  const delivTotP = delivYears.reduce((s, y) => s + delivByYear[y].p, 0);
 
   // Uncaptured demand by proximity band: (on-campus + existing + pipeline) vs FTE
   const onCampusBeds = uiRows.reduce((s, r) => s + (r.beds_on_campus_reported || r.beds_on_campus_computed || 0), 0);
@@ -455,20 +453,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   <div class="sheet">
     ${runHead}
     ${mainHead("04", "Supply Pipeline", "Deliveries over time &amp; uncaptured demand")}
-    <div class="two-col">
-      <div>
-        <div class="sub">Deliveries Over Time - beds by year built</div>
-        <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
-      </div>
-      <div>
-        <div class="sub">Deliveries by Year</div>
-        <table class="dt">
-          <thead><tr><th>Year</th><th>Delivered</th><th>Projected</th><th>Total</th></tr></thead>
-          <tbody>${delivYears.length ? delivYears.map((y) => `<tr><td>${y}</td><td>${delivByYear[y].d ? fmtInt(delivByYear[y].d) : "-"}</td><td>${delivByYear[y].p ? fmtInt(delivByYear[y].p) : "-"}</td><td>${fmtInt(delivByYear[y].d + delivByYear[y].p)}</td></tr>`).join("") : '<tr><td colspan="4">No deliveries on record.</td></tr>'}</tbody>
-          ${delivYears.length ? `<tfoot><tr><td>Total</td><td>${fmtInt(delivTotD)}</td><td>${fmtInt(delivTotP)}</td><td>${fmtInt(delivTotD + delivTotP)}</td></tr></tfoot>` : ""}
-        </table>
-      </div>
-    </div>
+    <div class="sub">Deliveries Over Time - beds by year built</div>
+    <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-deliv"></canvas></div></div>
     <div class="sub">Uncaptured Demand by Proximity - FTE demand filled by on-campus, existing &amp; pipeline beds</div>
     <div class="legend"><span><i style="background:#16352e"></i>On-campus</span><span><i style="background:#7fb0a4"></i>Existing beds</span><span><i style="background:#a95818"></i>Pipeline beds</span><span><i style="background:#e7dcbf;border:1px solid #cdbf95"></i>Uncaptured demand</span></div>
     <div class="charts-sd">

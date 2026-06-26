@@ -304,7 +304,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const mainHead = (num, title, sub) => `
     <div class="main-head">
       <div class="num">${num}</div>
-      <div class="ttl">${title}${sub ? `<small>${sub}</small>` : ""}</div>
+      <div class="ttl">${title}</div>
       <div class="meta">${M.is_subtext30 ? '<span class="chip chip-s30">★ Subtext-30</span>' : ""}${M.fwd_rank ? `<span class="chip chip-rank">Fwd rank #${M.fwd_rank}</span>` : ""}</div>
     </div>`;
   const foot = (n) => `<div class="foot"><span>Subtext Living - Market Report · ${esc(M.anchor_university)}</span><span>Page ${n} of ${TOTAL}</span></div>`;

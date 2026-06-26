@@ -305,7 +305,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   /* ---- shared bits ---- */
-  const TOTAL = 11;
+  const TOTAL = 12;
   const runHead = `<div class="run-head"><span>Subtext Living · Market Report · <b>${esc(M.anchor_university)}</b></span><span>${esc(M.city)}, ${esc(M.state_abbr)} · ${asOfText}</span></div>`;
   const mainHead = (num, title, sub) => `
     <div class="main-head">
@@ -367,6 +367,44 @@ document.addEventListener("DOMContentLoaded", async () => {
   const wAvg = (key) => { let n = 0, d = 0; comps.forEach((p) => { if (p[key] != null && p.beds) { n += p[key] * p.beds; d += p.beds; } }); return d > 0 ? n / d : null; };
   const totBeds = comps.reduce((s, p) => s + (p.beds || 0), 0);
   const compMixRows = utypes.map((t) => `<tr><td>${t}</td><td>${fmtInt(utypeUnits[t])}</td><td>${utypeTotal ? (utypeUnits[t] / utypeTotal * 100).toFixed(1) + "%" : "-"}</td></tr>`).join("");
+
+  // ----- Unit & Bed Mix (by units) across the comp set, mirroring the dashboard -----
+  const UNIT_MIX_TYPES = ["Studio", "1BR", "2BR", "3BR", "4BR", "5BR", "6BR+"];
+  const UNIT_TYPE_COLORS = { "Studio": "#6d5b8e", "1BR": "#3d8aa6", "2BR": "#4f7a6f", "3BR": "#c7973f", "4BR": "#a95818", "5BR": "#16352e", "6BR+": "#9c4a3c" };
+  const UNIT_MIX_PALETTE = ["#16352e", "#a95818", "#4f7a6f", "#c7973f", "#6d5b8e", "#3d8aa6", "#8c6d46", "#9c4a3c", "#5a8c4a", "#b0894d", "#42606d", "#7a4f63"];
+  const PARITY_COLORS = { full: "#16352e", partial: "#a95818" };
+  // Selected comps with floor-plan data, biggest first (matches dashboard ordering).
+  const mixComps = comps.map((p) => ({ prop: p, mix: umByProp[p.property_key] })).filter((x) => x.mix)
+    .sort((a, b) => (b.mix.total_beds || 0) - (a.mix.total_beds || 0));
+  // Inventory-by-unit stacked bar: x = bedroom type, one dataset per property.
+  const mixTypesPresent = UNIT_MIX_TYPES.filter((t) => mixComps.some(({ mix }) => (mix.units_by_type || {})[t]));
+  const mixDatasets = mixComps.map(({ prop, mix }, i) => {
+    const color = UNIT_MIX_PALETTE[i % UNIT_MIX_PALETTE.length];
+    const isPipeline = !["stable", "lease up"].includes(prop.phase);
+    return { label: (prop.property_name || "(unnamed)") + (isPipeline ? ` (${prop.phase})` : ""),
+      data: mixTypesPresent.map((t) => (mix.units_by_type || {})[t] || 0),
+      backgroundColor: isPipeline ? color + "b3" : color, borderColor: "#fff", borderWidth: 1, borderRadius: 1 };
+  });
+  const mixStackTotals = mixTypesPresent.map((t, ti) => mixDatasets.reduce((s, ds) => s + (ds.data[ti] || 0), 0));
+  // Average unit size by exact unit type: units-weighted across the comp set.
+  const sizeAgg = {};
+  mixComps.forEach(({ mix }) => (mix.size_by_unit || []).forEach((e) => {
+    if (!e.avg_sf || !e.units) return;
+    const a = sizeAgg[e.label] || (sizeAgg[e.label] = { sf: 0, units: 0, beds: e.beds, baths: e.baths, cat: e.cat });
+    a.sf += e.avg_sf * e.units; a.units += e.units;
+  }));
+  const sizeCats = Object.keys(sizeAgg).map((label) => ({ label, ...sizeAgg[label] })).filter((a) => a.units > 0)
+    .sort((x, y) => (x.beds - y.beds) || ((x.baths ?? -1) - (y.baths ?? -1)))
+    .map((a) => ({ label: a.label, color: UNIT_TYPE_COLORS[a.cat] || "#837c75", value: Math.round(a.sf / a.units), units: a.units }));
+  // Parity by type (units): full = en-suite, partial = shared bath. Feeds both doughnuts.
+  const mixPerType = {};
+  mixComps.forEach(({ mix }) => UNIT_MIX_TYPES.forEach((t) => {
+    const e = (mix.parity_by_type || {})[t]; if (!e) return;
+    const slot = mixPerType[t] || (mixPerType[t] = { full: 0, partial: 0 });
+    slot.full += e.units_full || 0; slot.partial += e.units_partial || 0;
+  }));
+  const parityFull = Object.values(mixPerType).reduce((s, v) => s + v.full, 0);
+  const parityPartial = Object.values(mixPerType).reduce((s, v) => s + v.partial, 0);
 
   // ----- Competitive Set detail tables (per-year leasing history, scoped to comps) -----
   const DT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
@@ -566,14 +604,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       <tbody>${compRows || '<tr><td colspan="8">No comp-set properties on file.</td></tr>'}</tbody>
       ${comps.length ? `<tfoot><tr><td>Bed-weighted · ${comps.length} comps</td><td></td><td>${fmtInt(totBeds)}</td><td></td><td>${fmtUsd(wAvg("avg_rent"))}</td><td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "-"}</td><td>${fmtPct1(wAvg("occupancy"))}</td><td>${fmtPct1(wAvg("prelease"))}</td></tr></tfoot>` : ""}
     </table>
-    <div class="sub">Unit Mix</div>
-    <div class="umix-wrap">
-      <table class="dt">
-        <thead><tr><th>Unit Type</th><th>Units</th><th>%</th></tr></thead>
-        <tbody>${compMixRows || '<tr><td colspan="3">No floor-plan data.</td></tr>'}</tbody>
-        ${utypeTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(utypeTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
-      </table>
-    </div>
     ${foot(9)}
   </div>
 
@@ -595,6 +625,28 @@ document.addEventListener("DOMContentLoaded", async () => {
     <div class="sub">${dAnchor("Occupancy")} by Year</div>
     ${dOccupancyTable}
     ${foot(11)}
+  </div>
+
+  <div class="sheet">
+    ${runHead}
+    ${mainHead("06", "Competitive Set Detail", "Unit &amp; bed mix · selected comps · by unit")}
+    <div class="sub">Inventory by Unit Count</div>
+    <div class="chart-card"><div class="chart-box"><canvas id="ch-umix-inv"></canvas></div></div>
+    <div class="sub">Average Unit Size by Unit Type</div>
+    <div class="chart-card"><div class="chart-box"><canvas id="ch-umix-size"></canvas></div></div>
+    <div class="charts2" style="margin-top:8px">
+      <div class="chart-card"><h4>Comp Set Mix (Units)</h4><div class="chart-box-sm"><canvas id="ch-umix-pie"></canvas></div></div>
+      <div class="chart-card"><h4>Bed / Bath Parity (Units)</h4><div class="chart-box-sm"><canvas id="ch-umix-parity"></canvas></div></div>
+    </div>
+    <div class="sub">Unit Mix</div>
+    <div class="umix-wrap">
+      <table class="dt">
+        <thead><tr><th>Unit Type</th><th>Units</th><th>%</th></tr></thead>
+        <tbody>${compMixRows || '<tr><td colspan="3">No floor-plan data.</td></tr>'}</tbody>
+        ${utypeTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(utypeTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
+      </table>
+    </div>
+    ${foot(12)}
   </div>`;
 
   document.getElementById("report-loading").style.display = "none";
@@ -814,6 +866,112 @@ document.addEventListener("DOMContentLoaded", async () => {
         plugins: [ChartDataLabels],
       });
     });
+  }
+
+  // Unit & Bed Mix (comp set, by units) - mirrors the dashboard's By-Unit view.
+  {
+    // Inventory by unit count: stacked bar, one segment per comp, total atop each stack.
+    const invEl = document.getElementById("ch-umix-inv");
+    if (invEl && mixDatasets.length) {
+      const invTotals = {
+        id: "umixInvTotals",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart;
+          const meta = chart.getDatasetMeta(chart.data.datasets.length - 1);
+          if (!meta || !meta.data) return;
+          ctx.save(); ctx.fillStyle = C.everest; ctx.textAlign = "center";
+          ctx.font = "700 9px Pragmatica, sans-serif";
+          meta.data.forEach((bar, i) => { if (mixStackTotals[i]) ctx.fillText(fmtInt(mixStackTotals[i]), bar.x, bar.y - 4); });
+          ctx.restore();
+        },
+      };
+      new Chart(invEl.getContext("2d"), {
+        type: "bar",
+        data: { labels: mixTypesPresent, datasets: mixDatasets },
+        options: baseOpts({
+          layout: { padding: { top: 16 } },
+          plugins: { legend: { display: true, position: "bottom", labels: { font: { size: 8 }, boxWidth: 10, boxHeight: 10, padding: 6 } }, tooltip: { enabled: false }, datalabels: { display: false } },
+          scales: {
+            x: { stacked: true, grid: { display: false }, ticks: { color: C.slate, font: { size: 9, weight: 600 } } },
+            y: { stacked: true, beginAtZero: true, title: { display: true, text: "Unit Count", color: C.slate70, font: { size: 8 } }, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 } } },
+          },
+        }),
+        plugins: [invTotals],
+      });
+    }
+
+    // Average unit size by exact unit type: single bar, value labelled atop.
+    const sizeEl = document.getElementById("ch-umix-size");
+    if (sizeEl && sizeCats.length) {
+      const vals = sizeCats.map((c) => c.value);
+      const sizeTotals = {
+        id: "umixSizeTotals",
+        afterDatasetsDraw(chart) {
+          const { ctx } = chart; const meta = chart.getDatasetMeta(0); if (!meta || !meta.data) return;
+          ctx.save(); ctx.fillStyle = C.everest; ctx.textAlign = "center"; ctx.font = "700 8px Pragmatica, sans-serif";
+          meta.data.forEach((bar, i) => { if (vals[i]) ctx.fillText(fmtInt(vals[i]) + " SF", bar.x, bar.y - 4); });
+          ctx.restore();
+        },
+      };
+      new Chart(sizeEl.getContext("2d"), {
+        type: "bar",
+        data: { labels: sizeCats.map((c) => c.label), datasets: [{ label: "Avg SF", data: vals, backgroundColor: sizeCats.map((c) => c.color), borderColor: "#fff", borderWidth: 1, borderRadius: 1 }] },
+        options: baseOpts({
+          layout: { padding: { top: 16 } },
+          plugins: { legend: { display: false }, tooltip: { enabled: false }, datalabels: { display: false } },
+          scales: {
+            x: { grid: { display: false }, ticks: { color: C.slate, font: { size: 7.5, weight: 600 }, maxRotation: 35, minRotation: 0 } },
+            y: { beginAtZero: true, title: { display: true, text: "Square Feet", color: C.slate70, font: { size: 8 } }, grid: { color: "rgba(0,0,0,0.05)" }, ticks: { color: C.slate70, font: { size: 8 } } },
+          },
+        }),
+        plugins: [sizeTotals],
+      });
+    }
+
+    // Comp Set Mix nested doughnut: inner = bedroom type, outer = en-suite vs shared bath.
+    const pieEl = document.getElementById("ch-umix-pie");
+    const mixTypes = UNIT_MIX_TYPES.filter((t) => mixPerType[t] && (mixPerType[t].full + mixPerType[t].partial) > 0);
+    const mixTotal = mixTypes.reduce((s, t) => s + mixPerType[t].full + mixPerType[t].partial, 0);
+    if (pieEl && mixTotal) {
+      const innerData = mixTypes.map((t) => mixPerType[t].full + mixPerType[t].partial);
+      const innerColors = mixTypes.map((t) => UNIT_TYPE_COLORS[t] || "#837c75");
+      const outerData = [], outerColors = [], outerMeta = [];
+      mixTypes.forEach((t) => {
+        const base = UNIT_TYPE_COLORS[t] || "#837c75";
+        outerData.push(mixPerType[t].full); outerColors.push(base); outerMeta.push({ kind: "en-suite" });
+        outerData.push(mixPerType[t].partial); outerColors.push(base + "80"); outerMeta.push({ kind: "shared bath" });
+      });
+      new Chart(pieEl.getContext("2d"), {
+        type: "doughnut",
+        data: { labels: mixTypes, datasets: [
+          { data: innerData, backgroundColor: innerColors, borderColor: "#fff", borderWidth: 2,
+            datalabels: { color: "#fff", font: { weight: 700, size: 7.5, family: "Pragmatica, sans-serif" }, formatter: (v, ctx) => (v / mixTotal * 100) < 7 ? "" : mixTypes[ctx.dataIndex] } },
+          { data: outerData, backgroundColor: outerColors, borderColor: "#fff", borderWidth: 2,
+            datalabels: { color: C.slate, font: { weight: 700, size: 7, family: "Pragmatica, sans-serif" }, formatter: (v, ctx) => { if (outerMeta[ctx.dataIndex].kind !== "shared bath") return ""; const pct = v / mixTotal * 100; return pct < 5 ? "" : pct.toFixed(0) + "%"; } } },
+        ] },
+        options: baseOpts({
+          cutout: "40%", layout: { padding: 4 },
+          plugins: { legend: { display: true, position: "right", labels: { font: { size: 8 }, boxWidth: 10, boxHeight: 10, padding: 5 } }, tooltip: { enabled: false } },
+        }),
+        plugins: [ChartDataLabels],
+      });
+    }
+
+    // Bed/Bath parity doughnut (units): full parity vs shared baths across the comp set.
+    const parEl = document.getElementById("ch-umix-parity");
+    const parTotal = parityFull + parityPartial;
+    if (parEl && parTotal) {
+      new Chart(parEl.getContext("2d"), {
+        type: "doughnut",
+        data: { labels: ["Full parity", "No parity"], datasets: [{ data: [parityFull, parityPartial], backgroundColor: [PARITY_COLORS.full, PARITY_COLORS.partial], borderColor: "#fff", borderWidth: 2 }] },
+        options: baseOpts({
+          cutout: "52%", layout: { padding: 4 },
+          plugins: { legend: { display: true, position: "right", labels: { font: { size: 8 }, boxWidth: 10, boxHeight: 10, padding: 5 } }, tooltip: { enabled: false },
+            datalabels: { color: "#fff", font: { weight: 700, size: 8, family: "Pragmatica, sans-serif" }, formatter: (v) => { const pct = v / parTotal * 100; return pct < 6 ? "" : pct.toFixed(0) + "%"; } } },
+        }),
+        plugins: [ChartDataLabels],
+      });
+    }
   }
 
   /* ---- maps via comp-map.js: market-wide (all props) for overview, comps for comp set ---- */

@@ -135,6 +135,12 @@
   table.dt tbody tr:nth-child(even) td { background: var(--beige); }
   table.dt tfoot td { padding: 6px 8px; text-align: right; font-weight: 700; border-top: 2px solid var(--slate); background: var(--beige-deep); }
   table.dt tfoot td:first-child { text-align: left; }
+  /* Secondary growth rows (YoY / 2-Yr / 3-Yr) under the bold aggregate row */
+  table.dt tfoot tr.gr td { background: #fff; font-weight: 700; color: var(--slate-70); border-top: 1px solid var(--beige-deep); }
+  table.dt td.up { color: var(--everest); }
+  table.dt td.down { color: var(--birch); }
+  /* Unit Mix sits full-page beneath the comp table but keeps a readable width */
+  .umix-wrap { max-width: 3.6in; }
 
   .two-col { display: grid; grid-template-columns: 1.5fr 1fr; gap: 16px; align-items: start; }
   .foot { margin-top: auto; padding-top: 12px; border-top: 1px solid var(--beige-deep); display: flex; justify-content: space-between; font-size: 8px; color: var(--slate-50); }
@@ -299,13 +305,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   /* ---- shared bits ---- */
-  const TOTAL = 9;
+  const TOTAL = 11;
   const runHead = `<div class="run-head"><span>Subtext Living · Market Report · <b>${esc(M.anchor_university)}</b></span><span>${esc(M.city)}, ${esc(M.state_abbr)} · ${asOfText}</span></div>`;
   const mainHead = (num, title, sub) => `
     <div class="main-head">
       <div class="num">${num}</div>
       <div class="ttl">${title}</div>
-      <div class="meta">${M.is_subtext30 ? '<span class="chip chip-s30">★ Subtext-30</span>' : ""}${M.fwd_rank ? `<span class="chip chip-rank">Fwd rank #${M.fwd_rank}</span>` : ""}</div>
+      <div class="meta"></div>
     </div>`;
   const foot = (n) => `<div class="foot"><span>Subtext Living - Market Report · ${esc(M.anchor_university)}</span><span>Page ${n} of ${TOTAL}</span></div>`;
   const kpiCards = (list) => list.map((k) => `<div class="kpi"><div class="kpi-label">${k.l}</div><div class="kpi-value ${k.cls || ""}">${k.v}</div><div class="kpi-sub">${k.s}</div></div>`).join("");
@@ -361,6 +367,77 @@ document.addEventListener("DOMContentLoaded", async () => {
   const wAvg = (key) => { let n = 0, d = 0; comps.forEach((p) => { if (p[key] != null && p.beds) { n += p[key] * p.beds; d += p.beds; } }); return d > 0 ? n / d : null; };
   const totBeds = comps.reduce((s, p) => s + (p.beds || 0), 0);
   const compMixRows = utypes.map((t) => `<tr><td>${t}</td><td>${fmtInt(utypeUnits[t])}</td><td>${utypeTotal ? (utypeUnits[t] / utypeTotal * 100).toFixed(1) + "%" : "-"}</td></tr>`).join("");
+
+  // ----- Competitive Set detail tables (per-year leasing history, scoped to comps) -----
+  const DT_MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const compKeySet = new Set(comps.map((p) => p.property_key));
+  const compHist = propHist.filter((r) => compKeySet.has(r.property_key));
+  const dYears = [...new Set(compHist.map((r) => Number(r.year_)))].sort((a, b) => a - b).slice(-5);
+  const hLook = {};
+  compHist.forEach((r) => { const k = r.property_key, y = Number(r.year_); (hLook[k] = hLook[k] || {})[y] = r; });
+  let dMonth = "";
+  if (compHist.length) { const iso = compHist[0].data_as_of; if (typeof iso === "string" && iso.length >= 7) { const mm = Number(iso.slice(5, 7)); if (mm >= 1 && mm <= 12) dMonth = DT_MONTHS[mm - 1]; } }
+  const dAnchor = (lbl) => dMonth ? `${lbl} (${dMonth})` : lbl;
+  const bedW = (rows, f) => { let n = 0, d = 0; rows.forEach((r) => { if (r && r[f] != null && r.beds != null) { n += Number(r[f]) * Number(r.beds); d += Number(r.beds); } }); return d > 0 ? n / d : null; };
+  const grow = (c, p) => (c == null || p == null || p === 0) ? null : (c - p) / p;
+  const gCell = (g) => `<td class="${g == null ? "" : g >= 0 ? "up" : "down"}">${g == null ? "" : fmtSigned(g)}</td>`;
+  const dHeadCells = `<th>Property</th><th>Built</th><th>Mi</th><th>Beds</th>${dYears.map((y) => `<th>${y}</th>`).join("")}`;
+  const dMetaCells = (p) => `<td>${p.yearBuilt ?? "-"}</td><td>${p.milesToClosestCampus != null ? p.milesToClosestCampus.toFixed(1) : "-"}</td><td>${fmtInt(p.beds)}</td>`;
+  const DT_LBLSPAN = 4;
+  const dEmpty = `<tr><td colspan="${DT_LBLSPAN + dYears.length}">No comp-set leasing history on file.</td></tr>`;
+
+  // Effective rent / bed by year + bed-weighted average with YoY / 2-Yr / 3-Yr growth
+  const dRentAvg = {};
+  dYears.forEach((y) => { dRentAvg[y] = bedW(comps.map((p) => hLook[p.property_key]?.[y]).filter(Boolean), "avg_rent_per_bed"); });
+  const dRatesTable = `
+    <table class="dt">
+      <thead><tr>${dHeadCells}</tr></thead>
+      <tbody>${comps.length ? comps.map((p) => `<tr><td>${esc(p.property_name || "(unnamed)")}</td>${dMetaCells(p)}${dYears.map((y) => { const r = hLook[p.property_key]?.[y]; return `<td>${r && r.avg_rent_per_bed ? fmtUsd(r.avg_rent_per_bed) : "-"}</td>`; }).join("")}</tr>`).join("") : dEmpty}</tbody>
+      ${comps.length ? `<tfoot>
+        <tr><td colspan="${DT_LBLSPAN}">Avg Rent / Bed</td>${dYears.map((y) => `<td>${fmtUsd(dRentAvg[y])}</td>`).join("")}</tr>
+        <tr class="gr"><td colspan="${DT_LBLSPAN}">YoY Growth</td>${dYears.map((y, i) => i === 0 ? "<td></td>" : gCell(grow(dRentAvg[y], dRentAvg[dYears[i - 1]]))).join("")}</tr>
+        <tr class="gr"><td colspan="${DT_LBLSPAN}">2-Yr Growth</td>${dYears.map((y, i) => i < 2 ? "<td></td>" : gCell(grow(dRentAvg[y], dRentAvg[dYears[i - 2]]))).join("")}</tr>
+        <tr class="gr"><td colspan="${DT_LBLSPAN}">3-Yr Growth</td>${dYears.map((y, i) => i < 3 ? "<td></td>" : gCell(grow(dRentAvg[y], dRentAvg[dYears[i - 3]]))).join("")}</tr>
+      </tfoot>` : ""}
+    </table>`;
+
+  // Per-property rent growth (YoY) + average of property-level growths
+  const dRgYear = Object.fromEntries(dYears.map((y) => [y, []]));
+  const dRgBody = comps.map((p) => {
+    const cells = dYears.map((y, i) => {
+      if (i === 0) return "<td></td>";
+      const g = grow(hLook[p.property_key]?.[y]?.avg_rent_per_bed, hLook[p.property_key]?.[dYears[i - 1]]?.avg_rent_per_bed);
+      if (g != null) dRgYear[y].push(g);
+      return gCell(g);
+    }).join("");
+    return `<tr><td>${esc(p.property_name || "(unnamed)")}</td>${dMetaCells(p)}${cells}</tr>`;
+  }).join("");
+  const dRgAvg = dYears.map((y, i) => { if (i === 0) return "<td></td>"; const gs = dRgYear[y]; if (!gs.length) return "<td></td>"; return gCell(gs.reduce((s, x) => s + x, 0) / gs.length); }).join("");
+  const dRentGrowthTable = `
+    <table class="dt">
+      <thead><tr>${dHeadCells}</tr></thead>
+      <tbody>${comps.length ? dRgBody : dEmpty}</tbody>
+      ${comps.length ? `<tfoot><tr><td colspan="${DT_LBLSPAN}">Average Growth</td>${dRgAvg}</tr></tfoot>` : ""}
+    </table>`;
+
+  // Pre-lease / occupancy by year + bed-weighted average with YoY / 2-Yr growth
+  const dPctTable = (field) => {
+    const avg = {};
+    dYears.forEach((y) => { avg[y] = bedW(comps.map((p) => hLook[p.property_key]?.[y]).filter(Boolean), field); });
+    const lbl = field === "prelease" ? "Average Pre-lease" : "Average Occupancy";
+    return `
+    <table class="dt">
+      <thead><tr>${dHeadCells}</tr></thead>
+      <tbody>${comps.length ? comps.map((p) => `<tr><td>${esc(p.property_name || "(unnamed)")}</td>${dMetaCells(p)}${dYears.map((y) => { const r = hLook[p.property_key]?.[y]; return `<td>${r && r[field] != null ? fmtPct0(r[field]) : "-"}</td>`; }).join("")}</tr>`).join("") : dEmpty}</tbody>
+      ${comps.length ? `<tfoot>
+        <tr><td colspan="${DT_LBLSPAN}">${lbl}</td>${dYears.map((y) => `<td>${fmtPct1(avg[y])}</td>`).join("")}</tr>
+        <tr class="gr"><td colspan="${DT_LBLSPAN}">YoY Growth</td>${dYears.map((y, i) => i === 0 ? "<td></td>" : gCell(grow(avg[y], avg[dYears[i - 1]]))).join("")}</tr>
+        <tr class="gr"><td colspan="${DT_LBLSPAN}">2-Yr Growth</td>${dYears.map((y, i) => i < 2 ? "<td></td>" : gCell(grow(avg[y], avg[dYears[i - 2]]))).join("")}</tr>
+      </tfoot>` : ""}
+    </table>`;
+  };
+  const dPreleaseTable = dPctTable("prelease");
+  const dOccupancyTable = dPctTable("occupancy");
 
   // Fundamentals metric/scope definitions
   const METRICS = [
@@ -482,26 +559,42 @@ document.addEventListener("DOMContentLoaded", async () => {
     ${runHead}
     ${mainHead("05", "Competitive Set", `${comps.length} selected propert${comps.length === 1 ? "y" : "ies"} · ${fmtInt(totBeds)} beds`)}
     <div class="sub">Comp Set Map</div>
-    <img id="report-comp-map" class="map-img" alt="Competitive set map (rendering…)">
-    <div class="two-col">
-      <div>
-        <div class="sub">Competitive Set</div>
-        <table class="dt">
-          <thead><tr><th>Property</th><th>Built</th><th>Beds</th><th>Mi</th><th>Avg Rent</th><th>Rent/SF</th><th>Occ</th><th>Pre-lse</th></tr></thead>
-          <tbody>${compRows || '<tr><td colspan="8">No comp-set properties on file.</td></tr>'}</tbody>
-          ${comps.length ? `<tfoot><tr><td>Bed-weighted · ${comps.length} comps</td><td></td><td>${fmtInt(totBeds)}</td><td></td><td>${fmtUsd(wAvg("avg_rent"))}</td><td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "-"}</td><td>${fmtPct1(wAvg("occupancy"))}</td><td>${fmtPct1(wAvg("prelease"))}</td></tr></tfoot>` : ""}
-        </table>
-      </div>
-      <div>
-        <div class="sub">Unit Mix</div>
-        <table class="dt">
-          <thead><tr><th>Unit Type</th><th>Units</th><th>%</th></tr></thead>
-          <tbody>${compMixRows || '<tr><td colspan="3">No floor-plan data.</td></tr>'}</tbody>
-          ${utypeTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(utypeTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
-        </table>
-      </div>
+    <img id="report-comp-map" class="map-img map-img-sm" alt="Competitive set map (rendering…)">
+    <div class="sub">Competitive Set</div>
+    <table class="dt">
+      <thead><tr><th>Property</th><th>Built</th><th>Beds</th><th>Mi</th><th>Avg Rent</th><th>Rent/SF</th><th>Occ</th><th>Pre-lse</th></tr></thead>
+      <tbody>${compRows || '<tr><td colspan="8">No comp-set properties on file.</td></tr>'}</tbody>
+      ${comps.length ? `<tfoot><tr><td>Bed-weighted · ${comps.length} comps</td><td></td><td>${fmtInt(totBeds)}</td><td></td><td>${fmtUsd(wAvg("avg_rent"))}</td><td>${wAvg("avg_rent_per_sf") != null ? "$" + wAvg("avg_rent_per_sf").toFixed(2) : "-"}</td><td>${fmtPct1(wAvg("occupancy"))}</td><td>${fmtPct1(wAvg("prelease"))}</td></tr></tfoot>` : ""}
+    </table>
+    <div class="sub">Unit Mix</div>
+    <div class="umix-wrap">
+      <table class="dt">
+        <thead><tr><th>Unit Type</th><th>Units</th><th>%</th></tr></thead>
+        <tbody>${compMixRows || '<tr><td colspan="3">No floor-plan data.</td></tr>'}</tbody>
+        ${utypeTotal ? `<tfoot><tr><td>Total</td><td>${fmtInt(utypeTotal)}</td><td>100.0%</td></tr></tfoot>` : ""}
+      </table>
     </div>
     ${foot(9)}
+  </div>
+
+  <div class="sheet">
+    ${runHead}
+    ${mainHead("06", "Competitive Set Detail", "Annual leasing snapshots · bed-weighted aggregates")}
+    <div class="sub">Effective Rent / Bed by Year</div>
+    ${dRatesTable}
+    <div class="sub">Rent Growth - year-over-year by property</div>
+    ${dRentGrowthTable}
+    ${foot(10)}
+  </div>
+
+  <div class="sheet">
+    ${runHead}
+    ${mainHead("06", "Competitive Set Detail", "Pre-lease &amp; occupancy by year · bed-weighted aggregates")}
+    <div class="sub">${dAnchor("Pre-lease")} by Year</div>
+    ${dPreleaseTable}
+    <div class="sub">${dAnchor("Occupancy")} by Year</div>
+    ${dOccupancyTable}
+    ${foot(11)}
   </div>`;
 
   document.getElementById("report-loading").style.display = "none";

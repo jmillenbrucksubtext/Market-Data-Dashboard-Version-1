@@ -1285,6 +1285,104 @@ h1, h2, h3, .serif {
 }
 .comps-table-actions .table-dl-btn { align-self: center; }
 
+/* Per-chart / per-table info icon + shared popover (injected by chart-info.js).
+   The circled-i sits inline right after a title; clicking it opens one shared
+   card explaining the metric's formula, source field, and significance. */
+.chart-info-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--slate-30);
+  cursor: pointer;
+  vertical-align: middle;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.chart-info-btn:hover,
+.chart-info-btn.is-open { color: var(--slate); background: var(--beige-deep); }
+.chart-info-btn svg { display: block; }
+/* Invert on the comp detail tables' green title band; shrink on KPI labels. */
+.comp-table-title .chart-info-btn { color: rgba(255, 255, 255, 0.6); }
+.comp-table-title .chart-info-btn:hover,
+.comp-table-title .chart-info-btn.is-open { color: #fff; background: rgba(255, 255, 255, 0.15); }
+.kpi-label .chart-info-btn { width: 15px; height: 15px; margin-left: 4px; }
+@media print { .chart-info-btn { display: none; } }
+
+.chart-info-pop {
+  position: absolute;
+  z-index: 4000;
+  width: 340px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 24px);
+  overflow-y: auto;
+  background: #fff;
+  border: 1px solid var(--beige-deep);
+  border-radius: 8px;
+  box-shadow: 0 8px 28px rgba(43, 40, 37, 0.18);
+  padding: 14px 16px 16px;
+  font-family: "Pragmatica", sans-serif;
+  color: var(--slate);
+  line-height: 1.45;
+}
+.chart-info-pop[hidden] { display: none; }
+.chart-info-head {
+  font-family: "Mencken Std", Georgia, "Times New Roman", serif;
+  font-weight: 700;
+  font-size: 15px;
+  letter-spacing: -0.01em;
+  margin-bottom: 8px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.chart-info-sec { margin-top: 10px; }
+.chart-info-sec:first-of-type { margin-top: 0; }
+.chart-info-k {
+  font-size: 9.5px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-50);
+  margin-bottom: 2px;
+}
+.chart-info-v { font-size: 12.5px; color: var(--slate-90); }
+.chart-info-v code,
+.chart-info-rows code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11.5px;
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 3px;
+  padding: 0 3px;
+}
+.chart-info-rows {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 2px;
+}
+.chart-info-rows th,
+.chart-info-rows td {
+  text-align: left;
+  vertical-align: top;
+  font-size: 11.5px;
+  font-weight: 400;
+  padding: 3px 0;
+  border-top: 1px solid var(--beige-deep);
+}
+.chart-info-rows th {
+  font-weight: 700;
+  color: var(--slate);
+  white-space: nowrap;
+  padding-right: 10px;
+}
+.chart-info-rows tr:first-child th,
+.chart-info-rows tr:first-child td { border-top: none; }
+
 /* Comp Map Generator (Comps tab) -------------------------------- */
 .comp-map-actions {
   display: flex;

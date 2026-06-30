@@ -1541,12 +1541,18 @@ function renderPipeline() {
   }
 
   // ---- Panel 3: Deliveries Over Time (beds by year built) ---------------
+  // Per-year bed totals drive the bar heights; parallel *Props maps keep the
+  // contributing properties so the tooltip can name what delivered each year.
   const delivered = {}, projected = {};
+  const deliveredProps = {}, projectedProps = {};
   scoped.forEach((p) => {
     const yb = p.yearBuilt, b = p.beds || 0;
     if (!yb || !b) return;
-    const bucket = ["stable", "lease up"].includes(p.phase) ? delivered : projected;
+    const isDelivered = ["stable", "lease up"].includes(p.phase);
+    const bucket = isDelivered ? delivered : projected;
+    const propBucket = isDelivered ? deliveredProps : projectedProps;
     bucket[yb] = (bucket[yb] || 0) + b;
+    (propBucket[yb] = propBucket[yb] || []).push({ name: p.property_name, beds: b });
   });
   const years = [...new Set([...Object.keys(delivered), ...Object.keys(projected)].map(Number))]
     .sort((a, b) => a - b);
@@ -1581,7 +1587,19 @@ function renderPipeline() {
           legend: { position: "bottom",
             labels: { font: { size: 11, family: "Pragmatica, sans-serif" }, color: "#2b2825",
                       boxWidth: 12, boxHeight: 12, padding: 10 } },
-          tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} beds` } },
+          tooltip: { callbacks: {
+            label: (c) => `${c.dataset.label}: ${fmtInt(c.parsed.y)} beds`,
+            // List the properties making up this segment, largest first, so
+            // hovering a year reveals what delivered (or is projected) and how
+            // many beds each contributed.
+            afterLabel: (c) => {
+              const y = years[c.dataIndex];
+              const list = c.dataset.label === "Beds Delivered" ? deliveredProps[y] : projectedProps[y];
+              if (!list || !list.length) return "";
+              return list.slice().sort((a, b) => b.beds - a.beds)
+                .map((p) => `  • ${p.name}: ${fmtInt(p.beds)}`);
+            },
+          } },
           datalabels: { display: false },
         },
         scales: {

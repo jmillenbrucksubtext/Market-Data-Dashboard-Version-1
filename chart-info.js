@@ -255,7 +255,7 @@
       title: "Deliveries Over Time",
       formula: "Stacked bars of beds by year built: delivered (stable / lease-up) versus projected (under-construction / planned).",
       sql: "`properties` beds grouped by yearBuilt and phase",
-      sig: "The delivery timeline of new supply."
+      sig: "The delivery timeline of new supply. Hover a year to see which properties delivered and the beds each contributed."
     },
     "pipe-supplydemand": {
       title: "Uncaptured Demand",

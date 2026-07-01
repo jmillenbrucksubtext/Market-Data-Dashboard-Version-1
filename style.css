@@ -363,10 +363,10 @@ h1, h2, h3, .serif {
   color: var(--slate);
   font-weight: 700;
 }
-/* Pursuit markets is a distinct lens (the active deal pipeline), not a focus
+/* Active markets is a distinct lens (the deal pipeline board), not a focus
    subset - give it an everest-green active state so it reads differently. */
-.subtext-toggle-pursuit input { accent-color: var(--everest); }
-.subtext-toggle-pursuit.active {
+.subtext-toggle-active input { accent-color: var(--everest); }
+.subtext-toggle-active.active {
   background: var(--everest);
   border-color: var(--everest);
   color: #fff;
@@ -1912,6 +1912,11 @@ h1, h2, h3, .serif {
   border: 3px solid var(--lime);
   box-shadow: none;
 }
+/* The map shows one colour scheme at a time: pipeline stage when "Active
+   markets" is on, qualifier score otherwise. JS toggles .legend-mode-active. */
+.map-legend.legend-mode-active .legend-qualifier { display: none; }
+.map-legend:not(.legend-mode-active) .legend-status { display: none; }
+.map-legend .legend-count { color: var(--slate50); font-weight: 600; }
 
 /* Leaflet custom marker icons (set as L.divIcon) */
 .leaflet-prop-pin .pin-dot {

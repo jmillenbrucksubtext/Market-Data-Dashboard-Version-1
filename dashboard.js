@@ -311,11 +311,11 @@ function visibleScorecardRows() {
   const q = document.getElementById("market-filter").value.trim().toLowerCase();
   const subtext30 = document.getElementById("subtext30-only").checked;
   const power4 = document.getElementById("power4-only").checked;
-  const pursuit = document.getElementById("pursuit-only").checked;
+  const active = document.getElementById("active-markets")?.checked;
 
   if (q) {
     // A search reaches the entire tracked universe - the map toggles
-    // (Subtext-30 / Power 4 / Pursuit) are bypassed so any market can be
+    // (Subtext-30 / Power 4 / Active markets) are bypassed so any market can be
     // found, not just the ones currently filtered onto the map.
     rows = rows.filter((r) =>
       (r.anchor_university || "").toLowerCase().includes(q) ||
@@ -329,8 +329,8 @@ function visibleScorecardRows() {
     if (power4) {
       rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
     }
-    if (pursuit) {
-      rows = rows.filter((r) => r.is_pursuit === 1);
+    if (active) {
+      rows = rows.filter((r) => r.market_status);
     }
   }
 
@@ -478,23 +478,32 @@ function bindUI() {
     renderAll();
   });
 
-  // Pursuit markets - Subtext's active "Markets - Pursuing" pipeline.
-  const pursuit = document.getElementById("pursuit-only");
-  const pursuitLabel = document.getElementById("pursuit-toggle-label");
+  // Active markets - Subtext's pipeline board (Upcoming/Assessing/Pursuing).
+  const active = document.getElementById("active-markets");
+  const activeLabel = document.getElementById("active-toggle-label");
   // Surface the total in the toggle label so the count is visible even when off.
-  const pursuitTotal = DATA.tables.scorecard.filter((r) => r.is_pursuit === 1).length;
-  if (pursuitTotal) {
-    pursuitLabel.querySelector("span").textContent = `Pursuit markets (${pursuitTotal})`;
+  const activeTotal = DATA.tables.scorecard.filter((r) => r.market_status).length;
+  if (activeTotal) {
+    activeLabel.querySelector("span").textContent = `Active markets (${activeTotal})`;
   }
-  pursuit.addEventListener("change", () => {
-    pursuitLabel.classList.toggle("active", pursuit.checked);
-    // Pursuit is a curated cross-cut that includes non-Subtext-30 markets, so
-    // AND-ing it with the focus filters (Subtext-30 is on by default) would hide
-    // most of them. Clear those filters when pursuit is switched on.
-    if (pursuit.checked) {
+  // Fill the pipeline-stage legend counts once (they don't change with filters).
+  for (const stage of ["upcoming", "assessing", "pursuing"]) {
+    const el = document.getElementById(`legend-count-${stage}`);
+    if (el) {
+      el.textContent = `(${DATA.tables.scorecard.filter((r) => r.market_status === stage).length})`;
+    }
+  }
+  syncLegendMode();
+  active.addEventListener("change", () => {
+    activeLabel.classList.toggle("active", active.checked);
+    // Active markets is a curated cross-cut that includes non-Subtext-30 markets,
+    // so AND-ing it with the focus filters would hide most of them. Clear those
+    // filters when it is switched on.
+    if (active.checked) {
       if (cb.checked) { cb.checked = false; label.classList.remove("active"); }
       if (p4.checked) { p4.checked = false; p4Label.classList.remove("active"); }
     }
+    syncLegendMode();
     renderAll();
   });
 
@@ -1021,6 +1030,24 @@ function addFullscreenControl(map) {
 
 /* ----- National map of all tracked markets ------------------- */
 
+// Pipeline-stage pin colours (used when "Active markets" is on). Neutral slate
+// (Upcoming) -> amber (Assessing) -> everest green (Pursuing) reads as a funnel.
+const STATUS_COLOR = {
+  pursuing: "#16352e",   // everest
+  assessing: "#c79830",  // warn / amber
+  upcoming: "#837c75",   // slate50
+};
+
+// Show the pipeline-stage legend when "Active markets" is on, qualifier
+// otherwise. The active-markets checkbox drives the map's pin colouring too.
+function syncLegendMode() {
+  const legend = document.querySelector(".map-legend");
+  const active = document.getElementById("active-markets");
+  if (legend && active) {
+    legend.classList.toggle("legend-mode-active", active.checked);
+  }
+}
+
 function renderIndustryMap() {
   const el = document.getElementById("industry-map");
   if (!el) return;
@@ -1108,13 +1135,20 @@ function renderIndustryMap() {
     return "#a95818";                              // birch / rust
   }
 
+  // In "Active markets" mode, colour pins by pipeline stage instead of qualifier
+  // score; fall back to qualifier colour for any pin without a status (e.g. a
+  // search result outside the active board).
+  const activeMode = document.getElementById("active-markets")?.checked;
+  const fillFor = (r) =>
+    (activeMode && r.market_status && STATUS_COLOR[r.market_status]) || pinColor(r.qualifier_score);
+
   for (const r of rows) {
     const coords = ANCHOR_COORDS.get(r.market_key);
     if (!coords) continue;
     const isS30 = r.is_subtext30 === 1;
     const marker = L.circleMarker([coords.lat, coords.lng], {
       radius: isS30 ? 9 : 6,
-      fillColor: pinColor(r.qualifier_score),
+      fillColor: fillFor(r),
       color: isS30 ? "#c1d100" : "#ffffff",        // lime ring for Subtext-30, white for others
       weight: isS30 ? 3 : 1.5,
       fillOpacity: 0.92,
@@ -1124,13 +1158,14 @@ function renderIndustryMap() {
       : `${Math.round(r.qualifier_score * 100)}%`;
     const beds = r.existing_beds != null ? fmtInt(r.existing_beds) : "-";
     const rent = r.avg_rent_per_bed != null ? fmtUsd(r.avg_rent_per_bed) : "-";
-    const accent = pinColor(r.qualifier_score);
+    const accent = fillFor(r);
     marker.bindPopup(`
       <div class="market-popup" style="--popup-accent:${accent}">
         <div class="market-popup-head">
           <div class="market-popup-title">${escapeHtml(r.anchor_university || "")}</div>
           <div class="market-popup-sub">
             <span class="market-popup-loc">${escapeHtml(r.city || "")}, ${escapeHtml(r.state_abbr || "")}</span>
+            ${r.market_status ? `<span class="market-popup-badge" style="background:${STATUS_COLOR[r.market_status]};color:#fff">${r.market_status.charAt(0).toUpperCase() + r.market_status.slice(1)}</span>` : ""}
             ${isS30 ? '<span class="market-popup-badge">★ Subtext-30</span>' : ""}
           </div>
         </div>

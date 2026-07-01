@@ -35,9 +35,9 @@
     /* ================= INDUSTRY PAGE (index.html) ================= */
     "industry-map": {
       title: "Industry map",
-      formula: "One pin per market, placed at the anchor university. Pin colour is the qualifier-score tier (>= 80% green, 60-80% amber, < 60% red, NA grey); pin size scales with `existing_beds`.",
-      sql: "`scorecard` <- dbo.MarketReports + dbo.Markets (latest snapshot): anchor_university, city, state_abbr, qualifier_score, existing_beds, is_subtext30",
-      sig: "A geographic read of where every tracked market sits and how it scores. Toggles filter to the Subtext-30 list or the Power-4 conference markets."
+      formula: "One pin per market, placed at the anchor university. With `Active markets` on (default) pins are coloured by pipeline stage (Pursuing green, Assessing amber, Upcoming slate); with it off pins revert to the qualifier-score tier (>= 80% green, 60-79% amber, < 60% rust, NA grey). Subtext-30 markets get a larger pin with a lime ring.",
+      sql: "`scorecard` <- dbo.MarketReports + dbo.Markets (latest snapshot): anchor_university, city, state_abbr, qualifier_score, existing_beds, is_subtext30, market_status",
+      sig: "A geographic read of where every tracked market sits. `Active markets` shows Subtext's pipeline board (Upcoming / Assessing / Pursuing) categorised by stage; the other toggles filter to the Subtext-30 list or the Power-4 conference markets."
     },
     "scorecard": {
       title: "Market scorecard",

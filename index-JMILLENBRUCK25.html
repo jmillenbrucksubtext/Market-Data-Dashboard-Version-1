@@ -79,9 +79,9 @@
             <input type="checkbox" id="power4-only">
             <span>Power 4 only</span>
           </label>
-          <label class="subtext-toggle subtext-toggle-pursuit active" id="pursuit-toggle-label" title="Markets in Subtext's active 'Markets - Pursuing' pipeline (ProjectCosts, refreshed weekly)">
-            <input type="checkbox" id="pursuit-only" checked>
-            <span>Pursuit markets</span>
+          <label class="subtext-toggle subtext-toggle-active active" id="active-toggle-label" title="Markets on Subtext's active pipeline board: Upcoming, Assessing, and Pursuing">
+            <input type="checkbox" id="active-markets" checked>
+            <span>Active markets</span>
           </label>
           <span class="freshness">
             <span>Data as of</span>
@@ -106,8 +106,25 @@
           <div class="card-body">
             <div class="map-with-legend">
               <div id="industry-map" class="industry-map"></div>
-              <div class="map-legend">
-                <div class="legend-section">
+              <div class="map-legend legend-mode-active">
+                <!-- Active-markets mode: pins coloured by pipeline stage. -->
+                <div class="legend-section legend-status">
+                  <div class="legend-section-title">Pipeline stage</div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#16352e"></span>
+                    <span>Pursuing <span class="legend-count" id="legend-count-pursuing"></span></span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#c79830"></span>
+                    <span>Assessing <span class="legend-count" id="legend-count-assessing"></span></span>
+                  </div>
+                  <div class="legend-row">
+                    <span class="legend-dot" style="background:#837c75"></span>
+                    <span>Upcoming <span class="legend-count" id="legend-count-upcoming"></span></span>
+                  </div>
+                </div>
+                <!-- Default mode (Active markets off): pins coloured by qualifier score. -->
+                <div class="legend-section legend-qualifier">
                   <div class="legend-section-title">Qualifier score</div>
                   <div class="legend-row">
                     <span class="legend-dot" style="background:#16352e"></span>

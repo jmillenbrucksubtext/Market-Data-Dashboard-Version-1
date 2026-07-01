@@ -875,6 +875,48 @@ def compute_pursuit_markets(cur, scorecard: list[dict]) -> dict[int, int]:
 
 
 # ============================================================
+# Active markets - hardcoded 3-stage CRM view (Upcoming / Assessing / Pursuing)
+# ============================================================
+# TEMPORARY: pinned by market_key to match the CRM's "Markets - *" board exactly
+# (captured 2026-07-01). This supersedes the SQL-derived pursuit flag on the
+# Industry map because the ProjectCosts snapshot lags the CRM by ~a snapshot and
+# lumps the parallel "- P3" track in with the student-housing (SH) pipeline.
+# compute_pursuit_markets() above is left in place as the basis for a future
+# live 3-stage sync; until then these lists are the source of truth.
+#   TODO: replace with a live feed off dbo.ProjectCosts project_stage, filtering
+#   out '- P3' titles and mapping Upcoming/Assessing/Pursuing per stage.
+ACTIVE_MARKET_STATUS: dict[int, str] = {
+    # Markets - Pursuing (18)
+    155: "pursuing",   # Ohio State - Columbus
+    960: "pursuing",   # Oregon State - Corvallis
+    2375: "pursuing",  # Penn State - State College
+    2417: "pursuing",  # Rutgers - New Brunswick
+    2418: "pursuing",  # UConn - Storrs/Mansfield
+    2400: "pursuing",  # Virginia Tech - Blacksburg
+    2344: "pursuing",  # UNC Chapel Hill
+    86: "pursuing",    # Missouri - Columbia
+    1804: "pursuing",  # LSU - Baton Rouge
+    27: "pursuing",    # UT Austin
+    1012: "pursuing",  # Utah - Salt Lake City
+    2294: "pursuing",  # Maryland - College Park
+    977: "pursuing",   # Colorado Boulder
+    567: "pursuing",   # Kentucky - Lexington
+    732: "pursuing",   # Syracuse
+    118: "pursuing",   # Indiana - Bloomington
+    12: "pursuing",    # Georgia - Athens
+    11: "pursuing",    # Clemson
+    # Markets - Assessing (1)
+    334: "assessing",  # Wisconsin - Madison
+    # Markets - Upcoming (5)
+    975: "upcoming",   # San Diego (SDSU)
+    940: "upcoming",   # Washington - Seattle
+    15: "upcoming",    # Ole Miss - Oxford
+    383: "upcoming",   # Kansas - Lawrence
+    418: "upcoming",   # South Florida - Tampa
+}
+
+
+# ============================================================
 # Forward Looking Model - rank per market (from forward-model.html)
 # ============================================================
 # The data-science team drops a self-contained forward-model.html into this
@@ -1549,16 +1591,23 @@ def main() -> int:
         payload["tables"][name] = rows
         print(f" {len(rows)} rows")
 
-    # --- Flag pursuit markets (Subtext's 'Markets - Pursuing' pipeline) ---
-    # Stamp is_pursuit / pursuit_deals onto the scorecard so the Industry-page
-    # "Pursuit markets" toggle can filter the map + list off a single field.
-    pursuit_counts = compute_pursuit_markets(cur, payload["tables"]["scorecard"])
+    # --- Flag active markets (CRM 'Markets - *' board: Upcoming/Assessing/Pursuing) ---
+    # Stamp market_status onto the scorecard so the Industry-page "Active markets"
+    # toggle can filter + colour the map off a single field. is_pursuit is kept
+    # (derived from status) for backward compat with the market-state report.
+    # NOTE: pinned from ACTIVE_MARKET_STATUS for now, not SQL - see that constant.
     fwd_ranks = compute_forward_ranks(payload["tables"]["scorecard"])
     for r in payload["tables"]["scorecard"]:
-        n = pursuit_counts.get(r["market_key"], 0)
-        r["is_pursuit"] = 1 if n else 0
-        r["pursuit_deals"] = n
+        status = ACTIVE_MARKET_STATUS.get(r["market_key"])
+        r["market_status"] = status               # "pursuing"|"assessing"|"upcoming"|None
+        r["is_pursuit"] = 1 if status == "pursuing" else 0
+        r["pursuit_deals"] = 1 if status == "pursuing" else 0
         r["fwd_rank"] = fwd_ranks.get(r["market_key"])  # None if not in the screener
+    _sc = payload["tables"]["scorecard"]
+    print("  active markets: "
+          f"{sum(1 for r in _sc if r.get('market_status') == 'upcoming')} upcoming, "
+          f"{sum(1 for r in _sc if r.get('market_status') == 'assessing')} assessing, "
+          f"{sum(1 for r in _sc if r.get('market_status') == 'pursuing')} pursuing")
 
     # --- Read the Market Analysis Schedule Excel (OneDrive synced file) ---
     # Guarded with a timeout: the file is a OneDrive Files-On-Demand placeholder,

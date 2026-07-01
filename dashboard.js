@@ -381,15 +381,17 @@ function visibleScorecardRows() {
 
 /* ----- Scorecard Excel (.xlsx) export ------------------------- */
 
-// Lazy-load SheetJS (same CDN the app already uses for Chart.js) the first time
-// the user exports, so it costs nothing on a normal page view.
-function withXLSX(cb) {
-  if (window.XLSX) { cb(); return; }
-  const existing = document.getElementById("xlsx-lib");
-  if (existing) { existing.addEventListener("load", cb, { once: true }); return; }
+// Lazy-load ExcelJS (same CDN the app already uses for Chart.js) the first time
+// the user exports, so it costs nothing on a normal page view. ExcelJS (not
+// SheetJS) because the free build supports full cell styling for brand fonts,
+// fills, and borders.
+function withExcelJS(cb) {
+  if (window.ExcelJS) { cb(); return; }
+  const existing = document.getElementById("exceljs-lib");
+  if (existing) { existing.addEventListener("load", () => cb(), { once: true }); return; }
   const s = document.createElement("script");
-  s.id = "xlsx-lib";
-  s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+  s.id = "exceljs-lib";
+  s.src = "https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js";
   s.onload = () => cb();
   s.onerror = () => window.alert("Couldn't load the Excel export library. Check your connection and try again.");
   document.head.appendChild(s);
@@ -401,45 +403,117 @@ function dateStamp() {
   return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
 }
 
-// Export the currently-visible (filtered + sorted) scorecard rows to .xlsx,
-// mirroring what the table shows. Percents/currency carry Excel number formats
-// so the values stay real numbers, not strings.
+// Subtext masterbrand palette as Excel ARGB, plus the brand typefaces.
+const XLC = {
+  everest: "FF16352E", beigeDeep: "FFEDE5CF", beige: "FFF7F1E3",
+  slate: "FF2B2825", slate70: "FF5A544F", white: "FFFFFFFF",
+  birch: "FFA95818", warn: "FFC79830",
+};
+const XL_HEAD_FONT = "Mencken Std";   // brand serif (title band)
+const XL_BODY_FONT = "Pragmatica";    // brand sans (everything else)
+function xlFill(argb) { return { type: "pattern", pattern: "solid", fgColor: { argb } }; }
+
+// Export the currently-visible (filtered + sorted) scorecard rows to a branded
+// .xlsx. Percents/currency carry real numbers with Excel number formats.
 function downloadScorecardExcel() {
   const rows = visibleScorecardRows();
   const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+  const STAGE_COLOR = { pursuing: XLC.everest, assessing: XLC.warn, upcoming: XLC.slate70 };
   const cols = [
-    { h: "Anchor University",   get: (r) => r.anchor_university || "",           w: 34 },
-    { h: "City",                get: (r) => r.city || "",                        w: 16 },
-    { h: "State",               get: (r) => r.state_abbr || "",                  w: 7 },
-    { h: "Subtext-30",          get: (r) => (r.is_subtext30 === 1 ? "Yes" : ""), w: 11 },
-    { h: "Market Stage",        get: (r) => cap(r.market_status),                w: 13 },
-    { h: "Fwd Rank",            get: (r) => r.fwd_rank ?? null,                  w: 9,  z: "0" },
-    { h: "Qualifier",           get: (r) => r.qualifier_score ?? null,           w: 10, z: "0.0%" },
-    { h: "Uncaptured Demand",   get: (r) => r.uncaptured_demand ?? null,         w: 17, z: "0.0%" },
-    { h: "Enrollment",          get: (r) => r.total_enrollment ?? null,          w: 12, z: "#,##0" },
-    { h: "Existing Beds",       get: (r) => r.existing_beds ?? null,             w: 13, z: "#,##0" },
-    { h: "Avg Rent / Bed",      get: (r) => r.avg_rent_per_bed ?? null,          w: 13, z: "$#,##0" },
-    { h: "Rent YoY",            get: (r) => r.yoy_rent_growth ?? null,           w: 10, z: "0.0%" },
-    { h: "Pipeline Beds",       get: (r) => r.beds_pipeline_total ?? null,       w: 13, z: "#,##0" },
-    { h: "Mean Origin Income",  get: (r) => r.mean_origin_income ?? null,        w: 17, z: "$#,##0" },
+    { h: "Anchor University",  get: (r) => r.anchor_university || "",           w: 34 },
+    { h: "City",               get: (r) => r.city || "",                        w: 16 },
+    { h: "State",              get: (r) => r.state_abbr || "",                  w: 7 },
+    { h: "Subtext-30",         get: (r) => (r.is_subtext30 === 1 ? "Yes" : ""), w: 11 },
+    { h: "Market Stage",       get: (r) => cap(r.market_status),                w: 13 },
+    { h: "Fwd Rank",           get: (r) => r.fwd_rank ?? null,          w: 9,  num: true, z: "0" },
+    { h: "Qualifier",          get: (r) => r.qualifier_score ?? null,   w: 11, num: true, z: "0.0%" },
+    { h: "Uncaptured Demand",  get: (r) => r.uncaptured_demand ?? null, w: 15, num: true, z: "0.0%" },
+    { h: "Enrollment",         get: (r) => r.total_enrollment ?? null,  w: 12, num: true, z: "#,##0" },
+    { h: "Existing Beds",      get: (r) => r.existing_beds ?? null,     w: 13, num: true, z: "#,##0" },
+    { h: "Avg Rent / Bed",     get: (r) => r.avg_rent_per_bed ?? null,  w: 13, num: true, z: "$#,##0" },
+    { h: "Rent YoY",           get: (r) => r.yoy_rent_growth ?? null,   w: 10, num: true, z: "0.0%" },
+    { h: "Pipeline Beds",      get: (r) => r.beds_pipeline_total ?? null, w: 13, num: true, z: "#,##0" },
+    { h: "Mean Origin Income", get: (r) => r.mean_origin_income ?? null,  w: 16, num: true, z: "$#,##0" },
   ];
-  const aoa = [cols.map((c) => c.h)];
-  rows.forEach((r) => aoa.push(cols.map((c) => c.get(r))));
+  const nCol = cols.length;
+  const asOf = (document.getElementById("data-as-of")?.textContent || "").trim();
 
-  withXLSX(() => {
-    const ws = XLSX.utils.aoa_to_sheet(aoa);
-    ws["!cols"] = cols.map((c) => ({ wch: c.w }));
-    const range = XLSX.utils.decode_range(ws["!ref"]);
-    cols.forEach((c, ci) => {
-      if (!c.z) return;
-      for (let r = 1; r <= range.e.r; r++) {
-        const cell = ws[XLSX.utils.encode_cell({ r, c: ci })];
-        if (cell && cell.t === "n") cell.z = c.z;
-      }
+  withExcelJS(async () => {
+    const wb = new ExcelJS.Workbook();
+    wb.creator = "SubHouse";
+    const ws = wb.addWorksheet("Market Scorecard", {
+      views: [{ state: "frozen", xSplit: 1, ySplit: 3 }],   // lock header + anchor column
     });
-    const wb = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(wb, ws, "Market Scorecard");
-    XLSX.writeFile(wb, `subhouse-market-scorecard-${dateStamp()}.xlsx`);
+    cols.forEach((c, i) => { ws.getColumn(i + 1).width = c.w; });
+
+    // Row 1: everest title band spanning the table.
+    ws.mergeCells(1, 1, 1, nCol);
+    const title = ws.getCell(1, 1);
+    title.value = "Market Scorecard";
+    title.font = { name: XL_HEAD_FONT, size: 15, bold: true, color: { argb: XLC.white } };
+    title.fill = xlFill(XLC.everest);
+    title.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(1).height = 26;
+
+    // Row 2: subtitle (source + count + freshness).
+    ws.mergeCells(2, 1, 2, nCol);
+    const meta = ws.getCell(2, 1);
+    const bits = ["SubHouse", `${rows.length} markets`];
+    if (asOf && asOf !== "-") bits.push(`Data as of ${asOf}`);
+    meta.value = bits.join("   ·   ");
+    meta.font = { name: XL_BODY_FONT, size: 10, color: { argb: XLC.slate70 } };
+    meta.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+    ws.getRow(2).height = 18;
+
+    // Row 3: header - beige fill, slate bold, everest underline.
+    const head = ws.getRow(3);
+    head.height = 30;
+    cols.forEach((c, i) => {
+      const cell = head.getCell(i + 1);
+      cell.value = c.h;
+      cell.font = { name: XL_BODY_FONT, size: 10, bold: true, color: { argb: XLC.slate } };
+      cell.fill = xlFill(XLC.beigeDeep);
+      cell.alignment = { vertical: "middle", horizontal: c.num ? "right" : "left", wrapText: true, indent: 1 };
+      cell.border = { bottom: { style: "medium", color: { argb: XLC.everest } } };
+    });
+
+    // Data rows.
+    rows.forEach((r, ri) => {
+      const row = ws.getRow(4 + ri);
+      row.height = 18;
+      cols.forEach((c, i) => {
+        const cell = row.getCell(i + 1);
+        const v = c.get(r);
+        cell.value = v;
+        if (c.num && c.z && typeof v === "number") cell.numFmt = c.z;
+        let color = XLC.slate;
+        let bold = i === 0;   // anchor university reads as the row label
+        if (c.h === "Rent YoY" && typeof v === "number") {
+          color = v > 0.005 ? XLC.everest : v < -0.005 ? XLC.birch : XLC.slate70;
+        } else if (c.h === "Market Stage" && r.market_status) {
+          color = STAGE_COLOR[r.market_status] || XLC.slate; bold = true;
+        } else if (c.h === "Subtext-30" && v === "Yes") {
+          color = XLC.everest; bold = true;
+        }
+        cell.font = { name: XL_BODY_FONT, size: 10.5, bold, color: { argb: color } };
+        cell.alignment = { vertical: "middle", horizontal: c.num ? "right" : "left", indent: 1 };
+        cell.border = { bottom: { style: "thin", color: { argb: XLC.beigeDeep } } };
+      });
+    });
+
+    // Sort/filter dropdowns on the header row.
+    ws.autoFilter = { from: { row: 3, column: 1 }, to: { row: 3 + rows.length, column: nCol } };
+
+    const buf = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buf], {
+      type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+    });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `subhouse-market-scorecard-${dateStamp()}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
   });
 }
 

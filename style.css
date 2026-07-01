@@ -1272,6 +1272,28 @@ h1, h2, h3, .serif {
 .chart-dl-btn svg { display: block; }
 @media print { .chart-dl-btn { display: none; } }
 
+/* "Excel" download button in the Market Scorecard card header. */
+.xlsx-dl-btn {
+  margin-left: auto;
+  align-self: center;
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate-70);
+  background: #fff;
+  border: 1px solid var(--beige-deep);
+  border-radius: 6px;
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease, border-color 0.15s ease;
+}
+.xlsx-dl-btn:hover { color: var(--slate); background: var(--bg); border-color: var(--slate-30); }
+.xlsx-dl-btn svg { display: block; }
+@media print { .xlsx-dl-btn { display: none; } }
+
 /* Table CSV download buttons. Inside the comp detail tables' green title
    band the icon inverts to stay legible. */
 .comp-table-title { position: relative; }

@@ -379,6 +379,70 @@ function visibleScorecardRows() {
   return rows;
 }
 
+/* ----- Scorecard Excel (.xlsx) export ------------------------- */
+
+// Lazy-load SheetJS (same CDN the app already uses for Chart.js) the first time
+// the user exports, so it costs nothing on a normal page view.
+function withXLSX(cb) {
+  if (window.XLSX) { cb(); return; }
+  const existing = document.getElementById("xlsx-lib");
+  if (existing) { existing.addEventListener("load", cb, { once: true }); return; }
+  const s = document.createElement("script");
+  s.id = "xlsx-lib";
+  s.src = "https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js";
+  s.onload = () => cb();
+  s.onerror = () => window.alert("Couldn't load the Excel export library. Check your connection and try again.");
+  document.head.appendChild(s);
+}
+
+function dateStamp() {
+  const d = new Date();
+  const p = (n) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}`;
+}
+
+// Export the currently-visible (filtered + sorted) scorecard rows to .xlsx,
+// mirroring what the table shows. Percents/currency carry Excel number formats
+// so the values stay real numbers, not strings.
+function downloadScorecardExcel() {
+  const rows = visibleScorecardRows();
+  const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
+  const cols = [
+    { h: "Anchor University",   get: (r) => r.anchor_university || "",           w: 34 },
+    { h: "City",                get: (r) => r.city || "",                        w: 16 },
+    { h: "State",               get: (r) => r.state_abbr || "",                  w: 7 },
+    { h: "Subtext-30",          get: (r) => (r.is_subtext30 === 1 ? "Yes" : ""), w: 11 },
+    { h: "Market Stage",        get: (r) => cap(r.market_status),                w: 13 },
+    { h: "Fwd Rank",            get: (r) => r.fwd_rank ?? null,                  w: 9,  z: "0" },
+    { h: "Qualifier",           get: (r) => r.qualifier_score ?? null,           w: 10, z: "0.0%" },
+    { h: "Uncaptured Demand",   get: (r) => r.uncaptured_demand ?? null,         w: 17, z: "0.0%" },
+    { h: "Enrollment",          get: (r) => r.total_enrollment ?? null,          w: 12, z: "#,##0" },
+    { h: "Existing Beds",       get: (r) => r.existing_beds ?? null,             w: 13, z: "#,##0" },
+    { h: "Avg Rent / Bed",      get: (r) => r.avg_rent_per_bed ?? null,          w: 13, z: "$#,##0" },
+    { h: "Rent YoY",            get: (r) => r.yoy_rent_growth ?? null,           w: 10, z: "0.0%" },
+    { h: "Pipeline Beds",       get: (r) => r.beds_pipeline_total ?? null,       w: 13, z: "#,##0" },
+    { h: "Mean Origin Income",  get: (r) => r.mean_origin_income ?? null,        w: 17, z: "$#,##0" },
+  ];
+  const aoa = [cols.map((c) => c.h)];
+  rows.forEach((r) => aoa.push(cols.map((c) => c.get(r))));
+
+  withXLSX(() => {
+    const ws = XLSX.utils.aoa_to_sheet(aoa);
+    ws["!cols"] = cols.map((c) => ({ wch: c.w }));
+    const range = XLSX.utils.decode_range(ws["!ref"]);
+    cols.forEach((c, ci) => {
+      if (!c.z) return;
+      for (let r = 1; r <= range.e.r; r++) {
+        const cell = ws[XLSX.utils.encode_cell({ r, c: ci })];
+        if (cell && cell.t === "n") cell.z = c.z;
+      }
+    });
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, ws, "Market Scorecard");
+    XLSX.writeFile(wb, `subhouse-market-scorecard-${dateStamp()}.xlsx`);
+  });
+}
+
 /* Custom autocomplete for the market search box. Suggestions are drawn from
    the ENTIRE tracked universe (every scorecard market), independent of the
    map toggles. Behavior: nothing shows until the first character is typed,
@@ -522,6 +586,9 @@ function bindUI() {
       renderAll();
     });
   });
+
+  const xlsxBtn = document.getElementById("scorecard-xlsx");
+  if (xlsxBtn) xlsxBtn.addEventListener("click", downloadScorecardExcel);
 }
 
 /* ----- KPI strip --------------------------------------------- */

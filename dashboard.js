@@ -413,96 +413,171 @@ const XL_HEAD_FONT = "Mencken Std";   // brand serif (title band)
 const XL_BODY_FONT = "Pragmatica";    // brand sans (everything else)
 function xlFill(argb) { return { type: "pattern", pattern: "solid", fgColor: { argb } }; }
 
-// Export the currently-visible (filtered + sorted) scorecard rows to a branded
-// .xlsx. Percents/currency carry real numbers with Excel number formats.
+/* ----- Pipeline scorecard (grouped by market stage) ----------
+   The Industry scorecard is a monthly-market-update layout: one table per
+   CRM stage (Upcoming / Assessing / Pursuing), each with a green stage band.
+   Shared by the on-screen render and the Excel export. */
+
+const PIPELINE_STAGES = [
+  { key: "upcoming",  label: "Markets - Upcoming" },
+  { key: "assessing", label: "Markets - Assessing" },
+  { key: "pursuing",  label: "Markets - Pursuing" },
+];
+
+// Derived-column maps built once from DATA (the pipeline set is small).
+let _pipelineDerived = null;
+function pipelineDerived() {
+  if (_pipelineDerived) return _pipelineDerived;
+  const t = DATA.tables;
+  const fteGrowth = new Map((t.fte_history || []).map((f) => [f.market_key, f.yoy_fte_growth]));
+  const yoyRent = new Map((t.rent_yoy || []).map((r) => [r.market_key, r.yoy_rent_growth]));
+  const onCampus = new Map();
+  (t.university_info || []).forEach((u) => {
+    const b = u.beds_on_campus_reported ?? u.beds_on_campus_computed ?? 0;
+    onCampus.set(u.market_key, (onCampus.get(u.market_key) || 0) + (b || 0));
+  });
+  const propsByMarket = new Map();
+  (t.properties || []).forEach((p) => {
+    if (!propsByMarket.has(p.market_key)) propsByMarket.set(p.market_key, []);
+    propsByMarket.get(p.market_key).push(p);
+  });
+  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket };
+  return _pipelineDerived;
+}
+
+// Bed-weighted avg rent across a market's properties within `maxMi` of campus.
+function bedWeightedRent(props, maxMi) {
+  let num = 0, den = 0;
+  for (const p of props) {
+    if (p.avg_rent == null || !p.beds) continue;
+    if (maxMi != null && (p.milesToClosestCampus == null || p.milesToClosestCampus > maxMi)) continue;
+    num += p.avg_rent * p.beds; den += p.beds;
+  }
+  return den ? num / den : null;
+}
+
+// Active-market rows (those with a market_status), augmented with the derived
+// columns and filtered by the search box. Grouped by stage at render time.
+function pipelineScorecardRows() {
+  const d = pipelineDerived();
+  const q = (document.getElementById("market-filter")?.value || "").trim().toLowerCase();
+  return DATA.tables.scorecard
+    .filter((r) => r.market_status)
+    .filter((r) => !q
+      || (r.anchor_university || "").toLowerCase().includes(q)
+      || (r.city || "").toLowerCase().includes(q)
+      || (r.state_abbr || "").toLowerCase().includes(q))
+    .map((r) => {
+      const props = d.propsByMarket.get(r.market_key) || [];
+      return {
+        ...r,
+        fte_growth_yoy: d.fteGrowth.get(r.market_key) ?? null,
+        yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
+        on_campus_beds: d.onCampus.get(r.market_key) ?? null,
+        rent_half_mi: bedWeightedRent(props, 0.5),
+        rent_one_mi: bedWeightedRent(props, 1.0),
+        uncaptured_demand: r.penetration_ratio != null ? 1 - r.penetration_ratio : null,
+      };
+    })
+    .sort((a, b) => (a.anchor_university || "").localeCompare(b.anchor_university || ""));
+}
+
+// Column set - mirrors the monthly market update. `xz` = Excel number format.
+const PIPELINE_COLS = [
+  { h: "University",       uni: true },
+  { h: "Total Enrollment", get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE",              get: (r) => r.enr_full_time,        fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE Growth",       get: (r) => r.fte_growth_yoy,       fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Occ.",      get: (r) => r.occupancy,            fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Prelease",  get: (r) => r.prelease,             fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Rent",      get: (r) => r.avg_rent_per_bed,     fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent - 0.5 Mile",  get: (r) => r.rent_half_mi,         fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent - 1.0 Mile",  get: (r) => r.rent_one_mi,          fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "YoY Rent Growth",  get: (r) => r.yoy_rent_growth,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "On-Campus Beds",   get: (r) => r.on_campus_beds,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "PBSH Beds",        get: (r) => r.existing_beds,        fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline",         get: (r) => r.beds_pipeline_total,  fmt: fmtInt,           xz: "#,##0" },
+  { h: "UD as FTE %",      get: (r) => r.uncaptured_demand,    fmt: (v) => fmtPct(v), xz: "0.0%" },
+];
+
+function pipelineRowsByStage(rows) {
+  const byStage = new Map(PIPELINE_STAGES.map((s) => [s.key, []]));
+  rows.forEach((r) => { if (byStage.has(r.market_status)) byStage.get(r.market_status).push(r); });
+  return byStage;
+}
+
+// Export the market update as a branded .xlsx: one green-banded section per
+// stage, real numbers with Excel number formats.
 function downloadScorecardExcel() {
-  const rows = visibleScorecardRows();
-  const cap = (s) => s ? s.charAt(0).toUpperCase() + s.slice(1) : "";
-  const STAGE_COLOR = { pursuing: XLC.everest, assessing: XLC.warn, upcoming: XLC.slate70 };
-  const cols = [
-    { h: "Anchor University",  get: (r) => r.anchor_university || "",           w: 34 },
-    { h: "City",               get: (r) => r.city || "",                        w: 16 },
-    { h: "State",              get: (r) => r.state_abbr || "",                  w: 7 },
-    { h: "Subtext-30",         get: (r) => (r.is_subtext30 === 1 ? "Yes" : ""), w: 11 },
-    { h: "Market Stage",       get: (r) => cap(r.market_status),                w: 13 },
-    { h: "Fwd Rank",           get: (r) => r.fwd_rank ?? null,          w: 9,  num: true, z: "0" },
-    { h: "Qualifier",          get: (r) => r.qualifier_score ?? null,   w: 11, num: true, z: "0.0%" },
-    { h: "Uncaptured Demand",  get: (r) => r.uncaptured_demand ?? null, w: 15, num: true, z: "0.0%" },
-    { h: "Enrollment",         get: (r) => r.total_enrollment ?? null,  w: 12, num: true, z: "#,##0" },
-    { h: "Existing Beds",      get: (r) => r.existing_beds ?? null,     w: 13, num: true, z: "#,##0" },
-    { h: "Avg Rent / Bed",     get: (r) => r.avg_rent_per_bed ?? null,  w: 13, num: true, z: "$#,##0" },
-    { h: "Rent YoY",           get: (r) => r.yoy_rent_growth ?? null,   w: 10, num: true, z: "0.0%" },
-    { h: "Pipeline Beds",      get: (r) => r.beds_pipeline_total ?? null, w: 13, num: true, z: "#,##0" },
-    { h: "Mean Origin Income", get: (r) => r.mean_origin_income ?? null,  w: 16, num: true, z: "$#,##0" },
-  ];
-  const nCol = cols.length;
+  const rows = pipelineScorecardRows();
+  const byStage = pipelineRowsByStage(rows);
+  const nCol = PIPELINE_COLS.length;
   const asOf = (document.getElementById("data-as-of")?.textContent || "").trim();
 
   withExcelJS(async () => {
     const wb = new ExcelJS.Workbook();
     wb.creator = "SubHouse";
-    const ws = wb.addWorksheet("Market Scorecard", {
-      views: [{ state: "frozen", xSplit: 1, ySplit: 3 }],   // lock header + anchor column
-    });
-    cols.forEach((c, i) => { ws.getColumn(i + 1).width = c.w; });
+    const ws = wb.addWorksheet("Market Update", { views: [{ state: "frozen", xSplit: 1 }] });
+    ws.getColumn(1).width = 34;
+    for (let i = 2; i <= nCol; i++) ws.getColumn(i).width = 13;
 
-    // Row 1: everest title band spanning the table.
-    ws.mergeCells(1, 1, 1, nCol);
-    const title = ws.getCell(1, 1);
-    title.value = "Market Scorecard";
+    let rownum = 1;
+    // Title band.
+    ws.mergeCells(rownum, 1, rownum, nCol);
+    const title = ws.getCell(rownum, 1);
+    title.value = "Monthly Market Update" + (asOf && asOf !== "-" ? "   ·   Data as of " + asOf : "");
     title.font = { name: XL_HEAD_FONT, size: 15, bold: true, color: { argb: XLC.white } };
     title.fill = xlFill(XLC.everest);
     title.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
-    ws.getRow(1).height = 26;
+    ws.getRow(rownum).height = 26;
+    rownum += 2;
 
-    // Row 2: subtitle (source + count + freshness).
-    ws.mergeCells(2, 1, 2, nCol);
-    const meta = ws.getCell(2, 1);
-    const bits = ["SubHouse", `${rows.length} markets`];
-    if (asOf && asOf !== "-") bits.push(`Data as of ${asOf}`);
-    meta.value = bits.join("   ·   ");
-    meta.font = { name: XL_BODY_FONT, size: 10, color: { argb: XLC.slate70 } };
-    meta.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
-    ws.getRow(2).height = 18;
-
-    // Row 3: header - beige fill, slate bold, everest underline.
-    const head = ws.getRow(3);
-    head.height = 30;
-    cols.forEach((c, i) => {
-      const cell = head.getCell(i + 1);
-      cell.value = c.h;
-      cell.font = { name: XL_BODY_FONT, size: 10, bold: true, color: { argb: XLC.slate } };
-      cell.fill = xlFill(XLC.beigeDeep);
-      cell.alignment = { vertical: "middle", horizontal: c.num ? "right" : "left", wrapText: true, indent: 1 };
-      cell.border = { bottom: { style: "medium", color: { argb: XLC.everest } } };
-    });
-
-    // Data rows.
-    rows.forEach((r, ri) => {
-      const row = ws.getRow(4 + ri);
-      row.height = 18;
-      cols.forEach((c, i) => {
-        const cell = row.getCell(i + 1);
-        const v = c.get(r);
-        cell.value = v;
-        if (c.num && c.z && typeof v === "number") cell.numFmt = c.z;
-        let color = XLC.slate;
-        let bold = i === 0;   // anchor university reads as the row label
-        if (c.h === "Rent YoY" && typeof v === "number") {
-          color = v > 0.005 ? XLC.everest : v < -0.005 ? XLC.birch : XLC.slate70;
-        } else if (c.h === "Market Stage" && r.market_status) {
-          color = STAGE_COLOR[r.market_status] || XLC.slate; bold = true;
-        } else if (c.h === "Subtext-30" && v === "Yes") {
-          color = XLC.everest; bold = true;
-        }
-        cell.font = { name: XL_BODY_FONT, size: 10.5, bold, color: { argb: color } };
-        cell.alignment = { vertical: "middle", horizontal: c.num ? "right" : "left", indent: 1 };
-        cell.border = { bottom: { style: "thin", color: { argb: XLC.beigeDeep } } };
+    for (const stage of PIPELINE_STAGES) {
+      const list = byStage.get(stage.key) || [];
+      if (!list.length) continue;
+      // Stage band.
+      ws.mergeCells(rownum, 1, rownum, nCol);
+      const band = ws.getCell(rownum, 1);
+      band.value = `${stage.label}  (${list.length})`;
+      band.font = { name: XL_HEAD_FONT, size: 12, bold: true, color: { argb: XLC.white } };
+      band.fill = xlFill(XLC.everest);
+      band.alignment = { vertical: "middle", horizontal: "left", indent: 1 };
+      ws.getRow(rownum).height = 20;
+      rownum++;
+      // Header row.
+      const hr = ws.getRow(rownum);
+      hr.height = 28;
+      PIPELINE_COLS.forEach((c, i) => {
+        const cell = hr.getCell(i + 1);
+        cell.value = c.h;
+        cell.font = { name: XL_BODY_FONT, size: 9, bold: true, color: { argb: XLC.slate } };
+        cell.fill = xlFill(XLC.beigeDeep);
+        cell.alignment = { vertical: "middle", horizontal: c.uni ? "left" : "right", wrapText: true, indent: 1 };
+        cell.border = { bottom: { style: "medium", color: { argb: XLC.everest } } };
       });
-    });
-
-    // Sort/filter dropdowns on the header row.
-    ws.autoFilter = { from: { row: 3, column: 1 }, to: { row: 3 + rows.length, column: nCol } };
+      rownum++;
+      // Data rows.
+      list.forEach((r) => {
+        const row = ws.getRow(rownum);
+        PIPELINE_COLS.forEach((c, i) => {
+          const cell = row.getCell(i + 1);
+          if (c.uni) {
+            cell.value = r.anchor_university || "";
+            cell.font = { name: XL_BODY_FONT, size: 10, bold: true, color: { argb: XLC.slate } };
+            cell.alignment = { horizontal: "left", indent: 1 };
+          } else {
+            const v = c.get(r);
+            cell.value = (v == null ? null : v);
+            if (c.xz && typeof v === "number") cell.numFmt = c.xz;
+            cell.font = { name: XL_BODY_FONT, size: 10, color: { argb: XLC.slate } };
+            cell.alignment = { horizontal: "right", indent: 1 };
+          }
+          cell.border = { bottom: { style: "thin", color: { argb: XLC.beigeDeep } } };
+        });
+        rownum++;
+      });
+      rownum++;   // spacer between stages
+    }
 
     const buf = await wb.xlsx.writeBuffer();
     const blob = new Blob([buf], {
@@ -511,7 +586,7 @@ function downloadScorecardExcel() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = `subhouse-market-scorecard-${dateStamp()}.xlsx`;
+    a.download = `subhouse-market-update-${dateStamp()}.xlsx`;
     a.click();
     URL.revokeObjectURL(url);
   });
@@ -648,19 +723,6 @@ function bindUI() {
     renderAll();
   });
 
-  document.querySelectorAll("#scorecard thead th").forEach((th) => {
-    th.addEventListener("click", () => {
-      const col = th.dataset.sort;
-      if (sortState.col === col) {
-        sortState.dir = sortState.dir === "asc" ? "desc" : "asc";
-      } else {
-        sortState.col = col;
-        sortState.dir = th.dataset.defaultDir || (th.dataset.type === "num" ? "desc" : "asc");
-      }
-      renderAll();
-    });
-  });
-
   const xlsxBtn = document.getElementById("scorecard-xlsx");
   if (xlsxBtn) xlsxBtn.addEventListener("click", downloadScorecardExcel);
 }
@@ -712,57 +774,58 @@ function renderKpis(rows) {
 
 /* ----- Scorecard table --------------------------------------- */
 
-function renderScorecard(rows) {
-  const tbody = document.querySelector("#scorecard tbody");
-  document.querySelectorAll("#scorecard thead th").forEach((th) => {
-    th.classList.remove("sorted-asc", "sorted-desc");
-    if (th.dataset.sort === sortState.col) {
-      th.classList.add(sortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
-    }
+// One table per stage: a green stage band, a column header row, then the
+// markets in that stage (A-Z). Clicking a row opens the market page.
+function renderScorecard() {
+  const container = document.getElementById("pipeline-stages");
+  if (!container) return;
+  const rows = pipelineScorecardRows();
+  const byStage = pipelineRowsByStage(rows);
+  const nCol = PIPELINE_COLS.length;
+  const headCells = PIPELINE_COLS
+    .map((c) => `<th class="${c.uni ? "" : "num"}">${escapeHtml(c.h)}</th>`).join("");
+
+  let html = "";
+  let stagesShown = 0;
+  for (const stage of PIPELINE_STAGES) {
+    const list = byStage.get(stage.key) || [];
+    if (!list.length) continue;
+    stagesShown++;
+    const body = list.map((r) => {
+      const star = r.is_subtext30 === 1
+        ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
+      const cells = PIPELINE_COLS.map((c) => {
+        if (c.uni) {
+          return `<td class="university-cell">${star}${escapeHtml(r.anchor_university || "")}`
+            + `<span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span></td>`;
+        }
+        const v = c.get(r);
+        return `<td class="num">${v == null ? '<span class="muted">-</span>' : c.fmt(v)}</td>`;
+      }).join("");
+      return `<tr data-market-key="${r.market_key}">${cells}</tr>`;
+    }).join("");
+    html += `
+      <table class="pipeline-table">
+        <thead>
+          <tr class="stage-band"><th colspan="${nCol}">${escapeHtml(stage.label)}<span class="stage-count">${list.length}</span></th></tr>
+          <tr class="stage-head">${headCells}</tr>
+        </thead>
+        <tbody>${body}</tbody>
+      </table>`;
+  }
+  container.innerHTML = html || `<div class="empty-state">No active-pipeline markets match the filter.</div>`;
+  container.querySelectorAll("tbody tr").forEach((tr) => {
+    tr.addEventListener("click", () => {
+      window.location.href = `market.html?id=${Number(tr.dataset.marketKey)}`;
+    });
   });
 
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="10" class="empty-state">No markets match the filter.</td></tr>`;
-  } else {
-    tbody.innerHTML = rows
-      .map((r) => {
-        const selected = r.market_key === activeMarketKey ? " selected" : "";
-        const star = r.is_subtext30 === 1
-          ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
-        const affTitle = r.affluence_n != null
-          ? (r.pct_hiinc != null
-              ? `${fmtPct(r.pct_hiinc)} from high-income tracts · n=${fmtInt(r.affluence_n)}`
-              : `n=${fmtInt(r.affluence_n)} students`)
-          : "no migration data";
-        return `
-          <tr class="${selected.trim()}" data-market-key="${r.market_key}">
-            <td class="university-cell">
-              ${star}${escapeHtml(r.anchor_university || "")}
-              <span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span>
-            </td>
-            <td class="num">${r.fwd_rank != null ? `<span class="fwd-rank">${r.fwd_rank}</span>` : '<span class="muted">N/A</span>'}</td>
-            <td class="num">${qualifierPill(r)}</td>
-            <td class="num">${fmtPct(r.uncaptured_demand)}</td>
-            <td class="num">${fmtInt(r.total_enrollment)}</td>
-            <td class="num">${fmtInt(r.existing_beds)}</td>
-            <td class="num">${fmtUsd(r.avg_rent_per_bed)}</td>
-            <td class="num">${deltaSpan(r.yoy_rent_growth)}</td>
-            <td class="num">${fmtInt(r.beds_pipeline_total)}</td>
-            <td class="num" title="${affTitle}">${fmtUsd(r.mean_origin_income)}</td>
-          </tr>`;
-      })
-      .join("");
-    // Clicking a row opens the market detail page (real navigation).
-    tbody.querySelectorAll("tr").forEach((tr) => {
-      tr.addEventListener("click", () => {
-        const key = Number(tr.dataset.marketKey);
-        window.location.href = `market.html?id=${key}`;
-      });
-    });
+  const rc = document.getElementById("result-count");
+  if (rc) {
+    rc.textContent = rows.length
+      ? `${rows.length} active markets across ${stagesShown} stage${stagesShown === 1 ? "" : "s"}`
+      : "No active-pipeline markets";
   }
-
-  document.getElementById("result-count").textContent =
-    `Showing ${rows.length} of ${DATA.tables.scorecard.length} markets`;
 }
 
 /* ----- Charts ------------------------------------------------ */
@@ -1485,7 +1548,7 @@ function renderAll() {
   const rows = visibleScorecardRows();
   renderIndustryMap();
   renderKpis(rows);
-  renderScorecard(rows);
+  renderScorecard();
   renderSupply(rows);
   renderDemand(rows);
   renderPricing(rows);

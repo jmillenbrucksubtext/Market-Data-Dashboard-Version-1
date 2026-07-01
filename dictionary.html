@@ -108,16 +108,20 @@
 
                 <article class="dict-item">
                   <h4>Market scorecard table</h4>
-                  <p>One row per market. Defaults to sort by <strong>Qualifier score (descending)</strong> - top of the list = best-performing markets. NA scores fall to the bottom. Click any column header to re-sort.</p>
+                  <p>Active-pipeline markets grouped into a table per CRM stage (Markets - Upcoming / Assessing / Pursuing), a monthly-market-update layout. Markets sort A-Z within each stage; click one to open its page. Download the whole thing to Excel from the card header.</p>
                   <table class="dict-fields">
                     <thead><tr><th>Column</th><th>Formula</th></tr></thead>
                     <tbody>
-                      <tr><td>Uncaptured Demand</td><td><code>1 - (existing_beds / enr_full_time)</code> - share of student demand not yet served by purpose-built beds; negative if over-supplied</td></tr>
-                      <tr><td>Avg rent / bed</td><td><code>MarketReports.rate_avg</code> at the latest snapshot</td></tr>
-                      <tr><td>Occupancy</td><td><code>MarketReports.occupancy</code> at the latest snapshot</td></tr>
-                      <tr><td>Pre-lease</td><td><code>MarketReports.prelease</code> at the latest snapshot</td></tr>
-                      <tr><td>Qualifier</td><td>Aggregate score pill - see <a href="#scoring-formula">Scoring formula</a></td></tr>
-                      <tr><td>★ Subtext-30 flag</td><td>True if any anchor university for the market is in the Subtext-30 list</td></tr>
+                      <tr><td>Total Enrollment / FTE</td><td>Market enrollment and full-time-equivalent enrollment</td></tr>
+                      <tr><td>FTE Growth</td><td>YoY change in FTE (<code>fte_history.yoy_fte_growth</code>)</td></tr>
+                      <tr><td>Market Occ. / Prelease</td><td><code>MarketReports.occupancy</code> / <code>prelease</code> at the latest snapshot</td></tr>
+                      <tr><td>Market Rent</td><td>Bed-weighted <code>avg_rent</code> across the market</td></tr>
+                      <tr><td>Rent - 0.5 / 1.0 Mile</td><td>Bed-weighted <code>avg_rent</code> of properties within that radius of campus</td></tr>
+                      <tr><td>YoY Rent Growth</td><td><code>rent_yoy.yoy_rent_growth</code></td></tr>
+                      <tr><td>On-Campus Beds</td><td>Sum of on-campus beds across the market's universities</td></tr>
+                      <tr><td>PBSH Beds</td><td>Existing purpose-built student-housing beds (<code>existing_beds</code>)</td></tr>
+                      <tr><td>Pipeline</td><td>Lease-up + under-construction + planned beds</td></tr>
+                      <tr><td>UD as FTE %</td><td><code>1 - (existing_beds / enr_full_time)</code> - uncaptured demand; negative if over-supplied</td></tr>
                     </tbody>
                   </table>
                 </article>

@@ -182,37 +182,21 @@
           </div>
         </div>
 
-        <!-- Scorecard table -->
+        <!-- Market Scorecard: one table per pipeline stage (monthly update layout) -->
         <section class="card">
           <header class="card-header">
             <div>
               <h2>Market Scorecard</h2>
-              <p>One row per market. Click any column to sort. Click a row to select it.</p>
+              <p>Active markets grouped by pipeline stage. Click a market to open it.</p>
             </div>
-            <button type="button" id="scorecard-xlsx" class="xlsx-dl-btn" title="Download the current view (respects filters and sort) as an Excel file">
+            <button type="button" id="scorecard-xlsx" class="xlsx-dl-btn" title="Download the market update as an Excel file">
               <svg viewBox="0 0 16 16" width="14" height="14" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2.5v7.5M4.8 7.2 8 10.4l3.2-3.2M2.5 12.5h11"/></svg>
               Excel
             </button>
           </header>
           <div class="result-count" id="result-count">-</div>
-          <div class="table-wrap">
-            <table id="scorecard">
-              <thead>
-                <tr>
-                  <th data-sort="anchor_university">Anchor University</th>
-                  <th data-sort="fwd_rank" data-type="num" data-default-dir="asc" title="Rank in the Forward Looking Model market screener (Forward Model tab)">Fwd<br>Rank</th>
-                  <th data-sort="qualifier_score" data-type="num">Qualifier</th>
-                  <th data-sort="uncaptured_demand" data-type="num">Uncaptured Demand</th>
-                  <th data-sort="total_enrollment" data-type="num">Enrollment</th>
-                  <th data-sort="existing_beds" data-type="num">Existing Beds</th>
-                  <th data-sort="avg_rent_per_bed" data-type="num">Avg Rent/Bed</th>
-                  <th data-sort="yoy_rent_growth" data-type="num">Rent YoY</th>
-                  <th data-sort="beds_pipeline_total" data-type="num">Pipeline</th>
-                  <th data-sort="mean_origin_income" data-type="num" title="Mean household income of the census tracts incoming students migrated from (migration data).">Origin Inc</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
+          <div class="table-wrap pipeline-wrap">
+            <div id="pipeline-stages"></div>
           </div>
         </section>
 

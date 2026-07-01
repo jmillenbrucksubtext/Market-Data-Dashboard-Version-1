@@ -41,16 +41,18 @@
     },
     "scorecard": {
       title: "Market scorecard",
-      formula: "One row per market. Defaults to sort by qualifier score (descending); NA scores fall to the bottom. Click any header to re-sort.",
-      sql: "`scorecard` <- dbo.MarketReports + dbo.Markets (latest snapshot per market)",
-      sig: "The master ranking of all tracked markets - the top of the list is the best-performing.",
+      formula: "Active-pipeline markets grouped into a table per CRM stage (Upcoming / Assessing / Pursuing), a monthly-market-update layout. Markets sort A-Z within each stage; click one to open it.",
+      sql: "`scorecard` (joined to fte_history, rent_yoy, university_info, properties) where market_status is set",
+      sig: "Every market Subtext is actively tracking, broken out by pipeline stage.",
       rows: [
-        ["Uncaptured demand", "`1 - (existing_beds / enr_full_time)` - share of student demand not yet served by purpose-built beds; negative if over-supplied"],
-        ["Avg rent / bed", "`MarketReports.rate_avg` at the latest snapshot"],
-        ["Occupancy", "`MarketReports.occupancy` at the latest snapshot"],
-        ["Pre-lease", "`MarketReports.prelease` at the latest snapshot"],
-        ["Qualifier", "Aggregate weighted-credit score (see the Qualifier Scorecard)"],
-        ["Subtext-30 star", "True if any anchor university for the market is on the Subtext-30 list"]
+        ["FTE / FTE Growth", "Full-time enrollment and its YoY change (`fte_history.yoy_fte_growth`)"],
+        ["Market Occ. / Prelease", "`MarketReports.occupancy` / `prelease` at the latest snapshot"],
+        ["Market Rent", "Bed-weighted `avg_rent` across the market"],
+        ["Rent - 0.5 / 1.0 Mile", "Bed-weighted `avg_rent` of properties within that radius of campus"],
+        ["YoY Rent Growth", "`rent_yoy.yoy_rent_growth`"],
+        ["On-Campus Beds", "Sum of on-campus beds across the market's universities"],
+        ["PBSH Beds", "Existing purpose-built student-housing beds (`existing_beds`)"],
+        ["UD as FTE %", "Uncaptured demand: `1 - existing_beds / enr_full_time`"]
       ]
     },
     "supply-chart": {

@@ -152,7 +152,7 @@
     "properties-comps": {
       title: "Comp-set Properties",
       formula: "One row per comp-set member with a checkbox; the charts and tables below recompute live whenever the selection changes.",
-      sql: "`properties` where is_comp_set. Rule: phase in {stable, lease up} AND milesToClosestCampus <= 1.0 AND (yearBuilt >= 2020 OR top 5 by avg_rent)",
+      sql: "`properties` where is_comp_set. Rule: phase in {stable, lease up} AND milesToClosestCampus <= 1.0 AND beds >= 150 AND (yearBuilt >= 2020 OR top 5 by avg_rent)",
       sig: "The selectable comp set that drives all Competitive Set analytics."
     },
     "unitmix-chart": {

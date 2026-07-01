@@ -791,7 +791,7 @@ function renderProperties() {
     label: "purpose-built propert",
   });
   // Every property in the market is selectable as a comp; the standard
-  // comp set (walkable + built ≥2020 or top-rent) is just the default.
+  // comp set (walkable, 150+ beds, built ≥2020 or top-rent) is just the default.
   renderPropertyTable({
     tableId: "properties-comps",
     countId: "prop-count-comps",

@@ -420,14 +420,14 @@
                   <p>Which properties count as comps in a market - drives the Competitive Set tab and the comp-rent qualifier.</p>
                 </header>
                 <article class="dict-item">
-                  <p><strong>Eligibility pool:</strong> <code>phase ∈ {stable, lease up}</code> AND <code>milesToClosestCampus ≤ 1.0</code></p>
+                  <p><strong>Eligibility pool:</strong> <code>phase ∈ {stable, lease up}</code> AND <code>milesToClosestCampus ≤ 1.0</code> AND <code>beds ≥ 150</code></p>
                   <p><strong>Comp-set member (within pool - union):</strong></p>
                   <ul class="dict-list-bullets">
                     <li>(a) Built ≥ 2020 (<code>yearBuilt ≥ 2020</code>), or</li>
                     <li>(b) Top 5 by <code>avg_rent</code> within the pool, regardless of vintage.</li>
                   </ul>
                   <p class="dict-aside">The OR rescue: ~112 of 279 markets have zero pool properties built 2020+. Without the top-5 fallback, those markets' rent-comp qualifier would always be NA.</p>
-                  <p class="dict-aside">Configurable knobs (top of <code>load_comp_set.py</code>): <code>COMP_SET_MILES = 1.0</code> · <code>COMP_SET_VINTAGE = 2020</code> · <code>COMP_SET_TOPN = 5</code> · <code>COMP_SET_PHASES = {stable, lease up}</code>.</p>
+                  <p class="dict-aside">Configurable knobs (top of <code>load_comp_set.py</code>): <code>COMP_SET_MILES = 1.0</code> · <code>COMP_SET_VINTAGE = 2020</code> · <code>COMP_SET_TOPN = 5</code> · <code>COMP_SET_MIN_BEDS = 150</code> · <code>COMP_SET_PHASES = {stable, lease up}</code>.</p>
                 </article>
               </section>
 

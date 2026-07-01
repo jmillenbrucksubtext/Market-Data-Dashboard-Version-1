@@ -7,6 +7,7 @@ Comp-set definition (per market):
         phase IN ('stable', 'lease up')
         AND milesToClosestCampus IS NOT NULL
         AND milesToClosestCampus <= COMP_SET_MILES   (default 1.0)
+        AND beds >= COMP_SET_MIN_BEDS                (default 150)
     Member if EITHER:
         yearBuilt >= COMP_SET_VINTAGE                (default 2020)
       OR
@@ -34,6 +35,7 @@ DATA_JSON = Path(__file__).resolve().parent / "data.json"
 COMP_SET_MILES = 1.0
 COMP_SET_VINTAGE = 2020
 COMP_SET_TOPN = 5
+COMP_SET_MIN_BEDS = 150   # exclude sub-scale properties from the comp set
 COMP_SET_PHASES = {"stable", "lease up"}
 
 RENT_COMPSET_THRESHOLD = 1000   # $/bed - pass if comp-set avg rent > this
@@ -41,6 +43,12 @@ RENT_COMPSET_THRESHOLD = 1000   # $/bed - pass if comp-set avg rent > this
 
 def _eligible(p: dict) -> bool:
     if p.get("phase") not in COMP_SET_PHASES:
+        return False
+    b = p.get("beds")
+    try:
+        if b is None or float(b) < COMP_SET_MIN_BEDS:
+            return False
+    except (TypeError, ValueError):
         return False
     m = p.get("milesToClosestCampus")
     if m is None:

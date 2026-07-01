@@ -45,7 +45,7 @@
       sql: "`scorecard` <- dbo.MarketReports + dbo.Markets (latest snapshot per market)",
       sig: "The master ranking of all tracked markets - the top of the list is the best-performing.",
       rows: [
-        ["Penetration", "`existing_beds / enr_full_time`"],
+        ["Uncaptured demand", "`1 - (existing_beds / enr_full_time)` - share of student demand not yet served by purpose-built beds; negative if over-supplied"],
         ["Avg rent / bed", "`MarketReports.rate_avg` at the latest snapshot"],
         ["Occupancy", "`MarketReports.occupancy` at the latest snapshot"],
         ["Pre-lease", "`MarketReports.prelease` at the latest snapshot"],

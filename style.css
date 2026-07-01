@@ -703,6 +703,9 @@ h1, h2, h3, .serif {
 }
 #scorecard thead th:hover { color: var(--slate); }
 #scorecard thead th[data-type="num"] { text-align: right; }
+/* "Uncaptured Demand" is too long for the fixed column on one line - let it
+   wrap to two lines rather than clip. */
+#scorecard thead th[data-sort="uncaptured_demand"] { white-space: normal; line-height: 1.2; }
 #scorecard thead th.sorted-asc::after  { content: " ↑"; color: var(--slate); }
 #scorecard thead th.sorted-desc::after { content: " ↓"; color: var(--slate); }
 

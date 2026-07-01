@@ -112,7 +112,7 @@
                   <table class="dict-fields">
                     <thead><tr><th>Column</th><th>Formula</th></tr></thead>
                     <tbody>
-                      <tr><td>Penetration</td><td><code>existing_beds / enr_full_time</code></td></tr>
+                      <tr><td>Uncaptured Demand</td><td><code>1 - (existing_beds / enr_full_time)</code> - share of student demand not yet served by purpose-built beds; negative if over-supplied</td></tr>
                       <tr><td>Avg rent / bed</td><td><code>MarketReports.rate_avg</code> at the latest snapshot</td></tr>
                       <tr><td>Occupancy</td><td><code>MarketReports.occupancy</code> at the latest snapshot</td></tr>
                       <tr><td>Pre-lease</td><td><code>MarketReports.prelease</code> at the latest snapshot</td></tr>

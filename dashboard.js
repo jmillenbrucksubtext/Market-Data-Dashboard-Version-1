@@ -354,6 +354,9 @@ function visibleScorecardRows() {
     return {
       ...r,
       yoy_rent_growth: yoyByKey.get(r.market_key) ?? null,
+      // Share of student demand not yet served by purpose-built beds (1 - penetration).
+      // Negative for over-supplied markets (beds > FTE); sorts alongside penetration.
+      uncaptured_demand: r.penetration_ratio != null ? 1 - r.penetration_ratio : null,
       qualifier_score: q && q.score_pct != null ? q.score_pct : null,
       qualifier_passes: q?.passes ?? null,
       qualifier_evaluable: q?.evaluable ?? null,
@@ -598,7 +601,7 @@ function renderScorecard(rows) {
             </td>
             <td class="num">${r.fwd_rank != null ? `<span class="fwd-rank">${r.fwd_rank}</span>` : '<span class="muted">N/A</span>'}</td>
             <td class="num">${qualifierPill(r)}</td>
-            <td class="num">${fmtPct(r.penetration_ratio)}</td>
+            <td class="num">${fmtPct(r.uncaptured_demand)}</td>
             <td class="num">${fmtInt(r.total_enrollment)}</td>
             <td class="num">${fmtInt(r.existing_beds)}</td>
             <td class="num">${fmtUsd(r.avg_rent_per_bed)}</td>

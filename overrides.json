@@ -1,0 +1,46 @@
+{
+  "_doc": [
+    "Manual data corrections. Applied to data.json automatically at the end of",
+    "every export-data.py run (including the Monday scheduled refresh), or on",
+    "demand with: python apply_overrides.py",
+    "",
+    "Add one entry per correction under 'overrides'. See apply_overrides.py's",
+    "docstring for the full format. Always include a 'note' saying WHY the",
+    "source figure is wrong and an 'added' date, so overrides can be audited",
+    "and retired once the source data is fixed.",
+    "",
+    "The '_examples' below are documentation only - they are never applied."
+  ],
+  "_examples": [
+    {
+      "table": "properties",
+      "match": { "property_key": 1234 },
+      "set": { "beds": 540, "units": 180 },
+      "note": "CoStar double-counts phase 2 beds",
+      "added": "2026-07-01"
+    },
+    {
+      "table": "university_info",
+      "match": { "school_key": 55 },
+      "set": { "pct_on_campus": 0.24 },
+      "note": "IPEDS on-campus pct stale; value from university common data set",
+      "added": "2026-07-01",
+      "expires": "2027-01-01"
+    },
+    {
+      "table": "properties",
+      "match": { "property_key": 9999 },
+      "action": "remove",
+      "note": "duplicate listing of property 1234 under old name",
+      "added": "2026-07-01"
+    },
+    {
+      "table": "market_history",
+      "match": { "market_key": 42, "year_": 2025 },
+      "set": { "beds_under_construction": 1200 },
+      "note": "aggregation missed The Standard phase 2 (visually confirmed)",
+      "added": "2026-07-01"
+    }
+  ],
+  "overrides": []
+}

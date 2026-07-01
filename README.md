@@ -84,6 +84,34 @@ Push the updated files to redeploy.
 
 ---
 
+## Fix a bad figure (manual overrides)
+
+Every chart and table on the market tabs (Comps, Pipeline, University Info)
+renders from rows in `data.json`, which is regenerated from SQL weekly - so
+never hand-edit `data.json`; the fix would be wiped on Monday. Instead:
+
+1. Add an entry to `overrides.json` targeting the bad row + field
+   (see `_examples` in that file, or the docstring in `apply_overrides.py`).
+   Always include a `note` explaining why the source figure is wrong.
+2. Run `python apply_overrides.py` to patch the current `data.json`
+   immediately (`--dry-run` to preview). Push to deploy.
+
+That's it for persistence: `export-data.py` re-applies `overrides.json` as
+its final step on every refresh, so corrections survive the weekly cycle
+automatically. The refresh log flags overrides that are **STALE** (row no
+longer exists upstream) or **REDUNDANT** (source now matches - the upstream
+data was fixed, retire the entry).
+
+Supported actions per entry: `set` fields on matching rows (default),
+`remove` bad/duplicate rows, `add` missing rows. `match` can combine any
+columns (e.g. `market_key` + `year_`). Optional `expires` date auto-retires
+an entry.
+
+Caveat: if you manually run a `load_*.py` patcher that rewrites a table you
+have overridden, re-run `python apply_overrides.py` afterwards.
+
+---
+
 ## Run locally
 
 ```bash

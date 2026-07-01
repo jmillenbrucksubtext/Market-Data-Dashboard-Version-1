@@ -1706,6 +1706,20 @@ def main() -> int:
                     as_ofs.append(v)
     payload["data_as_of"] = max(as_ofs) if as_ofs else None
 
+    # --- Manual overrides (overrides.json) ---------------------------------
+    # Applied LAST so hand corrections for known-bad source figures survive
+    # every refresh. Managed via apply_overrides.py; never edit data.json
+    # directly. A failure here must not sink the whole refresh.
+    try:
+        from apply_overrides import load_overrides, apply_overrides
+        _overrides = load_overrides()
+        if _overrides:
+            print(f"\nApplying {len(_overrides)} manual override(s) from overrides.json:")
+            for _line in apply_overrides(payload, _overrides):
+                print(f"  {_line}")
+    except Exception as e:
+        print(f"  overrides SKIPPED: {type(e).__name__}: {e}")
+
     with OUTPUT.open("w", encoding="utf-8") as fh:
         json.dump(payload, fh, indent=2, default=str)
 

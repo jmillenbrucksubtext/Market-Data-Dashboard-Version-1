@@ -808,7 +808,9 @@ h1, h2, h3, .serif {
 
 /* Pipeline scorecard - one table per market stage (monthly-update layout).
    Wide, so the wrapper scrolls horizontally on narrow screens. */
-.pipeline-wrap { overflow-x: auto; padding: 4px 20px 16px; }
+/* Show the full scorecard inline - no internal vertical scroll (overrides the
+   540px cap on .table-wrap). Only the wide table scrolls sideways if needed. */
+.pipeline-wrap { overflow-x: auto; overflow-y: visible; max-height: none; padding: 4px 20px 16px; }
 .pipeline-table {
   width: 100%;
   min-width: 1180px;
@@ -849,8 +851,6 @@ h1, h2, h3, .serif {
   padding: 6px 10px;
   border-bottom: 1px solid var(--everest);
   white-space: nowrap;
-  position: sticky;
-  top: 0;
 }
 .pipeline-table .stage-head th:first-child { text-align: left; }
 .pipeline-table tbody td {

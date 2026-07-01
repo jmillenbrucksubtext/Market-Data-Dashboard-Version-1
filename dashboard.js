@@ -419,9 +419,9 @@ function xlFill(argb) { return { type: "pattern", pattern: "solid", fgColor: { a
    Shared by the on-screen render and the Excel export. */
 
 const PIPELINE_STAGES = [
-  { key: "upcoming",  label: "Markets - Upcoming" },
-  { key: "assessing", label: "Markets - Assessing" },
   { key: "pursuing",  label: "Markets - Pursuing" },
+  { key: "assessing", label: "Markets - Assessing" },
+  { key: "upcoming",  label: "Markets - Upcoming" },
 ];
 
 // Derived-column maps built once from DATA (the pipeline set is small).

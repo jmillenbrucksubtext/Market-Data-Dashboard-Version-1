@@ -4,7 +4,8 @@ and refresh the comp-set rent qualifier. Pure data.json patcher - no SQL.
 
 Comp-set definition (per market):
     Eligibility pool:
-        phase IN ('stable', 'lease up')
+        phase = 'stable'   (stabilized only - lease-up and pipeline are
+                            excluded; their product hasn't been tested yet)
         AND milesToClosestCampus IS NOT NULL
         AND milesToClosestCampus <= COMP_SET_MILES   (default 1.0)
         AND beds >= COMP_SET_MIN_BEDS                (default 150)
@@ -36,7 +37,9 @@ COMP_SET_MILES = 1.0
 COMP_SET_VINTAGE = 2020
 COMP_SET_TOPN = 5
 COMP_SET_MIN_BEDS = 150   # exclude sub-scale properties from the comp set
-COMP_SET_PHASES = {"stable", "lease up"}
+# Stabilized only. Lease-up (and under-construction / planned) are pipeline -
+# their product hasn't leased through a full cycle, so they're not comparable.
+COMP_SET_PHASES = {"stable"}
 
 RENT_COMPSET_THRESHOLD = 1000   # $/bed - pass if comp-set avg rent > this
 

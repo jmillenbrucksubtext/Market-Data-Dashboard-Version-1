@@ -14,10 +14,22 @@
   "use strict";
 
   var W = 2800, H = 2000;
+  // PowerPoint export: a true 16:9 frame (13.333x7.5in slide at ~240 DPI),
+  // full-bleed border-to-border. The map is re-rendered at these dimensions
+  // off-screen so the auto-layout, title card and legend refit the wider
+  // frame rather than being cropped.
+  var PPTX_W = 3200, PPTX_H = 1800;
+  var exportCanvas = null;  // when set, draw()/refresh() target this instead of the on-screen canvas
+  // Branded slide frame drawn ONLY on the PowerPoint export: an everest header
+  // band (title + SubHouse wordmark) and footer band (source + attribution),
+  // so the downloaded 16:9 PNG reads as a finished slide, not a bare map.
+  var FRAME = { header: 156, footer: 84, accent: 8 };
   var TILE = 256;
   var FIT_PAD_X = 420, FIT_PAD_Y = 300;
   var EDGE = 24;
   var CANDIDATES_PER_CAT = 15;   // picker depth per call-out category
+
+  function mapCanvas() { return exportCanvas || document.getElementById("uni-map-canvas"); }
 
   var TILE_SOURCES = {
     terrain: {
@@ -305,7 +317,17 @@
   function autoLayout(ctx, items) {
     var radii = [110, 170, 250, 350, 480];
     var angleOffsets = [0, 30, -30, 60, -60, 90, -90, 120, -120, 150, -150, 180];
-    var placed = [titleCardRect(ctx)];
+    // On the export the title card is gone (its title moves into the header
+    // band), so the header + footer bands are the callout obstacles instead.
+    var placed;
+    if (exportCanvas) {
+      placed = [
+        { x: 0, y: 0, w: W, h: FRAME.header + FRAME.accent + 12 },
+        { x: 0, y: H - FRAME.footer - FRAME.accent - 12, w: W, h: FRAME.footer + FRAME.accent + 12 },
+      ];
+    } else {
+      placed = [titleCardRect(ctx)];
+    }
     var lr = legendRect(ctx);
     if (lr) placed.push(lr);
     var leaders = [];
@@ -571,7 +593,9 @@
     entries.forEach(function (e) { w = Math.max(w, ctx.measureText(e.label).width); });
     w = Math.max(w + LEGEND_ICON + LEGEND_PAD * 2, 260);
     var h = LEGEND_PAD * 2 + LEGEND_TITLE + entries.length * LEGEND_ROW;
-    return { x: W - EDGE - w, y: H - EDGE - h - 34, w: w, h: h };
+    // On the export, lift the legend clear of the footer band.
+    var bottomGap = EDGE + 34 + (exportCanvas ? FRAME.footer + FRAME.accent : 0);
+    return { x: W - EDGE - w, y: H - bottomGap - h, w: w, h: h };
   }
 
   function drawLegend(ctx) {
@@ -656,8 +680,64 @@
     ctx.fillText(text, W - w + 10, H - 10);
   }
 
+  /* Branded slide frame - export only. An everest header band carries the
+     campus title (left) and the SubHouse wordmark (right); an everest footer
+     band carries the source line and the required tile/POI attribution. A lime
+     hairline separates each band from the map. Replaces the in-map title card
+     on the export. */
+  function drawSlideFrame(ctx) {
+    var EV = "#16352e", LIME = "#c1d100", BEIGE = "#f7f1e3";
+    var date = MARKET.data_as_of ? new Date(MARKET.data_as_of) : new Date();
+    var stamp = date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
+
+    // Header band + lime accent.
+    ctx.fillStyle = EV;
+    ctx.fillRect(0, 0, W, FRAME.header);
+    ctx.fillStyle = LIME;
+    ctx.fillRect(0, FRAME.header, W, FRAME.accent);
+
+    ctx.textBaseline = "middle";
+    // SubHouse wordmark (right), measured first so the title can avoid it.
+    ctx.textAlign = "right";
+    var rx = W - EDGE - 24;
+    ctx.font = "700 20px 'Pragmatica', sans-serif";
+    ctx.fillStyle = LIME;
+    ctx.fillText("MARKET ANALYSIS", rx, FRAME.header / 2 - 30);
+    ctx.font = "700 46px 'Mencken Std', Georgia, serif";
+    ctx.fillStyle = "#ffffff";
+    ctx.fillText("SubHouse", rx, FRAME.header / 2 + 20);
+    var wmW = ctx.measureText("SubHouse").width;
+    ctx.fillStyle = LIME;
+    ctx.fillRect(rx - wmW, FRAME.header / 2 + 44, wmW, 4);
+
+    // Title (left), clamped so it never runs into the wordmark block.
+    ctx.textAlign = "left";
+    ctx.fillStyle = "#ffffff";
+    ctx.font = "700 52px 'Mencken Std', Georgia, serif";
+    var title = (state.school ? state.school.university_name : "") + " - Campus Map";
+    ctx.fillText(title, EDGE + 24, FRAME.header / 2, W - EDGE * 2 - wmW - 120);
+
+    // Footer band + lime accent.
+    var fy = H - FRAME.footer;
+    ctx.fillStyle = LIME;
+    ctx.fillRect(0, fy - FRAME.accent, W, FRAME.accent);
+    ctx.fillStyle = EV;
+    ctx.fillRect(0, fy, W, FRAME.footer);
+    ctx.textAlign = "left";
+    ctx.font = "600 24px 'Pragmatica', sans-serif";
+    ctx.fillStyle = BEIGE;
+    ctx.fillText("Source: SubHouse Market Analysis  ·  " + stamp, EDGE + 24, fy + FRAME.footer / 2);
+    ctx.textAlign = "right";
+    ctx.font = "400 18px 'Pragmatica', sans-serif";
+    ctx.fillStyle = "rgba(247, 241, 227, 0.7)";
+    ctx.fillText(TILE_SOURCES[state.basemap].attribution + " · POIs © OpenStreetMap", W - EDGE - 24, fy + FRAME.footer / 2);
+
+    ctx.textAlign = "left";
+    ctx.textBaseline = "alphabetic";
+  }
+
   function draw() {
-    var canvas = document.getElementById("uni-map-canvas");
+    var canvas = mapCanvas();
     if (!canvas) return;
     canvas.width = W; canvas.height = H;
     var ctx = canvas.getContext("2d");
@@ -721,15 +801,22 @@
 
     if (pd) ctx.restore();
 
-    drawTitleCard(ctx);
-    drawLegend(ctx);
-    drawAttribution(ctx);
+    // On the export, the branded frame carries the title + attribution; on the
+    // interactive canvas, keep the in-map title card and corner attribution.
+    if (exportCanvas) {
+      drawSlideFrame(ctx);
+      drawLegend(ctx);
+    } else {
+      drawTitleCard(ctx);
+      drawLegend(ctx);
+      drawAttribution(ctx);
+    }
   }
 
   /* ----- Refresh pipeline ----------------------------------------- */
 
   function refresh() {
-    var canvas = document.getElementById("uni-map-canvas");
+    var canvas = mapCanvas();
     if (!canvas || !state.school) { draw(); return; }
 
     var items = activeCallouts();
@@ -967,7 +1054,7 @@
   }
 
   function download() {
-    var canvas = document.getElementById("uni-map-canvas");
+    var canvas = mapCanvas();
     if (!canvas || !state.school) return;
     var d = new Date();
     var stamp = d.getFullYear() + "-" +
@@ -979,8 +1066,53 @@
     link.click();
   }
 
+  /* PowerPoint export: re-render the current campus into a 16:9 frame
+     off-screen (so the live view is never disturbed), download it, then
+     restore the on-screen view exactly as it was - no tile re-fetch. */
+  function exportPptx(btn) {
+    if (!document.getElementById("uni-map-canvas") || !state.school) return;
+    var label = btn ? btn.textContent : "";
+    if (btn) { btn.disabled = true; btn.textContent = "Building 16:9..."; }
+
+    var saved = {
+      W: W, H: H, base: state.base, baseSig: state.baseSig,
+      view: state.view, placements: state.placements,
+    };
+
+    exportCanvas = document.createElement("canvas");
+    W = PPTX_W; H = PPTX_H;
+    state.base = null; state.baseSig = null;
+    state.placements = new Map();  // clean auto-layout for the new aspect ratio
+
+    Promise.resolve(refresh()).then(function () {
+      var d = new Date();
+      var stamp = d.getFullYear() + "-" +
+        String(d.getMonth() + 1).padStart(2, "0") + "-" +
+        String(d.getDate()).padStart(2, "0");
+      var link = document.createElement("a");
+      link.download = slug(state.school.university_name) + "-campus-map-16x9-" + stamp + ".png";
+      link.href = exportCanvas.toDataURL("image/png");
+      link.click();
+    }).catch(function () {}).then(function () {
+      exportCanvas = null;
+      W = saved.W; H = saved.H;
+      state.placements = saved.placements;
+      if (saved.base) {
+        // Reuse the cached basemap: restore the view and reproject call-outs
+        // for the original frame, then redraw - no flicker, no re-fetch.
+        state.base = saved.base; state.baseSig = saved.baseSig; state.view = saved.view;
+        activeCallouts().forEach(function (p) { p.px = project(p.lat, p.lng); });
+        draw();
+      } else {
+        state.baseSig = null;
+        refresh();
+      }
+      if (btn) { btn.disabled = false; btn.textContent = label; }
+    });
+  }
+
   function init() {
-    var canvas = document.getElementById("uni-map-canvas");
+    var canvas = mapCanvas();
     if (!canvas) return;
     bindDrag(canvas);
 
@@ -1028,6 +1160,8 @@
     }
     var dlBtn = document.getElementById("uni-map-download");
     if (dlBtn) dlBtn.addEventListener("click", download);
+    var pptxBtn = document.getElementById("uni-map-download-pptx");
+    if (pptxBtn) pptxBtn.addEventListener("click", function () { exportPptx(pptxBtn); });
   }
 
   if (document.readyState === "loading") {

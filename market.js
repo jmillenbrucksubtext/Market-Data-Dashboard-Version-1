@@ -27,7 +27,6 @@ let DATA = null;
 let MARKET = null;
 let PROPERTIES = [];
 let CAMPUSES = [];
-let LOGOS = new Map();   // market_key → logo filename (e.g., "14.png")
 // Per-table sort state: both tables default to year built (newest deals on
 // top).
 let propSortStates = {
@@ -74,20 +73,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   } catch (err) {
     return showError(`Couldn't load data.json - ${err}`);
   }
-
-  // Optional: load campus logo manifest. Missing manifest is fine - every
-  // market just falls back to the SVG building pin.
-  try {
-    const mRes = await fetch("assets/campus-logos/_manifest.json", { cache: "no-cache" });
-    if (mRes.ok) {
-      const manifest = await mRes.json();
-      for (const e of manifest) {
-        if (e.file && (e.status === "ok" || e.status === "ok_existing")) {
-          LOGOS.set(e.market_key, e.file);
-        }
-      }
-    }
-  } catch { /* no manifest is fine */ }
 
   MARKET = DATA.tables.scorecard.find((r) => r.market_key === marketKey);
   if (!MARKET) return showError(`Market ${marketKey} not found.`);
@@ -1854,28 +1839,9 @@ function phasePill(phase) {
 }
 
 function campusMarkerIcon(isAnchor, marketKey, universityName = "University") {
-  // Anchor campuses use the dashboard logo when available and a readable
-  // university-name badge otherwise. Non-anchor campuses use the SVG icon.
-  if (isAnchor && marketKey != null && LOGOS.has(marketKey)) {
-    const file = LOGOS.get(marketKey);
-    const url = `assets/campus-logos/${encodeURIComponent(file)}`;
-    // Inline !important styles to beat Leaflet's '.leaflet-container img'
-    // default which forces max-width: none.
-    const imgStyle = [
-      "display:block",
-      "max-width:80px !important",
-      "max-height:32px !important",
-      "width:auto !important",
-      "height:auto !important",
-      "object-fit:contain",
-    ].join(";");
-    return L.divIcon({
-      className: "leaflet-logo-pin",
-      html: `<div class="logo-pin-bubble"><img src="${url}" alt="" style="${imgStyle}"></div>`,
-      iconSize: [120, 56],
-      iconAnchor: [60, 56],
-    });
-  }
+  // Anchor campuses render a readable university-name badge. (We used to show
+  // the university logo, but many were outdated or wrong, so we show the name.)
+  // Non-anchor campuses use the SVG icon.
   if (isAnchor) {
     return L.divIcon({
       className: "leaflet-campus-label-pin",

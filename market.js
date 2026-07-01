@@ -74,6 +74,10 @@ document.addEventListener("DOMContentLoaded", async () => {
     return showError(`Couldn't load data.json - ${err}`);
   }
 
+  // Re-apply any local (this-browser) data edits before anything derives
+  // from DATA. Managed by edit-mode.js; publishes via overrides.json.
+  if (window.SubtextEdit) window.SubtextEdit.applyLocal(DATA);
+
   MARKET = DATA.tables.scorecard.find((r) => r.market_key === marketKey);
   if (!MARKET) return showError(`Market ${marketKey} not found.`);
 

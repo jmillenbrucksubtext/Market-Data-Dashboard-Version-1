@@ -3765,3 +3765,260 @@ h1, h2, h3, .serif {
     margin-bottom: 24px;
   }
 }
+
+/* =============================================================
+   Per-chart / per-table edit affordance (injected by edit-mode.js).
+   Pencil button rides next to the chart-info circled-i; clicking opens
+   a centered modal listing the rows that feed the visual, with inputs
+   for the correctable fields. Saved edits live in localStorage (this
+   browser only) and are re-applied to DATA on every page load; the
+   pending-edits pill exports them as overrides.json entries to make
+   them permanent for everyone.
+   ============================================================= */
+.chart-edit-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  margin-left: 6px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--slate-50);
+  cursor: pointer;
+  vertical-align: middle;
+  flex: 0 0 auto;
+}
+.chart-edit-btn:hover,
+.chart-edit-btn.is-open { color: var(--slate); background: var(--beige-deep); }
+.chart-edit-btn svg { display: block; }
+.comp-table-title .chart-edit-btn { color: rgba(255, 255, 255, 0.6); }
+.comp-table-title .chart-edit-btn:hover,
+.comp-table-title .chart-edit-btn.is-open { color: #fff; background: rgba(255, 255, 255, 0.15); }
+.chart-edit-btn.has-edits { color: var(--birch); }
+@media print { .chart-edit-btn { display: none; } }
+
+.edit-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 4000;
+  background: rgba(43, 40, 37, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+.edit-modal-backdrop[hidden] { display: none; }
+
+.edit-modal {
+  background: var(--surface);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 12px 40px rgba(43, 40, 37, 0.25);
+  width: min(1040px, 96vw);
+  max-height: 88vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+.edit-modal-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding: 14px 18px 10px;
+  border-bottom: 1px solid var(--beige-deep);
+}
+.edit-modal-head h3 {
+  margin: 0;
+  font-family: "Mencken Std", serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--slate);
+}
+.edit-modal-sub {
+  font-size: 11.5px;
+  color: var(--slate-50);
+}
+.edit-modal-close {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--slate-50);
+  font-size: 18px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 2px 6px;
+  border-radius: var(--radius-sm);
+}
+.edit-modal-close:hover { color: var(--slate); background: var(--beige-deep); }
+
+.edit-modal-body {
+  overflow: auto;
+  padding: 12px 18px;
+}
+.edit-grid {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+}
+.edit-grid th,
+.edit-grid td {
+  padding: 5px 8px;
+  border-bottom: 1px solid var(--beige-deep);
+  text-align: left;
+  white-space: nowrap;
+}
+.edit-grid th {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-50);
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+}
+.edit-grid td.edit-id-cell { color: var(--slate-70); }
+.edit-grid input {
+  font-family: "Pragmatica", sans-serif;
+  font-variant-numeric: tabular-nums;
+  font-size: 12.5px;
+  color: var(--slate);
+  background: var(--beige);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-sm);
+  padding: 3px 6px;
+  width: 90px;
+}
+.edit-grid input.edit-wide { width: 200px; }
+.edit-grid input:focus {
+  outline: none;
+  border-color: var(--everest);
+  background: var(--surface);
+}
+.edit-grid input.is-dirty {
+  border-color: var(--birch);
+  background: var(--bad-soft);
+}
+.edit-grid input.is-overridden {
+  border-color: var(--warn);
+}
+.edit-modal-note {
+  padding: 10px 18px 0;
+  border-top: 1px solid var(--beige-deep);
+}
+.edit-modal-note label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--slate-50);
+  margin-bottom: 4px;
+}
+.edit-modal-note input {
+  width: 100%;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12.5px;
+  color: var(--slate);
+  background: var(--beige);
+  border: 1px solid var(--slate-15);
+  border-radius: var(--radius-sm);
+  padding: 5px 8px;
+}
+.edit-modal-foot {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 18px 14px;
+}
+.edit-modal-hint {
+  font-size: 11px;
+  color: var(--slate-50);
+  margin-right: auto;
+}
+.edit-btn-primary,
+.edit-btn-secondary {
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border-radius: var(--radius-sm);
+  padding: 6px 14px;
+  cursor: pointer;
+}
+.edit-btn-primary {
+  background: var(--everest);
+  color: #fff;
+  border: 1px solid var(--everest);
+}
+.edit-btn-primary:hover { background: #1e453c; }
+.edit-btn-primary:disabled {
+  background: var(--slate-30);
+  border-color: var(--slate-30);
+  cursor: default;
+}
+.edit-btn-secondary {
+  background: var(--surface);
+  color: var(--slate-70);
+  border: 1px solid var(--slate-15);
+}
+.edit-btn-secondary:hover { border-color: var(--slate-50); color: var(--slate); }
+
+/* Floating pending-edits pill (bottom-right) */
+.edit-pending-pill {
+  position: fixed;
+  right: 18px;
+  bottom: 18px;
+  z-index: 3500;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  background: var(--slate);
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 8px 15px;
+  font-family: "Pragmatica", sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(43, 40, 37, 0.3);
+}
+.edit-pending-pill:hover { background: var(--slate-90); }
+.edit-pending-pill[hidden] { display: none; }
+.edit-pending-pill .edit-pill-count {
+  background: var(--lime);
+  color: var(--slate);
+  border-radius: 999px;
+  padding: 0 7px;
+  font-size: 11px;
+}
+@media print { .edit-pending-pill { display: none; } }
+
+/* Pending-edits review list inside the modal */
+.edit-pending-list { list-style: none; margin: 0; padding: 0; }
+.edit-pending-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  padding: 7px 2px;
+  border-bottom: 1px solid var(--beige-deep);
+  font-size: 12.5px;
+}
+.edit-pending-list .edit-pending-what { color: var(--slate); }
+.edit-pending-list .edit-pending-note { color: var(--slate-50); font-size: 11.5px; }
+.edit-pending-list .edit-pending-del {
+  margin-left: auto;
+  border: none;
+  background: transparent;
+  color: var(--slate-50);
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0 4px;
+  border-radius: var(--radius-sm);
+}
+.edit-pending-list .edit-pending-del:hover { color: var(--bad); background: var(--beige-deep); }

@@ -88,7 +88,17 @@ Push the updated files to redeploy.
 
 Every chart and table on the market tabs (Comps, Pipeline, University Info)
 renders from rows in `data.json`, which is regenerated from SQL weekly - so
-never hand-edit `data.json`; the fix would be wiped on Monday. Instead:
+never hand-edit `data.json`; the fix would be wiped on Monday.
+
+**On the dashboard (edit-mode.js):** every chart and table on those three
+tabs has a pencil button next to its circled-i. It opens the rows feeding
+that visual; change a cell, say why the source figure is wrong, and Save.
+The fix applies instantly in that browser (stored in localStorage and
+re-applied on every page load). Browser edits are LOCAL ONLY - to publish
+for everyone, open the "Local edits" pill (bottom-right), Copy JSON, merge
+the entries into `overrides.json`'s `overrides` array, then step 2 below.
+
+**In the repo:**
 
 1. Add an entry to `overrides.json` targeting the bad row + field
    (see `_examples` in that file, or the docstring in `apply_overrides.py`).

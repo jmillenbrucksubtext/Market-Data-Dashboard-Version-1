@@ -518,6 +518,8 @@ QUERIES: dict[str, str] = {
             p.milesToClosestCampus,
             p.currentGoogleReviewAvg,
             p.currentGoogleReviews                  AS google_review_count,
+            p.phone,
+            p.webSiteUrl                            AS website,
             CAST(p.lastReportDate AS DATETIME2)     AS last_report_date
         FROM dbo.Properties p
         LEFT JOIN plan_agg pa ON pa.property_key = p.[Key]

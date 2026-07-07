@@ -530,31 +530,40 @@ function pipelineScorecardRows() {
 }
 
 // Column set - mirrors the monthly market update. `xz` = Excel number format.
+// `h` is the flat label used by the Excel export; on screen, columns with a
+// `group` render under a two-row header (family band over `sub` labels) and
+// ungrouped columns span both rows.
 const PIPELINE_COLS = [
   { h: "University",           uni: true },
   { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
-  { h: "Total Enrollment",     get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE",                  get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE Growth",           get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Occ - 0.5 Mi",         get: (r) => r.occ_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Occ - 1.0 Mi",         get: (r) => r.occ_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Occ.",          get: (r) => r.occupancy,           fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Prelease - 0.5 Mi",    get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Prelease - 1.0 Mi",    get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Prelease",      get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Rent - 0.5 Mi",        get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent - 1.0 Mi",        get: (r) => r.rent_one_mi,         fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Market Rent",          get: (r) => r.avg_rent_per_bed,    fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent Growth - 0.5 Mi", get: (r) => r.rent_growth_half_mi, fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Rent Growth - 1.0 Mi", get: (r) => r.rent_growth_one_mi,  fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Rent Growth",   get: (r) => r.yoy_rent_growth,     fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "On-Campus Beds",       get: (r) => r.on_campus_beds,      fmt: fmtInt,           xz: "#,##0" },
-  { h: "PBSH Beds",            get: (r) => r.existing_beds,       fmt: fmtInt,           xz: "#,##0" },
-  { h: "Pipeline",             get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
-  { h: "UD - 1.0 Mi",          get: (r) => r.ud_one_mi,           fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "UD - 1.0 Mi (2010+)",  get: (r) => r.ud_one_mi_2010,      fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "UD as FTE %",          get: (r) => r.uncaptured_demand,   fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Total Enrollment",     group: "Enrollment",        sub: "Total",        get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE",                  group: "Enrollment",        sub: "FTE",          get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE Growth",           group: "Enrollment",        sub: "FTE Growth",   get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 0.5 Mi",         group: "Occupancy",         sub: "0.5 Mi",       get: (r) => r.occ_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 1.0 Mi",         group: "Occupancy",         sub: "1.0 Mi",       get: (r) => r.occ_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Occ.",          group: "Occupancy",         sub: "Market",       get: (r) => r.occupancy,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 0.5 Mi",    group: "Prelease",          sub: "0.5 Mi",       get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 1.0 Mi",    group: "Prelease",          sub: "1.0 Mi",       get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Prelease",      group: "Prelease",          sub: "Market",       get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent - 0.5 Mi",        group: "Rent",              sub: "0.5 Mi",       get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent - 1.0 Mi",        group: "Rent",              sub: "1.0 Mi",       get: (r) => r.rent_one_mi,         fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Market Rent",          group: "Rent",              sub: "Market",       get: (r) => r.avg_rent_per_bed,    fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent Growth - 0.5 Mi", group: "Rent Growth",       sub: "0.5 Mi",       get: (r) => r.rent_growth_half_mi, fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent Growth - 1.0 Mi", group: "Rent Growth",       sub: "1.0 Mi",       get: (r) => r.rent_growth_one_mi,  fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Rent Growth",   group: "Rent Growth",       sub: "Market",       get: (r) => r.yoy_rent_growth,     fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "On-Campus Beds",       group: "Beds",              sub: "On-Campus",    get: (r) => r.on_campus_beds,      fmt: fmtInt,           xz: "#,##0" },
+  { h: "PBSH Beds",            group: "Beds",              sub: "PBSH",         get: (r) => r.existing_beds,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline",             group: "Beds",              sub: "Pipeline",     get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
+  { h: "UD - 1.0 Mi",          group: "Uncaptured Demand", sub: "1.0 Mi",       get: (r) => r.ud_one_mi,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD - 1.0 Mi (2010+)",  group: "Uncaptured Demand", sub: "1.0 Mi 2010+", get: (r) => r.ud_one_mi_2010,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD as FTE %",          group: "Uncaptured Demand", sub: "Market",       get: (r) => r.uncaptured_demand,   fmt: (v) => fmtPct(v), xz: "0.0%" },
 ];
+
+// True when column `i` opens a new header group (used for divider borders).
+function pipelineGroupStart(i) {
+  const c = PIPELINE_COLS[i];
+  return !!c.group && PIPELINE_COLS[i - 1]?.group !== c.group;
+}
 
 function pipelineRowsByStage(rows) {
   const byStage = new Map(PIPELINE_STAGES.map((s) => [s.key, []]));
@@ -838,8 +847,21 @@ function renderScorecard() {
   const rows = pipelineScorecardRows();
   const byStage = pipelineRowsByStage(rows);
   const nCol = PIPELINE_COLS.length;
-  const headCells = PIPELINE_COLS
-    .map((c) => `<th class="${c.uni ? "" : "num"}">${escapeHtml(c.h)}</th>`).join("");
+  // Two-row header: metric-family bands over short variant labels; ungrouped
+  // columns span both rows. data-col/data-group drive the crosshair hover.
+  const groupCells = [];
+  const subCells = [];
+  PIPELINE_COLS.forEach((c, i) => {
+    if (!c.group) {
+      groupCells.push(`<th rowspan="2" class="${c.uni ? "" : "num"} solo-head"${c.uni ? "" : ` data-col="${i}"`}>${escapeHtml(c.h)}</th>`);
+      return;
+    }
+    if (pipelineGroupStart(i)) {
+      const span = PIPELINE_COLS.filter((x) => x.group === c.group).length;
+      groupCells.push(`<th colspan="${span}" class="group-head" data-group="${escapeHtml(c.group)}">${escapeHtml(c.group)}</th>`);
+    }
+    subCells.push(`<th class="num sub-head${pipelineGroupStart(i) ? " group-start" : ""}" data-col="${i}">${escapeHtml(c.sub)}</th>`);
+  });
 
   let html = "";
   let stagesShown = 0;
@@ -850,13 +872,13 @@ function renderScorecard() {
     const body = list.map((r) => {
       const star = r.is_subtext30 === 1
         ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
-      const cells = PIPELINE_COLS.map((c) => {
+      const cells = PIPELINE_COLS.map((c, i) => {
         if (c.uni) {
           return `<td class="university-cell">${star}${escapeHtml(r.anchor_university || "")}`
             + `<span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span></td>`;
         }
         const v = c.get(r);
-        return `<td class="num">${v == null ? '<span class="muted">-</span>' : c.fmt(v)}</td>`;
+        return `<td class="num${pipelineGroupStart(i) ? " group-start" : ""}" data-col="${i}">${v == null ? '<span class="muted">-</span>' : c.fmt(v)}</td>`;
       }).join("");
       return `<tr data-market-key="${r.market_key}">${cells}</tr>`;
     }).join("");
@@ -864,7 +886,8 @@ function renderScorecard() {
       <table class="pipeline-table">
         <thead>
           <tr class="stage-band"><th colspan="${nCol}">${escapeHtml(stage.label)}<span class="stage-count">${list.length}</span></th></tr>
-          <tr class="stage-head">${headCells}</tr>
+          <tr class="stage-head stage-head-groups">${groupCells.join("")}</tr>
+          <tr class="stage-head stage-head-subs">${subCells.join("")}</tr>
         </thead>
         <tbody>${body}</tbody>
       </table>`;
@@ -874,6 +897,25 @@ function renderScorecard() {
     tr.addEventListener("click", () => {
       window.location.href = `market.html?id=${Number(tr.dataset.marketKey)}`;
     });
+  });
+
+  // Crosshair hover: the row highlight (CSS tr:hover) shows the school; this
+  // lights up the hovered stat's column and its header labels vertically.
+  container.querySelectorAll("table.pipeline-table").forEach((tbl) => {
+    const clear = () =>
+      tbl.querySelectorAll(".col-hover").forEach((el) => el.classList.remove("col-hover"));
+    tbl.addEventListener("mouseover", (e) => {
+      const cell = e.target.closest("[data-col]");
+      clear();
+      if (!cell || !tbl.contains(cell)) return;
+      const idx = cell.dataset.col;
+      tbl.querySelectorAll(`[data-col="${idx}"]`).forEach((el) => el.classList.add("col-hover"));
+      const g = PIPELINE_COLS[Number(idx)]?.group;
+      if (g) {
+        tbl.querySelectorAll(`th[data-group="${g}"]`).forEach((el) => el.classList.add("col-hover"));
+      }
+    });
+    tbl.addEventListener("mouseleave", clear);
   });
 
   const rc = document.getElementById("result-count");

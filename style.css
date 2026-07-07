@@ -844,17 +844,40 @@ h1, h2, h3, .serif {
   background: var(--beige-deep);
   color: var(--slate);
   font-weight: 700;
-  font-size: 9px;
+  font-size: 9.5px;
   text-transform: uppercase;
   letter-spacing: 0.03em;
   text-align: right;
-  padding: 6px 10px;
+  padding: 6px 8px;
   border-bottom: 1px solid var(--everest);
   white-space: normal;
   line-height: 1.15;
   vertical-align: bottom;
 }
-.pipeline-table .stage-head th:first-child { text-align: left; }
+.pipeline-table .stage-head-groups th:first-child { text-align: left; }
+/* Metric-family band cells (top header row) over short variant labels. */
+.pipeline-table .stage-head th.group-head {
+  text-align: center;
+  border-bottom: none;
+  padding: 5px 6px 2px;
+  letter-spacing: 0.06em;
+}
+.pipeline-table .stage-head th.solo-head { vertical-align: bottom; }
+.pipeline-table .stage-head-subs th {
+  font-weight: 600;
+  color: var(--slate-70);
+  padding-top: 2px;
+  white-space: nowrap;
+}
+/* Faint divider where each metric family starts, headers and body alike. */
+.pipeline-table .stage-head th.group-head,
+.pipeline-table .stage-head th.group-start,
+.pipeline-table tbody td.group-start { border-left: 1px solid rgba(22, 53, 46, 0.12); }
+/* Crosshair hover: hovered column (and its header labels) lights up; the
+   row highlight below shows the school, the intersection reads strongest. */
+.pipeline-table th.col-hover { background: #e2d6b3; }
+.pipeline-table tbody td.col-hover { background: var(--bg); }
+.pipeline-table tbody tr:hover td.col-hover { background: var(--beige-deep); }
 .pipeline-table tbody td {
   padding: 6px 7px;
   border-bottom: 1px solid var(--beige-deep);

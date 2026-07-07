@@ -108,10 +108,20 @@ when no qualifying properties. `bedWeightedRent` becomes
   on-screen table and the Excel export (`downloadScorecardExcel()`), so new
   columns flow into the export automatically. New pct columns use
   `fmt: fmtPct`, `xz: "0.0%"`; Subtext Rank uses `fmtInt`, `xz: "#,##0"`.
-- `style.css` `.pipeline-table`: font-size 11.5px → 10.5px; header cells
-  (`.stage-head th`) `white-space: normal` with `line-height: 1.15`,
-  `vertical-align: bottom`, font-size 9.5px → 9px so labels wrap to two lines;
-  cell padding 6px 10px → 6px 7px; `min-width` 1180px → 1420px.
+- `style.css` `.pipeline-table`: font-size 11.5px → 10.5px; cell padding
+  6px 10px → 6px 7px; `min-width` 1180px → 1420px.
+- **Amended 2026-07-07 (Jack: headers too crammed):** on screen the header is
+  a two-row grouped layout — metric-family bands (Enrollment / Occupancy /
+  Prelease / Rent / Rent Growth / Beds / Uncaptured Demand) with `colspan`
+  over short variant sub-labels (0.5 Mi / 1.0 Mi / Market), and University /
+  Subtext Rank spanning both rows. Faint left borders divide the families.
+  `PIPELINE_COLS` entries carry `group`/`sub` for the screen; the flat `h`
+  labels still drive the Excel export unchanged.
+- **Amended 2026-07-07 (Jack request):** crosshair hover — the existing
+  `tr:hover` row highlight shows the school; a delegated `mouseover` handler
+  adds `.col-hover` to the hovered column's cells and its header labels
+  (`data-col`/`data-group` attributes), with the row∩column intersection
+  shaded strongest.
 - Excel column widths: first column 34 stays; numeric columns 13 → 11 to keep
   the wider sheet manageable.
 - Missing values keep the existing muted "-" convention. Row sort stays A-Z by

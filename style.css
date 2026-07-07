@@ -813,15 +813,16 @@ h1, h2, h3, .serif {
 .pipeline-wrap { overflow-x: auto; overflow-y: visible; max-height: none; padding: 4px 20px 16px; }
 .pipeline-table {
   width: 100%;
-  min-width: 1460px;
+  min-width: 1420px;
   border-collapse: collapse;
   font-size: 10.5px;
   font-variant-numeric: tabular-nums;
   margin-bottom: 20px;
-  /* Fixed layout + shared colgroup so all stage tables align identically. */
-  table-layout: fixed;
 }
-.pipeline-table col.col-uni { width: 190px; }
+/* Visual gap between stage sections inside the single shared table. */
+.pipeline-table tbody.stage-section:not(:first-child) .stage-band th {
+  border-top: 16px solid var(--surface);
+}
 .pipeline-table .stage-band th {
   background: var(--everest);
   color: #fff;
@@ -879,7 +880,7 @@ h1, h2, h3, .serif {
    row highlight below shows the school, the intersection reads strongest. */
 .pipeline-table th.col-hover { background: #e2d6b3; }
 .pipeline-table tbody td.col-hover { background: var(--bg); }
-.pipeline-table tbody tr:hover td.col-hover { background: var(--beige-deep); }
+.pipeline-table tbody tr[data-market-key]:hover td.col-hover { background: var(--beige-deep); }
 .pipeline-table tbody td {
   padding: 6px 7px;
   border-bottom: 1px solid var(--beige-deep);
@@ -887,9 +888,9 @@ h1, h2, h3, .serif {
   white-space: nowrap;
 }
 .pipeline-table tbody td.num { text-align: right; }
-.pipeline-table tbody tr { cursor: pointer; transition: background 0.1s; }
-.pipeline-table tbody tr:hover { background: var(--bg); }
-.pipeline-table .university-cell { font-weight: 700; white-space: normal; }
+.pipeline-table tbody tr[data-market-key] { cursor: pointer; transition: background 0.1s; }
+.pipeline-table tbody tr[data-market-key]:hover { background: var(--bg); }
+.pipeline-table .university-cell { font-weight: 700; }
 .pipeline-table .city-state {
   display: block;
   font-weight: 400;

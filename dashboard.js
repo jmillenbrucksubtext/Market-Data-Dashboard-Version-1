@@ -863,7 +863,10 @@ function renderScorecard() {
     subCells.push(`<th class="num sub-head${pipelineGroupStart(i) ? " group-start" : ""}" data-col="${i}">${escapeHtml(c.sub)}</th>`);
   });
 
-  let html = "";
+  // One table for every stage (band + headers repeat per section) so the
+  // browser sizes each column once across Pursuing/Assessing/Upcoming and
+  // all three sections line up with the same natural widths.
+  let sections = "";
   let stagesShown = 0;
   for (const stage of PIPELINE_STAGES) {
     const list = byStage.get(stage.key) || [];
@@ -882,19 +885,18 @@ function renderScorecard() {
       }).join("");
       return `<tr data-market-key="${r.market_key}">${cells}</tr>`;
     }).join("");
-    html += `
-      <table class="pipeline-table">
-        <colgroup><col class="col-uni">${"<col>".repeat(nCol - 1)}</colgroup>
-        <thead>
+    sections += `
+        <tbody class="stage-section">
           <tr class="stage-band"><th colspan="${nCol}">${escapeHtml(stage.label)}<span class="stage-count">${list.length}</span></th></tr>
           <tr class="stage-head stage-head-groups">${groupCells.join("")}</tr>
           <tr class="stage-head stage-head-subs">${subCells.join("")}</tr>
-        </thead>
-        <tbody>${body}</tbody>
-      </table>`;
+          ${body}
+        </tbody>`;
   }
-  container.innerHTML = html || `<div class="empty-state">No active-pipeline markets match the filter.</div>`;
-  container.querySelectorAll("tbody tr").forEach((tr) => {
+  container.innerHTML = sections
+    ? `<table class="pipeline-table">${sections}</table>`
+    : `<div class="empty-state">No active-pipeline markets match the filter.</div>`;
+  container.querySelectorAll("tbody tr[data-market-key]").forEach((tr) => {
     tr.addEventListener("click", () => {
       window.location.href = `market.html?id=${Number(tr.dataset.marketKey)}`;
     });

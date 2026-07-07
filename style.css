@@ -813,12 +813,15 @@ h1, h2, h3, .serif {
 .pipeline-wrap { overflow-x: auto; overflow-y: visible; max-height: none; padding: 4px 20px 16px; }
 .pipeline-table {
   width: 100%;
-  min-width: 1420px;
+  min-width: 1460px;
   border-collapse: collapse;
   font-size: 10.5px;
   font-variant-numeric: tabular-nums;
   margin-bottom: 20px;
+  /* Fixed layout + shared colgroup so all stage tables align identically. */
+  table-layout: fixed;
 }
+.pipeline-table col.col-uni { width: 190px; }
 .pipeline-table .stage-band th {
   background: var(--everest);
   color: #fff;
@@ -867,7 +870,6 @@ h1, h2, h3, .serif {
   font-weight: 600;
   color: var(--slate-70);
   padding-top: 2px;
-  white-space: nowrap;
 }
 /* Faint divider where each metric family starts, headers and body alike. */
 .pipeline-table .stage-head th.group-head,
@@ -887,7 +889,7 @@ h1, h2, h3, .serif {
 .pipeline-table tbody td.num { text-align: right; }
 .pipeline-table tbody tr { cursor: pointer; transition: background 0.1s; }
 .pipeline-table tbody tr:hover { background: var(--bg); }
-.pipeline-table .university-cell { font-weight: 700; }
+.pipeline-table .university-cell { font-weight: 700; white-space: normal; }
 .pipeline-table .city-state {
   display: block;
   font-weight: 400;

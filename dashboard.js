@@ -884,6 +884,7 @@ function renderScorecard() {
     }).join("");
     html += `
       <table class="pipeline-table">
+        <colgroup><col class="col-uni">${"<col>".repeat(nCol - 1)}</colgroup>
         <thead>
           <tr class="stage-band"><th colspan="${nCol}">${escapeHtml(stage.label)}<span class="stage-count">${list.length}</span></th></tr>
           <tr class="stage-head stage-head-groups">${groupCells.join("")}</tr>

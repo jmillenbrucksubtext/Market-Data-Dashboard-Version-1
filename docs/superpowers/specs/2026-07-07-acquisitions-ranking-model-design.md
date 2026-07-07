@@ -47,7 +47,8 @@ All on branch `feature/acquisitions-ranking-model`:
 2. `acquisitions-model.html` — generated, committed output.
 3. `index.html` + `style.css` — Development/Acquisitions toggle in the Forward
    Model view.
-4. This spec.
+4. `dashboard.js` — `brandForwardModel()` selector fix (see Toggle section).
+5. This spec.
 
 ## Builder (`build_acquisitions_model.py`)
 
@@ -123,13 +124,16 @@ Formatting rules, matching the development page exactly:
 - Switching shows/hides the iframes (CSS class), never swaps `src`, so each
   model keeps its scroll position and selected sub-tab across flips.
 - Toggle styling added to `style.css`, consistent with existing dashboard pills.
-- Brand-CSS injection: `dashboard.js`'s `brandForwardModel()` injects
-  `forward-model-brand.css` into the *first* `.forward-frame` only — which is
-  currently the Market State iframe, so the development model receives no
-  injection today (pre-existing quirk). Decision: leave `dashboard.js`
-  untouched; the acquisitions iframe likewise receives no injection, so both
-  toggle options render with identical styling. The quirk is recorded under
-  Notes as a separate follow-up candidate.
+- Brand-CSS injection fix (scope added at user request): `dashboard.js`'s
+  `brandForwardModel()` currently injects `forward-model-brand.css` into the
+  *first* `.forward-frame` only — which is the Market State iframe, so the
+  development model receives no injection today and Market State receives a
+  stylesheet never meant for it. Fix: target
+  `document.querySelectorAll("#forward-view .forward-frame")` and attach the
+  inject-on-load handler to each, so both the Development and Acquisitions
+  iframes get the brand skin and Market State stops receiving it. This
+  restores the routine's documented intent; the Development tab's appearance
+  will change to the branded skin.
 - No sidebar, hash-routing, or other-tab changes.
 
 ## Error handling
@@ -148,7 +152,9 @@ Formatting rules, matching the development page exactly:
 3. Spot-check at least 5 markets against the Excel — UConn (#1), Missouri
    (#2), Rutgers (#3), plus two mid-table markets — on both the values and
    weightings tabs.
-4. Confirm the Development model renders and behaves exactly as before.
+4. Confirm the Development model renders and behaves as before, now with the
+   brand skin injected; confirm Market State no longer receives
+   `forward-model-brand.css` and still renders correctly.
 5. User examines locally in their browser. Push / PR happens only after their
    sign-off.
 
@@ -159,12 +165,11 @@ Formatting rules, matching the development page exactly:
   the pre-push review is the checkpoint.
 - The stale OneDrive folder copy `Market-Data-Dashboard-Version-1-main` is not
   touched; all work happens in the git clone `Market-Data-Dashboard-Version-1`.
-- Pre-existing quirk (out of scope, follow-up candidate): `brandForwardModel()`
-  in `dashboard.js` was written to re-skin the forward-model iframe, but since
-  the Market State section was added before it in the DOM, the brand stylesheet
-  now lands in the Market State iframe instead. Fixing the selector would
-  change the forward model's current appearance, so it is deliberately not
-  bundled into this feature.
+- The `brandForwardModel()` selector fix (above) was originally deferred as a
+  follow-up, then pulled into scope at user request on 2026-07-07. It changes
+  the Development tab's appearance to the branded skin, which is the routine's
+  documented intent; the user reviews the result locally before anything is
+  pushed.
 
 ## Out of scope / later
 

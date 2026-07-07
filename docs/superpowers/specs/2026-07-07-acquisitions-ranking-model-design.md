@@ -99,9 +99,18 @@ Formatting rules, matching the development page exactly:
 - Metric cell coloring on the values tab: tercile within each metric column by
   value — top third `metric-hi`, middle `metric-mid`, bottom third `metric-lo`
   (the rule reverse-engineered from the development page's generated classes).
+- Blank / non-numeric cells in any displayed column render as "-" (the
+  Rent/Price rule generalized) and are excluded from tercile bucketing.
 - Forecast columns (3yr Bed/Enroll Δ, 3yr App Growth) get the `fcast-col`
   header treatment and FCST badges, and the same fcast-cell JS tagging indices
   updated if column positions differ (they don't — layout is identical).
+- The page carries all three of the development page's script blocks: tab
+  switching, sortable columns, and the runtime color-inversion for
+  3yr Bed/Enroll Δ (values `td[7]` swaps `metric-hi`↔`metric-lo`; weightings
+  `td[4]` swaps `w-pos`↔`w-neg`, since lower supply growth is better). The
+  builder emits raw tercile/sign classes and lets that script invert at
+  runtime, exactly as the development page does — the inversion must not also
+  be baked into the generated classes (double-apply would cancel it).
 
 ## Toggle (`index.html`, `style.css`)
 
@@ -109,10 +118,18 @@ Formatting rules, matching the development page exactly:
   `[Development] [Acquisitions]` above the model, Development active by default.
 - Two iframes: the existing `forward-model.html` iframe (unchanged, still the
   default) and a new `acquisitions-model.html` iframe with `loading="lazy"`,
-  hidden until first selected.
+  hidden until first selected. The new iframe reuses the existing
+  `.forward-frame` class for its sizing/border treatment.
 - Switching shows/hides the iframes (CSS class), never swaps `src`, so each
   model keeps its scroll position and selected sub-tab across flips.
 - Toggle styling added to `style.css`, consistent with existing dashboard pills.
+- Brand-CSS injection: `dashboard.js`'s `brandForwardModel()` injects
+  `forward-model-brand.css` into the *first* `.forward-frame` only — which is
+  currently the Market State iframe, so the development model receives no
+  injection today (pre-existing quirk). Decision: leave `dashboard.js`
+  untouched; the acquisitions iframe likewise receives no injection, so both
+  toggle options render with identical styling. The quirk is recorded under
+  Notes as a separate follow-up candidate.
 - No sidebar, hash-routing, or other-tab changes.
 
 ## Error handling
@@ -142,6 +159,12 @@ Formatting rules, matching the development page exactly:
   the pre-push review is the checkpoint.
 - The stale OneDrive folder copy `Market-Data-Dashboard-Version-1-main` is not
   touched; all work happens in the git clone `Market-Data-Dashboard-Version-1`.
+- Pre-existing quirk (out of scope, follow-up candidate): `brandForwardModel()`
+  in `dashboard.js` was written to re-skin the forward-model iframe, but since
+  the Market State section was added before it in the DOM, the brand stylesheet
+  now lands in the Market State iframe instead. Fixing the selector would
+  change the forward model's current appearance, so it is deliberately not
+  bundled into this feature.
 
 ## Out of scope / later
 

@@ -61,8 +61,11 @@ All on branch `feature/acquisitions-ranking-model`:
   and writes nothing. Prints kept/dropped row counts on success.
 - Writes `acquisitions-model.html` into the repo root next to
   `forward-model.html`.
-- The page template (CSS/JS/callouts) is embedded in the builder so the output
-  is fully self-contained, mirroring how `forward-model.html` works.
+- The builder uses `forward-model.html` as its design template at build time:
+  it swaps the two `<tbody>` blocks, `<title>`, `<h1>`, and footer source
+  lines, and carries all CSS / JS / callout content over untouched. One source
+  of truth for the design; the generated output is still fully self-contained.
+  The builder fail-louds if any template anchor is missing.
 
 ## Generated page (`acquisitions-model.html`)
 
@@ -94,7 +97,7 @@ Formatting rules, matching the development page exactly:
 | Rent/Price | one-decimal %; "-" when blank |
 | Current New Property Rent | $ + thousands-comma integer |
 | Fwd/Curr rank | badges `rank-forward` / `rank-current` |
-| Change | badge `change-up` (+N) / `change-down` (−N) / `change-zero` (0) |
+| Change | badge `change-up` (+N) / `change-down` (−N) / `change-flat` (0) |
 | Strongest / Weakest Variable | `tag-strong` / `tag-weak` tags |
 
 - Metric cell coloring on the values tab: tercile within each metric column by

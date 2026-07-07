@@ -942,6 +942,35 @@ h1, h2, h3, .serif {
   background: #fff;
 }
 
+/* Forward Model: Development / Acquisitions toggle */
+.fwd-toggle {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+.fwd-toggle-btn {
+  padding: 7px 20px;
+  border: 1px solid var(--beige-deep);
+  border-radius: 20px;
+  background: var(--surface);
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--slate-70);
+  cursor: pointer;
+}
+.fwd-toggle-btn:not(.active):hover { background: var(--beige); }
+.fwd-toggle-btn.active {
+  background: var(--everest);
+  border-color: var(--everest);
+  color: #fff;
+}
+.forward-frame.fwd-hidden { display: none; }
+/* The toggle bar sits above the frames, so give them back its height */
+#forward-view .forward-frame {
+  height: calc(100vh / var(--page-zoom, 1) - 178px);
+}
+
 /* Sources tab -------------------------------------------------- */
 
 .src-table {

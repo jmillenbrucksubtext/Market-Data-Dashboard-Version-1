@@ -1557,23 +1557,39 @@ function renderAll() {
 }
 
 /* ----- Forward Model iframe re-skin --------------------------- */
-// forward-model.html is a generated drop-in that gets replaced wholesale,
-// so the Subtext branding is injected from outside: append the override
-// stylesheet into the iframe document each time it (re)loads.
+// forward-model.html / acquisitions-model.html are generated drop-ins that
+// get replaced wholesale, so the Subtext branding is injected from outside:
+// append the override stylesheet into each iframe document as it (re)loads.
+// Scoped to #forward-view so the Market State iframe is not touched.
 (function brandForwardModel() {
-  const frame = document.querySelector(".forward-frame");
-  if (!frame) return;
-  const inject = () => {
-    try {
-      const doc = frame.contentDocument;
-      if (!doc || !doc.head || doc.getElementById("fwd-brand-css")) return;
-      const link = doc.createElement("link");
-      link.id = "fwd-brand-css";
-      link.rel = "stylesheet";
-      link.href = "forward-model-brand.css?v=1";
-      doc.head.appendChild(link);
-    } catch { /* same-origin, so this shouldn't throw */ }
-  };
-  frame.addEventListener("load", inject);
-  inject();  // covers the already-loaded case
+  document.querySelectorAll("#forward-view .forward-frame").forEach((frame) => {
+    const inject = () => {
+      try {
+        const doc = frame.contentDocument;
+        if (!doc || !doc.head || doc.getElementById("fwd-brand-css")) return;
+        const link = doc.createElement("link");
+        link.id = "fwd-brand-css";
+        link.rel = "stylesheet";
+        link.href = "forward-model-brand.css?v=1";
+        doc.head.appendChild(link);
+      } catch { /* same-origin, so this shouldn't throw */ }
+    };
+    frame.addEventListener("load", inject);
+    inject();  // covers the already-loaded case
+  });
+})();
+
+/* ----- Forward Model: Development / Acquisitions toggle -------- */
+(function forwardModelToggle() {
+  const btns = document.querySelectorAll("#forward-view .fwd-toggle-btn");
+  const dev = document.getElementById("forward-frame-dev");
+  const acq = document.getElementById("forward-frame-acq");
+  if (!btns.length || !dev || !acq) return;
+  btns.forEach((btn) => btn.addEventListener("click", () => {
+    btns.forEach((b) => b.classList.toggle("active", b === btn));
+    const showAcq = btn.dataset.model === "acq";
+    if (showAcq && !acq.getAttribute("src")) acq.src = acq.dataset.src;
+    dev.classList.toggle("fwd-hidden", showAcq);
+    acq.classList.toggle("fwd-hidden", !showAcq);
+  }));
 })();

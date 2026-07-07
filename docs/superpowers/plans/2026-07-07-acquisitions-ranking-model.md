@@ -373,7 +373,7 @@ wrote acquisitions-model.html
 Run (Git Bash):
 
 ```bash
-grep -c '<tr>' acquisitions-model.html                      # expect 161 (79+79 data rows + 2 header + 1 legend-free)
+grep -c '<tr>' acquisitions-model.html                      # expect 160 (79+79 data rows + 2 header rows)
 grep -o '<title>[^<]*' acquisitions-model.html              # expect: <title>Forward Looking Model - Acquisition Screener 2024
 grep -c 'Source: Acquisition Screener' acquisitions-model.html   # expect 2
 grep -o 'rank rank-forward">1<' acquisitions-model.html | head -2  # appears twice (values + weightings row 1)

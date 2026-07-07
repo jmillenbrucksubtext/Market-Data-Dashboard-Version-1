@@ -76,10 +76,15 @@ generalized to `bedWeighted(props, maxMi, getter)` — skip properties where
 when no qualifying properties. `bedWeightedRent` becomes
 `bedWeighted(props, maxMi, p => p.avg_rent)`.
 
-- **Occ - 0.5/1.0 Mi:** `bedWeighted(props, R, p => p.occupancy)`. Properties
-  not reporting occupancy (e.g. under construction / planned) drop out via the
-  null guard.
-- **Prelease - 0.5/1.0 Mi:** `bedWeighted(props, R, p => p.prelease)`.
+- **Occ - 0.5/1.0 Mi:** `bedWeighted(props, R, p => p.occupancy || null)`.
+  **Zero is treated as not-reporting**, not as a real 0% — in the export,
+  under-construction / planned / not-yet-delivered properties carry
+  `occupancy: 0.0` rather than `null` (e.g. ACC P3 SLC: 1,446 beds, delivers
+  2026, occ 0.0), and including them would put Utah's 1-mile occupancy at 28%
+  against a 98.5% market figure. With the `|| null` rule, radius occupancy
+  tracks market occupancy within a few points across all 24 active markets.
+- **Prelease - 0.5/1.0 Mi:** `bedWeighted(props, R, p => p.prelease || null)`.
+  Same zero-as-missing rule, same rationale.
 - **Rent Growth - 0.5/1.0 Mi:** built from `property_history`, which holds
   annual (June) snapshots per property. In `pipelineDerived()`, compute once:
   `latestYear = max(year_)`, `priorYear = latestYear − 1`; map
@@ -122,13 +127,17 @@ when no qualifying properties. `bedWeightedRent` becomes
 ## Testing / verification
 
 1. **Oracle script (Python):** compute all nine new values for every active
-   market straight from `data.json` using the definitions above.
+   market straight from `data.json` using the definitions above. Also asserts
+   `(property_key, year_)` uniqueness in `property_history` and flags any
+   per-property growth outside ±50% for eyeballing. Lives in the session
+   scratchpad — throwaway tooling, not committed to the repo.
 2. **JS harness (Node):** load `dashboard.js` with stubbed `document`/`window`
    globals and injected `DATA`, call `pipelineScorecardRows()`, and diff every
-   new field against the Python oracle (tolerance 1e-9).
+   new field against the Python oracle (tolerance 1e-9). Also throwaway.
 3. **Visual check:** serve the repo (`python -m http.server`) and confirm the
-   23-column table renders, headers wrap to two lines, no horizontal overflow
-   at 1080p, and clicking rows still opens market pages.
+   23-column table renders, headers wrap to two lines, the table fits without
+   horizontal scrolling at typical desktop widths (~1600px+ viewport), and
+   clicking rows still opens market pages.
 4. Excel export is asserted by (2) driving off the same `PIPELINE_COLS`.
 
 ## Out of scope

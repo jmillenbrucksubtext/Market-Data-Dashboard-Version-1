@@ -441,19 +441,53 @@ function pipelineDerived() {
     if (!propsByMarket.has(p.market_key)) propsByMarket.set(p.market_key, []);
     propsByMarket.get(p.market_key).push(p);
   });
-  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket };
+  // Per-property YoY rent growth from the annual (June) property_history
+  // snapshots: latest year vs the year before. Zero/absent rents drop out.
+  const hist = t.property_history || [];
+  const years = [...new Set(hist.map((h) => h.year_))].sort((a, b) => a - b);
+  const rentGrowth = new Map();
+  if (years.length >= 2) {
+    const [prior, latest] = years.slice(-2);
+    const cur = new Map(), prev = new Map();
+    for (const h of hist) {
+      if (!(h.avg_rent_per_bed > 0)) continue;
+      if (h.year_ === latest) cur.set(h.property_key, h.avg_rent_per_bed);
+      else if (h.year_ === prior) prev.set(h.property_key, h.avg_rent_per_bed);
+    }
+    for (const [pk, c] of cur) {
+      const p = prev.get(pk);
+      if (p) rentGrowth.set(pk, c / p - 1);
+    }
+  }
+  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
-// Bed-weighted avg rent across a market's properties within `maxMi` of campus.
-function bedWeightedRent(props, maxMi) {
+// Bed-weighted avg of getter(p) across a market's properties within `maxMi`
+// of campus. Properties missing the value or a bed count are skipped.
+function bedWeighted(props, maxMi, getter) {
   let num = 0, den = 0;
   for (const p of props) {
-    if (p.avg_rent == null || !p.beds) continue;
+    const v = getter(p);
+    if (v == null || !p.beds) continue;
     if (maxMi != null && (p.milesToClosestCampus == null || p.milesToClosestCampus > maxMi)) continue;
-    num += p.avg_rent * p.beds; den += p.beds;
+    num += v * p.beds; den += p.beds;
   }
   return den ? num / den : null;
+}
+
+// Uncaptured demand within 1 mile: share of FTE not yet served by PBSH beds
+// near campus - mirrors the uncaptured_1mi qualifier in export-data.py.
+// `minYear` restricts the supply side to newer vintages (e.g. built 2010+).
+function uncapturedWithinMile(props, fte, minYear) {
+  if (!fte) return null;
+  let beds = 0;
+  for (const p of props) {
+    if (!p.beds || p.milesToClosestCampus == null || p.milesToClosestCampus > 1.0) continue;
+    if (minYear != null && !(p.yearBuilt >= minYear)) continue;
+    beds += p.beds;
+  }
+  return 1 - beds / fte;
 }
 
 // Active-market rows (those with a market_status), augmented with the derived
@@ -469,13 +503,26 @@ function pipelineScorecardRows() {
       || (r.state_abbr || "").toLowerCase().includes(q))
     .map((r) => {
       const props = d.propsByMarket.get(r.market_key) || [];
+      // Zero occupancy/prelease means "not reporting" in the export (under-
+      // construction / pre-delivery assets), not a real 0% - drop them.
+      const occ = (p) => p.occupancy || null;
+      const pre = (p) => p.prelease || null;
+      const growth = (p) => d.rentGrowth.get(p.property_key) ?? null;
       return {
         ...r,
         fte_growth_yoy: d.fteGrowth.get(r.market_key) ?? null,
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
         on_campus_beds: d.onCampus.get(r.market_key) ?? null,
-        rent_half_mi: bedWeightedRent(props, 0.5),
-        rent_one_mi: bedWeightedRent(props, 1.0),
+        rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
+        rent_one_mi: bedWeighted(props, 1.0, (p) => p.avg_rent),
+        occ_half_mi: bedWeighted(props, 0.5, occ),
+        occ_one_mi: bedWeighted(props, 1.0, occ),
+        pre_half_mi: bedWeighted(props, 0.5, pre),
+        pre_one_mi: bedWeighted(props, 1.0, pre),
+        rent_growth_half_mi: bedWeighted(props, 0.5, growth),
+        rent_growth_one_mi: bedWeighted(props, 1.0, growth),
+        ud_one_mi: uncapturedWithinMile(props, r.enr_full_time, null),
+        ud_one_mi_2010: uncapturedWithinMile(props, r.enr_full_time, 2010),
         uncaptured_demand: r.penetration_ratio != null ? 1 - r.penetration_ratio : null,
       };
     })
@@ -484,20 +531,29 @@ function pipelineScorecardRows() {
 
 // Column set - mirrors the monthly market update. `xz` = Excel number format.
 const PIPELINE_COLS = [
-  { h: "University",       uni: true },
-  { h: "Total Enrollment", get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE",              get: (r) => r.enr_full_time,        fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE Growth",       get: (r) => r.fte_growth_yoy,       fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Occ.",      get: (r) => r.occupancy,            fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Prelease",  get: (r) => r.prelease,             fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Rent",      get: (r) => r.avg_rent_per_bed,     fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent - 0.5 Mile",  get: (r) => r.rent_half_mi,         fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent - 1.0 Mile",  get: (r) => r.rent_one_mi,          fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "YoY Rent Growth",  get: (r) => r.yoy_rent_growth,      fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "On-Campus Beds",   get: (r) => r.on_campus_beds,       fmt: fmtInt,           xz: "#,##0" },
-  { h: "PBSH Beds",        get: (r) => r.existing_beds,        fmt: fmtInt,           xz: "#,##0" },
-  { h: "Pipeline",         get: (r) => r.beds_pipeline_total,  fmt: fmtInt,           xz: "#,##0" },
-  { h: "UD as FTE %",      get: (r) => r.uncaptured_demand,    fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "University",           uni: true },
+  { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
+  { h: "Total Enrollment",     get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE",                  get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE Growth",           get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 0.5 Mi",         get: (r) => r.occ_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 1.0 Mi",         get: (r) => r.occ_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Occ.",          get: (r) => r.occupancy,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 0.5 Mi",    get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 1.0 Mi",    get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Prelease",      get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent - 0.5 Mi",        get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent - 1.0 Mi",        get: (r) => r.rent_one_mi,         fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Market Rent",          get: (r) => r.avg_rent_per_bed,    fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent Growth - 0.5 Mi", get: (r) => r.rent_growth_half_mi, fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent Growth - 1.0 Mi", get: (r) => r.rent_growth_one_mi,  fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Rent Growth",   get: (r) => r.yoy_rent_growth,     fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "On-Campus Beds",       get: (r) => r.on_campus_beds,      fmt: fmtInt,           xz: "#,##0" },
+  { h: "PBSH Beds",            get: (r) => r.existing_beds,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline",             get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
+  { h: "UD - 1.0 Mi",          get: (r) => r.ud_one_mi,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD - 1.0 Mi (2010+)",  get: (r) => r.ud_one_mi_2010,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD as FTE %",          get: (r) => r.uncaptured_demand,   fmt: (v) => fmtPct(v), xz: "0.0%" },
 ];
 
 function pipelineRowsByStage(rows) {
@@ -519,7 +575,7 @@ function downloadScorecardExcel() {
     wb.creator = "SubHouse";
     const ws = wb.addWorksheet("Market Update", { views: [{ state: "frozen", xSplit: 1 }] });
     ws.getColumn(1).width = 34;
-    for (let i = 2; i <= nCol; i++) ws.getColumn(i).width = 13;
+    for (let i = 2; i <= nCol; i++) ws.getColumn(i).width = 11;
 
     let rownum = 1;
     // Title band.

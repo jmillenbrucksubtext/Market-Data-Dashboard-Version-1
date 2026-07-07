@@ -87,7 +87,8 @@ when no qualifying properties. `bedWeightedRent` becomes
   Same zero-as-missing rule, same rationale.
 - **Rent Growth - 0.5/1.0 Mi:** built from `property_history`, which holds
   annual (June) snapshots per property. In `pipelineDerived()`, compute once:
-  `latestYear = max(year_)`, `priorYear = latestYear − 1`; map
+  the two most recent snapshot years (currently 2025 → 2026; these are
+  consecutive on all data to date); map
   `property_key → growth` where `growth = cur/prev − 1` for properties with
   `avg_rent_per_bed` present and > 0 in **both** years. Then per market/radius:
   bed-weighted average of per-property growth (weights = current `beds` from

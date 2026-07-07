@@ -25,7 +25,7 @@ Line numbers below refer to the file state at branch commit `3d66e66`. The Pytho
 
 - [ ] **Step 1: Write the harness**
 
-Create `SCRATCH\harness.js`. It evaluates `dashboard.js` in a `vm` sandbox (the only load-time side effect is `document.addEventListener("DOMContentLoaded", ...)`, and `Chart`-guarded blocks short-circuit), injects `DATA`, calls `pipelineScorecardRows()`, and diffs the 9 new fields against the Python oracle plus the exact 23-header order:
+Create `SCRATCH\harness.js`. It evaluates `dashboard.js` in a `vm` sandbox — load-time side effects are `document.addEventListener("DOMContentLoaded", ...)` (line ~108), the `brandForwardModel` IIFE (line ~1563, calls `document.querySelector` and no-ops on null), and two `Chart`-guarded blocks that short-circuit. It injects `DATA`, calls `pipelineScorecardRows()`, and diffs the 9 new fields against the Python oracle plus the exact 23-header order:
 
 ```js
 const fs = require("fs");
@@ -33,7 +33,12 @@ const vm = require("vm");
 const [, , dashboardPath, dataPath, oraclePath] = process.argv;
 
 const sandbox = {
-  document: { addEventListener() {}, getElementById: () => null },
+  document: {
+    addEventListener() {},
+    getElementById: () => null,
+    querySelector: () => null,
+    querySelectorAll: () => [],
+  },
   window: {},
   console,
 };
@@ -95,7 +100,7 @@ Expected: `oracle: 24 active markets, history years 2025->2026`, an assertion-fr
 
 Run from the repo root:
 `node "SCRATCH\harness.js" dashboard.js data.json "SCRATCH\oracle.json"`
-Expected: FAIL — header mismatch (current headers lack the 9 new columns) and `occ_half_mi`/etc. mismatches (`js=undefined`). If it errors with a ReferenceError instead, the sandbox stubs need extending — fix the harness, not dashboard.js.
+Expected: FAIL — header mismatch (current headers lack the 9 new columns) and `occ_half_mi`/etc. mismatches (`js=undefined`). If it errors with a ReferenceError/TypeError instead, the sandbox stubs need extending — fix the harness, not dashboard.js. (Verified 2026-07-07: FAIL - 192 problems.)
 
 No commit (throwaway tooling, stays in scratchpad).
 
@@ -282,7 +287,7 @@ git commit -m "Add radius occupancy/prelease/rent-growth, UD, and Subtext rank s
 ### Task 3: style.css — fit 23 columns
 
 **Files:**
-- Modify: `style.css:814-857` (`.pipeline-table` block)
+- Modify: `style.css:814-861` (`.pipeline-table` block)
 
 - [ ] **Step 1: Apply the four CSS changes**
 

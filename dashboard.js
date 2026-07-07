@@ -911,11 +911,13 @@ function renderScorecard() {
       const cell = e.target.closest("[data-col]");
       clear();
       if (!cell || !tbl.contains(cell)) return;
+      // Highlight only within the hovered stage section, not the whole table.
+      const section = cell.closest("tbody.stage-section") || tbl;
       const idx = cell.dataset.col;
-      tbl.querySelectorAll(`[data-col="${idx}"]`).forEach((el) => el.classList.add("col-hover"));
+      section.querySelectorAll(`[data-col="${idx}"]`).forEach((el) => el.classList.add("col-hover"));
       const g = PIPELINE_COLS[Number(idx)]?.group;
       if (g) {
-        tbl.querySelectorAll(`th[data-group="${g}"]`).forEach((el) => el.classList.add("col-hover"));
+        section.querySelectorAll(`th[data-group="${g}"]`).forEach((el) => el.classList.add("col-hover"));
       }
     });
     tbl.addEventListener("mouseleave", clear);

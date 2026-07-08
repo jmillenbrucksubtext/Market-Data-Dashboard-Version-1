@@ -441,19 +441,53 @@ function pipelineDerived() {
     if (!propsByMarket.has(p.market_key)) propsByMarket.set(p.market_key, []);
     propsByMarket.get(p.market_key).push(p);
   });
-  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket };
+  // Per-property YoY rent growth from the annual (June) property_history
+  // snapshots: latest year vs the year before. Zero/absent rents drop out.
+  const hist = t.property_history || [];
+  const years = [...new Set(hist.map((h) => h.year_))].sort((a, b) => a - b);
+  const rentGrowth = new Map();
+  if (years.length >= 2) {
+    const [prior, latest] = years.slice(-2);
+    const cur = new Map(), prev = new Map();
+    for (const h of hist) {
+      if (!(h.avg_rent_per_bed > 0)) continue;
+      if (h.year_ === latest) cur.set(h.property_key, h.avg_rent_per_bed);
+      else if (h.year_ === prior) prev.set(h.property_key, h.avg_rent_per_bed);
+    }
+    for (const [pk, c] of cur) {
+      const p = prev.get(pk);
+      if (p) rentGrowth.set(pk, c / p - 1);
+    }
+  }
+  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
-// Bed-weighted avg rent across a market's properties within `maxMi` of campus.
-function bedWeightedRent(props, maxMi) {
+// Bed-weighted avg of getter(p) across a market's properties within `maxMi`
+// of campus. Properties missing the value or a bed count are skipped.
+function bedWeighted(props, maxMi, getter) {
   let num = 0, den = 0;
   for (const p of props) {
-    if (p.avg_rent == null || !p.beds) continue;
+    const v = getter(p);
+    if (v == null || !p.beds) continue;
     if (maxMi != null && (p.milesToClosestCampus == null || p.milesToClosestCampus > maxMi)) continue;
-    num += p.avg_rent * p.beds; den += p.beds;
+    num += v * p.beds; den += p.beds;
   }
   return den ? num / den : null;
+}
+
+// Uncaptured demand within 1 mile: share of FTE not yet served by PBSH beds
+// near campus - mirrors the uncaptured_1mi qualifier in export-data.py.
+// `minYear` restricts the supply side to newer vintages (e.g. built 2010+).
+function uncapturedWithinMile(props, fte, minYear) {
+  if (!fte) return null;
+  let beds = 0;
+  for (const p of props) {
+    if (!p.beds || p.milesToClosestCampus == null || p.milesToClosestCampus > 1.0) continue;
+    if (minYear != null && !(p.yearBuilt >= minYear)) continue;
+    beds += p.beds;
+  }
+  return 1 - beds / fte;
 }
 
 // Active-market rows (those with a market_status), augmented with the derived
@@ -469,13 +503,26 @@ function pipelineScorecardRows() {
       || (r.state_abbr || "").toLowerCase().includes(q))
     .map((r) => {
       const props = d.propsByMarket.get(r.market_key) || [];
+      // Zero occupancy/prelease means "not reporting" in the export (under-
+      // construction / pre-delivery assets), not a real 0% - drop them.
+      const occ = (p) => p.occupancy || null;
+      const pre = (p) => p.prelease || null;
+      const growth = (p) => d.rentGrowth.get(p.property_key) ?? null;
       return {
         ...r,
         fte_growth_yoy: d.fteGrowth.get(r.market_key) ?? null,
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
         on_campus_beds: d.onCampus.get(r.market_key) ?? null,
-        rent_half_mi: bedWeightedRent(props, 0.5),
-        rent_one_mi: bedWeightedRent(props, 1.0),
+        rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
+        rent_one_mi: bedWeighted(props, 1.0, (p) => p.avg_rent),
+        occ_half_mi: bedWeighted(props, 0.5, occ),
+        occ_one_mi: bedWeighted(props, 1.0, occ),
+        pre_half_mi: bedWeighted(props, 0.5, pre),
+        pre_one_mi: bedWeighted(props, 1.0, pre),
+        rent_growth_half_mi: bedWeighted(props, 0.5, growth),
+        rent_growth_one_mi: bedWeighted(props, 1.0, growth),
+        ud_one_mi: uncapturedWithinMile(props, r.enr_full_time, null),
+        ud_one_mi_2010: uncapturedWithinMile(props, r.enr_full_time, 2010),
         uncaptured_demand: r.penetration_ratio != null ? 1 - r.penetration_ratio : null,
       };
     })
@@ -483,22 +530,40 @@ function pipelineScorecardRows() {
 }
 
 // Column set - mirrors the monthly market update. `xz` = Excel number format.
+// `h` is the flat label used by the Excel export; on screen, columns with a
+// `group` render under a two-row header (family band over `sub` labels) and
+// ungrouped columns span both rows.
 const PIPELINE_COLS = [
-  { h: "University",       uni: true },
-  { h: "Total Enrollment", get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE",              get: (r) => r.enr_full_time,        fmt: fmtInt,           xz: "#,##0" },
-  { h: "FTE Growth",       get: (r) => r.fte_growth_yoy,       fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Occ.",      get: (r) => r.occupancy,            fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Prelease",  get: (r) => r.prelease,             fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Market Rent",      get: (r) => r.avg_rent_per_bed,     fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent - 0.5 Mile",  get: (r) => r.rent_half_mi,         fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "Rent - 1.0 Mile",  get: (r) => r.rent_one_mi,          fmt: fmtUsd,           xz: "$#,##0" },
-  { h: "YoY Rent Growth",  get: (r) => r.yoy_rent_growth,      fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "On-Campus Beds",   get: (r) => r.on_campus_beds,       fmt: fmtInt,           xz: "#,##0" },
-  { h: "PBSH Beds",        get: (r) => r.existing_beds,        fmt: fmtInt,           xz: "#,##0" },
-  { h: "Pipeline",         get: (r) => r.beds_pipeline_total,  fmt: fmtInt,           xz: "#,##0" },
-  { h: "UD as FTE %",      get: (r) => r.uncaptured_demand,    fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "University",           uni: true },
+  { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
+  { h: "Total Enrollment",     group: "Enrollment",        sub: "Total",        get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE",                  group: "Enrollment",        sub: "FTE",          get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "FTE Growth",           group: "Enrollment",        sub: "FTE Growth",   get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 0.5 Mi",         group: "Occupancy",         sub: "0.5 Mi",       get: (r) => r.occ_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Occ - 1.0 Mi",         group: "Occupancy",         sub: "1.0 Mi",       get: (r) => r.occ_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Occ.",          group: "Occupancy",         sub: "Market",       get: (r) => r.occupancy,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 0.5 Mi",    group: "Prelease",          sub: "0.5 Mi",       get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease - 1.0 Mi",    group: "Prelease",          sub: "1.0 Mi",       get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Prelease",      group: "Prelease",          sub: "Market",       get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent - 0.5 Mi",        group: "Rent",              sub: "0.5 Mi",       get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent - 1.0 Mi",        group: "Rent",              sub: "1.0 Mi",       get: (r) => r.rent_one_mi,         fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Market Rent",          group: "Rent",              sub: "Market",       get: (r) => r.avg_rent_per_bed,    fmt: fmtUsd,           xz: "$#,##0" },
+  { h: "Rent Growth - 0.5 Mi", group: "Rent Growth",       sub: "0.5 Mi",       get: (r) => r.rent_growth_half_mi, fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Rent Growth - 1.0 Mi", group: "Rent Growth",       sub: "1.0 Mi",       get: (r) => r.rent_growth_one_mi,  fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Market Rent Growth",   group: "Rent Growth",       sub: "Market",       get: (r) => r.yoy_rent_growth,     fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "On-Campus Beds",       group: "Beds",              sub: "On-Campus",    get: (r) => r.on_campus_beds,      fmt: fmtInt,           xz: "#,##0" },
+  { h: "PBSH Beds",            group: "Beds",              sub: "PBSH",         get: (r) => r.existing_beds,       fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline",             group: "Beds",              sub: "Pipeline",     get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
+  { h: "UD - 1.0 Mi",          group: "Uncaptured Demand", sub: "1.0 Mi",       get: (r) => r.ud_one_mi,           fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD - 1.0 Mi (2010+)",  group: "Uncaptured Demand", sub: "1.0 Mi 2010+", get: (r) => r.ud_one_mi_2010,      fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "UD as FTE %",          group: "Uncaptured Demand", sub: "Market",       get: (r) => r.uncaptured_demand,   fmt: (v) => fmtPct(v), xz: "0.0%" },
 ];
+
+// True when column `i` opens a new header group (used for divider borders).
+function pipelineGroupStart(i) {
+  const c = PIPELINE_COLS[i];
+  return !!c.group && PIPELINE_COLS[i - 1]?.group !== c.group;
+}
 
 function pipelineRowsByStage(rows) {
   const byStage = new Map(PIPELINE_STAGES.map((s) => [s.key, []]));
@@ -519,7 +584,7 @@ function downloadScorecardExcel() {
     wb.creator = "SubHouse";
     const ws = wb.addWorksheet("Market Update", { views: [{ state: "frozen", xSplit: 1 }] });
     ws.getColumn(1).width = 34;
-    for (let i = 2; i <= nCol; i++) ws.getColumn(i).width = 13;
+    for (let i = 2; i <= nCol; i++) ws.getColumn(i).width = 11;
 
     let rownum = 1;
     // Title band.
@@ -782,10 +847,26 @@ function renderScorecard() {
   const rows = pipelineScorecardRows();
   const byStage = pipelineRowsByStage(rows);
   const nCol = PIPELINE_COLS.length;
-  const headCells = PIPELINE_COLS
-    .map((c) => `<th class="${c.uni ? "" : "num"}">${escapeHtml(c.h)}</th>`).join("");
+  // Two-row header: metric-family bands over short variant labels; ungrouped
+  // columns span both rows. data-col/data-group drive the crosshair hover.
+  const groupCells = [];
+  const subCells = [];
+  PIPELINE_COLS.forEach((c, i) => {
+    if (!c.group) {
+      groupCells.push(`<th rowspan="2" class="${c.uni ? "" : "num"} solo-head"${c.uni ? "" : ` data-col="${i}"`}>${escapeHtml(c.h)}</th>`);
+      return;
+    }
+    if (pipelineGroupStart(i)) {
+      const span = PIPELINE_COLS.filter((x) => x.group === c.group).length;
+      groupCells.push(`<th colspan="${span}" class="group-head" data-group="${escapeHtml(c.group)}">${escapeHtml(c.group)}</th>`);
+    }
+    subCells.push(`<th class="num sub-head${pipelineGroupStart(i) ? " group-start" : ""}" data-col="${i}">${escapeHtml(c.sub)}</th>`);
+  });
 
-  let html = "";
+  // One table for every stage (band + headers repeat per section) so the
+  // browser sizes each column once across Pursuing/Assessing/Upcoming and
+  // all three sections line up with the same natural widths.
+  let sections = "";
   let stagesShown = 0;
   for (const stage of PIPELINE_STAGES) {
     const list = byStage.get(stage.key) || [];
@@ -794,30 +875,52 @@ function renderScorecard() {
     const body = list.map((r) => {
       const star = r.is_subtext30 === 1
         ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
-      const cells = PIPELINE_COLS.map((c) => {
+      const cells = PIPELINE_COLS.map((c, i) => {
         if (c.uni) {
           return `<td class="university-cell">${star}${escapeHtml(r.anchor_university || "")}`
             + `<span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span></td>`;
         }
         const v = c.get(r);
-        return `<td class="num">${v == null ? '<span class="muted">-</span>' : c.fmt(v)}</td>`;
+        return `<td class="num${pipelineGroupStart(i) ? " group-start" : ""}" data-col="${i}">${v == null ? '<span class="muted">-</span>' : c.fmt(v)}</td>`;
       }).join("");
       return `<tr data-market-key="${r.market_key}">${cells}</tr>`;
     }).join("");
-    html += `
-      <table class="pipeline-table">
-        <thead>
+    sections += `
+        <tbody class="stage-section">
           <tr class="stage-band"><th colspan="${nCol}">${escapeHtml(stage.label)}<span class="stage-count">${list.length}</span></th></tr>
-          <tr class="stage-head">${headCells}</tr>
-        </thead>
-        <tbody>${body}</tbody>
-      </table>`;
+          <tr class="stage-head stage-head-groups">${groupCells.join("")}</tr>
+          <tr class="stage-head stage-head-subs">${subCells.join("")}</tr>
+          ${body}
+        </tbody>`;
   }
-  container.innerHTML = html || `<div class="empty-state">No active-pipeline markets match the filter.</div>`;
-  container.querySelectorAll("tbody tr").forEach((tr) => {
+  container.innerHTML = sections
+    ? `<table class="pipeline-table">${sections}</table>`
+    : `<div class="empty-state">No active-pipeline markets match the filter.</div>`;
+  container.querySelectorAll("tbody tr[data-market-key]").forEach((tr) => {
     tr.addEventListener("click", () => {
       window.location.href = `market.html?id=${Number(tr.dataset.marketKey)}`;
     });
+  });
+
+  // Crosshair hover: the row highlight (CSS tr:hover) shows the school; this
+  // lights up the hovered stat's column and its header labels vertically.
+  container.querySelectorAll("table.pipeline-table").forEach((tbl) => {
+    const clear = () =>
+      tbl.querySelectorAll(".col-hover").forEach((el) => el.classList.remove("col-hover"));
+    tbl.addEventListener("mouseover", (e) => {
+      const cell = e.target.closest("[data-col]");
+      clear();
+      if (!cell || !tbl.contains(cell)) return;
+      // Highlight only within the hovered stage section, not the whole table.
+      const section = cell.closest("tbody.stage-section") || tbl;
+      const idx = cell.dataset.col;
+      section.querySelectorAll(`[data-col="${idx}"]`).forEach((el) => el.classList.add("col-hover"));
+      const g = PIPELINE_COLS[Number(idx)]?.group;
+      if (g) {
+        section.querySelectorAll(`th[data-group="${g}"]`).forEach((el) => el.classList.add("col-hover"));
+      }
+    });
+    tbl.addEventListener("mouseleave", clear);
   });
 
   const rc = document.getElementById("result-count");

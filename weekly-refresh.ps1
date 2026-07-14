@@ -85,18 +85,29 @@ if ($py -ne 0) {
     exit $py
 }
 
-python -u shadow_market/build_configs.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
-$shadowConfigPy = $LASTEXITCODE
-if ($shadowConfigPy -ne 0) {
-    Write-Log "FAIL shadow_market/build_configs.py exited $shadowConfigPy"
-    exit $shadowConfigPy
+# Shadow market rebuild needs the manually-downloaded CoStar export. When it
+# is absent, skip the step and keep the existing shadow-market assets instead
+# of aborting the whole refresh (which would also skip the git push below).
+$costarSource = $env:COSTAR_CSV_PATH
+if ([string]::IsNullOrWhiteSpace($costarSource)) {
+    $costarSource = Join-Path (Split-Path $PSScriptRoot -Parent) "CoStarProperties.csv"
 }
+if (Test-Path $costarSource) {
+    python -u shadow_market/build_configs.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+    $shadowConfigPy = $LASTEXITCODE
+    if ($shadowConfigPy -ne 0) {
+        Write-Log "FAIL shadow_market/build_configs.py exited $shadowConfigPy"
+        exit $shadowConfigPy
+    }
 
-python -u shadow_market/generate.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
-$shadowPy = $LASTEXITCODE
-if ($shadowPy -ne 0) {
-    Write-Log "FAIL shadow_market/generate.py exited $shadowPy"
-    exit $shadowPy
+    python -u shadow_market/generate.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+    $shadowPy = $LASTEXITCODE
+    if ($shadowPy -ne 0) {
+        Write-Log "FAIL shadow_market/generate.py exited $shadowPy"
+        exit $shadowPy
+    }
+} else {
+    Write-Log "CoStar CSV not found ($costarSource); preserving existing shadow-market assets"
 }
 
 $studentMigrationSource = $env:STUDENT_MIGRATION_CSV_PATH

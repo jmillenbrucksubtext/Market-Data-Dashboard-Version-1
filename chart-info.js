@@ -395,16 +395,12 @@
     "total existing beds": { title: "Total Existing Beds", formula: "Sum of `existing_beds` across all markets.", sql: "sum(scorecard.existing_beds) <- MarketReports.beds_purpose_built", sig: "Total purpose-built supply tracked." },
     "pipeline beds": { title: "Pipeline Beds", formula: "`beds_lease_up + beds_under_construction + beds_planned`.", sql: "scorecard pipeline fields <- dbo.MarketReports", sig: "Forward supply still to deliver." },
     "bed-weighted avg rent": { title: "Bed-Weighted Avg Rent", formula: "`sum(rent x beds) / sum(beds)` across markets.", sql: "scorecard.avg_rent_per_bed, existing_beds", sig: "The supply-weighted average rent level." },
-    /* Market KPI strip */
-    "existing beds": { title: "Existing Beds", formula: "`scorecard.existing_beds`.", sql: "<- MarketReports.beds_purpose_built (latest snapshot)", sig: "Purpose-built beds in the market today." },
-    "penetration": { title: "Penetration", formula: "`existing_beds / enr_full_time`.", sql: "scorecard.existing_beds, MarketReports.enr_full_time", sig: "Beds per full-time student - how saturated the market is." },
-    "fte enrollment": { title: "FTE Enrollment", formula: "`MarketReports.enr_full_time` (IPEDS, refreshed annually per school).", sql: "scorecard.enr_full_time", sig: "The full-time student demand base." },
-    "avg rent / bed": { title: "Avg Rent / Bed", formula: "`MarketReports.rate_avg`, bed-weighted across plans.", sql: "scorecard.avg_rent_per_bed", sig: "The market's headline rent level." },
-    "rent yoy": { title: "Rent YoY", formula: "`(rent_t - rent_{t-1}) / rent_{t-1}` from market_history.", sql: "market_history.avg_rent_per_bed", sig: "Latest year-over-year rent growth." },
-    "occupancy": { title: "Occupancy", formula: "`MarketReports.occupancy` at the latest snapshot.", sql: "scorecard.occupancy", sig: "How full the market runs." },
-    "pre-lease": { title: "Pre-lease", formula: "`MarketReports.prelease` at the latest snapshot.", sql: "scorecard.prelease", sig: "Leasing pace for the coming term." },
-    "mean origin income": { title: "Mean Origin Income", formula: "Average household income of the census tracts students migrated from.", sql: "`market_affluence` (Migration CSV), computed in load_affluence.py", sig: "A proxy for student-family affluence and rent tolerance." },
+    /* Pipeline tab KPIs */
+    "lease-up": { title: "Lease-up", formula: "`scorecard.beds_lease_up`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Delivered beds still leasing to stabilization." },
+    "under construction": { title: "Under Construction", formula: "`scorecard.beds_under_construction`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Beds actively being built." },
+    "planned": { title: "Planned", formula: "`scorecard.beds_planned`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Announced beds not yet under construction." },
     /* Student Migration KPIs */
+    "mean origin income": { title: "Mean Origin Income", formula: "Average household income of the census tracts students migrated from.", sql: "`market_affluence` (Migration CSV), computed in load_affluence.py", sig: "A proxy for student-family affluence and rent tolerance." },
     "overall in-state mix": { title: "Overall In-State Mix", formula: "In-state migrants / all migrants.", sql: "assets/student-origin/<market>.json", sig: "Share of students originating in-state." },
     "overall out-of-state mix": { title: "Overall Out-of-State Mix", formula: "Out-of-state migrants / all migrants.", sql: "assets/student-origin/<market>.json", sig: "Share of students originating out-of-state." },
     "origin states": { title: "Origin States", formula: "Count of distinct origin states.", sql: "assets/student-origin/<market>.json", sig: "Geographic breadth of the student draw." },

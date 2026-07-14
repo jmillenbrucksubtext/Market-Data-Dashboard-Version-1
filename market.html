@@ -74,7 +74,7 @@
             <span id="s30-badge" class="s30-badge" style="display:none;">★ Subtext-30 focus market</span>
           </div>
 
-          <!-- Tabs: Market (KPIs, charts, map) | Comps (map + comp-set table + per-comp charts)
+          <!-- Tabs: Market (scorecard, charts, map) | Comps (map + comp-set table + per-comp charts)
                | University Information (institutional stats + campus POI map) -->
           <nav class="market-tabs" role="tablist">
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
@@ -103,55 +103,6 @@
               <ul class="qualifier-list" id="qualifier-list"></ul>
             </div>
           </section>
-
-          <!-- KPI strip (9 cards, wraps to 2 rows on smaller screens) -->
-          <div class="kpi-row kpi-row-9">
-            <div class="kpi">
-              <div class="kpi-label">Existing Beds</div>
-              <div class="kpi-value" id="kpi-beds">-</div>
-              <div class="kpi-sub" id="kpi-beds-sub">-</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Pipeline Beds</div>
-              <div class="kpi-value" id="kpi-pipeline">-</div>
-              <div class="kpi-sub" id="kpi-pipeline-sub">-</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Penetration</div>
-              <div class="kpi-value" id="kpi-pen">-</div>
-              <div class="kpi-sub" id="kpi-pen-sub">-</div>
-            </div>
-            <div class="kpi" title="Headline = full-time enrollment (MarketReports.enr_full_time). YoY shows real FTE YoY when fte_history is loaded; falls back to total-enrollment YoY (enrollment_trend) otherwise.">
-              <div class="kpi-label">FTE Enrollment</div>
-              <div class="kpi-value" id="kpi-enr">-</div>
-              <div class="kpi-sub" id="kpi-enr-sub">-</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Avg Rent / Bed</div>
-              <div class="kpi-value" id="kpi-rent">-</div>
-              <div class="kpi-sub" id="kpi-rent-sub">-</div>
-            </div>
-            <div class="kpi">
-              <div class="kpi-label">Rent YoY</div>
-              <div class="kpi-value" id="kpi-rent-yoy">-</div>
-              <div class="kpi-sub" id="kpi-rent-yoy-sub">-</div>
-            </div>
-            <div class="kpi" title="Bed-weighted market occupancy at the latest snapshot.">
-              <div class="kpi-label">Occupancy</div>
-              <div class="kpi-value" id="kpi-occupancy">-</div>
-              <div class="kpi-sub" id="kpi-occupancy-sub">-</div>
-            </div>
-            <div class="kpi" title="Bed-weighted market pre-lease at the latest snapshot.">
-              <div class="kpi-label">Pre-lease</div>
-              <div class="kpi-value" id="kpi-prelease">-</div>
-              <div class="kpi-sub" id="kpi-prelease-sub">-</div>
-            </div>
-            <div class="kpi" title="Mean household income of the census tracts incoming students migrated from. Higher = wealthier inbound student base.">
-              <div class="kpi-label">Mean Origin Income</div>
-              <div class="kpi-value" id="kpi-affluence">-</div>
-              <div class="kpi-sub" id="kpi-affluence-sub">-</div>
-            </div>
-          </div>
 
           <!-- Map (sits between the KPI strip and the performance charts) -->
           <section class="card">
@@ -344,6 +295,7 @@
               <div>
                 <h2>Comp-set Properties</h2>
                 <p id="prop-count-comps">-</p>
+                <p id="comps-beds-note">-</p>
               </div>
               <div class="comps-table-actions">
                 <button type="button" class="comps-select-btn" data-comps-select="default">Default comps</button>
@@ -529,6 +481,32 @@
 
           <!-- ============ PIPELINE TAB ============ -->
           <div class="market-tab-panel" data-panel="pipeline" hidden>
+
+          <!-- Pipeline KPI strip - moved here from the Market tab; the
+               scorecard's pipeline qualifier carries the summary there. -->
+          <div class="kpi-row pipeline-kpis">
+            <div class="kpi">
+              <div class="kpi-label">Pipeline Beds</div>
+              <div class="kpi-value" id="pipe-kpi-total">-</div>
+              <div class="kpi-sub" id="pipe-kpi-total-sub">-</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Lease-up</div>
+              <div class="kpi-value" id="pipe-kpi-leaseup">-</div>
+              <div class="kpi-sub">beds in lease-up</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Under Construction</div>
+              <div class="kpi-value" id="pipe-kpi-uc">-</div>
+              <div class="kpi-sub">beds under construction</div>
+            </div>
+            <div class="kpi">
+              <div class="kpi-label">Planned</div>
+              <div class="kpi-value" id="pipe-kpi-planned">-</div>
+              <div class="kpi-sub">announced or planned beds</div>
+            </div>
+          </div>
+
           <section class="card">
             <header class="card-header">
               <div>
@@ -631,6 +609,11 @@
                   <div class="kpi-label">Origin Metros</div>
                   <div class="kpi-value" id="student-migration-kpi-metros">-</div>
                   <div class="kpi-sub">mapped CBSA origin areas</div>
+                </div>
+                <div class="kpi" title="Mean household income of the census tracts incoming students migrated from. Higher = wealthier inbound student base.">
+                  <div class="kpi-label">Mean Origin Income</div>
+                  <div class="kpi-value" id="kpi-affluence">-</div>
+                  <div class="kpi-sub" id="kpi-affluence-sub">-</div>
                 </div>
               </div>
 

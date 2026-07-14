@@ -2410,6 +2410,16 @@ h1, h2, h3, .serif {
 .qual-threshold { display: none; }      /* threshold info is in the label now */
 .qual-explanation { display: none; }
 
+/* Context line under a qualifier label - carries the supporting figure the
+   old Market-tab KPI strip used to show (pipeline breakdown, penetration,
+   latest prelease, total enrollment). */
+.qual-detail {
+  font-weight: 400;
+  font-size: 11px;
+  color: var(--slate-70);
+  margin-top: 1px;
+}
+
 /* Right-side stat: actual value, colored by binary status (pass / fail / na) */
 .qual-actual {
   font-family: "Mencken Std", Georgia, serif;
@@ -2797,7 +2807,7 @@ h1, h2, h3, .serif {
   font: 600 12px/1.2 "Pragmatica", sans-serif;
 }
 .student-migration-kpis {
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(5, minmax(0, 1fr));
 }
 .student-migration-map-grid {
   display: grid;

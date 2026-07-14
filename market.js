@@ -92,7 +92,8 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setFreshness();
   renderHeader();
-  renderKpis();
+  renderPipelineKpis();
+  renderOriginIncomeKpi();
   renderQualifiers();
   renderProperties();
   bindPropertySort();
@@ -542,141 +543,20 @@ function renderHeader() {
   }
 }
 
-function renderKpis() {
-  document.getElementById("kpi-beds").textContent = fmtInt(MARKET.existing_beds);
-  document.getElementById("kpi-beds-sub").textContent =
-    PROPERTIES.length > 0
-      ? `across ${PROPERTIES.length} comp properties`
-      : "purpose-built supply";
+function renderPipelineKpis() {
+  document.getElementById("pipe-kpi-total").textContent = fmtInt(MARKET.beds_pipeline_total);
+  document.getElementById("pipe-kpi-total-sub").textContent =
+    MARKET.beds_pipeline_total != null && MARKET.existing_beds > 0
+      ? `${fmtPct(MARKET.beds_pipeline_total / MARKET.existing_beds)} of existing supply`
+      : "forward supply";
+  document.getElementById("pipe-kpi-leaseup").textContent = fmtInt(MARKET.beds_lease_up || 0);
+  document.getElementById("pipe-kpi-uc").textContent = fmtInt(MARKET.beds_under_construction || 0);
+  document.getElementById("pipe-kpi-planned").textContent = fmtInt(MARKET.beds_planned || 0);
+}
 
-  document.getElementById("kpi-pipeline").textContent = fmtInt(MARKET.beds_pipeline_total);
-  const pipParts = [];
-  if (MARKET.beds_lease_up) pipParts.push(`${fmtInt(MARKET.beds_lease_up)} lease-up`);
-  if (MARKET.beds_under_construction) pipParts.push(`${fmtInt(MARKET.beds_under_construction)} U/C`);
-  if (MARKET.beds_planned) pipParts.push(`${fmtInt(MARKET.beds_planned)} planned`);
-  document.getElementById("kpi-pipeline-sub").textContent = pipParts.join(" · ") || "-";
-
-  document.getElementById("kpi-pen").textContent = fmtPct(MARKET.penetration_ratio);
-  const bandColor = MARKET.penetration_ratio == null ? C.slate70
-    : MARKET.penetration_ratio < 0.30 ? C.good
-    : MARKET.penetration_ratio > 0.55 ? C.bad
-    : C.warn;
-  document.getElementById("kpi-pen").style.color = bandColor;
-  const band = MARKET.penetration_ratio == null ? "-"
-    : MARKET.penetration_ratio < 0.30 ? "Under-supplied"
-    : MARKET.penetration_ratio > 0.55 ? "Over-supplied"
-    : "Balanced";
-  document.getElementById("kpi-pen-sub").textContent = band;
-
-  // FTE = current full-time enrollment snapshot from MarketReports.
-  // Total = sum of IPEDS totals across distinct institutions in this market.
-  // Schools_Denormal can have multiple branch rows per institution (e.g.,
-  // 10 Rutgers campus locations all rolling up to one IPEDS ID), so dedupe
-  // by IPEDS ID before summing to avoid 10x inflation.
-  const byIpeds = new Map();
-  for (const c of CAMPUSES) {
-    const key = c.ipeds_id ?? `school-${c.school_key}`;
-    if (!byIpeds.has(key)) byIpeds.set(key, c.total_enrollment || 0);
-  }
-  const ipedsTotal = [...byIpeds.values()].reduce((s, n) => s + n, 0);
-
-  // YoY preference order:
-  //   1. fte_history.yoy_fte_growth (true FTE YoY from MarketReports history)
-  //   2. enrollment_trend.yoy_change (total-enrollment YoY - proxy when FTE
-  //      history isn't loaded)
-  let yoyPct = null;
-  let yoyLabel = "YoY";   // "FTE YoY" when real FTE; "total YoY" when proxy
-  let trendYear = null;
-
-  const fteHist = (DATA.tables.fte_history || [])
-    .find((r) => r.market_key === MARKET.market_key);
-  if (fteHist && fteHist.yoy_fte_growth != null) {
-    yoyPct = fteHist.yoy_fte_growth;
-    yoyLabel = "FTE YoY";
-    trendYear = fteHist.current_snapshot
-      ? new Date(fteHist.current_snapshot).getFullYear()
-      : null;
-  } else {
-    const trendRows = (DATA.tables.enrollment_trend || [])
-      .filter((r) => r.market_key === MARKET.market_key
-                     && r.current_enrollment != null
-                     && r.prev_year_enrollment != null);
-    if (trendRows.length > 0) {
-      const cur = trendRows.reduce((s, r) => s + r.current_enrollment, 0);
-      const prev = trendRows.reduce((s, r) => s + r.prev_year_enrollment, 0);
-      if (prev > 0) yoyPct = (cur - prev) / prev;
-      yoyLabel = "total YoY";
-      trendYear = Math.max(...trendRows.map((r) => r.current_year || 0)) || null;
-    }
-  }
-
-  // Headline: FTE snapshot. Subline: total + YoY arrow.
-  const enrEl = document.getElementById("kpi-enr");
-  const enrSub = document.getElementById("kpi-enr-sub");
-  enrEl.textContent = fmtInt(MARKET.enr_full_time);
-  const parts = [];
-  if (ipedsTotal > 0) parts.push(`${fmtInt(ipedsTotal)} total`);
-  if (yoyPct != null) {
-    const arrow = yoyPct > 0.001 ? "▲" : yoyPct < -0.001 ? "▼" : "";
-    const cls = yoyPct > 0.001 ? "kpi-good" : yoyPct < -0.001 ? "kpi-bad" : "";
-    const yoyStr = `<span class="${cls}">${arrow} ${(yoyPct * 100).toFixed(1)}% ${yoyLabel}</span>`;
-    parts.push(trendYear ? `${yoyStr} (${trendYear})` : yoyStr);
-  }
-  enrSub.innerHTML = parts.length
-    ? parts.join(" · ")
-    : "IPEDS · no enrollment data";
-
-  document.getElementById("kpi-rent").textContent = fmtUsd(MARKET.avg_rent_per_bed);
-  document.getElementById("kpi-rent-sub").textContent = "bed-weighted average";
-
-  // Rent YoY - pull from rent_yoy table; render in big KPI style with color
-  const yoy = DATA.tables.rent_yoy.find((r) => r.market_key === MARKET.market_key);
-  const yoyEl = document.getElementById("kpi-rent-yoy");
-  if (yoy && yoy.yoy_rent_growth != null) {
-    const v = yoy.yoy_rent_growth;
-    const arrow = v > 0.005 ? "▲ " : v < -0.005 ? "▼ " : "";
-    const tone = v > 0.005 ? "kpi-good" : v < -0.005 ? "kpi-bad" : "";
-    yoyEl.className = `kpi-value ${tone}`;
-    yoyEl.textContent = `${arrow}${fmtPct(v)}`;
-    document.getElementById("kpi-rent-yoy-sub").textContent =
-      `vs ${new Date(yoy.prior_snapshot).getFullYear()}`;
-  } else {
-    yoyEl.className = "kpi-value";
-    yoyEl.textContent = "-";
-    document.getElementById("kpi-rent-yoy-sub").textContent = "no prior-year data";
-  }
-
-  // Occupancy - bed-weighted from MarketReports
-  const occEl = document.getElementById("kpi-occupancy");
-  const occSub = document.getElementById("kpi-occupancy-sub");
-  if (MARKET.occupancy != null) {
-    const o = MARKET.occupancy;
-    const occTone = o >= 0.92 ? "kpi-good" : o < 0.88 ? "kpi-bad" : "";
-    occEl.className = `kpi-value ${occTone}`;
-    occEl.textContent = fmtPct(o, 1);
-    occSub.textContent = "bed-weighted";
-  } else {
-    occEl.className = "kpi-value";
-    occEl.textContent = "-";
-    occSub.textContent = "no occupancy on file";
-  }
-
-  // Pre-lease - latest cycle from MarketReports
-  const preEl = document.getElementById("kpi-prelease");
-  const preSub = document.getElementById("kpi-prelease-sub");
-  if (MARKET.prelease != null) {
-    const p = MARKET.prelease;
-    const preTone = p >= 0.85 ? "kpi-good" : p < 0.65 ? "kpi-bad" : "";
-    preEl.className = `kpi-value ${preTone}`;
-    preEl.textContent = fmtPct(p, 1);
-    preSub.textContent = "latest cycle";
-  } else {
-    preEl.className = "kpi-value";
-    preEl.textContent = "-";
-    preSub.textContent = "no prelease on file";
-  }
-
-  // Affluence - mean origin household income of incoming students.
+// Mean origin household income of incoming students - lives on the Student
+// Migration tab alongside the other origin KPIs.
+function renderOriginIncomeKpi() {
   const aff = (DATA.tables.market_affluence || [])
     .find((r) => r.market_key === MARKET.market_key);
   const affEl = document.getElementById("kpi-affluence");
@@ -695,6 +575,47 @@ function renderKpis() {
     affEl.textContent = "-";
     affSub.textContent = "no migration data";
   }
+}
+
+// Context lines rendered under specific scorecard qualifiers - these carry
+// the numbers the old Market-tab KPI strip showed that the qualifiers'
+// actual values don't already cover. Keyed by qualifier result id.
+function qualifierDetails() {
+  const d = {};
+
+  // Total enrollment alongside the FTE qualifier. Schools_Denormal can have
+  // multiple branch rows per institution (e.g., 10 Rutgers campus locations
+  // all rolling up to one IPEDS ID), so dedupe by IPEDS ID before summing.
+  const byIpeds = new Map();
+  for (const c of CAMPUSES) {
+    const key = c.ipeds_id ?? `school-${c.school_key}`;
+    if (!byIpeds.has(key)) byIpeds.set(key, c.total_enrollment || 0);
+  }
+  const ipedsTotal = [...byIpeds.values()].reduce((s, n) => s + n, 0);
+  if (ipedsTotal > 0) d.fte = `${fmtInt(ipedsTotal)} total enrollment`;
+
+  if (MARKET.prelease != null) {
+    d.prelease_lag = `latest cycle ${fmtPct(MARKET.prelease, 1)}`;
+  }
+
+  if (MARKET.beds_pipeline_total != null) {
+    const parts = [];
+    if (MARKET.beds_lease_up) parts.push(`${fmtInt(MARKET.beds_lease_up)} lease-up`);
+    if (MARKET.beds_under_construction) parts.push(`${fmtInt(MARKET.beds_under_construction)} U/C`);
+    if (MARKET.beds_planned) parts.push(`${fmtInt(MARKET.beds_planned)} planned`);
+    d.pipeline = `${fmtInt(MARKET.beds_pipeline_total)} beds`
+      + (parts.length ? ` (${parts.join(" · ")})` : "")
+      + (MARKET.existing_beds ? ` of ${fmtInt(MARKET.existing_beds)} existing` : "");
+  }
+
+  if (MARKET.penetration_ratio != null) {
+    const band = MARKET.penetration_ratio < 0.30 ? "under-supplied"
+      : MARKET.penetration_ratio > 0.55 ? "over-supplied"
+      : "balanced";
+    d.uncaptured_1mi = `penetration ${fmtPct(MARKET.penetration_ratio)} · ${band}`;
+  }
+
+  return d;
 }
 
 /* ----- Qualifier scorecard ----------------------------------- */
@@ -728,6 +649,7 @@ function renderQualifiers() {
     `${passesDisplay} of ${q.evaluable} evaluable qualifiers passing` +
     (naCount > 0 ? ` · ${naCount} pending data` : "");
 
+  const details = qualifierDetails();
   listEl.innerHTML = q.results.map((r) => {
     // Binary scorecard: pass / fail / na. Older data may carry tier='warn'
     // - collapse anything that isn't a clean pass/na to 'fail'.
@@ -749,10 +671,14 @@ function renderQualifiers() {
       actualHtml = `<span class="qual-actual-${state}">${escapeHtml(r.actual_display)}</span>`;
     }
     const icon = state === "pass" ? "&#10003;" : state === "na" ? "&ndash;" : "&#10007;";
+    const detail = details[r.id];
+    const detailHtml = detail
+      ? `<div class="qual-detail">${escapeHtml(detail)}</div>`
+      : "";
     return `
       <li class="qual-row qual-${state}">
         <span class="qual-status" aria-hidden="true">${icon}</span>
-        <div class="qual-label">${escapeHtml(r.label)}</div>
+        <div class="qual-label">${escapeHtml(r.label)}${detailHtml}</div>
         <div class="qual-actual">${actualHtml}</div>
       </li>`;
   }).join("");
@@ -798,6 +724,13 @@ function renderProperties() {
     emptyMsg: "No purpose-built properties listed for this market.",
     label: "purpose-built propert",
   });
+
+  const bedsNote = document.getElementById("comps-beds-note");
+  if (bedsNote) {
+    bedsNote.textContent = MARKET.existing_beds != null
+      ? `${fmtInt(MARKET.existing_beds)} existing beds market-wide across ${PROPERTIES.length} tracked properties`
+      : "";
+  }
   // Every property in the market is selectable as a comp; the standard
   // comp set (stabilized, walkable, 150+ beds, built ≥2020 or top-rent) is just the default.
   renderPropertyTable({

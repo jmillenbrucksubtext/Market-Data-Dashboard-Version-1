@@ -155,25 +155,12 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip dict-chip-market-tab">Market tab</span>
                   <h3>Market tab</h3>
-                  <p>KPIs → map → multi-year performance charts → all-properties table.</p>
+                  <p>Scorecard → map → multi-year performance charts → all-properties table.</p>
                 </header>
 
                 <article class="dict-item">
-                  <h4>KPI strip (9 tiles)</h4>
-                  <table class="dict-fields">
-                    <thead><tr><th>KPI</th><th>Formula</th></tr></thead>
-                    <tbody>
-                      <tr><td>Existing Beds</td><td><code>scorecard.existing_beds</code> ← <code>MarketReports.beds_purpose_built</code> at the latest snapshot</td></tr>
-                      <tr><td>Pipeline Beds</td><td><code>beds_lease_up + beds_under_construction + beds_planned</code></td></tr>
-                      <tr><td>Penetration</td><td><code>existing_beds / enr_full_time</code></td></tr>
-                      <tr><td>FTE Enrollment</td><td><code>MarketReports.enr_full_time</code> (IPEDS, refreshed annually per school)</td></tr>
-                      <tr><td>Avg Rent / Bed</td><td><code>MarketReports.rate_avg</code> - bed-weighted across plans</td></tr>
-                      <tr><td>Rent YoY</td><td><code>(rent_t − rent_{t−1}) / rent_{t−1}</code> from <code>market_history</code></td></tr>
-                      <tr><td>Occupancy</td><td><code>MarketReports.occupancy</code></td></tr>
-                      <tr><td>Pre-lease</td><td><code>MarketReports.prelease</code></td></tr>
-                      <tr><td>Mean Origin Income</td><td>Avg household income of census tracts students migrated from - computed in <code>load_affluence.py</code></td></tr>
-                    </tbody>
-                  </table>
+                  <h4>Where the old KPI strip went</h4>
+                  <p>The nine-tile KPI strip was retired - most tiles duplicated the scorecard. The scorecard now carries context lines under the relevant qualifiers (pipeline bed breakdown, penetration band, latest pre-lease cycle, total enrollment). The pipeline bed tiles moved to the Pipeline tab, and Mean Origin Income moved to the Student Migration tab.</p>
                 </article>
 
                 <article class="dict-item">
@@ -337,7 +324,7 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip dict-chip-sidebar">Sidebar (both tabs)</span>
                   <h3>Subtext Qualifier Scorecard</h3>
-                  <p>Thirteen pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> - partial credit on multi-year qualifiers.</p>
+                  <p>Thirteen pass/fail rules per market. Aggregate score uses <a href="#scoring-formula">weighted credit</a> - partial credit on multi-year qualifiers. Several qualifiers carry a small context line under the label (pipeline bed breakdown, penetration band, latest pre-lease cycle, total enrollment) - the figures the retired Market-tab KPI strip used to show.</p>
                 </header>
 
                 <article class="dict-item">

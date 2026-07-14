@@ -2414,7 +2414,7 @@ h1, h2, h3, .serif {
 .qualifier-card .table-wrap { max-height: none; overflow: visible; }
 .qualifier-table {
   width: 100%;
-  max-width: 940px;
+  max-width: 1150px;
   border-collapse: collapse;
   border: 1.5px solid var(--slate);
 }
@@ -2468,6 +2468,15 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 .qual-metric-pass { background: var(--good-soft); }
 .qual-metric-fail { background: var(--bad-soft); }
 .qual-metric-na   { background: var(--slate-15); color: var(--slate-70); font-weight: 400; }
+
+/* Source column: data origin per qualifier (brand badge or plain name). */
+.qual-source {
+  width: 200px;
+  text-align: center;
+  font-size: 12.5px;
+  color: var(--slate);
+  white-space: nowrap;
+}
 
 /* Multi-year YoY lines for the rent_growth_3yr qualifier - stacked and
    centered inside the metric cell, per-year pass/fail value colors. */

@@ -617,6 +617,34 @@ function qualifierDetails() {
 
 /* ----- Qualifier scorecard ----------------------------------- */
 
+// CollegeHouse brand badge - mirrors .src-brand-collegehouse on the
+// Database Sources tab.
+const CH_BADGE = `<span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+  <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+    <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+    <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+    <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+  <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+</span>`;
+
+// Data origin per qualifier id, shown in the scorecard's Source column.
+const QUALIFIER_SOURCES = {
+  rent_market: CH_BADGE,
+  rent_compset: CH_BADGE,
+  fte: "IPEDS",
+  occupancy: CH_BADGE,
+  fte_growth_2022: "IPEDS",
+  fte_growth_yoy: "IPEDS",
+  rent_growth_3yr: CH_BADGE,
+  prelease_lag: CH_BADGE,
+  pipeline: CH_BADGE,
+  uncaptured_1mi: `${CH_BADGE} + IPEDS`,
+  income_median_zips: "Opportunity Insights + Census",
+  power4_r1: "Google",
+  fwd_top50: "Subtext Forward Model",
+};
+
 function renderQualifiers() {
   const all = DATA.tables.market_qualifiers || [];
   const q = all.find((r) => r.market_key === MARKET.market_key);
@@ -674,6 +702,7 @@ function renderQualifiers() {
       <tr class="qual-${state}">
         <td class="qual-label">${escapeHtml(r.label)}${detailHtml}</td>
         <td class="qual-metric qual-metric-${state}">${metricHtml}</td>
+        <td class="qual-source">${QUALIFIER_SOURCES[r.id] || "-"}</td>
       </tr>`;
   }).join("");
 }

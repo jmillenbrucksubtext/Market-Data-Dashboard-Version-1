@@ -434,7 +434,7 @@
                       <tr><td><code>market_affluence</code></td><td>MigrationAllRents*.csv (local) joined to IPEDS → market_key crosswalk</td><td>load_affluence.py · export-data.py</td></tr>
                       <tr><td><code>market_qualifiers</code></td><td>Computed from the above; per-row pass/fail + aggregate score_pct</td><td>compute_qualifiers + patcher family</td></tr>
                       <tr><td><code>plans</code></td><td>dbo.Plans (floor plans tied to properties)</td><td>export-data.py</td></tr>
-                      <tr><td><code>campus_locations</code></td><td>dbo.Schools_Denormal + IPEDS_CH_Crosswalk</td><td>export-data.py</td></tr>
+                      <tr><td><code>campus_locations</code></td><td>dbo.Schools + dbo.Enrollments + IPEDS_CH_Crosswalk</td><td>export-data.py</td></tr>
                       <tr><td><code>market_analysis_schedule</code></td><td>Market Analysis Schedule.xlsx on OneDrive</td><td>export-data.py (Excel reader)</td></tr>
                     </tbody>
                   </table>

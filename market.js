@@ -583,7 +583,7 @@ function renderOriginIncomeKpi() {
 function qualifierDetails() {
   const d = {};
 
-  // Total enrollment alongside the FTE qualifier. Schools_Denormal can have
+  // Total enrollment alongside the FTE qualifier. dbo.Schools can have
   // multiple branch rows per institution (e.g., 10 Rutgers campus locations
   // all rolling up to one IPEDS ID), so dedupe by IPEDS ID before summing.
   const byIpeds = new Map();
@@ -3240,9 +3240,10 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
 }
 
 /* ===== University Information tab ============================ */
-/* Institutional stats from `university_info` (dbo.Schools_Denormal,
-   latest CDS/IPEDS year per school). dbo.Enrollments_Manual is flagged
-   do-not-use and is no longer referenced anywhere. Campus POI map pulls
+/* Institutional stats from `university_info` (dbo.Enrollments view,
+   latest CDS/IPEDS year per school; identity from dbo.Schools).
+   dbo.Schools_Denormal and dbo.Enrollments_Manual are flagged
+   do-not-use and are no longer referenced anywhere. Campus POI map pulls
    live from OpenStreetMap's Overpass API and caches per school in
    localStorage. Everything is lazy: built on first visit to the tab. */
 
@@ -3265,7 +3266,7 @@ const uniState = {
 };
 
 /* One entry per distinct school in this market (campus_locations carries
-   one duplicate row per Schools_Denormal year - dedupe by school_key),
+   historically one duplicate row per year - dedupe by school_key),
    joined to its university_info stats row. Anchor first, then by size. */
 function uniSchools() {
   const infoByKey = new Map(
@@ -3343,17 +3344,24 @@ function selectUniversity(schoolKey) {
 
 /* Applications, Acceptance & Yield - acceptance (admitted/applied) and yield
    (enrolled/admitted) as bars on the % axis, total applications as a line on
-   the right (thousands) axis. Data: tables.admissions_history (IPEDS ADM),
-   joined by ipeds_id. Hidden when the school has no admissions history. */
+   the right (thousands) axis, plus deck-style 1-5 yr growth tables for
+   applications / acceptance rate / yield. Data: tables.admissions_history
+   (dbo.Enrollments view), joined by school_key (ipeds_id fallback for rows
+   from the old IPEDS ADM repository). Chart shows the last 8 years; growth
+   looks back from the latest year across the full history. Hidden when the
+   school has no admissions history. */
 function renderUniAdmissions(school) {
   const card = document.getElementById("uni-admissions-card");
   const canvas = document.getElementById("uni-admissions-chart");
   const subEl = document.getElementById("uni-admissions-sub");
   if (!card || !canvas || typeof Chart === "undefined") return;
 
-  const rows = (DATA.tables.admissions_history || [])
-    .filter((r) => r.ipeds_id === school.ipeds_id)
+  const allRows = (DATA.tables.admissions_history || [])
+    .filter((r) => (r.school_key != null
+      ? r.school_key === school.school_key
+      : r.ipeds_id === school.ipeds_id))
     .sort((a, b) => a.year_ - b.year_);
+  const rows = allRows.slice(-8);
 
   if (uniAdmissionsChart) { uniAdmissionsChart.destroy(); uniAdmissionsChart = null; }
   if (rows.length === 0) { card.style.display = "none"; return; }
@@ -3361,8 +3369,10 @@ function renderUniAdmissions(school) {
 
   if (subEl) {
     subEl.textContent =
-      `${school.university_name} · first-time first-year · ${rows[0].year_}-${rows[rows.length - 1].year_} · source IPEDS ADM`;
+      `${school.university_name} · first-time first-year · ${rows[0].year_}-${rows[rows.length - 1].year_} · source dbo.Enrollments`;
   }
+
+  renderUniAdmissionsGrowth(allRows);
 
   const labels = rows.map((r) => `'${String(r.year_).slice(-2)}`);
   const accept = rows.map((r) => (r.applications ? (r.admitted / r.applications) * 100 : null));
@@ -3428,6 +3438,40 @@ function renderUniAdmissions(school) {
   });
 }
 
+/* Deck-style growth tables beside the admissions chart: relative change of
+   applications, acceptance rate, and yield versus 1-5 years before the
+   latest reported year. Growth = metric(latest) / metric(latest - N) - 1;
+   years with no data show a dash. */
+function renderUniAdmissionsGrowth(allRows) {
+  const host = document.getElementById("uni-admissions-growth");
+  if (!host) return;
+
+  const byYear = new Map(allRows.map((r) => [r.year_, r]));
+  const latest = allRows[allRows.length - 1].year_;
+
+  const metrics = [
+    { label: "Application Growth", value: (r) => r.applications || null },
+    { label: "Acceptance Growth", value: (r) => (r.applications ? r.admitted / r.applications : null) },
+    { label: "Yield Growth", value: (r) => (r.admitted ? r.enrolled / r.admitted : null) },
+  ];
+
+  host.innerHTML = metrics.map((m) => {
+    const now = byYear.has(latest) ? m.value(byYear.get(latest)) : null;
+    const body = [1, 2, 3, 4, 5].map((n) => {
+      const prior = byYear.has(latest - n) ? m.value(byYear.get(latest - n)) : null;
+      const growth = now != null && prior ? now / prior - 1 : null;
+      const cls = growth == null ? "" : growth < 0 ? " class=\"neg\"" : "";
+      const txt = growth == null ? "-" : `${(growth * 100).toFixed(1)}%`;
+      return `<tr><td>${n}-YR</td><td${cls}>${txt}</td></tr>`;
+    }).join("");
+    return (
+      `<table class="uni-growth-table" aria-label="${m.label} vs prior years">` +
+      `<thead><tr><th colspan="2">${m.label}</th></tr></thead>` +
+      `<tbody>${body}</tbody></table>`
+    );
+  }).join("");
+}
+
 /* Undergraduate Student Profile - the underwriting template (residency split,
    retention, on-campus, tuition, room & board) measured against Subtext
    targets, plus a residency doughnut. Built from university_info. Rows with no
@@ -3447,7 +3491,7 @@ function renderUniProfile(school) {
   if (subEl) {
     subEl.textContent =
       `${school.university_name} · undergraduate profile${info.enrollment_year ? ` · ${info.enrollment_year}` : ""}`
-      + ` · vs Subtext targets · source dbo.Schools_Denormal`;
+      + ` · vs Subtext targets · source dbo.Enrollments`;
   }
 
   const ug = (info.enr_ft_undergrad || 0) + (info.enr_pt_undergrad || 0);
@@ -3602,15 +3646,15 @@ function renderUniStats(school) {
 
   if (!info) {
     sub.textContent = `${school.university_name} - no institutional stats on file.`;
-    grid.innerHTML = `<div class="empty-state">No Schools_Denormal row for this campus.</div>`;
+    grid.innerHTML = `<div class="empty-state">No enrollment data for this campus.</div>`;
     return;
   }
 
   sub.textContent =
     `${school.university_name} · ${info.is_public ? "Public" : "Private"} · ` +
-    `latest reported year ${info.enrollment_year} · source dbo.Schools_Denormal`;
+    `latest reported year ${info.enrollment_year} · source dbo.Enrollments`;
 
-  /* Enrollment - headline numbers from Schools_Denormal. */
+  /* Enrollment - headline numbers from dbo.Enrollments. */
   const enrRows = [
     uniStatRow("Total enrollment", `${fmtInt(info.enrollment_total)} <span class="uni-stat-note">${info.enrollment_year}</span>`),
     uniStatRow("Full-time undergrad", fmtInt(info.enr_ft_undergrad)),
@@ -3680,7 +3724,7 @@ function renderUniStats(school) {
   ];
 
   const groups = [
-    ["Enrollment", enrRows, "Schools_Denormal"],
+    ["Enrollment", enrRows, "dbo.Enrollments"],
     ["On-Campus Housing", housingRows, null],
     ["Admissions", admissionsRows, null],
     ["Cost of Attendance", costRows, null],

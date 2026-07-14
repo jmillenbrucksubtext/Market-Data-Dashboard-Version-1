@@ -1,6 +1,11 @@
 """
 load_university_info.py
 ------------------------
+SUPERSEDED 2026-07-14: university_info is exported by export-data.py from
+the dbo.Enrollments view (+ dbo.Schools identity). dbo.Schools_Denormal,
+which this standalone patcher still queries, was flagged DO NOT USE the
+same day. Keep for reference only.
+
 Pulls per-school institutional stats from dbo.Schools_Denormal - on-campus
 bed counts, tuition, admissions funnel, on-campus housing rates, and the
 student profile - and writes a `university_info` table into data.json.
@@ -9,10 +14,6 @@ Drives the University Information tab on the market page.
 Schools_Denormal is school x year; we keep one row per (marketKey,
 schoolKey) - the latest enrollmentYear with enrollment > 0. Zeros in rate /
 income columns mean "not reported" and are treated as missing by the UI.
-
-Enrollment figures on that tab come from
-these Schools_Denormal columns (dbo.Enrollments_Manual was flagged
-do-not-use on 2026-07-14 and is no longer read anywhere).
 
 Auth modes match the other patchers: --auth aad | sql | env.
 """

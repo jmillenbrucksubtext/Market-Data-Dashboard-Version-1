@@ -2487,6 +2487,49 @@ h1, h2, h3, .serif {
 .uni-profile-table .uni-target-na   { color: var(--slate-50); font-weight: 600; }
 .uni-na { color: var(--slate-50); }
 
+/* Admissions card: 1-5 yr growth tables (deck layout) beside the chart */
+.uni-adm-layout {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.uni-adm-layout .perf-chart { flex: 1 1 auto; min-width: 0; }
+.uni-adm-growth {
+  flex: 0 0 190px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.uni-growth-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  border: 1px solid var(--beige-deep);
+}
+.uni-growth-table thead th {
+  background: var(--slate);
+  color: #fff;
+  font-weight: 700;
+  font-size: 11.5px;
+  letter-spacing: 0.02em;
+  text-align: center;
+  padding: 5px 10px;
+}
+.uni-growth-table tbody td {
+  padding: 4px 10px;
+  border-bottom: 1px solid var(--beige-deep);
+  color: var(--slate);
+}
+.uni-growth-table tbody tr:last-child td { border-bottom: none; }
+.uni-growth-table tbody td:first-child { font-weight: 600; color: var(--slate-70); }
+.uni-growth-table tbody td:last-child { text-align: right; font-variant-numeric: tabular-nums; }
+.uni-growth-table tbody td.neg { color: var(--bad); }
+@media (max-width: 900px) {
+  .uni-adm-layout { flex-direction: column; align-items: stretch; }
+  .uni-adm-growth { flex: none; flex-direction: row; flex-wrap: wrap; }
+  .uni-adm-growth .uni-growth-table { flex: 1 1 150px; }
+}
+
 /* Qualifier scorecard ------------------------------------------ */
 
 .qualifier-score-badge {

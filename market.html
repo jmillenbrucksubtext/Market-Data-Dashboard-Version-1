@@ -862,24 +862,28 @@
 
           <!-- Applications, Acceptance & Yield - multi-year admissions funnel
                (first-time first-year): acceptance + yield bars on the % axis,
-               total applications line on the right axis. Built by
-               renderUniAdmissions() from tables.admissions_history (IPEDS ADM,
-               loaded by load_admissions_history.py). Hidden when a school has
-               no admissions history. -->
+               total applications line on the right axis, plus 1-5 yr growth
+               tables for applications / acceptance rate / yield. Built by
+               renderUniAdmissions() from tables.admissions_history
+               (dbo.Enrollments view). Hidden when a school has no admissions
+               history. -->
           <section class="card" id="uni-admissions-card">
             <div class="card-body">
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Applications, Acceptance &amp; Yield</span>
-                  <span class="perf-title-sub" id="uni-admissions-sub">first-time first-year · IPEDS</span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="uni-admissions-chart"></canvas></div>
-              </figure>
+              <div class="uni-adm-layout">
+                <div class="uni-adm-growth" id="uni-admissions-growth"></div>
+                <figure class="perf-chart perf-chart-wide">
+                  <figcaption class="perf-title">
+                    <span class="perf-title-text">Applications, Acceptance &amp; Yield</span>
+                    <span class="perf-title-sub" id="uni-admissions-sub">first-time first-year</span>
+                  </figcaption>
+                  <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="uni-admissions-chart"></canvas></div>
+                </figure>
+              </div>
             </div>
           </section>
 
           <!-- Institutional statistics - groups built by market.js from
-               university_info (dbo.Schools_Denormal). -->
+               university_info (dbo.Enrollments view + dbo.Schools). -->
           <section class="card">
             <header class="card-header">
               <div>
@@ -944,7 +948,7 @@
           <footer class="page-footer">
             <p>
               Source: <code>dbo.Properties</code> (purpose-built only) ·
-              campus locations from <code>dbo.Schools_Denormal</code> ·
+              campus locations from <code>dbo.Schools</code> ·
               map tiles by OpenStreetMap.
             </p>
           </footer>

@@ -284,25 +284,25 @@
     "uni-profile-table": {
       title: "Undergraduate Student Profile",
       formula: "Residency split, retention, on-campus capacity, tuition, and room & board versus Subtext underwriting targets.",
-      sql: "`university_info` (dbo.Schools_Denormal)",
+      sql: "`university_info` (dbo.Enrollments view, latest year; identity from dbo.Schools)",
       sig: "The underwriting snapshot of the anchor university."
     },
     "uni-residency-pie": {
       title: "Undergrad Residency",
       formula: "Share of undergraduates on-campus versus domestic off-campus versus international.",
-      sql: "`university_info` residency fields (dbo.Schools_Denormal)",
+      sql: "`university_info` residency fields (dbo.Enrollments view, latest year)",
       sig: "The residency split that feeds the off-campus demand picture."
     },
     "uni-admissions-chart": {
       title: "Applications, Acceptance & Yield",
-      formula: "Acceptance % and yield % bars (left axis) plus a total-applications line (right axis), first-time first-year, by year.",
-      sql: "`admissions_history` <- IPEDS ADM (build_admissions_repository.py -> load_admissions_history.py), 2018-2023",
+      formula: "Acceptance % and yield % bars (left axis) plus a total-applications line (right axis), first-time first-year, last 8 reported years. Side tables: relative growth of applications, acceptance rate, and yield versus 1-5 years before the latest year (`metric_now / metric_prior - 1`).",
+      sql: "`admissions_history` <- dbo.Enrollments view: appliedFirstTimeFirstYear / admittedFirstTimeFirstYear / enrolledFirstTimeFirstYear, 2014+",
       sig: "The admissions funnel trend - selectivity and demand for the school."
     },
     "uni-stats-grid": {
       title: "University Statistics",
       formula: "Institutional statistics grid (enrollment scale, retention, selectivity, tuition, and related fields).",
-      sql: "`university_info` (dbo.Schools_Denormal)",
+      sql: "`university_info` (dbo.Enrollments view, latest year; identity from dbo.Schools)",
       sig: "A reference profile of the institution."
     },
     "ipeds-table": {
@@ -366,11 +366,11 @@
     "under construction": { title: "Under Construction", formula: "`scorecard.beds_under_construction`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Beds actively being built." },
     "planned": { title: "Planned", formula: "`scorecard.beds_planned`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Announced beds not yet under construction." },
     /* University Information KPIs */
-    "total enrollment": { title: "Total Enrollment", formula: "Latest reported year for the school.", sql: "`university_info.enrollment_total` <- Schools_Denormal.enrollmentTotal (latest enrollmentYear row)", sig: "Headline size of the institution." },
-    "full-time enrollment": { title: "Full-Time Enrollment", formula: "Full-time undergrad + full-time graduate for the latest reported year.", sql: "`university_info.enr_ft_undergrad` + `university_info.enr_ft_grad` <- Schools_Denormal.enrollmentFullTimeUndergraduate / enrollmentFullTimeGraduate", sig: "The demand base purpose-built housing actually serves." },
-    "on-campus beds": { title: "On-Campus Beds", formula: "Reported beds when the school files them; falls back to the computed estimate otherwise (the subline says which).", sql: "`university_info.beds_on_campus_reported` / `university_info.beds_on_campus_computed` <- Schools_Denormal.bedsOnCampusReported / Schools_Denormal.bedsOnCampusComputed", sig: "Housing the university supplies itself - competes with off-campus beds." },
-    "admit rate": { title: "Admit Rate", formula: "First-time first-year admits / applicants; the subline shows the applicant count.", sql: "`university_info.admit_rate` <- Schools_Denormal.admittedFirstTimeFirstYearPct; applicants from Schools_Denormal.appliedFirstTimeFirstYear", sig: "Selectivity - lower admit rates signal steadier enrollment demand." },
-    "tuition (in-state)": { title: "Tuition (In-State)", formula: "Published in-state tuition; the subline shows out-of-state. Zero means not reported.", sql: "`university_info.tuition_in_state` / `university_info.tuition_out_of_state` <- Schools_Denormal.tuitionInState / Schools_Denormal.tuitionOutOfState", sig: "Cost of attendance - context for what rents the student base can bear." },
+    "total enrollment": { title: "Total Enrollment", formula: "Latest reported year for the school.", sql: "`university_info.enrollment_total` <- Enrollments.enrollmentTotal (latest enrollmentYear row)", sig: "Headline size of the institution." },
+    "full-time enrollment": { title: "Full-Time Enrollment", formula: "Full-time undergrad + full-time graduate for the latest reported year.", sql: "`university_info.enr_ft_undergrad` + `university_info.enr_ft_grad` <- Enrollments.enrollmentFullTimeUndergraduate / enrollmentFullTimeGraduate", sig: "The demand base purpose-built housing actually serves." },
+    "on-campus beds": { title: "On-Campus Beds", formula: "Reported beds when the school files them; falls back to the computed estimate otherwise (the subline says which).", sql: "`university_info.beds_on_campus_reported` / `university_info.beds_on_campus_computed` <- Enrollments.bedsOnCampusReported / Enrollments.bedsOnCampusComputed", sig: "Housing the university supplies itself - competes with off-campus beds." },
+    "admit rate": { title: "Admit Rate", formula: "First-time first-year admits / applicants; the subline shows the applicant count.", sql: "`university_info.admit_rate` <- Enrollments.admittedFirstTimeFirstYearPct; applicants from Enrollments.appliedFirstTimeFirstYear", sig: "Selectivity - lower admit rates signal steadier enrollment demand." },
+    "tuition (in-state)": { title: "Tuition (In-State)", formula: "Published in-state tuition; the subline shows out-of-state. Zero means not reported.", sql: "`university_info.tuition_in_state` / `university_info.tuition_out_of_state` <- Enrollments.tuitionInState / Enrollments.tuitionOutOfState", sig: "Cost of attendance - context for what rents the student base can bear." },
     /* Student Migration KPIs */
     "mean origin income": { title: "Mean Origin Income", formula: "Average household income of the census tracts students migrated from.", sql: "`market_affluence` (Migration CSV), computed in load_affluence.py", sig: "A proxy for student-family affluence and rent tolerance." },
     "overall in-state mix": { title: "Overall In-State Mix", formula: "In-state migrants / all migrants.", sql: "assets/student-origin/<market>.json", sig: "Share of students originating in-state." },

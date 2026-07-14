@@ -227,13 +227,19 @@ document.addEventListener("DOMContentLoaded", async () => {
   const s30Mean = {}, p4Mean = {};
   ["avg_rent_per_bed", "occupancy", "prelease"].forEach((f) => { s30Mean[f] = yearMean(s30Keys, f); p4Mean[f] = yearMean(p4Keys, f); });
 
-  // Anchor university (largest school by Schools_Denormal enrollment)
+  // Anchor university (largest school by dbo.Enrollments enrollment)
   const uiRows = (T.university_info || []).filter((r) => r.market_key === marketKey);
   const uinfo = uiRows.find((r) => r.university_name === M.anchor_university)
     || uiRows.slice().sort((a, b) => (b.enrollment_total || 0) - (a.enrollment_total || 0))[0] || null;
   const anchorName = uinfo ? uinfo.university_name : M.anchor_university;
   const anchorIpeds = ((T.campus_locations || []).find((c) => c.market_key === marketKey && c.university_name === anchorName) || {}).ipeds_id ?? null;
-  const adm = (T.admissions_history || []).filter((r) => r.ipeds_id === anchorIpeds).sort((a, b) => a.year_ - b.year_);
+  // Prefer school_key (unique per school); ipeds_id can be shared by branch campuses.
+  const anchorSchoolKey = uinfo ? uinfo.school_key : null;
+  const adm = (T.admissions_history || [])
+    .filter((r) => (r.school_key != null && anchorSchoolKey != null)
+      ? r.school_key === anchorSchoolKey
+      : r.ipeds_id === anchorIpeds)
+    .sort((a, b) => a.year_ - b.year_);
 
   // Comp unit mix by exact unit type
   const umByProp = {}; (T.unit_mix || []).forEach((r) => { umByProp[r.property_key] = r; });

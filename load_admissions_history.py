@@ -1,4 +1,9 @@
 """
+SUPERSEDED 2026-07-14: admissions_history is now exported directly from the
+dbo.Enrollments view by export-data.py (2014+, refreshed weekly). Running
+this script would overwrite it with the stale 2018-2023 Excel data - don't,
+unless you are deliberately restoring the old IPEDS ADM numbers.
+
 Patch tables.admissions_history into data.json from the Excel repository.
 
 Reads "Admissions Data/admissions_history.xlsx" (built by

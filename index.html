@@ -215,13 +215,18 @@
                   <td>1 row per market (<code>Key</code>)</td>
                 </tr>
                 <tr>
+                  <td><code>dbo.Schools</code> <span class="hint">(view)</span></td>
+                  <td>University identity dimension: name, short name, market mapping, campus lat/long. Joined to <code>dbo.Enrollments</code> for every school-level figure.</td>
+                  <td>1 row per university (<code>SchoolKey</code>)</td>
+                </tr>
+                <tr>
                   <td><code>dbo.Schools_Denormal</code></td>
-                  <td>University dimension with current-year enrollment.</td>
-                  <td>1 row per university (<code>schoolKey</code>)</td>
+                  <td>Denormalized university &#215; year table. <strong>Do not use</strong> (flagged 2026-07-14) - no longer read by the dashboard; identity comes from <code>dbo.Schools</code> and enrollment figures from <code>dbo.Enrollments</code>.</td>
+                  <td>1 row per university &#215; <code>enrollmentYear</code></td>
                 </tr>
                 <tr>
                   <td><code>dbo.Enrollments_Manual</code></td>
-                  <td>Historical enrollment time-series. <strong>Do not use</strong> - no longer read by the dashboard; enrollment now comes from MarketReports and Schools_Denormal.</td>
+                  <td>Historical enrollment time-series. <strong>Do not use</strong> - no longer read by the dashboard; market-level enrollment comes from MarketReports and school-level from <code>dbo.Enrollments</code>.</td>
                   <td>1 row per <code>IPEDS_ID</code> × <code>Year</code></td>
                 </tr>
                 <tr>
@@ -256,7 +261,7 @@
                 </tr>
                 <tr>
                   <td><code>dbo.Enrollments</code> <span class="hint">(view)</span></td>
-                  <td>Per-school per-year CDS-style history view - the Schools_Denormal vocabulary plus race/ethnicity splits, the financial-aid block, and industry-average benchmarks. Includes 2025 rows. Not yet queried by the export.</td>
+                  <td>Per-school per-year CDS-style history view - enrollment splits plus race/ethnicity, the financial-aid block, and industry-average benchmarks. Includes 2025 rows. <strong>The go-to source for all school-level enrollment figures</strong> (University Information tab, campus pins, enrollment_total, scorecard anchor). The IPEDS tab stays on <code>dbo.IPEDSBasicData</code>.</td>
                   <td>1 row per <code>schoolKey</code> &#215; <code>enrollmentYear</code> (<code>Key</code> = "school:year")</td>
                 </tr>
               </tbody>
@@ -612,8 +617,8 @@
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
 
-                <!-- dbo.Schools_Denormal -->
-                <tr class="src-section"><td colspan="5"><code>dbo.Schools_Denormal</code> - university dimension</td></tr>
+                <!-- dbo.Schools + dbo.Enrollments (formerly dbo.Schools_Denormal) -->
+                <tr class="src-section"><td colspan="5"><code>dbo.Schools</code> + <code>dbo.Enrollments</code> - university dimension. Identity columns (<code>name</code>, <code>shortName</code>, <code>latitude</code>/<code>longitude</code>, <code>marketKey</code>) read from <code>dbo.Schools</code>; every enrollment / CDS figure from <code>dbo.Enrollments</code> at the latest reported year. <code>dbo.Schools_Denormal</code>, the previous source of all of these, is FLAGGED DO NOT USE (2026-07-14).</td></tr>
                 <tr>
                   <td><code>name</code></td>
                   <td class="src-origin">
@@ -2378,7 +2383,7 @@
                   <td>Varchar - cast before use.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
-                <tr class="src-section"><td colspan="5"><code>dbo.Enrollments</code> - per-school per-year CDS-style history view (2025 included); not yet wired to any visual - candidate source for enrollment history / YoY.</td></tr>
+                <tr class="src-section"><td colspan="5"><code>dbo.Enrollments</code> - per-school per-year CDS-style history view (2025 included). The go-to source for every school-level enrollment figure: latest-year rows feed <code>university_info</code> / campus pins / the scorecard anchor (see the university-dimension section above), and the full history feeds <code>admissions_history</code> - the Applications, Acceptance &amp; Yield chart and its 1-5 yr growth tables.</td></tr>
                 <tr>
                   <td><code>Key</code></td>
                   <td class="src-origin">TBD</td>
@@ -2390,7 +2395,7 @@
                   <td><code>schoolKey / enrollmentYear</code></td>
                   <td class="src-origin">TBD</td>
                   <td>School + year keys</td>
-                  <td>Joins to <code>Schools_Denormal.schoolKey</code>; one row per school per year, 2025 included.</td>
+                  <td>Joins to <code>dbo.Schools.SchoolKey</code>; one row per school per year, 2025 included.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>

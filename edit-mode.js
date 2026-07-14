@@ -127,14 +127,6 @@
     return m;
   }
 
-  function marketIpedsIds(d) {
-    var ids = {};
-    d.tables.campus_locations.forEach(function (c) {
-      if (c.market_key === marketKey && c.ipeds_id != null) ids[c.ipeds_id] = 1;
-    });
-    return ids;
-  }
-
   /* ================= section definitions =================
      table   data.json tables.* key (also the overrides.json target)
      match   row fields that identify the row in an override entry
@@ -307,10 +299,10 @@
       label: function (r) { return r.short_name || r.university_name; }
     },
     admissionsHistory: {
-      table: "admissions_history", match: ["ipeds_id", "year_"],
-      title: "Admissions history (IPEDS ADM)",
+      table: "admissions_history", match: ["school_key", "year_"],
+      title: "Admissions history (dbo.Enrollments)",
       hint: "Applications / admitted / enrolled per year; acceptance and yield are derived.",
-      emptyHint: "No admissions_history table in the current data.json - run load_admissions_history.py after a refresh.",
+      emptyHint: "No admissions_history table in the current data.json - re-run export-data.py.",
       cols: [
         { field: "applications", label: "Applications", type: "int" },
         { field: "admitted", label: "Admitted", type: "int" },
@@ -319,11 +311,10 @@
       rows: function (d) {
         var t = d.tables.admissions_history;
         if (!t) return [];
-        var ids = marketIpedsIds(d);
-        return t.filter(function (r) { return ids[r.ipeds_id]; }).slice()
+        return t.filter(function (r) { return r.market_key === marketKey; }).slice()
           .sort(function (a, b) { return a.year_ - b.year_; });
       },
-      label: function (r) { return (r.university_name || r.ipeds_id) + " - " + r.year_; }
+      label: function (r) { return (r.university_name || r.ipeds_id || r.school_key) + " - " + r.year_; }
     },
     scorecardDemand: {
       table: "scorecard", match: ["market_key"], layout: "transposed",

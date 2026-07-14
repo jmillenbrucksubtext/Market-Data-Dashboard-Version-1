@@ -273,7 +273,16 @@
                 <tr class="src-section"><td colspan="5"><code>dbo.MarketReports</code> - weekly market snapshot, read at <code>MAX(snapshot_date)</code> per market</td></tr>
                 <tr>
                   <td><code>beds_purpose_built</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Existing Beds</td>
                   <td>At <code>MAX(snapshot_date)</code> per <code>market_key</code>.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -344,7 +353,16 @@
                 </tr>
                 <tr>
                   <td><code>enr_total</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Total Enrollment <span class="hint">(scorecard)</span></td>
                   <td>Market-level total at <code>MAX(snapshot_date)</code>.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -383,7 +401,16 @@
                 </tr>
                 <tr>
                   <td><code>beds_tracked_by_occupancy</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Bed weight <span class="hint">(rent reliability)</span></td>
                   <td>Number of beds the rent average is computed from.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -425,14 +452,32 @@
                 </tr>
                 <tr>
                   <td><code>beds_purpose_built</code> / <code>enr_total</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Penetration Ratio</td>
                   <td>At <code>MAX(snapshot_date)</code> per market. NULL if enrollment = 0.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>snapshot_date</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Leasing cycle</td>
                   <td>
                     <code>CASE WHEN MONTH(snapshot_date) ≤ 8 THEN YEAR(snapshot_date) ELSE YEAR(snapshot_date)+1 END</code>
@@ -442,14 +487,32 @@
                 </tr>
                 <tr>
                   <td><code>snapshot_date</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Week of cycle <span class="hint">(velocity x-axis)</span></td>
                   <td><code>DATEPART(ISO_WEEK, snapshot_date)</code></td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>snapshot_date</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Data as of <span class="hint">(top-right pill)</span></td>
                   <td><code>MAX(snapshot_date)</code> across all rows in <code>data.json</code>. Refreshed weekly when the export runs.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -457,14 +520,32 @@
 
                 <tr>
                   <td><code>enr_full_time</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>FTE Enrollment <span class="hint">(scorecard, qualifiers)</span></td>
                   <td>Full-time enrollment at <code>MAX(snapshot_date)</code>; denominator for penetration and uncaptured demand.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>beds_tracked_by_prelease</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Pre-lease bed weight</td>
                   <td>Beds behind the prelease average.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>

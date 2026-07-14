@@ -1487,6 +1487,20 @@ h1, h2, h3, .serif {
 .chart-info-src svg { flex: 0 0 auto; color: var(--slate-50); }
 .chart-info-src .src-table { font-weight: 700; }
 .chart-info-src .src-dot { color: var(--slate-50); }
+
+/* Data-source brand badges in the Database Sources table (SQL Source col) */
+.src-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-weight: 700;
+  font-size: 12.5px;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+}
+.src-brand svg { flex: 0 0 auto; }
+.src-brand-collegehouse .src-brand-college { color: #2ab9c9; }
+.src-brand-collegehouse .src-brand-house { color: #1d2f4e; }
 .chart-info-rows {
   width: 100%;
   border-collapse: collapse;

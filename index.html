@@ -249,6 +249,11 @@
                   <td>Historical per-plan snapshots. Drives property history charts and bed-weighted prelease roll-ups.</td>
                   <td>1 row per plan &#215; <code>snapshot_date</code></td>
                 </tr>
+                <tr>
+                  <td><code>dbo.IPEDSBasicData</code></td>
+                  <td>Per-institution, per-year IPEDS view: enrollment, first-time undergrad geography, admissions funnel, test scores, tuition &amp; aid. Not yet queried by the export.</td>
+                  <td>~1 row per <code>UnitID</code> &#215; <code>DataYear</code> (view fans out - dedupe before use)</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -1541,6 +1546,425 @@
                   </td>
                   <td>Bed weights</td>
                   <td>Weights for the per-property prelease roll-up.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr class="src-section"><td colspan="5"><code>dbo.IPEDSBasicData</code> - per-institution per-year IPEDS view; not yet wired to any visual. ~13.8M rows: dedupe to one row per <code>UnitID</code> &#215; <code>DataYear</code> before use.</td></tr>
+                <tr>
+                  <td><code>INSTNM</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Institution name</td>
+                  <td>IPEDS institution label.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>UnitID</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>IPEDS unit id</td>
+                  <td>Joins to markets via <code>IPEDS_CH_Crosswalk.IPEDs</code>.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>DataYear</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Report year</td>
+                  <td>One row per institution per IPEDS collection year.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>FullTimeEnrollment</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Full-time enrollment</td>
+                  <td>Stored as varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>Total</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Total enrollment</td>
+                  <td>Stored as varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>Dist</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Distance-education enrollment</td>
+                  <td>Stored as varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>DistanceShare</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Distance-education share</td>
+                  <td><code>Dist / Total</code>, precomputed float.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>FirstTimeUGrads</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>First-time undergrads (total)</td>
+                  <td>First-time first-year cohort size.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>InStateFirstTimeUGrads</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>First-time undergrads - in-state</td>
+                  <td>Cohort geography split.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>OOSFirstTimeUGrads</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>First-time undergrads - out-of-state</td>
+                  <td>Cohort geography split.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>InternationalFirstTimeUGrads</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>First-time undergrads - international</td>
+                  <td>Cohort geography split.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>OOSRate</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Out-of-state share</td>
+                  <td>Precomputed float share of the first-time cohort.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>INTRate</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>International share</td>
+                  <td>Precomputed float share of the first-time cohort.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>APPLCN</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Applications</td>
+                  <td>First-time first-year applications; varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>ADMSSN</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Admitted</td>
+                  <td>First-time first-year admits; varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>AdmissionRate</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Admit rate</td>
+                  <td><code>ADMSSN / APPLCN</code>, precomputed float.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>ACTCM75</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>ACT composite (75th pct)</td>
+                  <td>Varchar with blanks - cast/NULLIF before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>SATM75 / SATV75</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>SAT math / verbal (75th pct)</td>
+                  <td>Varchar with blanks - cast/NULLIF before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>Tu_Fees_Now_InS</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Tuition &amp; fees (in-state)</td>
+                  <td>Varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>Tu_Fees_Now_OS</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Tuition &amp; fees (out-of-state)</td>
+                  <td>Varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>ANYAIDP</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>% receiving any financial aid</td>
+                  <td>Varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>FinAidCohPercSFA</code></td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-ipeds" title="IPEDS (NCES)">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <g fill="#3f3e4a">
+                          <rect x="2.5" y="12" width="3.2" height="9.5"/>
+                          <rect x="7.6" y="8.5" width="3.2" height="13"/>
+                          <rect x="12.7" y="5" width="3.2" height="16.5"/>
+                          <rect x="17.8" y="1.5" width="3.2" height="20"/>
+                        </g>
+                        <ellipse cx="12" cy="13.5" rx="11" ry="4" fill="none" stroke="#3f3e4a" stroke-width="1.7" transform="rotate(-16 12 13.5)"/>
+                      </svg>IPEDS
+                    </span>
+                  </td>
+                  <td>Financial aid cohort % (SFA)</td>
+                  <td>Varchar - cast before use.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
               </tbody>

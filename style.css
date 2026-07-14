@@ -1527,6 +1527,9 @@ h1, h2, h3, .serif {
 .status-pill-use   { background: var(--good-soft); color: var(--good); }
 .status-pill-avoid { background: var(--bad-soft);  color: var(--bad); }
 
+/* Subtext Analyst Research: internal source - lime S mark + slate wordmark. */
+.src-brand-subtext { color: var(--slate); white-space: normal; text-align: left; }
+
 /* U.S. Census Bureau: crimson wordmark over its rounded underline bar. */
 .src-brand-census {
   flex-direction: column;

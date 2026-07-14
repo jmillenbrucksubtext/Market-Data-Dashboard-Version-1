@@ -881,14 +881,30 @@
                 <tr class="src-section"><td colspan="5"><code>dbo.Enrollments_Manual</code> - enrollment history - FLAGGED DO NOT USE; no longer referenced by the dashboard</td></tr>
                 <tr>
                   <td><code>Total_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Enrollment YoY</td>
                   <td><code>(current_year / prev_year) − 1</code>, joined on <code>IPEDS_ID</code>.</td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Total_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Enrollment 5-yr CAGR</td>
                   <td><code>(current / current−5)^(1/5) − 1</code>. NULL if &lt;5 years of history.</td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
@@ -896,42 +912,90 @@
 
                 <tr>
                   <td><code>Full_Time_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Full-Time Enrollment + FTE YoY</td>
                   <td><code>enrollment_history.full_time_enrollment</code> per <code>IPEDS_ID</code> &#215; <code>Year</code> - University tab and enrollment charts.</td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Undergrad_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Undergraduate enrollment series</td>
                   <td><code>enrollment_history.undergrad_enrollment</code></td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Graduate_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Graduate enrollment series</td>
                   <td><code>enrollment_history.graduate_enrollment</code></td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Freshman_Enrollment</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Freshman enrollment series</td>
                   <td><code>enrollment_history.freshman_enrollment</code></td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>University</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>University name labels</td>
                   <td><code>MIN(University)</code> per <code>IPEDS_ID</code>.</td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>IPEDS_ID / Year</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-subtext" title="Subtext Analyst Research">
+                      <svg viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+                        <rect x="2" y="2" width="20" height="20" rx="5" fill="#c1d100"/>
+                        <path d="M15.6 8.2c-.7-.9-1.9-1.4-3.2-1.4-1.9 0-3.2 1-3.2 2.5 0 1.7 1.3 2.2 3.2 2.7 1.9.5 3.1 1 3.1 2.4 0 1.3-1.2 2.2-3 2.2-1.5 0-2.7-.6-3.4-1.5" stroke="#16352e" stroke-width="1.9" fill="none" stroke-linecap="round"/>
+                      </svg>
+                      Subtext Analyst Research
+                    </span>
+                  </td>
                   <td>Series keys</td>
                   <td>Join key to the crosswalk / x-axis of the enrollment history charts.</td>
                   <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>

@@ -970,16 +970,16 @@ h1, h2, h3, .serif {
   background: var(--bg);
 }
 .src-table tbody td {
-  padding: 10px 12px;
+  padding: 8px 10px;
   border-bottom: 1px solid var(--beige-deep);
   vertical-align: top;
   color: var(--slate);
-  line-height: 1.55;
+  line-height: 1.5;
 }
 .src-table tbody td:first-child {
   font-weight: 700;
   white-space: nowrap;
-  padding-right: 18px;
+  padding-right: 14px;
 }
 .src-table tbody td:nth-child(2) {
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
@@ -1008,14 +1008,27 @@ h1, h2, h3, .serif {
 }
 .src-table code {
   background: var(--bg);
-  padding: 1px 6px;
+  padding: 1px 5px;
   border-radius: 4px;
   border: 1px solid var(--beige-deep);
   font-family: ui-monospace, "SF Mono", Menlo, monospace;
-  font-size: 12px;
+  font-size: 11.5px;
   color: var(--slate);
   white-space: nowrap;
 }
+
+/* SQL Data Point table: fixed column grid so the five columns always fit
+   the viewport - content wraps instead of forcing a horizontal scroller. */
+.src-table-datapoints { table-layout: fixed; font-size: 12.5px; }
+.src-table-datapoints tbody td:first-child { white-space: normal; overflow-wrap: anywhere; }
+.src-table-datapoints code { white-space: normal; overflow-wrap: anywhere; }
+.src-table-datapoints thead th:nth-child(1) { width: 23%; }
+.src-table-datapoints thead th:nth-child(2) { width: 12%; }
+.src-table-datapoints thead th:nth-child(3) { width: 17%; }
+.src-table-datapoints thead th:nth-child(5) { width: 92px; }
+.src-table-datapoints .src-status { padding-left: 4px; padding-right: 4px; }
+.src-table-datapoints .status-pill { font-size: 9px; padding: 2px 7px; letter-spacing: 0.03em; }
+.src-table-datapoints .src-brand { font-size: 12px; white-space: normal; }
 .src-table tbody td:nth-child(2) code {
   background: transparent;
   border: none;

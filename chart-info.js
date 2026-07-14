@@ -69,7 +69,7 @@
       rows: [
         ["Nominal market rent > $900", "`scorecard.avg_rent_per_bed > 900` (MarketReports.rate_avg)"],
         ["Comp-set rent > $1,000", "Bed-weighted avg `avg_rent` across the comp-set > 1000"],
-        ["FTE enrollment > 15,000", "`enr_full_time > 15000`"],
+        ["FTE enrollment > 15,000", "Sum of `university_info.enr_ft_undergrad` + `enr_ft_grad` across the market's schools (dbo.Enrollments, latest reported year - matches the University tab; the year is noted with the figure) > 15,000"],
         ["Market occupancy > 90%", "`occupancy > 0.90`"],
         ["FTE growth since 2022 > 3%", "`(current_fte - baseline_2022_fte) / baseline_2022_fte > 0.03`"],
         ["FTE growth YoY positive", "`(current_fte - prior_fte) / prior_fte > 0`; prior = most recent snapshot whose FTE differs from current (not literal T-1yr)"],

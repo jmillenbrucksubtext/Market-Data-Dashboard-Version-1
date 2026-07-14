@@ -586,13 +586,22 @@ function qualifierDetails() {
   // Total enrollment alongside the FTE qualifier. dbo.Schools can have
   // multiple branch rows per institution (e.g., 10 Rutgers campus locations
   // all rolling up to one IPEDS ID), so dedupe by IPEDS ID before summing.
+  // The reported dbo.Enrollments year(s) are noted after the figure.
   const byIpeds = new Map();
+  const enrYears = new Set();
   for (const c of CAMPUSES) {
     const key = c.ipeds_id ?? `school-${c.school_key}`;
     if (!byIpeds.has(key)) byIpeds.set(key, c.total_enrollment || 0);
+    if (c.total_enrollment && c.enrollment_year) enrYears.add(c.enrollment_year);
   }
   const ipedsTotal = [...byIpeds.values()].reduce((s, n) => s + n, 0);
-  if (ipedsTotal > 0) d.fte = `${fmtInt(ipedsTotal)} total enrollment`;
+  if (ipedsTotal > 0) {
+    const yrs = [...enrYears].sort();
+    const when = yrs.length === 0 ? ""
+      : yrs[0] === yrs[yrs.length - 1] ? ` (${yrs[0]})`
+      : ` (${yrs[0]}-${yrs[yrs.length - 1]})`;
+    d.fte = `${fmtInt(ipedsTotal)} total enrollment${when}`;
+  }
 
   if (MARKET.prelease != null) {
     d.prelease_lag = `latest cycle ${fmtPct(MARKET.prelease, 1)}`;
@@ -660,7 +669,7 @@ const CENSUS_BADGE = `<span class="src-brand src-brand-census" title="U.S. Censu
 const QUALIFIER_SOURCES = {
   rent_market: CH_BADGE,
   rent_compset: CH_BADGE,
-  fte: IPEDS_BADGE,
+  fte: CH_BADGE,   /* dbo.Enrollments (CDS history view) */
   occupancy: CH_BADGE,
   fte_growth_2022: IPEDS_BADGE,
   fte_growth_yoy: IPEDS_BADGE,

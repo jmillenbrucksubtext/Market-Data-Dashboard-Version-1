@@ -1210,15 +1210,35 @@ def _q_rent_compset(market, props_by_market):
 
 
 def _q_fte(market, _props_by_market):
+    # Match the University Information tab: FT undergrad + FT grad at each
+    # school's latest reported dbo.Enrollments year, summed across the
+    # market's schools, with the reported year(s) noted next to the figure.
+    uni = market.get("uni_fte")
+    if uni and uni["fte"] > 0:
+        yrs = sorted(uni["years"])
+        when = (f"{yrs[0]}" if len(yrs) == 1 or yrs[0] == yrs[-1]
+                else f"{yrs[0]}-{yrs[-1]}") if yrs else None
+        return _result(
+            "fte", "FTE enrollment above 15,000", "> 15,000",
+            actual=uni["fte"],
+            actual_display=f"{int(uni['fte']):,}" + (f" ({when})" if when else ""),
+            threshold=15000, margin=1500, direction="above",
+            explanation="full-time undergrad + graduate at each school's latest "
+                        "reported year (dbo.Enrollments), summed across the "
+                        "market - matches the University Information tab",
+        )
+    # Fallback for markets with no mapped school stats: MarketReports FTE.
     fte = market.get("enr_full_time")
     if fte is None:
         return _na("fte", "FTE enrollment above 15,000", "> 15,000",
                    "no FTE on file")
+    snap = str(market.get("data_as_of") or "")[:10]
     return _result(
         "fte", "FTE enrollment above 15,000", "> 15,000",
-        actual=fte, actual_display=f"{int(fte):,}",
+        actual=fte,
+        actual_display=f"{int(fte):,}" + (f" (as of {snap})" if snap else ""),
         threshold=15000, margin=1500, direction="above",
-        explanation="current-year FTE from MarketReports at the latest snapshot",
+        explanation="fallback: current-year FTE from MarketReports at the latest snapshot",
     )
 
 
@@ -1465,6 +1485,21 @@ def compute_qualifiers(tables: dict) -> list[dict]:
     fte_history_by_market = {
         r["market_key"]: r for r in tables.get("fte_history", [])
     }
+    # University-tab FTE per market: FT undergrad + FT grad at each school's
+    # latest reported dbo.Enrollments year (one university_info row per
+    # school), summed across the market. Keeps the FTE qualifier figure
+    # identical to what the University Information tab displays; `years`
+    # records the reported year(s) so the scorecard can note the date.
+    uni_fte_by_market: dict = {}
+    for r in tables.get("university_info", []):
+        fte = (r.get("enr_ft_undergrad") or 0) + (r.get("enr_ft_grad") or 0)
+        if fte <= 0:
+            continue
+        slot = uni_fte_by_market.setdefault(
+            r["market_key"], {"fte": 0, "years": set()})
+        slot["fte"] += fte
+        if r.get("enrollment_year"):
+            slot["years"].add(int(r["enrollment_year"]))
     # Multi-year rent + supply snapshots, grouped by market for the
     # rent_growth_3yr qualifier.
     market_history_by_market: dict = {}
@@ -1488,6 +1523,7 @@ def compute_qualifiers(tables: dict) -> list[dict]:
             m["affluence_n_students"] = a.get("n_students")
         m["prelease_yoy"] = prelease_yoy_by_market.get(m["market_key"])
         m["fte_history"] = fte_history_by_market.get(m["market_key"])
+        m["uni_fte"] = uni_fte_by_market.get(m["market_key"])
         m["market_history_rows"] = market_history_by_market.get(m["market_key"], [])
         m["comp_set_keys"] = comp_keys_by_market.get(m["market_key"], set())
         results = [ev(m, by_market) for ev in QUALIFIER_EVALUATORS]

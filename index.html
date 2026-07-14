@@ -545,8 +545,8 @@
                       <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
                     </span>
                   </td>
-                  <td>FTE Enrollment <span class="hint">(scorecard, qualifiers)</span></td>
-                  <td>Full-time enrollment at <code>MAX(snapshot_date)</code>; denominator for penetration and uncaptured demand.</td>
+                  <td>FTE Enrollment <span class="hint">(scorecard, FTE-growth qualifiers)</span></td>
+                  <td>Full-time enrollment at <code>MAX(snapshot_date)</code>; denominator for penetration and uncaptured demand. The qualifier scorecard's "FTE enrollment &gt; 15,000" figure now comes from <code>dbo.Enrollments</code> (FT undergrad + grad, latest reported year - matches the University tab); this field is its fallback.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>

@@ -55,30 +55,6 @@
         ["UD as FTE %", "Uncaptured demand: `1 - existing_beds / enr_full_time`"]
       ]
     },
-    "supply-chart": {
-      title: "Supply: Existing + Pipeline",
-      formula: "Stacked horizontal bars, top 30 markets by total beds: `existing + lease-up + under-construction + planned`.",
-      sql: "`scorecard`: existing_beds, beds_lease_up, beds_under_construction, beds_planned",
-      sig: "Ranks markets by total bed supply and shows how much is already delivered versus still in the pipeline."
-    },
-    "demand-chart": {
-      title: "Enrollment Growth",
-      formula: "5-year enrollment CAGR, top 30 markets by enrollment: `(enr_end / enr_start)^(1/5) - 1`.",
-      sql: "`scorecard.cagr_5yr` (derived from MarketReports.enr_full_time history)",
-      sig: "Demand-side momentum - which markets are growing their student base fastest."
-    },
-    "pricing-rent-chart": {
-      title: "Avg Rent per Bed",
-      formula: "Bed-weighted average rent per bed, top 30. Bars coloured by Subtext-30 membership.",
-      sql: "`scorecard.avg_rent_per_bed` <- MarketReports.rate_avg (latest snapshot)",
-      sig: "Where each market sits on absolute rent level."
-    },
-    "pricing-growth-chart": {
-      title: "Rent YoY Growth",
-      formula: "Year-over-year rent growth, top 30: `(rent_t - rent_{t-1}) / rent_{t-1}`.",
-      sql: "`scorecard.yoy_rent_growth` (from market_history.avg_rent_per_bed)",
-      sig: "Rent momentum - which markets are pushing rate hardest."
-    },
     /* ================= MARKET PAGE (market.html) ================= */
     "qualifier-list": {
       title: "Subtext Qualifier Scorecard",
@@ -391,10 +367,7 @@
   /* KPI tiles, keyed by normalised tile label (en-dashes -> hyphens). */
   var KPI = {
     /* Industry */
-    "markets tracked": { title: "Markets Tracked", formula: "Count of markets in the dataset.", sql: "row count of `scorecard`", sig: "The size of the tracked universe." },
-    "total existing beds": { title: "Total Existing Beds", formula: "Sum of `existing_beds` across all markets.", sql: "sum(scorecard.existing_beds) <- MarketReports.beds_purpose_built", sig: "Total purpose-built supply tracked." },
     "pipeline beds": { title: "Pipeline Beds", formula: "`beds_lease_up + beds_under_construction + beds_planned`.", sql: "scorecard pipeline fields <- dbo.MarketReports", sig: "Forward supply still to deliver." },
-    "bed-weighted avg rent": { title: "Bed-Weighted Avg Rent", formula: "`sum(rent x beds) / sum(beds)` across markets.", sql: "scorecard.avg_rent_per_bed, existing_beds", sig: "The supply-weighted average rent level." },
     /* Pipeline tab KPIs */
     "lease-up": { title: "Lease-up", formula: "`scorecard.beds_lease_up`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Delivered beds still leasing to stabilization." },
     "under construction": { title: "Under Construction", formula: "`scorecard.beds_under_construction`.", sql: "<- dbo.MarketReports (latest snapshot)", sig: "Beds actively being built." },

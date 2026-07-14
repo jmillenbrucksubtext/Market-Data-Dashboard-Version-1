@@ -78,18 +78,13 @@
         </a>
 
         <div class="topbar-right">
-          <label class="subtext-toggle" id="subtext-toggle-label">
-            <input type="checkbox" id="subtext30-only">
-            <span>Subtext-30 only</span>
-          </label>
-          <label class="subtext-toggle" id="power4-toggle-label" title="SEC · Big Ten · Big 12 · ACC anchor schools">
-            <input type="checkbox" id="power4-only">
-            <span>Power 4 only</span>
-          </label>
-          <label class="subtext-toggle subtext-toggle-active active" id="active-toggle-label" title="Markets on Subtext's active pipeline board: Upcoming, Assessing, and Pursuing">
-            <input type="checkbox" id="active-markets" checked>
-            <span>Active markets</span>
-          </label>
+          <select id="market-scope" class="market-scope-select" aria-label="Filter markets"
+                  title="Filter the map and scorecard. Active markets = Subtext's pipeline board (Upcoming, Assessing, Pursuing); Power 4 = SEC / Big Ten / Big 12 / ACC anchor schools.">
+            <option value="active" selected>Active markets</option>
+            <option value="subtext30">Subtext-30 only</option>
+            <option value="power4">Power 4 only</option>
+            <option value="all">All markets</option>
+          </select>
           <span class="freshness">
             <span>Data as of</span>
             <span class="value" id="data-as-of">-</span>
@@ -161,34 +156,6 @@
           </div>
         </section>
 
-        <div class="page-header">
-          <h1>Market Performance</h1>
-        </div>
-
-        <!-- KPI summary row -->
-        <div class="kpi-row" id="kpi-row">
-          <div class="kpi">
-            <div class="kpi-label">Markets Tracked</div>
-            <div class="kpi-value" id="kpi-markets">-</div>
-            <div class="kpi-sub" id="kpi-markets-sub">-</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Total Existing Beds</div>
-            <div class="kpi-value" id="kpi-beds">-</div>
-            <div class="kpi-sub" id="kpi-beds-sub">-</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Pipeline Beds</div>
-            <div class="kpi-value" id="kpi-pipeline">-</div>
-            <div class="kpi-sub" id="kpi-pipeline-sub">-</div>
-          </div>
-          <div class="kpi">
-            <div class="kpi-label">Bed-Weighted Avg Rent</div>
-            <div class="kpi-value" id="kpi-rent">-</div>
-            <div class="kpi-sub" id="kpi-rent-sub">-</div>
-          </div>
-        </div>
-
         <!-- Market Scorecard: one table per pipeline stage (monthly update layout) -->
         <section class="card">
           <header class="card-header">
@@ -204,61 +171,6 @@
           <div class="result-count" id="result-count">-</div>
           <div class="table-wrap pipeline-wrap">
             <div id="pipeline-stages"></div>
-          </div>
-        </section>
-
-        <!-- Industry charts - bubble pattern shared with the market-detail
-             performance section. Each chart sits in its own card with a
-             title strip and optional top-right legend / control slot. -->
-        <section class="card performance-section industry-charts">
-          <header class="card-header">
-            <div>
-              <h2>National Snapshot</h2>
-              <p>Subtext-30 markets ranked across supply, enrollment, and pricing.</p>
-            </div>
-          </header>
-          <div class="card-body">
-            <div class="perf-grid">
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Supply: Existing + Pipeline</span>
-                  <span class="perf-title-sub">Top 30 by total beds</span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="supply-chart"></canvas></div>
-              </figure>
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Enrollment Growth</span>
-                  <span class="perf-title-sub">5-year CAGR · top 30 by enrollment</span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="demand-chart"></canvas></div>
-              </figure>
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Avg Rent per Bed</span>
-                  <span class="perf-title-legend">
-                    <span class="perf-legend-item"><span class="swatch swatch-bench"></span>Subtext-30</span>
-                    <span class="perf-legend-item"><span class="swatch swatch-mute"></span>Other</span>
-                  </span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="pricing-rent-chart"></canvas></div>
-              </figure>
-
-              <figure class="perf-chart perf-chart-wide">
-                <figcaption class="perf-title">
-                  <span class="perf-title-text">Rent YoY Growth</span>
-                  <span class="perf-title-legend">
-                    <span class="perf-legend-item"><span class="swatch swatch-lime"></span>Positive</span>
-                    <span class="perf-legend-item"><span class="swatch swatch-anchor"></span>Negative</span>
-                  </span>
-                </figcaption>
-                <div class="perf-chart-wrap perf-chart-wrap-ranked"><canvas id="pricing-growth-chart"></canvas></div>
-              </figure>
-
-            </div>
           </div>
         </section>
 

@@ -303,29 +303,23 @@ function fullLabel(market_key) {
 function visibleScorecardRows() {
   let rows = DATA.tables.scorecard.slice();
   const q = document.getElementById("market-filter").value.trim().toLowerCase();
-  const subtext30 = document.getElementById("subtext30-only").checked;
-  const power4 = document.getElementById("power4-only").checked;
-  const active = document.getElementById("active-markets")?.checked;
+  const scope = document.getElementById("market-scope")?.value || "all";
 
   if (q) {
-    // A search reaches the entire tracked universe - the map toggles
-    // (Subtext-30 / Power 4 / Active markets) are bypassed so any market can be
+    // A search reaches the entire tracked universe - the scope dropdown
+    // (Active / Subtext-30 / Power 4 / All) is bypassed so any market can be
     // found, not just the ones currently filtered onto the map.
     rows = rows.filter((r) =>
       (r.anchor_university || "").toLowerCase().includes(q) ||
       (r.city || "").toLowerCase().includes(q) ||
       (r.state_abbr || "").toLowerCase().includes(q),
     );
-  } else {
-    if (subtext30) {
-      rows = rows.filter((r) => r.is_subtext30 === 1);
-    }
-    if (power4) {
-      rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
-    }
-    if (active) {
-      rows = rows.filter((r) => r.market_status);
-    }
+  } else if (scope === "subtext30") {
+    rows = rows.filter((r) => r.is_subtext30 === 1);
+  } else if (scope === "power4") {
+    rows = rows.filter((r) => POWER4_ANCHORS.has(r.anchor_university));
+  } else if (scope === "active") {
+    rows = rows.filter((r) => r.market_status);
   }
 
   // Attach yoy_rent_growth from rent_yoy
@@ -740,26 +734,15 @@ function bindUI() {
     renderAll();
     renderSearchSuggestions();
   });
-  const cb = document.getElementById("subtext30-only");
-  const label = document.getElementById("subtext-toggle-label");
-  cb.addEventListener("change", () => {
-    label.classList.toggle("active", cb.checked);
-    renderAll();
-  });
-  const p4 = document.getElementById("power4-only");
-  const p4Label = document.getElementById("power4-toggle-label");
-  p4.addEventListener("change", () => {
-    p4Label.classList.toggle("active", p4.checked);
-    renderAll();
-  });
-
-  // Active markets - Subtext's pipeline board (Upcoming/Assessing/Pursuing).
-  const active = document.getElementById("active-markets");
-  const activeLabel = document.getElementById("active-toggle-label");
-  // Surface the total in the toggle label so the count is visible even when off.
+  // Market scope dropdown - Active markets (the pipeline board) is the
+  // default lens; Subtext-30 / Power 4 are focus subsets; All markets is
+  // the whole tracked universe.
+  const scope = document.getElementById("market-scope");
+  // Surface the total in the option label so the count is visible up front.
   const activeTotal = DATA.tables.scorecard.filter((r) => r.market_status).length;
-  if (activeTotal) {
-    activeLabel.querySelector("span").textContent = `Active markets (${activeTotal})`;
+  const activeOpt = scope.querySelector('option[value="active"]');
+  if (activeTotal && activeOpt) {
+    activeOpt.textContent = `Active markets (${activeTotal})`;
   }
   // Fill the pipeline-stage legend counts once (they don't change with filters).
   for (const stage of ["upcoming", "assessing", "pursuing"]) {
@@ -769,15 +752,7 @@ function bindUI() {
     }
   }
   syncLegendMode();
-  active.addEventListener("change", () => {
-    activeLabel.classList.toggle("active", active.checked);
-    // Active markets is a curated cross-cut that includes non-Subtext-30 markets,
-    // so AND-ing it with the focus filters would hide most of them. Clear those
-    // filters when it is switched on.
-    if (active.checked) {
-      if (cb.checked) { cb.checked = false; label.classList.remove("active"); }
-      if (p4.checked) { p4.checked = false; p4Label.classList.remove("active"); }
-    }
+  scope.addEventListener("change", () => {
     syncLegendMode();
     renderAll();
   });
@@ -789,6 +764,7 @@ function bindUI() {
 /* ----- KPI strip --------------------------------------------- */
 
 function renderKpis(rows) {
+  if (!document.getElementById("kpi-markets")) return;  // KPI strip removed from the Industry tab
   // Markets tracked
   const totalMarkets = DATA.tables.scorecard.length;
   const visible = rows.length;
@@ -1007,6 +983,7 @@ function renderSupply(rows) {
     .slice(0, 30);
 
   const ctx = document.getElementById("supply-chart");
+  if (!ctx) return;  // chart removed from the Industry tab
   if (charts.supply) charts.supply.destroy();
   charts.supply = new Chart(ctx, {
     type: "bar",
@@ -1068,6 +1045,7 @@ function renderDemand(rows) {
     .slice(0, 30);
 
   const ctx = document.getElementById("demand-chart");
+  if (!ctx) return;  // chart removed from the Industry tab
   if (charts.demand) charts.demand.destroy();
   charts.demand = new Chart(ctx, {
     type: "bar",
@@ -1342,13 +1320,13 @@ const STATUS_COLOR = {
   upcoming: "#837c75",   // slate50
 };
 
-// Show the pipeline-stage legend when "Active markets" is on, qualifier
-// otherwise. The active-markets checkbox drives the map's pin colouring too.
+// Show the pipeline-stage legend when the scope dropdown is on "Active
+// markets", qualifier otherwise. The scope drives the map's pin colouring too.
 function syncLegendMode() {
   const legend = document.querySelector(".map-legend");
-  const active = document.getElementById("active-markets");
-  if (legend && active) {
-    legend.classList.toggle("legend-mode-active", active.checked);
+  const scope = document.getElementById("market-scope");
+  if (legend && scope) {
+    legend.classList.toggle("legend-mode-active", scope.value === "active");
   }
 }
 
@@ -1442,7 +1420,7 @@ function renderIndustryMap() {
   // In "Active markets" mode, colour pins by pipeline stage instead of qualifier
   // score; fall back to qualifier colour for any pin without a status (e.g. a
   // search result outside the active board).
-  const activeMode = document.getElementById("active-markets")?.checked;
+  const activeMode = document.getElementById("market-scope")?.value === "active";
   const fillFor = (r) =>
     (activeMode && r.market_status && STATUS_COLOR[r.market_status]) || pinColor(r.qualifier_score);
 

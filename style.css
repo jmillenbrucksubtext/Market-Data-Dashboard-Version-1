@@ -363,13 +363,19 @@ h1, h2, h3, .serif {
   color: var(--slate);
   font-weight: 700;
 }
-/* Active markets is a distinct lens (the deal pipeline board), not a focus
-   subset - give it an everest-green active state so it reads differently. */
-.subtext-toggle-active input { accent-color: var(--everest); }
-.subtext-toggle-active.active {
-  background: var(--everest);
-  border-color: var(--everest);
-  color: #fff;
+
+/* Market scope dropdown - replaced the Subtext-30 / Power 4 / Active
+   markets toggle row in the Industry topbar. */
+.market-scope-select {
+  padding: 7px 12px;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate);
 }
 
 /* Subtext Dispatch ticker - sits in the topbar between .search and

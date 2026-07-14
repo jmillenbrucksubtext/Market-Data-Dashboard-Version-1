@@ -431,6 +431,50 @@
     return String(s || "").toLowerCase().replace(/[‐-―]/g, "-").replace(/\s+/g, " ").trim();
   }
 
+  /* ---- source chips ---------------------------------------------------------
+     Every `table.column` reference in an entry's text becomes a small chip
+     with a database icon so the SQL table and the column within it read at
+     a glance. File-name dots (Schedule.xlsx, generate.py, <market>.json)
+     are not sources and are skipped; `dbo.Table` (schema-qualified, no
+     column) renders as a table-only chip. */
+  var DB_ICON =
+    '<svg viewBox="0 0 24 24" width="10" height="10" fill="none" ' +
+    'stroke="currentColor" stroke-width="2" stroke-linecap="round">' +
+    '<ellipse cx="12" cy="5" rx="8" ry="3"/>' +
+    '<path d="M4 5v14c0 1.66 3.58 3 8 3s8-1.34 8-3V5"/>' +
+    '<path d="M4 12c0 1.66 3.58 3 8 3s8-1.34 8-3"/></svg>';
+  var SRC_SKIP = /^(xlsx|csv|json|py|html|js|ps1|md)$/i;
+
+  function parseSources(text) {
+    var out = [], seen = {};
+    var re = /\b([A-Za-z_][\w-]*)\.([A-Za-z_]\w*)(?:\.([A-Za-z_]\w*))?/g;
+    var m;
+    while ((m = re.exec(String(text))) !== null) {
+      var table = m[3] ? m[1] + "." + m[2] : m[1];
+      var col = m[3] || m[2];
+      if (SRC_SKIP.test(col)) continue;
+      if (!m[3] && table === "dbo") { table = "dbo." + col; col = null; }
+      var key = table + "|" + col;
+      if (seen[key]) continue;
+      seen[key] = true;
+      out.push({ table: table, col: col });
+    }
+    return out;
+  }
+
+  function sourceChips(text) {
+    var srcs = parseSources(text);
+    if (!srcs.length) return "";
+    var html = '<div class="chart-info-srcs">';
+    srcs.forEach(function (s) {
+      var label = '<span class="src-table">' + esc(s.table) + "</span>";
+      if (s.col) label += '<span class="src-dot">.</span><span class="src-col">' + esc(s.col) + "</span>";
+      var title = s.col ? "table " + s.table + " - column " + s.col : "table " + s.table;
+      html += '<span class="chart-info-src" title="' + esc(title) + '">' + DB_ICON + label + "</span>";
+    });
+    return html + "</div>";
+  }
+
   function buildPopInner(entry) {
     var html = '<div class="chart-info-head">' + esc(entry.title || "About this metric") + "</div>";
     if (entry.formula) {
@@ -439,7 +483,8 @@
     }
     if (entry.sql) {
       html += '<div class="chart-info-sec"><div class="chart-info-k">Data &amp; SQL source</div>' +
-        '<div class="chart-info-v">' + fmt(entry.sql) + "</div></div>";
+        '<div class="chart-info-v">' + fmt(entry.sql) + "</div>" +
+        sourceChips(entry.sql) + "</div>";
     }
     if (entry.sig) {
       html += '<div class="chart-info-sec"><div class="chart-info-k">Significance</div>' +
@@ -449,7 +494,7 @@
       html += '<div class="chart-info-sec"><div class="chart-info-k">Columns</div>' +
         '<table class="chart-info-rows"><tbody>';
       entry.rows.forEach(function (r) {
-        html += "<tr><th>" + fmt(r[0]) + "</th><td>" + fmt(r[1]) + "</td></tr>";
+        html += "<tr><th>" + fmt(r[0]) + "</th><td>" + fmt(r[1]) + sourceChips(r[1]) + "</td></tr>";
       });
       html += "</tbody></table></div>";
     }

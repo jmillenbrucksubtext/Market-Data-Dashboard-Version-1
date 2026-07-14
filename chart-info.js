@@ -79,13 +79,6 @@
       sql: "`scorecard.yoy_rent_growth` (from market_history.avg_rent_per_bed)",
       sig: "Rent momentum - which markets are pushing rate hardest."
     },
-    "analysis": {
-      title: "Market Analysis Schedule",
-      formula: "Internal pipeline tracker - one row per scheduled market: analyst, initial analysis + decision, IC date + decision, status, estimated sites.",
-      sql: "`market_analysis_schedule` <- Market Analysis Schedule.xlsx (OneDrive), read by export-data.py at refresh time",
-      sig: "Reflects the state of the schedule spreadsheet at the last Monday 06:00 refresh."
-    },
-
     /* ================= MARKET PAGE (market.html) ================= */
     "qualifier-list": {
       title: "Subtext Qualifier Scorecard",
@@ -537,7 +530,7 @@
 
   /* element ids that live alone in a plain card -> mount in the card-header h2 */
   var CARD_IDS = [
-    "industry-map", "scorecard", "analysis", "map", "properties-all",
+    "industry-map", "scorecard", "map", "properties-all",
     "comp-map-canvas", "properties-comps", "qualifier-list",
     "student-migration-in-map", "student-migration-out-map",
     "student-migration-in-metros", "student-migration-out-metros",

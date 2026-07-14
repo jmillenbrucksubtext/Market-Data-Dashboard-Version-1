@@ -100,11 +100,6 @@ let charts = {};
 let industryMap = null;
 let industryMarkerLayer = null;
 
-// Analysis tab state
-let analysisSortState = { col: "ic_date", dir: "desc" };
-let activeCategory = "Future Analyses";  // single-select; defaults to forward-looking pipeline
-let analysisSearchQuery = "";
-
 document.addEventListener("DOMContentLoaded", async () => {
   try {
     const res = await fetch("data.json", { cache: "no-cache" });
@@ -147,13 +142,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   bindMarketSearch();
   bindUI();
   bindNav();
-  bindAnalysisSort();
   renderAll();
 });
 
 /* ----- View routing ------------------------------------------ */
 
-const VALID_VIEWS = ["industry", "marketstate", "analysis", "sources", "forward", "tools"];
+const VALID_VIEWS = ["industry", "marketstate", "sources", "forward", "tools"];
 
 function bindNav() {
   const items = document.querySelectorAll(".nav-item[data-view]");
@@ -1501,150 +1495,6 @@ function renderIndustryMap() {
   }
 }
 
-/* ----- Analysis tab ----------------------------------------- */
-
-function analysisRows() {
-  const all = (DATA.tables.market_analysis_schedule || []).slice();
-  const byCategory = all.filter((r) => (r.category || "") === activeCategory);
-  const q = analysisSearchQuery.trim().toLowerCase();
-  if (!q) return byCategory;
-  return byCategory.filter((r) =>
-    (r.market_name || "").toLowerCase().includes(q),
-  );
-}
-
-function renderAnalysisFilter() {
-  const container = document.getElementById("analysis-filter");
-  if (!container) return;
-  const all = DATA.tables.market_analysis_schedule || [];
-  if (all.length === 0) { container.innerHTML = ""; return; }
-
-  // Build per-category counts. Sections preserve a sensible order:
-  // Future Analyses first (forward-looking), then everything else.
-  const counts = {};
-  all.forEach((r) => {
-    const c = r.category || "(uncategorized)";
-    counts[c] = (counts[c] || 0) + 1;
-  });
-  const ordered = Object.keys(counts).sort((a, b) => {
-    if (a === "Future Analyses") return -1;
-    if (b === "Future Analyses") return 1;
-    return a.localeCompare(b);
-  });
-
-  // If the currently-active category doesn't exist in the data (e.g. data
-  // changed and "Future Analyses" was renamed), fall back to the first one.
-  if (!counts[activeCategory] && ordered.length > 0) {
-    activeCategory = ordered[0];
-  }
-
-  const chips = ordered.map((c) => `
-    <button class="chip ${activeCategory === c ? "chip-active" : ""}" data-cat="${escapeHtml(c)}">
-      ${escapeHtml(c)} <span class="chip-count">${counts[c]}</span>
-    </button>
-  `);
-
-  // Search input lives in the same chip row, right-aligned.
-  const searchHtml = `
-    <div class="filter-search">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M21 21l-5-5"/></svg>
-      <input type="text" id="analysis-search" placeholder="Search university..." value="${escapeHtml(analysisSearchQuery)}" autocomplete="off">
-    </div>
-  `;
-
-  container.innerHTML =
-    `<span class="filter-label">Section:</span>${chips.join("")}${searchHtml}`;
-
-  container.querySelectorAll(".chip").forEach((btn) => {
-    btn.addEventListener("click", () => {
-      activeCategory = btn.dataset.cat;
-      renderAnalysisFilter();
-      renderAnalysis();
-    });
-  });
-
-  const input = document.getElementById("analysis-search");
-  input.addEventListener("input", (e) => {
-    analysisSearchQuery = e.target.value;
-    renderAnalysis();
-  });
-  // Keep focus + cursor position across re-renders so typing isn't disrupted
-  if (document.activeElement === document.body && analysisSearchQuery) {
-    input.focus();
-    input.setSelectionRange(input.value.length, input.value.length);
-  }
-}
-
-function fmtDateShort(s) {
-  if (!s) return "-";
-  const d = new Date(s);
-  if (isNaN(d.getTime())) return String(s);
-  return d.toLocaleDateString("en-US", { year: "numeric", month: "short", day: "numeric" });
-}
-
-function renderAnalysis() {
-  const tbody = document.querySelector("#analysis tbody");
-  if (!tbody) return;
-  const all = DATA.tables.market_analysis_schedule || [];
-  const inSection = all.filter((r) => (r.category || "") === activeCategory).length;
-  document.getElementById("analysis-count").textContent =
-    `Schedule · ${activeCategory} (${inSection} row${inSection === 1 ? "" : "s"})`;
-
-  document.querySelectorAll("#analysis thead th").forEach((th) => {
-    th.classList.remove("sorted-asc", "sorted-desc");
-    if (th.dataset.sort === analysisSortState.col) {
-      th.classList.add(analysisSortState.dir === "asc" ? "sorted-asc" : "sorted-desc");
-    }
-  });
-
-  const rows = analysisRows();
-  if (rows.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="11" class="empty-state">No rows match the filter.</td></tr>`;
-    return;
-  }
-
-  const { col, dir } = analysisSortState;
-  const sign = dir === "asc" ? 1 : -1;
-  rows.sort((a, b) => {
-    const av = a[col] ?? "", bv = b[col] ?? "";
-    if (av === "" && bv === "") return 0;
-    if (av === "") return 1;
-    if (bv === "") return -1;
-    return String(av).localeCompare(String(bv), undefined, { numeric: true }) * sign;
-  });
-
-  tbody.innerHTML = rows.map((r) => `
-    <tr>
-      <td class="analysis-section">${escapeHtml(r.category || "-")}</td>
-      <td>${escapeHtml(r.market_type || "-")}</td>
-      <td class="market-cell">${escapeHtml(r.market_name || "-")}</td>
-      <td class="num">${escapeHtml(r.analyst || "-")}</td>
-      <td>${escapeHtml(fmtDateShort(r.initial_analysis_date))}</td>
-      <td>${escapeHtml(r.initial_decision || "-")}</td>
-      <td>${escapeHtml(fmtDateShort(r.ic_date))}</td>
-      <td>${escapeHtml(r.ic_decision || "-")}</td>
-      <td>${escapeHtml(r.status || "-")}</td>
-      <td class="num">${escapeHtml(String(r.est_sites ?? "-"))}</td>
-      <td class="notes-cell" title="${escapeHtml(r.notes || "")}">${escapeHtml(r.notes || "-")}</td>
-    </tr>
-  `).join("");
-}
-
-function bindAnalysisSort() {
-  document.querySelectorAll("#analysis thead th").forEach((th) => {
-    th.addEventListener("click", () => {
-      const c = th.dataset.sort;
-      if (analysisSortState.col === c) {
-        analysisSortState.dir = analysisSortState.dir === "asc" ? "desc" : "asc";
-      } else {
-        analysisSortState.col = c;
-        analysisSortState.dir = "asc";
-      }
-      renderAnalysis();
-    });
-  });
-}
-
 /* ----- Master render ----------------------------------------- */
 
 function renderAll() {
@@ -1655,8 +1505,6 @@ function renderAll() {
   renderSupply(rows);
   renderDemand(rows);
   renderPricing(rows);
-  renderAnalysisFilter();
-  renderAnalysis();
 }
 
 /* ----- Forward Model iframe re-skin --------------------------- */

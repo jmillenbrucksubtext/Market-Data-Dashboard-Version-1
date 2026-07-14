@@ -35,10 +35,6 @@
           <svg class="icon" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
           Forward Model
         </a>
-        <a class="nav-item" data-view="analysis" href="#analysis">
-          <svg class="icon" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2"/><path d="M8 10h8M8 14h8M8 18h5"/></svg>
-          Analysis
-        </a>
         <a class="nav-item" data-view="sources" href="#sources">
           <svg class="icon" viewBox="0 0 24 24"><path d="M12 2v20"/><path d="M2 12h20"/><circle cx="12" cy="12" r="10"/></svg>
           Sources
@@ -270,58 +266,6 @@
           <p>
             Internal team reference · static export refreshed weekly · source:
             <code>StudentResearch</code> on Azure SQL · not for external distribution.
-          </p>
-        </footer>
-      </section>
-
-      <!-- ============================================================
-           View: Analysis (Market Analysis Schedule from Excel)
-           ============================================================ -->
-      <section id="analysis-view" class="view">
-        <div class="page-header">
-          <h1>Market Analysis</h1>
-          <p>
-            Pipeline tracker mirrored from
-            <code>General/Markets/Support/Market Analysis Schedule.xlsx</code> on OneDrive.
-            Refreshes on every data pull.
-          </p>
-        </div>
-
-        <section class="card">
-          <header class="card-header">
-            <div>
-              <h2 id="analysis-count">Schedule</h2>
-              <p>Click any column to sort. Use the chips below to filter by section.</p>
-            </div>
-          </header>
-          <div class="filter-chips" id="analysis-filter"></div>
-          <div class="table-wrap">
-            <table id="analysis">
-              <thead>
-                <tr>
-                  <th data-sort="category">Section</th>
-                  <th data-sort="market_type">Market Type</th>
-                  <th data-sort="market_name">Market</th>
-                  <th data-sort="analyst">Analyst</th>
-                  <th data-sort="initial_analysis_date">Initial Analysis</th>
-                  <th data-sort="initial_decision">Initial Decision</th>
-                  <th data-sort="ic_date">IC Date</th>
-                  <th data-sort="ic_decision">IC Decision</th>
-                  <th data-sort="status">Status</th>
-                  <th data-sort="est_sites">Est. Sites</th>
-                  <th data-sort="notes">Notes</th>
-                </tr>
-              </thead>
-              <tbody></tbody>
-            </table>
-          </div>
-        </section>
-
-        <footer class="page-footer">
-          <p>
-            Source: <code>Market Analysis Schedule.xlsx</code> · sheet
-            <code>Market Analysis Schedule</code> · refreshed automatically each
-            time <code>export-data.py</code> runs.
           </p>
         </footer>
       </section>
@@ -621,13 +565,13 @@
 
       <!-- ============================================================
            View: More Subtext Tools
-           One page collecting every tool advertised in the sidebar.
+           One page collecting every companion Subtext tool.
            ============================================================ -->
       <section id="tools-view" class="view">
         <div class="page-header">
           <h1>More Subtext Tools</h1>
           <p>
-            Everything from the sidebar advertisements, collected in one place.
+            Companion Subtext tools, collected in one place.
             Each tool opens in a new tab.
           </p>
         </div>
@@ -689,8 +633,5 @@
   <script src="dashboard.js?v=25"></script>
   <script src="chart-download.js?v=7"></script>
   <script src="chart-info.js?v=1"></script>
-  <!-- Sidebar easter-egg ads: LOI-O-MATIC and the Memo Chef -->
-  <script src="loi-o-matic.js?v=7" defer></script>
-  <script src="memo-chef.js?v=3" defer></script>
 </body>
 </html>

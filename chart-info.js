@@ -10,7 +10,12 @@
    chart-download.js: charts are found via figure.perf-chart, detail tables via
    .comp-table-card, everything else via a known element id -> nearest card
    header. A debounced MutationObserver re-attaches after tabs lazy-render or a
-   dynamic title is rewritten. */
+   dynamic title is rewritten.
+
+   Popover layout: title, formula, then "Data & SQL source" as per-table blocks
+   (SQL table title first, its queried columns beneath, then the free-text
+   source note). `sig` entries stay in the registry to mirror dictionary.html
+   but are not rendered. */
 (function () {
   "use strict";
 
@@ -442,6 +447,37 @@
     return html + "</div>";
   }
 
+  /* The main "Data & SQL source" section, restructured for readability:
+     per source table a block of [table title] then [queried column(s)],
+     with the free-text source/derivation note beneath the blocks. */
+  function sourceBlocks(text) {
+    var srcs = parseSources(text);
+    if (!srcs.length) return "";
+    var tables = [], byName = {};
+    srcs.forEach(function (s) {
+      if (!(s.table in byName)) {
+        byName[s.table] = { table: s.table, cols: [] };
+        tables.push(byName[s.table]);
+      }
+      if (s.col && byName[s.table].cols.indexOf(s.col) === -1) {
+        byName[s.table].cols.push(s.col);
+      }
+    });
+    var html = '<div class="chart-info-src-blocks">';
+    tables.forEach(function (t) {
+      html += '<div class="chart-info-src-block">' +
+        '<div class="chart-info-src-table">' + DB_ICON +
+        "<span>" + esc(t.table) + "</span></div>";
+      if (t.cols.length) {
+        html += '<div class="chart-info-src-cols">' +
+          t.cols.map(function (c) { return "<code>" + esc(c) + "</code>"; }).join("") +
+          "</div>";
+      }
+      html += "</div>";
+    });
+    return html + "</div>";
+  }
+
   function buildPopInner(entry) {
     var html = '<div class="chart-info-head">' + esc(entry.title || "About this metric") + "</div>";
     if (entry.formula) {
@@ -450,12 +486,8 @@
     }
     if (entry.sql) {
       html += '<div class="chart-info-sec"><div class="chart-info-k">Data &amp; SQL source</div>' +
-        '<div class="chart-info-v">' + fmt(entry.sql) + "</div>" +
-        sourceChips(entry.sql) + "</div>";
-    }
-    if (entry.sig) {
-      html += '<div class="chart-info-sec"><div class="chart-info-k">Significance</div>' +
-        '<div class="chart-info-v">' + fmt(entry.sig) + "</div></div>";
+        sourceBlocks(entry.sql) +
+        '<div class="chart-info-v chart-info-src-note">' + fmt(entry.sql) + "</div></div>";
     }
     if (entry.rows && entry.rows.length) {
       html += '<div class="chart-info-sec"><div class="chart-info-k">Columns</div>' +
@@ -519,7 +551,7 @@
     var btn = document.createElement("button");
     btn.type = "button";
     btn.className = "chart-info-btn";
-    btn.title = "Formula, data source, and significance";
+    btn.title = "Formula and data source";
     btn.setAttribute("aria-label", "About: " + (entry.title || "this metric"));
     btn.innerHTML = ICON;
     btn.addEventListener("click", function (e) {

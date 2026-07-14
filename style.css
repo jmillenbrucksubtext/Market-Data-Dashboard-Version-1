@@ -1501,6 +1501,50 @@ h1, h2, h3, .serif {
 .chart-info-src .src-table { font-weight: 700; }
 .chart-info-src .src-dot { color: var(--slate-50); }
 
+/* "Data & SQL source" section: per-table block - table title first, its
+   queried columns beneath, then the free-text source note under the blocks */
+.chart-info-src-blocks {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  margin: 2px 0 7px;
+}
+.chart-info-src-table {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--slate);
+  overflow-wrap: anywhere;
+}
+.chart-info-src-table svg { flex: 0 0 auto; color: var(--slate-50); }
+.chart-info-src-cols {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin: 3px 0 0 15px;
+}
+.chart-info-src-cols code {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 10.5px;
+  background: var(--beige);
+  border: 1px solid var(--beige-deep);
+  border-radius: 3px;
+  padding: 1px 5px;
+  overflow-wrap: anywhere;
+}
+.chart-info-src-note {
+  font-size: 11.5px;
+  color: var(--slate-50);
+}
+.chart-info-src-blocks + .chart-info-src-note {
+  border-top: 1px dashed var(--beige-deep);
+  padding-top: 6px;
+}
+.chart-info-src-note code { font-size: 10.5px; }
+
 /* Data-source brand badges in the Database Sources table (SQL Source col) */
 .src-brand {
   display: inline-flex;

@@ -306,28 +306,6 @@
       },
       label: function (r) { return r.short_name || r.university_name; }
     },
-    enrollmentHistory: {
-      table: "enrollment_history", match: ["ipeds_id", "year_"],
-      title: "Enrollment history (IPEDS, per year)",
-      hint: "Feeds the three enrollment-history charts and the university KPI YoY figures.",
-      cols: [
-        { field: "total_enrollment", label: "Total", type: "int" },
-        { field: "full_time_enrollment", label: "Full-Time", type: "int" },
-        { field: "undergrad_enrollment", label: "Undergrad", type: "int" },
-        { field: "graduate_enrollment", label: "Graduate", type: "int" },
-        { field: "freshman_enrollment", label: "Freshman", type: "int" }
-      ],
-      rows: function (d) {
-        return d.tables.enrollment_history
-          .filter(function (h) { return h.market_key === marketKey; })
-          .slice()
-          .sort(function (a, b) {
-            var na = String(a.university_name), nb = String(b.university_name);
-            return na === nb ? a.year_ - b.year_ : na.localeCompare(nb);
-          });
-      },
-      label: function (r) { return r.university_name + " - " + r.year_; }
-    },
     admissionsHistory: {
       table: "admissions_history", match: ["ipeds_id", "year_"],
       title: "Admissions history (IPEDS ADM)",

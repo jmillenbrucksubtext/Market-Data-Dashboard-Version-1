@@ -1977,7 +1977,7 @@ async function buildMap({ containerId, propertyFilter, markerStore }) {
         </div>
         <div class="map-popup-body">
           <div class="map-popup-row">
-            <span class="map-popup-row-label">IPEDS enrollment</span>
+            <span class="map-popup-row-label">Enrollment</span>
             <span class="map-popup-row-value">${fmtInt(c.total_enrollment)}<span class="map-popup-row-sub">${c.enrollment_year ? ` · ${c.enrollment_year}` : ""}</span></span>
           </div>
         </div>
@@ -2820,173 +2820,6 @@ function drawCompLine(canvasId, compSeries, marketSeries, { yFmt, isPct = false 
   });
 }
 
-/* ----- Enrollment History (Market tab) ----------------------- */
-// Three multi-year line charts (FTE / Freshman / Total) for the
-// anchor university, plus YoY / 2-Yr / 3-Yr growth tiles above each
-// chart - Excel-style summary. Sourced from `enrollment_history`,
-// pulled by load_enrollment_history.py.
-
-let enrCharts = {};
-
-function renderEnrollment() {
-  // Find the anchor university's IPEDS id via campus_locations.
-  const anchorCampus = (CAMPUSES || []).find(
-    (c) => c.university_name === MARKET.anchor_university,
-  ) || CAMPUSES[0];
-  const ipeds = anchorCampus?.ipeds_id;
-  const sub = document.getElementById("enr-section-sub");
-  if (sub) {
-    sub.textContent = anchorCampus
-      ? `${anchorCampus.university_name} - Full-time, Freshman, and Total enrollment year-over-year. (Applications source not yet wired.)`
-      : "Anchor university not found in campus_locations.";
-  }
-
-  const series = ((DATA.tables.enrollment_history) || [])
-    .filter((r) => r.ipeds_id === ipeds)
-    .filter((r) => r.year_ != null)
-    .sort((a, b) => Number(a.year_) - Number(b.year_));
-
-  drawEnrollmentChart({
-    canvasId: "enr-chart-fte",
-    statsId: "enr-stats-fte",
-    subId: "enr-fte-sub",
-    series,
-    valueKey: "full_time_enrollment",
-    color: "#a95818",  // rust
-    label: "FTE",
-  });
-  drawEnrollmentChart({
-    canvasId: "enr-chart-freshman",
-    statsId: "enr-stats-freshman",
-    subId: "enr-freshman-sub",
-    series,
-    valueKey: "freshman_enrollment",
-    color: "#16352e",  // everest
-    label: "Freshman",
-  });
-  drawEnrollmentChart({
-    canvasId: "enr-chart-total",
-    statsId: "enr-stats-total",
-    subId: "enr-total-sub",
-    series,
-    valueKey: "total_enrollment",
-    color: "#2b2825",  // slate
-    label: "Total",
-  });
-}
-
-function _enrGrowth(curr, prev) {
-  if (curr == null || prev == null || prev === 0) return null;
-  return (curr - prev) / prev;
-}
-function _enrFmtPct(v) {
-  if (v == null) return "-";
-  return (v >= 0 ? "+" : "") + (v * 100).toFixed(1) + "%";
-}
-
-function drawEnrollmentChart({ canvasId, statsId, subId, series, valueKey, color, label }) {
-  const canvas = document.getElementById(canvasId);
-  const statsEl = document.getElementById(statsId);
-  const subEl = document.getElementById(subId);
-  if (!canvas || typeof Chart === "undefined") return;
-
-  // Keep only rows with the metric populated. Limit to last 8 years so the
-  // x-axis stays legible.
-  const data = series
-    .filter((r) => r[valueKey] != null && r[valueKey] > 0)
-    .slice(-8);
-
-  if (data.length === 0) {
-    if (statsEl) statsEl.innerHTML = `<div class="enr-empty">No ${label.toLowerCase()} history for this university.</div>`;
-    if (subEl) subEl.textContent = "";
-    if (enrCharts[canvasId]) { enrCharts[canvasId].destroy(); enrCharts[canvasId] = null; }
-    return;
-  }
-
-  const years = data.map((r) => Number(r.year_));
-  const values = data.map((r) => Number(r[valueKey]));
-  const latest = values[values.length - 1];
-  const yoy   = values.length >= 2 ? _enrGrowth(latest, values[values.length - 2]) : null;
-  const twoYr = values.length >= 3 ? _enrGrowth(latest, values[values.length - 3]) : null;
-  const threeYr = values.length >= 4 ? _enrGrowth(latest, values[values.length - 4]) : null;
-
-  if (subEl) {
-    subEl.textContent = `Latest: ${latest.toLocaleString()} · ${years[years.length - 1]}`;
-  }
-
-  if (statsEl) {
-    statsEl.innerHTML = `
-      <div class="enr-stat">
-        <span class="enr-stat-label">YoY Growth</span>
-        <span class="enr-stat-value ${yoy != null && yoy >= 0 ? "growth-up" : yoy != null ? "growth-down" : ""}">${_enrFmtPct(yoy)}</span>
-      </div>
-      <div class="enr-stat">
-        <span class="enr-stat-label">2-Yr Growth</span>
-        <span class="enr-stat-value ${twoYr != null && twoYr >= 0 ? "growth-up" : twoYr != null ? "growth-down" : ""}">${_enrFmtPct(twoYr)}</span>
-      </div>
-      <div class="enr-stat">
-        <span class="enr-stat-label">3-Yr Growth</span>
-        <span class="enr-stat-value ${threeYr != null && threeYr >= 0 ? "growth-up" : threeYr != null ? "growth-down" : ""}">${_enrFmtPct(threeYr)}</span>
-      </div>`;
-  }
-
-  if (enrCharts[canvasId]) enrCharts[canvasId].destroy();
-  enrCharts[canvasId] = new Chart(canvas.getContext("2d"), {
-    type: "line",
-    data: {
-      labels: years,
-      datasets: [{
-        data: values,
-        borderColor: color,
-        backgroundColor: color,
-        borderWidth: 2.5,
-        pointRadius: 4,
-        pointHoverRadius: 6,
-        tension: 0.2,
-        fill: false,
-      }],
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      layout: { padding: { top: 22, right: 12, left: 4, bottom: 4 } },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: (ctx) => `${label}: ${Number(ctx.parsed.y).toLocaleString()}`,
-          },
-        },
-        datalabels: {
-          align: "top",
-          anchor: "end",
-          offset: 4,
-          color: "#2b2825",
-          font: { family: "Mencken Std, Georgia, serif", weight: 700, size: 11 },
-          formatter: (v) => v == null ? "" : Number(v).toLocaleString(),
-          clip: false,
-        },
-      },
-      scales: {
-        x: {
-          ticks: { color: "#5a544f", font: { size: 11 } },
-          grid: { display: false },
-        },
-        y: {
-          beginAtZero: false,
-          ticks: {
-            color: "#5a544f",
-            font: { size: 11 },
-            callback: (v) => Number(v).toLocaleString(),
-          },
-          grid: { color: "rgba(0,0,0,0.05)" },
-        },
-      },
-    },
-    plugins: window.ChartDataLabels ? [window.ChartDataLabels] : [],
-  });
-}
-
 /* ----- Comp-set per-year detail tables ----------------------- */
 // Four Excel-style tables driven by property_history, scoped to the
 // selected comps: Rates, Rent Growth (YoY), Pre-lease, Occupancy. Footer
@@ -3286,11 +3119,10 @@ function renderPctTable(id, selected, propsByKey, lookup, years, field) {
 
 /* ===== University Information tab ============================ */
 /* Institutional stats from `university_info` (dbo.Schools_Denormal,
-   latest CDS/IPEDS year per school) with enrollment headlines from
-   `enrollment_history` (dbo.Enrollments_Manual - the current-year
-   authority). Campus POI map pulls live from OpenStreetMap's Overpass
-   API and caches per school in localStorage. Everything is lazy: built
-   on first visit to the tab. */
+   latest CDS/IPEDS year per school). dbo.Enrollments_Manual is flagged
+   do-not-use and is no longer referenced anywhere. Campus POI map pulls
+   live from OpenStreetMap's Overpass API and caches per school in
+   localStorage. Everything is lazy: built on first visit to the tab. */
 
 /* Map rendering lives in uni-map.js (comp-map-style canvas with
    draggable call-outs and shaded districts). market.js owns the data
@@ -3329,7 +3161,7 @@ function uniSchools() {
         ipeds_id: c.ipeds_id,
         lat: c.campus_lat,
         lng: c.campus_lng,
-        enrollment: c.total_enrollment,
+        enrollment: (infoByKey.get(c.school_key) || {}).enrollment_total || null,
         info: infoByKey.get(c.school_key) || null,
       });
     }
@@ -3343,11 +3175,6 @@ function uniSchools() {
 }
 
 function renderUniversityTab() {
-  // Enrollment history lives on this tab now; (re)draw each time it is shown
-  // so the charts size to the (previously hidden) container. renderEnrollment
-  // destroys and recreates its charts, so calling it repeatedly is safe.
-  renderEnrollment();
-
   if (uniState.initialized) return;
   uniState.initialized = true;
 
@@ -3591,47 +3418,29 @@ function renderResidencyPie(inPct, outPct) {
   });
 }
 
-/* Latest + prior year from enrollment_history for one school. */
-function uniEnrollmentLatest(ipeds) {
-  const series = (DATA.tables.enrollment_history || [])
-    .filter((r) => r.ipeds_id === ipeds)
-    .sort((a, b) => a.year_ - b.year_);
-  return {
-    latest: series[series.length - 1] || null,
-    prior: series[series.length - 2] || null,
-  };
-}
-
 /* Money / income fields use 0 to mean "not reported". */
 function nzMoney(v) {
   return v == null || v === 0 || isNaN(v) ? null : v;
 }
 
-function uniYoy(cur, prev) {
-  if (cur == null || prev == null || !prev) return null;
-  return cur / prev - 1;
-}
-
 function renderUniKpis(school) {
   const info = school.info || {};
-  const { latest, prior } = uniEnrollmentLatest(school.ipeds_id);
 
-  const totalYoy = uniYoy(latest?.total_enrollment, prior?.total_enrollment);
-  const ftYoy = uniYoy(latest?.full_time_enrollment, prior?.full_time_enrollment);
   const bedsReported = info.beds_on_campus_reported || null;
   const bedsComputed = info.beds_on_campus_computed || null;
   const beds = bedsReported || bedsComputed;
+  const ftTotal = (info.enr_ft_undergrad || 0) + (info.enr_ft_grad || 0);
 
   const kpis = [
     {
       label: "Total Enrollment",
-      value: fmtInt(latest?.total_enrollment),
-      sub: latest ? `${latest.year_}${totalYoy != null ? ` · ${deltaSpan(totalYoy)} YoY` : ""}` : "-",
+      value: fmtInt(info.enrollment_total),
+      sub: info.enrollment_year ? `${info.enrollment_year} reported year` : "-",
     },
     {
       label: "Full-Time Enrollment",
-      value: fmtInt(latest?.full_time_enrollment),
-      sub: latest ? `${latest.year_}${ftYoy != null ? ` · ${deltaSpan(ftYoy)} YoY` : ""}` : "-",
+      value: fmtInt(ftTotal || null),
+      sub: ftTotal ? "undergrad + graduate" : "-",
     },
     {
       label: "On-Campus Beds",
@@ -3679,20 +3488,8 @@ function renderUniStats(school) {
     `${school.university_name} · ${info.is_public ? "Public" : "Private"} · ` +
     `latest reported year ${info.enrollment_year} · source dbo.Schools_Denormal`;
 
-  const { latest, prior } = uniEnrollmentLatest(school.ipeds_id);
-  const trend = (DATA.tables.enrollment_trend || []).find((r) => r.ipeds_id === school.ipeds_id);
-
-  /* Enrollment - headline numbers from Enrollments_Manual when we have
-     them (current-year authority); Schools_Denormal as fallback. */
-  const enrRows = latest ? [
-    uniStatRow("Total enrollment", `${fmtInt(latest.total_enrollment)} <span class="uni-stat-note">${latest.year_}</span>`),
-    uniStatRow("Full-time enrollment", fmtInt(latest.full_time_enrollment)),
-    uniStatRow("Undergraduate", fmtInt(latest.undergrad_enrollment)),
-    uniStatRow("Graduate", fmtInt(latest.graduate_enrollment)),
-    uniStatRow("Freshman class", fmtInt(latest.freshman_enrollment)),
-    uniStatRow("YoY change (total)", deltaSpan(uniYoy(latest.total_enrollment, prior?.total_enrollment))),
-    uniStatRow("5-yr CAGR (total)", deltaSpan(trend?.cagr_5yr)),
-  ] : [
+  /* Enrollment - headline numbers from Schools_Denormal. */
+  const enrRows = [
     uniStatRow("Total enrollment", `${fmtInt(info.enrollment_total)} <span class="uni-stat-note">${info.enrollment_year}</span>`),
     uniStatRow("Full-time undergrad", fmtInt(info.enr_ft_undergrad)),
     uniStatRow("Part-time undergrad", fmtInt(info.enr_pt_undergrad)),
@@ -3761,7 +3558,7 @@ function renderUniStats(school) {
   ];
 
   const groups = [
-    ["Enrollment", enrRows, latest ? "Enrollments_Manual" : "Schools_Denormal"],
+    ["Enrollment", enrRows, "Schools_Denormal"],
     ["On-Campus Housing", housingRows, null],
     ["Admissions", admissionsRows, null],
     ["Cost of Attendance", costRows, null],

@@ -227,17 +227,13 @@ document.addEventListener("DOMContentLoaded", async () => {
   const s30Mean = {}, p4Mean = {};
   ["avg_rent_per_bed", "occupancy", "prelease"].forEach((f) => { s30Mean[f] = yearMean(s30Keys, f); p4Mean[f] = yearMean(p4Keys, f); });
 
-  // Anchor enrollment (largest school)
-  const ehAll = (T.enrollment_history || []).filter((r) => r.market_key === marketKey);
-  const byIpeds = {}; ehAll.forEach((r) => (byIpeds[r.ipeds_id] = byIpeds[r.ipeds_id] || []).push(r));
-  let anchorRows = [], best = -1;
-  Object.values(byIpeds).forEach((rows) => { const latest = rows.reduce((a, b) => (a.year_ > b.year_ ? a : b)); if ((latest.total_enrollment || 0) > best) { best = latest.total_enrollment || 0; anchorRows = rows; } });
-  anchorRows.sort((a, b) => a.year_ - b.year_);
-  const anchorIpeds = anchorRows.length ? anchorRows[0].ipeds_id : null;
-  const anchorName = anchorRows.length ? anchorRows[0].university_name : M.anchor_university;
-  const adm = (T.admissions_history || []).filter((r) => r.ipeds_id === anchorIpeds).sort((a, b) => a.year_ - b.year_);
+  // Anchor university (largest school by Schools_Denormal enrollment)
   const uiRows = (T.university_info || []).filter((r) => r.market_key === marketKey);
-  const uinfo = uiRows.find((r) => r.university_name === anchorName) || uiRows.slice().sort((a, b) => (b.enrollment_total || 0) - (a.enrollment_total || 0))[0] || null;
+  const uinfo = uiRows.find((r) => r.university_name === M.anchor_university)
+    || uiRows.slice().sort((a, b) => (b.enrollment_total || 0) - (a.enrollment_total || 0))[0] || null;
+  const anchorName = uinfo ? uinfo.university_name : M.anchor_university;
+  const anchorIpeds = ((T.campus_locations || []).find((c) => c.market_key === marketKey && c.university_name === anchorName) || {}).ipeds_id ?? null;
+  const adm = (T.admissions_history || []).filter((r) => r.ipeds_id === anchorIpeds).sort((a, b) => a.year_ - b.year_);
 
   // Comp unit mix by exact unit type
   const umByProp = {}; (T.unit_mix || []).forEach((r) => { umByProp[r.property_key] = r; });
@@ -251,8 +247,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   const topPct = M.fwd_rank != null && rankN ? Math.max(1, Math.round((M.fwd_rank / rankN) * 100)) : null;
   const last = history[history.length - 1], prev = history[history.length - 2];
   const rentYoy = last && prev && prev.avg_rent_per_bed > 0 ? last.avg_rent_per_bed / prev.avg_rent_per_bed - 1 : null;
-  const eF = anchorRows[0], eL = anchorRows[anchorRows.length - 1];
-  const enrCagr = eF && eL && eF.total_enrollment > 0 && eL.year_ > eF.year_ ? Math.pow(eL.total_enrollment / eF.total_enrollment, 1 / (eL.year_ - eF.year_)) - 1 : null;
   const pipePct = M.existing_beds > 0 ? M.beds_pipeline_total / M.existing_beds : null;
   const asOf = M.data_as_of ? new Date(M.data_as_of) : new Date();
   const asOfText = asOf.toLocaleDateString("en-US", { year: "numeric", month: "long", day: "numeric" });
@@ -352,7 +346,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     { l: "Penetration", v: fmtPct1(M.penetration_ratio), s: "beds ÷ enrollment", c: C.blue },
     { l: "Supply Pressure", v: pipePct != null ? fmtPct1(pipePct) : "-", s: "pipeline ÷ existing", c: C.birch },
     { l: "Rent Growth (YoY)", v: fmtSigned(rentYoy), s: "avg rent / bed", c: C.birch },
-    { l: "Enrollment CAGR", v: fmtSigned(enrCagr), s: anchorRows.length ? `${eF.year_}-${eL.year_}` : "", c: C.blue },
+    { l: "FTE Enrollment", v: fmtInt(M.enr_full_time), s: "latest snapshot", c: C.blue },
     { l: "Occupancy", v: fmtPct1(M.occupancy), s: "bed-weighted", c: C.everest },
     { l: "Pre-lease", v: fmtPct1(M.prelease), s: "latest cycle", c: C.everest },
   ];
@@ -537,8 +531,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   <div class="sheet">
     ${runHead}
     ${mainHead("02", "University Information", esc(anchorName))}
-    <div class="sub">Enrollment History - Total, Full-Time &amp; Freshman</div>
-    <div class="chart-card"><div class="chart-box-tall"><canvas id="ch-enr"></canvas></div></div>
     <div class="sub">Applications, Acceptance &amp; Yield</div>
     ${adm.length ? `<div class="chart-card"><div class="chart-box-tall"><canvas id="ch-adm"></canvas></div></div>` : `<div class="chart-card"><div style="padding:24px;text-align:center;color:var(--slate-50)">No admissions history on file for this institution.</div></div>`}
     <div class="sub">Undergraduate Student Profile</div>
@@ -715,32 +707,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
   METRICS.forEach((m) => SCOPES.forEach((sc) => makePerfChart(m, sc)));
-
-  // Enrollment
-  if (anchorRows.length) {
-    const el = document.getElementById("ch-enr");
-    // Compact per-point value labels (e.g. "28.4k"). Total sits above its line;
-    // Full-time below and Freshman above theirs so the close-running series don't collide.
-    const enrLbl = (align) => ({
-      align, anchor: "end", offset: 3, clip: false,
-      color: C.slate, font: { size: 6, weight: 700, family: "Pragmatica, sans-serif" },
-      formatter: (v) => v == null ? "" : (v / 1000).toFixed(1) + "k",
-    });
-    if (el) {
-      const enrOpts = lineOpts((v) => Math.round(v / 1000) + "k", false);
-      enrOpts.layout = { padding: { top: 14, right: 12 } };
-      new Chart(el.getContext("2d"), {
-        type: "line",
-        data: { labels: anchorRows.map((r) => r.year_), datasets: [
-          { label: "Total", data: anchorRows.map((r) => r.total_enrollment), borderColor: C.everest, backgroundColor: C.everest, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true, datalabels: enrLbl("top") },
-          { label: "Full-time", data: anchorRows.map((r) => r.full_time_enrollment), borderColor: C.birch, backgroundColor: C.birch, borderWidth: 2, pointRadius: 2, tension: 0.25, spanGaps: true, datalabels: enrLbl("bottom") },
-          { label: "Freshman", data: anchorRows.map((r) => r.freshman_enrollment), borderColor: C.warn, backgroundColor: C.warn, borderWidth: 1.5, borderDash: [4, 3], pointRadius: 1.5, tension: 0.25, spanGaps: true, datalabels: enrLbl("top") },
-        ] },
-        options: enrOpts,
-        plugins: [ChartDataLabels],
-      });
-    }
-  }
 
   // Admissions combo
   if (adm.length) {

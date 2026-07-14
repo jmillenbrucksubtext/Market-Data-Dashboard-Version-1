@@ -974,77 +974,6 @@ function renderSupply(rows) {
   });
 }
 
-function renderDemand(rows) {
-  const visibleKeys = new Set(rows.map((r) => r.market_key));
-  // enrollment_trend can fan out: a school with duplicate rows in
-  // dbo.Enrollments_Manual (same IPEDS/Year, different totals) or
-  // duplicate rows in IPEDS_CH_Crosswalk produces multiple chart bars
-  // for one (ipeds, market). Dedupe by (ipeds_id, market_key); when
-  // multiple CAGRs collide for one key keep the one tied to the larger
-  // enrollment (proxy for the real "total" row).
-  const seen = new Map();
-  DATA.tables.enrollment_trend.forEach((t) => {
-    if (!visibleKeys.has(t.market_key)) return;
-    if (t.cagr_5yr == null) return;
-    const key = `${t.ipeds_id}|${t.market_key}`;
-    const prev = seen.get(key);
-    if (!prev || (t.current_enrollment || 0) > (prev.current_enrollment || 0)) {
-      seen.set(key, t);
-    }
-  });
-  const trends = [...seen.values()]
-    .sort((a, b) => b.cagr_5yr - a.cagr_5yr)
-    .slice(0, 30);
-
-  const ctx = document.getElementById("demand-chart");
-  if (!ctx) return;  // chart removed from the Industry tab
-  if (charts.demand) charts.demand.destroy();
-  charts.demand = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: trends.map((t) => t.university_name),
-      datasets: [{
-        data: trends.map((t) => t.cagr_5yr * 100),
-        backgroundColor: trends.map((t) => t.cagr_5yr >= 0 ? C.everest : C.birch),
-        borderRadius: 3,
-        barThickness: 12,
-      }],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        datalabels: {
-          anchor: "end", align: "end", offset: 4, clip: false,
-          font: { weight: 700, size: 10, family: CHART_FONT },
-          color: C.slate,
-          formatter: (v) => v == null ? "" : `${v.toFixed(1)}%`,
-        },
-        tooltip: {
-          callbacks: {
-            title: (items) => trends[items[0].dataIndex].university_name,
-            label: (ctx) => {
-              const t = trends[ctx.dataIndex];
-              return [
-                `Current enrollment: ${fmtInt(t.current_enrollment)}`,
-                `YoY: ${fmtPct(t.yoy_change)}`,
-                `5-yr CAGR: ${fmtPct(t.cagr_5yr)}`,
-              ];
-            },
-          },
-        },
-      },
-      layout: { padding: { top: 4, right: 56, left: 4, bottom: 4 } },
-      scales: {
-        x: deckCleanScale({ ticks: { callback: (v) => v.toFixed(0) + "%", font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
-        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
-      },
-    },
-  });
-}
-
 function renderPricing(rows) {
   renderRentLevels(rows);
   renderRentGrowth(rows);
@@ -1433,7 +1362,6 @@ function renderAll() {
   renderKpis(rows);
   renderScorecard();
   renderSupply(rows);
-  renderDemand(rows);
   renderPricing(rows);
 }
 

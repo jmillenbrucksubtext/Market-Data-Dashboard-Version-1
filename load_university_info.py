@@ -10,10 +10,9 @@ Schools_Denormal is school x year; we keep one row per (marketKey,
 schoolKey) - the latest enrollmentYear with enrollment > 0. Zeros in rate /
 income columns mean "not reported" and are treated as missing by the UI.
 
-Enrollment HEADLINE figures on that tab
-come from `enrollment_history` (dbo.Enrollments_Manual is the authority for
-current-year enrollment); the enrollment columns here are kept as context /
-fallback only.
+Enrollment figures on that tab come from
+these Schools_Denormal columns (dbo.Enrollments_Manual was flagged
+do-not-use on 2026-07-14 and is no longer read anywhere).
 
 Auth modes match the other patchers: --auth aad | sql | env.
 """

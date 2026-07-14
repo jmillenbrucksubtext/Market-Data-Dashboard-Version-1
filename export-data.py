@@ -145,66 +145,20 @@ QUERIES: dict[str, str] = {
                AND mr.snapshot_date = latest.max_snap
     """,
     # enrollment_total: only schools mapped to a market we're tracking. Drops
-    # the ~3,200 schools with no marketKey. Enrollment value/year sourced
-    # from the latest Enrollments_Manual row per school (much fresher than
-    # the snapshot in Schools_Denormal, which was sometimes ~2014).
+    # the ~3,200 schools with no marketKey. Enrollment value/year from
+    # Schools_Denormal (Enrollments_Manual flagged do-not-use 2026-07-14).
     "enrollment_total": """
         SELECT
             sd.schoolKey                                                 AS university_key,
             sd.name                                                      AS university_name,
             sd.marketKey                                                 AS market_key,
-            COALESCE(em.Total_Enrollment, sd.enrollmentTotal)            AS total_enrollment,
+            sd.enrollmentTotal                                           AS total_enrollment,
             sd.enrollmentFullTimeUndergraduate
               + sd.enrollmentPartTimeUndergraduate                       AS total_undergrad,
-            COALESCE(em.Year,             sd.enrollmentYear)             AS academic_year
+            sd.enrollmentYear                                            AS academic_year
         FROM dbo.Schools_Denormal sd
         JOIN dbo.Markets m ON m.[Key] = sd.marketKey
-        LEFT JOIN dbo.IPEDS_CH_Crosswalk cx
-               ON cx.[Key]     = sd.schoolKey
-              AND cx.marketKey = sd.marketKey
-        OUTER APPLY (
-            SELECT TOP 1 Total_Enrollment, Year
-            FROM dbo.Enrollments_Manual
-            WHERE IPEDS_ID = cx.IPEDs
-              AND Total_Enrollment > 0
-            ORDER BY Year DESC
-        ) em
-        WHERE COALESCE(em.Total_Enrollment, sd.enrollmentTotal) > 0
-    """,
-    # Full multi-year enrollment history per university (Total / FTE /
-    # Freshman / etc.) - drives the Enrollment History charts on the
-    # Market tab. Mirrors load_enrollment_history.py. Same dedupe pattern
-    # as enrollment_trend: collapse Enrollments_Manual to one row per
-    # (IPEDS, Year) and dedupe the crosswalk join.
-    "enrollment_history": """
-        WITH e AS (
-            SELECT IPEDS_ID,
-                   MIN(University)                AS university_name,
-                   Year,
-                   MAX(Total_Enrollment)          AS total_enrollment,
-                   MAX(Full_Time_Enrollment)      AS full_time_enrollment,
-                   MAX(Undergrad_Enrollment)      AS undergrad_enrollment,
-                   MAX(Graduate_Enrollment)       AS graduate_enrollment,
-                   MAX(Freshman_Enrollment)       AS freshman_enrollment
-            FROM dbo.Enrollments_Manual
-            WHERE Total_Enrollment > 0
-            GROUP BY IPEDS_ID, Year
-        ),
-        cx AS (SELECT DISTINCT IPEDs, marketKey FROM dbo.IPEDS_CH_Crosswalk)
-        SELECT
-            e.IPEDS_ID                AS ipeds_id,
-            e.university_name,
-            cx.marketKey              AS market_key,
-            e.Year                    AS year_,
-            e.total_enrollment,
-            e.full_time_enrollment,
-            e.undergrad_enrollment,
-            e.graduate_enrollment,
-            e.freshman_enrollment
-        FROM e
-        LEFT JOIN cx ON cx.IPEDs = e.IPEDS_ID
-        WHERE e.Year >= 2015
-        ORDER BY e.IPEDS_ID, e.Year
+        WHERE sd.enrollmentTotal > 0
     """,
     # university_info: per-school institutional stats from Schools_Denormal -
     # on-campus beds, tuition, admissions funnel, housing rates, student
@@ -274,52 +228,6 @@ QUERIES: dict[str, str] = {
         WHERE sd.rn = 1
         ORDER BY sd.marketKey, sd.name
     """,
-    "enrollment_trend": """
-        -- Per-university 1yr and 5yr enrollment trends. Dedupes at two
-        -- spots that historically fanned out:
-        --   1. Enrollments_Manual sometimes has multiple rows for the same
-        --      (IPEDS_ID, Year) - different totals. We collapse with MAX so
-        --      one row per (IPEDS, Year).
-        --   2. IPEDS_CH_Crosswalk occasionally has multiple rows for the
-        --      same IPEDS → market mapping. We dedupe via DISTINCT in the
-        --      crosswalk subquery so the LEFT JOIN never doubles output.
-        WITH e AS (
-            SELECT IPEDS_ID,
-                   MIN(University)        AS University,
-                   Year,
-                   MAX(Total_Enrollment)  AS Total_Enrollment
-            FROM dbo.Enrollments_Manual
-            WHERE Total_Enrollment > 0
-            GROUP BY IPEDS_ID, Year
-        ),
-        latest AS (SELECT IPEDS_ID, MAX(Year) AS yr_max FROM e GROUP BY IPEDS_ID),
-        cx_unique AS (
-            SELECT DISTINCT IPEDs, marketKey FROM dbo.IPEDS_CH_Crosswalk
-        )
-        SELECT
-            cur.IPEDS_ID                                AS ipeds_id,
-            cur.University                              AS university_name,
-            cx.marketKey                                AS market_key,
-            cur.Year                                    AS current_year,
-            cur.Total_Enrollment                        AS current_enrollment,
-            prev1.Total_Enrollment                      AS prev_year_enrollment,
-            CASE WHEN prev1.Total_Enrollment > 0
-                 THEN CAST(cur.Total_Enrollment AS DECIMAL(18,6)) / prev1.Total_Enrollment - 1
-                 ELSE NULL END                          AS yoy_change,
-            CASE WHEN prev5.Total_Enrollment > 0
-                 THEN POWER(CAST(cur.Total_Enrollment AS DECIMAL(18,8)) / prev5.Total_Enrollment, 1.0/5.0) - 1
-                 ELSE NULL END                          AS cagr_5yr
-        FROM e cur
-        JOIN latest l            ON l.IPEDS_ID = cur.IPEDS_ID AND l.yr_max = cur.Year
-        LEFT JOIN e prev1        ON prev1.IPEDS_ID = cur.IPEDS_ID AND prev1.Year = cur.Year - 1
-        LEFT JOIN e prev5        ON prev5.IPEDS_ID = cur.IPEDS_ID AND prev5.Year = cur.Year - 5
-        LEFT JOIN cx_unique cx   ON cx.IPEDs = cur.IPEDS_ID
-        LEFT JOIN dbo.Markets m  ON m.[Key]  = cx.marketKey
-    """,
-    # fte_history: per-market full-time enrollment at three points in time -
-    # current snapshot, ~1 year prior, and a 2021-22 academic-year baseline.
-    # Drives the FTE YoY KPI tile and the two FTE qualifiers
-    # ("FTE growth YoY positive", "FTE growth since 2022 above 3%").
     "fte_history": """
         WITH current_snap AS (
             SELECT
@@ -557,9 +465,8 @@ QUERIES: dict[str, str] = {
     """,
     # campus_locations: every school with lat/long that maps to a market we
     # track. The market_detail page uses these to drop campus pins on the map.
-    # Enrollment value/year now comes from the latest Enrollments_Manual row
-    # per school (typically 2023–2024), falling back to Schools_Denormal's
-    # stale snapshot only when no IPEDS history exists.
+    # Enrollment value/year from Schools_Denormal (Enrollments_Manual flagged
+    # do-not-use 2026-07-14).
     "campus_locations": """
         SELECT
             sd.marketKey                                            AS market_key,
@@ -568,20 +475,13 @@ QUERIES: dict[str, str] = {
             sd.name                                                 AS university_name,
             sd.latitude                                             AS campus_lat,
             sd.longitude                                            AS campus_lng,
-            COALESCE(em.Total_Enrollment, sd.enrollmentTotal)       AS total_enrollment,
-            COALESCE(em.Year,             sd.enrollmentYear)        AS enrollment_year
+            sd.enrollmentTotal                                      AS total_enrollment,
+            sd.enrollmentYear                                       AS enrollment_year
         FROM dbo.Schools_Denormal sd
         JOIN dbo.Markets m ON m.[Key] = sd.marketKey
         LEFT JOIN dbo.IPEDS_CH_Crosswalk cx
                ON cx.[Key]     = sd.schoolKey
               AND cx.marketKey = sd.marketKey
-        OUTER APPLY (
-            SELECT TOP 1 Total_Enrollment, Year
-            FROM dbo.Enrollments_Manual
-            WHERE IPEDS_ID = cx.IPEDs
-              AND Total_Enrollment > 0
-            ORDER BY Year DESC
-        ) em
         WHERE sd.latitude  IS NOT NULL
           AND sd.longitude IS NOT NULL
     """,
@@ -590,12 +490,9 @@ QUERIES: dict[str, str] = {
     # is mapped). is_subtext30 = 1 if any university in this market is one of
     # the Subtext 30 focus universities.
     #
-    # total_enrollment / enr_full_time come from the CURRENT academic year in
-    # Enrollments_Manual (summed across the market's mapped universities,
-    # each at its own latest reported year), NOT from MarketReports - the
-    # snapshot columns there carry last year's IPEDS cohort forward (per data
-    # science, 2026-06). MarketReports remains the fallback for markets with
-    # no Enrollments_Manual coverage.
+    # total_enrollment / enr_full_time come straight from MarketReports at the
+    # latest snapshot. (They previously came from Enrollments_Manual, which
+    # was flagged do-not-use on 2026-07-14.)
     "scorecard": """
         WITH latest AS (
             SELECT market_key, MAX(snapshot_date) AS max_snap
@@ -631,41 +528,6 @@ QUERIES: dict[str, str] = {
                   SELECT 1 FROM dbo.IPEDS_CH_Crosswalk cx
                   WHERE cx.IPEDs = s.IPEDS_ID AND cx.marketKey IS NOT NULL
               )
-        ),
-        -- Current-year enrollment per market from Enrollments_Manual: each
-        -- university contributes its latest reported year, per column (total
-        -- and full-time can publish on different cadences).
-        cxu AS (SELECT DISTINCT IPEDs, marketKey FROM dbo.IPEDS_CH_Crosswalk),
-        em_tv AS (
-            SELECT e.IPEDS_ID, MAX(e.Total_Enrollment) AS total_enr
-            FROM dbo.Enrollments_Manual e
-            JOIN (
-                SELECT IPEDS_ID, MAX(Year) AS yr
-                FROM dbo.Enrollments_Manual
-                WHERE Total_Enrollment > 0
-                GROUP BY IPEDS_ID
-            ) ly ON ly.IPEDS_ID = e.IPEDS_ID AND e.Year = ly.yr
-            GROUP BY e.IPEDS_ID
-        ),
-        em_fv AS (
-            SELECT e.IPEDS_ID, MAX(e.Full_Time_Enrollment) AS fte
-            FROM dbo.Enrollments_Manual e
-            JOIN (
-                SELECT IPEDS_ID, MAX(Year) AS yr
-                FROM dbo.Enrollments_Manual
-                WHERE Full_Time_Enrollment > 0
-                GROUP BY IPEDS_ID
-            ) ly ON ly.IPEDS_ID = e.IPEDS_ID AND e.Year = ly.yr
-            GROUP BY e.IPEDS_ID
-        ),
-        em_mkt AS (
-            SELECT cxu.marketKey         AS market_key,
-                   SUM(em_tv.total_enr)  AS em_total,
-                   SUM(em_fv.fte)        AS em_fte
-            FROM cxu
-            LEFT JOIN em_tv ON em_tv.IPEDS_ID = cxu.IPEDs
-            LEFT JOIN em_fv ON em_fv.IPEDS_ID = cxu.IPEDs
-            GROUP BY cxu.marketKey
         )
         SELECT
             m.[Key]                                              AS market_key,
@@ -684,8 +546,8 @@ QUERIES: dict[str, str] = {
             mr.beds_under_construction,
             mr.beds_planned,
             mr.beds_pipeline                                     AS beds_pipeline_total,
-            COALESCE(NULLIF(em.em_total, 0), mr.enr_total)       AS total_enrollment,
-            COALESCE(NULLIF(em.em_fte,   0), mr.enr_full_time)   AS enr_full_time,
+            mr.enr_total                                         AS total_enrollment,
+            mr.enr_full_time                                     AS enr_full_time,
             mr.rate_avg                                          AS avg_rent_per_bed,
             mr.occupancy                                         AS occupancy,
             mr.prelease                                          AS prelease,
@@ -696,7 +558,6 @@ QUERIES: dict[str, str] = {
                                   AND mr.snapshot_date = latest.max_snap
         LEFT JOIN anchor a        ON a.market_key   = m.[Key]
         LEFT JOIN s30             ON s30.market_key = m.[Key]
-        LEFT JOIN em_mkt em       ON em.market_key  = m.[Key]
     """,
     # market_history: one anchor snapshot per (market, year) from 2020+.
     # Each year is anchored to the SAME calendar date as the latest
@@ -1273,7 +1134,7 @@ def _q_fte(market, _props_by_market):
         "fte", "FTE enrollment above 15,000", "> 15,000",
         actual=fte, actual_display=f"{int(fte):,}",
         threshold=15000, margin=1500, direction="above",
-        explanation="current-year FTE from Enrollments_Manual",
+        explanation="current-year FTE from MarketReports at the latest snapshot",
     )
 
 

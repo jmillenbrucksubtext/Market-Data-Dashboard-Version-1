@@ -221,7 +221,7 @@
                 </tr>
                 <tr>
                   <td><code>dbo.Enrollments_Manual</code></td>
-                  <td>Historical enrollment time-series. Drives YoY and 5-yr CAGR.</td>
+                  <td>Historical enrollment time-series. <strong>Do not use</strong> - no longer read by the dashboard; enrollment now comes from MarketReports and Schools_Denormal.</td>
                   <td>1 row per <code>IPEDS_ID</code> × <code>Year</code></td>
                 </tr>
                 <tr>
@@ -873,20 +873,20 @@
                 </tr>
 
                 <!-- dbo.Enrollments_Manual -->
-                <tr class="src-section"><td colspan="5"><code>dbo.Enrollments_Manual</code> - enrollment history</td></tr>
+                <tr class="src-section"><td colspan="5"><code>dbo.Enrollments_Manual</code> - enrollment history - FLAGGED DO NOT USE; no longer referenced by the dashboard</td></tr>
                 <tr>
                   <td><code>Total_Enrollment</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Enrollment YoY</td>
                   <td><code>(current_year / prev_year) − 1</code>, joined on <code>IPEDS_ID</code>.</td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Total_Enrollment</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Enrollment 5-yr CAGR</td>
                   <td><code>(current / current−5)^(1/5) − 1</code>. NULL if &lt;5 years of history.</td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
 
                 <tr>
@@ -894,42 +894,42 @@
                   <td class="src-origin">TBD</td>
                   <td>Full-Time Enrollment + FTE YoY</td>
                   <td><code>enrollment_history.full_time_enrollment</code> per <code>IPEDS_ID</code> &#215; <code>Year</code> - University tab and enrollment charts.</td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Undergrad_Enrollment</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Undergraduate enrollment series</td>
                   <td><code>enrollment_history.undergrad_enrollment</code></td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Graduate_Enrollment</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Graduate enrollment series</td>
                   <td><code>enrollment_history.graduate_enrollment</code></td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>Freshman_Enrollment</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Freshman enrollment series</td>
                   <td><code>enrollment_history.freshman_enrollment</code></td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>University</code></td>
                   <td class="src-origin">TBD</td>
                   <td>University name labels</td>
                   <td><code>MIN(University)</code> per <code>IPEDS_ID</code>.</td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
                 <tr>
                   <td><code>IPEDS_ID / Year</code></td>
                   <td class="src-origin">TBD</td>
                   <td>Series keys</td>
                   <td>Join key to the crosswalk / x-axis of the enrollment history charts.</td>
-                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                  <td class="src-status"><span class="status-pill status-pill-avoid">Do Not Use</span></td>
                 </tr>
 
                 <!-- dbo.Subtext30 + dbo.IPEDS_CH_Crosswalk -->

@@ -254,6 +254,11 @@
                   <td>Per-institution, per-year IPEDS view: enrollment, first-time undergrad geography, admissions funnel, test scores, tuition &amp; aid. Not yet queried by the export.</td>
                   <td>~1 row per <code>UnitID</code> &#215; <code>DataYear</code> (view fans out - dedupe before use)</td>
                 </tr>
+                <tr>
+                  <td><code>dbo.Enrollments</code></td>
+                  <td>Per-school per-year CDS-style history view - the Schools_Denormal vocabulary plus race/ethnicity splits, the financial-aid block, and industry-average benchmarks. Includes 2025 rows. Not yet queried by the export.</td>
+                  <td>1 row per <code>schoolKey</code> &#215; <code>enrollmentYear</code> (<code>Key</code> = "school:year")</td>
+                </tr>
               </tbody>
             </table>
           </div>
@@ -2029,6 +2034,252 @@
                   </td>
                   <td>Financial aid cohort % (SFA)</td>
                   <td>Varchar - cast before use.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr class="src-section"><td colspan="5"><code>dbo.Enrollments</code> - per-school per-year CDS-style history view (2025 included); not yet wired to any visual - candidate source for enrollment history / YoY.</td></tr>
+                <tr>
+                  <td><code>Key</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Row identifier</td>
+                  <td>"schoolKey:enrollmentYear" composite, e.g. <code>40:2025</code>.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>schoolKey / enrollmentYear</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>School + year keys</td>
+                  <td>Joins to <code>Schools_Denormal.schoolKey</code>; one row per school per year, 2025 included.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentTotal</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Total enrollment</td>
+                  <td>Per-year history of the University-tab headline.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergraduate / enrollmentPartTimeUndergraduate</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Undergrad enrollment (FT / PT)</td>
+                  <td>Per-year splits.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeGraduate / enrollmentPartTimeGraduate</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Graduate enrollment (FT / PT)</td>
+                  <td>Per-year splits.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergradDegreeSeeking</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Degree-seeking FT undergrads</td>
+                  <td>Financial-aid cohort base.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentUndergradInState / enrollmentUndergradInStatePct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Undergrads in-state (count + %)</td>
+                  <td>Counts, not just percentages.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentUndergradOutOfState / enrollmentUndergradOutOfStatePct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Undergrads out-of-state (count + %)</td>
+                  <td>Counts, not just percentages.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentUndergradOnCampusPct / enrollmentUndergradOffCampusPct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Undergrads on- / off-campus %</td>
+                  <td>The off-campus demand split.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentUndergradOnCampusPctRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>On-campus % vs industry avg</td>
+                  <td>Benchmark ratio.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentUndergradWhite / enrollmentUndergradBlack / enrollmentUndergradHispanic / enrollmentUndergradAmericanIndian / enrollmentUndergradAsian / enrollmentUndergradNativeHawaiianPacificIslander / enrollmentUndergradMultirace / enrollmentUndergradUnknownRace / enrollmentUndergradNonResident</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Undergrad race / ethnicity splits</td>
+                  <td>Nine per-year demographic counts.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>bedsOnCampusReported / bedsOnCampusComputed</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>On-campus beds (reported / computed)</td>
+                  <td>Per-year history of the University-tab beds figures.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>rateOnCampusRoomYearly / rateOnCampusBoardYearly / rateOnCampusRoomMonthlyAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>On-campus room &amp; board rates</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>costHousingDelta / costHousingRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>On- vs off-campus cost delta (+ benchmark)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>tuitionInState / tuitionOutOfState</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Tuition (in- / out-of-state)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>tuitionInStateRelToIndAvg / tuitionOutOfStateRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Tuition vs industry avg</td>
+                  <td>Benchmark ratios.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>costPerCreditHourUndergradInState / costPerCreditHourUndergradOutOfState</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Cost per credit hour (in / out)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>costPerCreditHourUndergradInStateRelToIndAvg / costPerCreditHourUndergradOutOfStateRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Credit-hour cost vs industry avg</td>
+                  <td>Benchmark ratios.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>appliedFirstTimeFirstYear / admittedFirstTimeFirstYear / enrolledFirstTimeFirstYear</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>First-year funnel (applied / admitted / enrolled)</td>
+                  <td>Per-year admissions history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>admittedFirstTimeFirstYearPct / admittedFirstTimeFirstYearPctRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Admit rate (+ benchmark)</td>
+                  <td>Per-year history of the Admit Rate KPI.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>appliedTransfer / admittedTransfer / enrolledTransfer</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Transfer funnel (applied / admitted / enrolled)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>admittedTransferPct / admittedTransferPctRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Transfer admit rate (+ benchmark)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergradAppliedForNeedBasedAid / enrollmentFullTimeUndergradAppliedForNeedBasedAidPct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Applied for need-based aid (count + %)</td>
+                  <td>FT undergrad aid funnel.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergradWithNeed / enrollmentFullTimeUndergradWithNeedPct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Determined to have need (count + %)</td>
+                  <td>FT undergrad aid funnel.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergradAwardedNeedBasedAid / enrollmentFullTimeUndergradAwardedNeedBasedAidPct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Awarded need-based aid (count + %)</td>
+                  <td>FT undergrad aid funnel.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>amountFullTimeUndergradNeedBasedAidAvg / amountFullTimeUndergradNeedBasedAidAvgRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Avg need-based aid (+ benchmark)</td>
+                  <td>Average award amount.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>enrollmentFullTimeUndergradAwardedNonNeedBasedAid / enrollmentFullTimeUndergradAwardedNonNeedBasedAidPct</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Awarded merit aid (count + %)</td>
+                  <td>Non-need-based awards.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>amountFullTimeUndergradNonNeedBasedAidAvg / amountFullTimeUndergradNonNeedBasedAidAvgRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Avg merit aid (+ benchmark)</td>
+                  <td>Average award amount.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>hasDormsCoed / hasDormsMen / hasDormsWomen</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Dorm availability flags</td>
+                  <td>Per-year housing flags.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>hasApartmentsMarried / hasApartmentsSingle</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>On-campus apartment flags</td>
+                  <td>Per-year housing flags.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>hasHousingDisabled / hasHousingIntl / hasHousingGreek / hasHousingCoop</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Specialty housing flags</td>
+                  <td>Per-year housing flags.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>isPublic</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Public / private flag</td>
+                  <td>Control of the institution.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>studentAgeAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Average student age</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>amountParentIncomeAvg / amountParentIncomeMed</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Parent income (avg / median)</td>
+                  <td>Per-year history.</td>
+                  <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
+                </tr>
+                <tr>
+                  <td><code>parentIncomeAvgRelToIndAvg / parentIncomeMedRelToIndAvg</code></td>
+                  <td class="src-origin">TBD</td>
+                  <td>Parent income vs industry avg</td>
+                  <td>Benchmark ratios.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
               </tbody>

@@ -528,8 +528,12 @@ function renderHeader() {
     reportLink.oncontextmenu = syncReportHref;   // right-click > open link
   }
   const region = MARKET.region ? ` · ${MARKET.region}` : "";
+  const anchorCampus = (CAMPUSES || []).find(
+    (c) => c.university_name === MARKET.anchor_university,
+  ) || CAMPUSES[0];
+  const ipeds = anchorCampus?.ipeds_id ? ` · IPEDS ${anchorCampus.ipeds_id}` : "";
   document.getElementById("market-subtitle").textContent =
-    `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}`;
+    `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}${ipeds}`;
 
   document.title = `SubHouse - ${MARKET.anchor_university}`;
 

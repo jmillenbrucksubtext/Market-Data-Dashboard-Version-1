@@ -1586,6 +1586,26 @@ def main() -> int:
         )
     print(f"  plans split into {len(by_property)} per-property files in {plans_dir}/")
 
+    # --- Split: ipeds_basic → per-market JSON files (loaded on demand) ---
+    # Keeps data.json under Cloudflare's 25 MiB per-asset deploy cap; the
+    # IPEDS tab fetches assets/ipeds/<market_key>.json lazily.
+    ipeds_dir = OUTPUT.parent / "assets" / "ipeds"
+    ipeds_dir.mkdir(parents=True, exist_ok=True)
+    ipeds_rows = payload["tables"].pop("ipeds_basic", [])
+    ipeds_by_market: dict[int, list[dict]] = {}
+    for row in ipeds_rows:
+        mk = row.get("market_key")
+        if mk is None:
+            continue
+        ipeds_by_market.setdefault(mk, []).append(row)
+    for old in ipeds_dir.glob("*.json"):
+        old.unlink()
+    for mk, rows in ipeds_by_market.items():
+        (ipeds_dir / f"{mk}.json").write_text(
+            json.dumps(rows, default=str), encoding="utf-8",
+        )
+    print(f"  ipeds_basic split into {len(ipeds_by_market)} per-market files in {ipeds_dir}/")
+
     # --- unit_mix: per-property beds/units by bedroom type --------------
     # Built from the same in-memory plan rows (single source of truth lives
     # in load_unit_mix.py). Drives the Unit & Bed Mix section on market.html.
@@ -1624,8 +1644,10 @@ def main() -> int:
     except Exception as e:
         print(f"  overrides SKIPPED: {type(e).__name__}: {e}")
 
+    # Compact separators: indent=2 pushed data.json past Cloudflare's 25 MiB
+    # per-asset deploy cap (the deploy fails and the live site goes stale).
     with OUTPUT.open("w", encoding="utf-8") as fh:
-        json.dump(payload, fh, indent=2, default=str)
+        json.dump(payload, fh, separators=(",", ":"), default=str)
 
     size_kb = OUTPUT.stat().st_size / 1024
     print(f"\nWrote {OUTPUT} ({size_kb:.0f} KB)")

@@ -975,9 +975,11 @@ function bindTabs() {
 /* ----- IPEDS tab ---------------------------------------------- */
 // Per-institution IPEDS data (ipeds_basic <- dbo.IPEDSBasicData) for the
 // market's universities: one column per school, one row per metric, with a
-// year selector. Rendered lazily each time the tab is shown.
+// year selector. The rows live in assets/ipeds/<market_key>.json (split out
+// of data.json to stay under Cloudflare's 25 MiB per-asset deploy cap) and
+// are fetched once, on first visit to the tab.
 
-const ipedsState = { year: null, bound: false };
+const ipedsState = { year: null, bound: false, rows: null, loading: false };
 
 const IPEDS_METRIC_GROUPS = [
   ["Enrollment", [
@@ -1013,11 +1015,26 @@ const IPEDS_METRIC_GROUPS = [
 ];
 
 function renderIpedsTab() {
-  const all = (DATA.tables.ipeds_basic || []).filter((r) => r.market_key === MARKET.market_key);
   const sub = document.getElementById("ipeds-sub");
   const sel = document.getElementById("ipeds-year");
   const table = document.getElementById("ipeds-table");
   if (!table) return;
+
+  if (ipedsState.rows === null) {
+    if (ipedsState.loading) return;
+    ipedsState.loading = true;
+    sub.textContent = "Loading IPEDS data…";
+    fetch(`assets/ipeds/${MARKET.market_key}.json`, { cache: "no-cache" })
+      .then((res) => (res.ok ? res.json() : []))
+      .catch(() => [])
+      .then((rows) => {
+        ipedsState.rows = rows;
+        ipedsState.loading = false;
+        renderIpedsTab();
+      });
+    return;
+  }
+  const all = ipedsState.rows;
 
   if (!all.length) {
     sub.textContent = "No IPEDS data on file for this market.";

@@ -609,10 +609,7 @@ function qualifierDetails() {
   }
 
   if (MARKET.penetration_ratio != null) {
-    const band = MARKET.penetration_ratio < 0.30 ? "under-supplied"
-      : MARKET.penetration_ratio > 0.55 ? "over-supplied"
-      : "balanced";
-    d.uncaptured_1mi = `penetration ${fmtPct(MARKET.penetration_ratio)} · ${band}`;
+    d.uncaptured_1mi = `penetration ${fmtPct(MARKET.penetration_ratio)}`;
   }
 
   return d;

@@ -903,13 +903,6 @@ function renderScorecard() {
 
 /* ----- Charts ------------------------------------------------ */
 
-function bandColor(pen) {
-  if (pen == null) return C.slate30;
-  if (pen < 0.30) return C.everest;   // under-supplied = opportunity
-  if (pen > 0.55) return C.birch;     // over-supplied = avoid
-  return C.warn;                      // balanced
-}
-
 /* Register datalabels plugin once. Used on the less-dense charts where
    value labels fit; left off the top-30 stacked supply chart to avoid
    visual clutter. */
@@ -927,47 +920,6 @@ function deckCleanScale(axisOpts = {}) {
     ticks: { font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate, autoSkip: false, ...axisOpts.ticks },
     ...axisOpts,
   };
-}
-
-function renderPenetration(rows) {
-  const ctx = document.getElementById("penetration-chart");
-  if (!ctx) return;  // chart removed from the Industry tab
-  const top = rows.filter((r) => r.penetration_ratio != null)
-    .sort((a, b) => a.penetration_ratio - b.penetration_ratio)
-    .slice(0, 30);
-  if (charts.penetration) charts.penetration.destroy();
-  charts.penetration = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels: top.map((r) => r.anchor_university),
-      datasets: [{
-        data: top.map((r) => r.penetration_ratio),
-        backgroundColor: top.map((r) => bandColor(r.penetration_ratio)),
-        borderRadius: 3,
-        barThickness: 12,
-      }],
-    },
-    options: {
-      indexAxis: "y",
-      responsive: true,
-      maintainAspectRatio: false,
-      plugins: {
-        legend: { display: false },
-        datalabels: { display: false },
-        tooltip: {
-          callbacks: {
-            title: (items) => fullLabel(rowKey(top, items[0].dataIndex)),
-            label: (ctx) => `Penetration: ${fmtPct(ctx.parsed.x)}`,
-          },
-        },
-      },
-      layout: { padding: { top: 4, right: 36, left: 4, bottom: 4 } },
-      scales: {
-        x: deckCleanScale({ ticks: { callback: (v) => fmtPct(v, 0), font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate70 } }),
-        y: deckCleanScale({ ticks: { autoSkip: false, font: { size: 11, weight: 600, family: CHART_FONT }, color: C.slate } }),
-      },
-    },
-  });
 }
 
 function rowKey(rows, idx) { return rows[idx]?.market_key; }

@@ -58,12 +58,6 @@ QUERIES: dict[str, str] = {
             CASE WHEN mr.enr_total > 0
                  THEN CAST(mr.beds_purpose_built AS DECIMAL(18,6)) / mr.enr_total
                  ELSE NULL END                       AS penetration_ratio,
-            CASE
-                WHEN mr.enr_total IS NULL OR mr.enr_total = 0 THEN 'N/A'
-                WHEN CAST(mr.beds_purpose_built AS DECIMAL(18,6)) / mr.enr_total < 0.30 THEN 'Under-supplied'
-                WHEN CAST(mr.beds_purpose_built AS DECIMAL(18,6)) / mr.enr_total > 0.55 THEN 'Over-supplied'
-                ELSE 'Balanced'
-            END                                      AS market_band,
             mr.snapshot_date                         AS data_as_of
         FROM dbo.Markets m
         JOIN (

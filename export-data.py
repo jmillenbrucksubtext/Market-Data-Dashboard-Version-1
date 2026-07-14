@@ -513,8 +513,13 @@ QUERIES: dict[str, str] = {
             pa.prelease_as_of                       AS prelease_as_of,
             p.rateAvg                               AS avg_rent,
             p.ratePerSfAvg                          AS avg_rent_per_sf,
-            p.concessionsValue,
-            p.hasConcessions,
+            -- July 2026 schema rename: concessionsValue -> concessionValue,
+            -- and hasConcessions was dropped in favour of concessionType*
+            -- columns. Keep the old JSON keys; derive the flag.
+            p.concessionValue                       AS concessionsValue,
+            CASE WHEN p.concessionTypeKey IS NOT NULL
+                   OR COALESCE(p.concessionValue, 0) <> 0
+                 THEN 1 ELSE 0 END                  AS hasConcessions,
             p.milesToClosestCampus,
             p.currentGoogleReviewAvg,
             p.currentGoogleReviews                  AS google_review_count,
@@ -545,9 +550,11 @@ QUERIES: dict[str, str] = {
             pl.prelease,
             pl.rate,
             pl.ratePerSf                 AS rate_per_sf,
-            pl.hasConcessions            AS has_concessions,
-            pl.concessionsValue          AS concessions_value,
-            pl.concessionsNotes          AS concessions_notes,
+            CASE WHEN pl.concessionTypeKey IS NOT NULL
+                   OR COALESCE(pl.concessionValue, 0) <> 0
+                 THEN 1 ELSE 0 END       AS has_concessions,
+            pl.concessionValue           AS concessions_value,
+            pl.concessionNotes           AS concessions_notes,
             CAST(pl.reportDate AS DATETIME2) AS report_date
         FROM dbo.Plans pl
         JOIN dbo.Properties p ON p.[Key] = pl.propertyKey

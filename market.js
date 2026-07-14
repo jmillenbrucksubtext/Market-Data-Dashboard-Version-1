@@ -620,7 +620,7 @@ function qualifierDetails() {
 function renderQualifiers() {
   const all = DATA.tables.market_qualifiers || [];
   const q = all.find((r) => r.market_key === MARKET.market_key);
-  const listEl = document.getElementById("qualifier-list");
+  const listEl = document.getElementById("qualifier-list").querySelector("tbody");
   const summaryEl = document.getElementById("qualifier-summary");
   const badgeEl = document.getElementById("qualifier-score-badge");
 
@@ -653,11 +653,10 @@ function renderQualifiers() {
     let state = r.status || "fail";
     if (state !== "pass" && state !== "na") state = "fail";
     // Multi-year qualifiers (e.g. rent_growth_3yr) carry a per-year
-    // breakdown - render each year as its own colored chip instead of one
-    // aggregate value.
-    let actualHtml;
+    // breakdown - render each year on its own line inside the metric cell.
+    let metricHtml;
     if (Array.isArray(r.breakdown) && r.breakdown.length) {
-      actualHtml = r.breakdown.map((b) => {
+      metricHtml = r.breakdown.map((b) => {
         const cls = b.passed ? "pass" : "fail";
         return `<div class="qual-yoy-line qual-yoy-line-${cls}">
                   <span class="qual-yoy-line-year">${escapeHtml(b.label)}:</span>
@@ -665,19 +664,17 @@ function renderQualifiers() {
                 </div>`;
       }).join("");
     } else {
-      actualHtml = `<span class="qual-actual-${state}">${escapeHtml(r.actual_display)}</span>`;
+      metricHtml = escapeHtml(r.actual_display);
     }
-    const icon = state === "pass" ? "&#10003;" : state === "na" ? "&ndash;" : "&#10007;";
     const detail = details[r.id];
     const detailHtml = detail
       ? `<div class="qual-detail">${escapeHtml(detail)}</div>`
       : "";
     return `
-      <li class="qual-row qual-${state}">
-        <span class="qual-status" aria-hidden="true">${icon}</span>
-        <div class="qual-label">${escapeHtml(r.label)}${detailHtml}</div>
-        <div class="qual-actual">${actualHtml}</div>
-      </li>`;
+      <tr class="qual-${state}">
+        <td class="qual-label">${escapeHtml(r.label)}${detailHtml}</td>
+        <td class="qual-metric qual-metric-${state}">${metricHtml}</td>
+      </tr>`;
   }).join("");
 }
 

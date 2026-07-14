@@ -2409,55 +2409,39 @@ h1, h2, h3, .serif {
 .qualifier-score-badge[data-tier="bad"]  { background: var(--bad-soft);  color: var(--bad);  border-color: var(--bad); }
 .qualifier-score-badge[data-tier="na"]   { background: var(--slate-15); color: var(--slate-70); }
 
-.qualifier-list {
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  /* Full-width banner at the top of the Market tab: flow the rows into
-     responsive columns instead of one tall single column. */
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
-  column-gap: 36px;
+/* Scorecard table - bordered rows with a colored Metric cell (pass green /
+   fail red / na grey), modeled on the team's PowerPoint market scorecard. */
+.qualifier-card .table-wrap { max-height: none; overflow: visible; }
+.qualifier-table {
+  width: 100%;
+  max-width: 940px;
+  border-collapse: collapse;
+  border: 1.5px solid var(--slate);
 }
-.qual-row {
-  display: flex;
-  align-items: center;
-  gap: 11px;
-  padding: 10px 0;
-  border-bottom: 1px solid var(--beige-deep);
-  transition: background 0.12s;
-}
-.qual-row:hover { background: rgba(0, 0, 0, 0.02); }
-/* In a multi-column grid the DOM-last row is not always the visually last in
-   each column, so keep per-row dividers; they read as clean column rules. */
-.qual-row.qual-na { opacity: 0.6; }
-
-/* Pass/fail/na status pip at the start of each row. */
-.qual-status {
-  flex: 0 0 auto;
-  width: 19px;
-  height: 19px;
-  border-radius: 50%;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
+.qualifier-table th {
+  background: var(--everest);
+  color: #fff;
   font-weight: 700;
-  line-height: 1;
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  text-align: left;
+  padding: 10px 16px;
+  border: 1px solid var(--everest);
 }
-.qual-pass .qual-status { background: var(--good-soft); color: var(--good); }
-.qual-fail .qual-status { background: var(--bad-soft);  color: var(--bad); }
-.qual-na   .qual-status { background: var(--slate-15);  color: var(--slate-70); }
+.qualifier-table th.qual-th-metric { text-align: center; }
+.qualifier-table td {
+  border: 1px solid var(--beige-deep);
+  padding: 11px 16px;
+  vertical-align: middle;
+}
 .qual-label {
   font-weight: 700;
   color: var(--slate);
-  font-size: 12.5px;
-  line-height: 1.35;
-  flex: 1 1 auto;
-  min-width: 0;
+  font-size: 13px;
+  line-height: 1.4;
 }
-.qual-threshold { display: none; }      /* threshold info is in the label now */
-.qual-explanation { display: none; }
+tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 
 /* Context line under a qualifier label - carries the supporting figure the
    old Market-tab KPI strip used to show (pipeline breakdown, penetration,
@@ -2466,50 +2450,36 @@ h1, h2, h3, .serif {
   font-weight: 400;
   font-size: 11px;
   color: var(--slate-70);
-  margin-top: 1px;
+  margin-top: 2px;
 }
 
-/* Right-side stat: actual value, colored by binary status (pass / fail / na) */
-.qual-actual {
+/* Metric cell: bold centered value on a pass/fail-colored fill. */
+.qual-metric {
+  width: 200px;
+  text-align: center;
   font-family: "Mencken Std", Georgia, serif;
   font-weight: 700;
-  font-size: 17px;
+  font-size: 16px;
   letter-spacing: -0.01em;
   font-variant-numeric: tabular-nums;
-  text-align: right;
   white-space: nowrap;
-  flex: 0 0 auto;
+  color: var(--slate);
 }
-.qual-actual-pass { color: var(--good); }
-.qual-actual-fail { color: var(--bad); }
-.qual-actual-na   { color: var(--slate-50); font-weight: 400; }
+.qual-metric-pass { background: var(--good-soft); }
+.qual-metric-fail { background: var(--bad-soft); }
+.qual-metric-na   { background: var(--slate-15); color: var(--slate-70); font-weight: 400; }
 
-/* Multi-year YoY rows for the rent_growth_3yr qualifier - stacked vertically,
-   right-aligned to match the column. Pass/fail color matches the binary
-   scorecard convention. */
-.qual-actual:has(.qual-yoy-line) {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 2px;
-}
+/* Multi-year YoY lines for the rent_growth_3yr qualifier - stacked and
+   centered inside the metric cell, per-year pass/fail value colors. */
 .qual-yoy-line {
-  display: inline-flex;
+  display: flex;
   align-items: baseline;
-  gap: 8px;
-  font-family: "Mencken Std", Georgia, serif;
-  font-weight: 700;
-  font-size: 17px;
-  letter-spacing: -0.01em;
-  font-variant-numeric: tabular-nums;
-  line-height: 1.25;
+  justify-content: center;
+  gap: 7px;
+  font-size: 14px;
+  line-height: 1.45;
 }
-.qual-yoy-line-year {
-  font-family: "Mencken Std", Georgia, serif;
-  font-weight: 700;
-  font-size: 17px;
-  color: var(--slate-70);
-}
+.qual-yoy-line-year { color: var(--slate-70); }
 .qual-yoy-line-pass .qual-yoy-line-val { color: var(--good); }
 .qual-yoy-line-fail .qual-yoy-line-val { color: var(--bad); }
 

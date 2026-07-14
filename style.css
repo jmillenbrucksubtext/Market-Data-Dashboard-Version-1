@@ -1501,6 +1501,32 @@ h1, h2, h3, .serif {
 .src-brand svg { flex: 0 0 auto; }
 .src-brand-collegehouse .src-brand-college { color: #2ab9c9; }
 .src-brand-collegehouse .src-brand-house { color: #1d2f4e; }
+
+/* IPEDS (NCES): monochrome charcoal bars-and-orbit mark + wordmark. */
+.src-brand-ipeds { color: #3f3e4a; letter-spacing: 0.02em; }
+
+/* Google: four-color G + letter-colored wordmark. */
+.src-brand-google { gap: 4px; }
+.src-brand-google .gg-b { color: #4285f4; }
+.src-brand-google .gg-r { color: #ea4335; }
+.src-brand-google .gg-y { color: #fbbc05; }
+.src-brand-google .gg-g { color: #34a853; }
+.src-brand-google span + span { margin-left: -4px; }
+
+/* U.S. Census Bureau: crimson wordmark over its rounded underline bar. */
+.src-brand-census {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 2px;
+  color: #a41e35;
+  line-height: 1;
+}
+.src-brand-census .src-census-bar {
+  display: block;
+  height: 3px;
+  border-radius: 2px;
+  background: #a41e35;
+}
 .chart-info-rows {
   width: 100%;
   border-collapse: collapse;

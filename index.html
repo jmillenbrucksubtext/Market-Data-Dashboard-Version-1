@@ -251,7 +251,7 @@
                 </tr>
                 <tr>
                   <td><code>dbo.IPEDSBasicData</code></td>
-                  <td>Per-institution, per-year IPEDS view: enrollment, first-time undergrad geography, admissions funnel, test scores, tuition &amp; aid. Not yet queried by the export.</td>
+                  <td>Per-institution, per-year IPEDS view: enrollment, first-time undergrad geography, admissions funnel, test scores, tuition &amp; aid. Drives the IPEDS tab on the market page.</td>
                   <td>~1 row per <code>UnitID</code> &#215; <code>DataYear</code> (view fans out - dedupe before use)</td>
                 </tr>
                 <tr>
@@ -616,14 +616,32 @@
                 <tr class="src-section"><td colspan="5"><code>dbo.Schools_Denormal</code> - university dimension</td></tr>
                 <tr>
                   <td><code>name</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Anchor University <span class="hint">(scorecard, charts)</span></td>
                   <td>Largest school by <code>enrollmentTotal</code> per <code>marketKey</code>. Fallback: <code>Markets.city + ', ' + Markets.stateAbbr</code> if no school is mapped.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentTotal</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Enrollment by University <span class="hint">(chart)</span></td>
                   <td>Current academic year (<code>enrollmentYear</code>).</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -631,252 +649,576 @@
 
                 <tr>
                   <td><code>shortName</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>University short name</td>
                   <td><code>university_info.short_name</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>isPublic</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Public / private flag</td>
                   <td><code>university_info.is_public</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentYear</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Enrollment data vintage</td>
                   <td>Latest year selected per school (<code>ROW_NUMBER() ... ORDER BY enrollmentYear DESC</code>).</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentFullTimeUndergraduate</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Full-time undergrad enrollment</td>
                   <td><code>university_info.enr_ft_undergrad</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentPartTimeUndergraduate</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Part-time undergrad enrollment</td>
                   <td><code>university_info.enr_pt_undergrad</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentFullTimeGraduate</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Full-time graduate enrollment</td>
                   <td><code>university_info.enr_ft_grad</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentPartTimeGraduate</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Part-time graduate enrollment</td>
                   <td><code>university_info.enr_pt_grad</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentUndergradInStatePct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Undergrad in-state %</td>
                   <td><code>university_info.pct_in_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentUndergradOutOfStatePct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Undergrad out-of-state %</td>
                   <td><code>university_info.pct_out_of_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentUndergradOnCampusPct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Undergrad on-campus %</td>
                   <td><code>university_info.pct_on_campus</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrollmentUndergradOffCampusPct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Undergrad off-campus %</td>
                   <td><code>university_info.pct_off_campus</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>bedsOnCampusReported</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-Campus Beds (reported)</td>
                   <td><code>university_info.beds_on_campus_reported</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>bedsOnCampusComputed</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-Campus Beds (computed fallback)</td>
                   <td><code>university_info.beds_on_campus_computed</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>rateOnCampusRoomYearly</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-campus room rate (yearly)</td>
                   <td><code>university_info.rate_room_yearly</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>rateOnCampusBoardYearly</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-campus board rate (yearly)</td>
                   <td><code>university_info.rate_board_yearly</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>rateOnCampusRoomMonthlyAvg</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-campus room rate (monthly avg)</td>
                   <td><code>university_info.rate_room_monthly</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>costHousingDelta</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Housing cost delta</td>
                   <td><code>university_info.cost_housing_delta</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>tuitionInState</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Tuition (In-State)</td>
                   <td><code>university_info.tuition_in_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>tuitionOutOfState</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Tuition (Out-of-State)</td>
                   <td><code>university_info.tuition_out_of_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>costPerCreditHourUndergradInState</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Cost per credit hour (in-state)</td>
                   <td><code>university_info.credit_hour_in_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>costPerCreditHourUndergradOutOfState</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Cost per credit hour (out-of-state)</td>
                   <td><code>university_info.credit_hour_out_of_state</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>appliedFirstTimeFirstYear</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>First-year applicants</td>
                   <td><code>university_info.applied_first_year</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>admittedFirstTimeFirstYear</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>First-year admits</td>
                   <td><code>university_info.admitted_first_year</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>admittedFirstTimeFirstYearPct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Admit Rate</td>
                   <td><code>university_info.admit_rate</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrolledFirstTimeFirstYear</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>First-year enrolled (yield)</td>
                   <td><code>university_info.enrolled_first_year</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>appliedTransfer</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Transfer applicants</td>
                   <td><code>university_info.applied_transfer</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>admittedTransfer</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Transfer admits</td>
                   <td><code>university_info.admitted_transfer</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>admittedTransferPct</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Transfer admit rate</td>
                   <td><code>university_info.transfer_admit_rate</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>enrolledTransfer</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Transfer enrolled</td>
                   <td><code>university_info.enrolled_transfer</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>studentAgeAvg</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Average student age</td>
                   <td><code>university_info.student_age_avg</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>amountParentIncomeAvg</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Parent income (avg)</td>
                   <td><code>university_info.parent_income_avg</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>amountParentIncomeMed</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Parent income (median)</td>
                   <td><code>university_info.parent_income_med</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>hasDormsCoed / hasDormsMen / hasDormsWomen</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Dorm availability flags</td>
                   <td><code>university_info.has_dorms_*</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>hasApartmentsMarried / hasApartmentsSingle</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>On-campus apartment flags</td>
                   <td><code>university_info.has_apts_*</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>hasHousingDisabled / hasHousingIntl / hasHousingGreek / hasHousingCoop</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Specialty housing flags</td>
                   <td><code>university_info.has_housing_*</code> - University tab</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
                 <tr>
                   <td><code>latitude / longitude</code></td>
-                  <td class="src-origin">TBD</td>
+                  <td class="src-origin">
+                    <span class="src-brand src-brand-collegehouse" title="CollegeHouse">
+                      <svg viewBox="0 0 24 24" width="15" height="15" aria-hidden="true">
+                        <circle cx="12" cy="12" r="11" fill="#2ab9c9"/>
+                        <path d="M12 1a11 11 0 0 1 11 11h-4a7 7 0 0 0-7-7z" fill="#1d2f4e"/>
+                        <path d="M5.5 14.5l4-4.5 3 3 6-6.5" stroke="#fff" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span class="src-brand-college">College</span><span class="src-brand-house">House</span>
+                    </span>
+                  </td>
                   <td>Campus map pins</td>
                   <td>campus_locations - market page maps and campus POI map</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
@@ -1617,7 +1959,7 @@
                   <td>Weights for the per-property prelease roll-up.</td>
                   <td class="src-status"><span class="status-pill status-pill-use">In Use</span></td>
                 </tr>
-                <tr class="src-section"><td colspan="5"><code>dbo.IPEDSBasicData</code> - per-institution per-year IPEDS view; not yet wired to any visual. ~13.8M rows: dedupe to one row per <code>UnitID</code> &#215; <code>DataYear</code> before use.</td></tr>
+                <tr class="src-section"><td colspan="5"><code>dbo.IPEDSBasicData</code> - per-institution per-year IPEDS view - drives the market-page IPEDS tab. ~13.8M rows: dedupe to one row per <code>UnitID</code> &#215; <code>DataYear</code> before use.</td></tr>
                 <tr>
                   <td><code>INSTNM</code></td>
                   <td class="src-origin">

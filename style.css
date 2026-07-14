@@ -2548,6 +2548,45 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 .qual-yoy-line-pass .qual-yoy-line-val { color: var(--good); }
 .qual-yoy-line-fail .qual-yoy-line-val { color: var(--bad); }
 
+/* IPEDS tab - metric rows x institution columns, year selector top right. */
+.ipeds-year-control {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--slate);
+}
+.ipeds-year-control select {
+  padding: 6px 10px;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--slate);
+}
+.ipeds-table { max-width: none; }
+.ipeds-table td.ipeds-value {
+  text-align: center;
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 15px;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+.ipeds-table tr.ipeds-group-row td {
+  background: var(--bg);
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+  border-top: 2px solid var(--lime);
+}
+
 /* Market detail tab nav - Market | Comps. Sits below the market header,
    spans the full grid, and acts as a switch for the .market-main panels. */
 .market-tabs {

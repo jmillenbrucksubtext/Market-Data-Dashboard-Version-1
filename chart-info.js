@@ -300,6 +300,12 @@
       sql: "`university_info` (dbo.Schools_Denormal)",
       sig: "A reference profile of the institution."
     },
+    "ipeds-table": {
+      title: "IPEDS Data",
+      formula: "One column per institution in the market, one row per IPEDS metric (enrollment, first-time undergrad geography, admissions, test scores, cost & aid), for the selected year.",
+      sql: "`ipeds_basic` <- dbo.IPEDSBasicData (deduped per UnitID x DataYear), joined to markets via IPEDS_CH_Crosswalk",
+      sig: "The raw federal IPEDS record for the market's universities, year by year - even years cover roughly half the institution universe, so some schools skip years."
+    },
     "uni-map-canvas": {
       title: "Campus Map",
       formula: "Static campus map: boundary polygon, named landmark call-outs, and icon badges for residence halls, Greek life, and nightlife.",
@@ -537,7 +543,8 @@
     "student-migration-in-map", "student-migration-out-map",
     "student-migration-in-metros", "student-migration-out-metros",
     "student-migration-states", "shadow-market-map", "shadow-market-rings",
-    "uni-profile-table", "uni-stats-grid", "uni-map-canvas", "plans"
+    "uni-profile-table", "uni-stats-grid", "uni-map-canvas", "plans",
+    "ipeds-table"
   ];
 
   function attach() {

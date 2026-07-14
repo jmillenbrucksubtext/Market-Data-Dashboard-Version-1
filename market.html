@@ -79,6 +79,7 @@
           <nav class="market-tabs" role="tablist">
             <button class="market-tab active" data-tab="market" role="tab" aria-selected="true">Market</button>
             <button class="market-tab" data-tab="university" role="tab" aria-selected="false">University</button>
+            <button class="market-tab" data-tab="ipeds" role="tab" aria-selected="false">IPEDS</button>
             <button class="market-tab" data-tab="comps" role="tab" aria-selected="false">Competitive Set</button>
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
             <button class="market-tab" data-tab="student-migration" role="tab" aria-selected="false">Student Migration</button>
@@ -257,6 +258,29 @@
           </section>
 
           </div> <!-- /.market-tab-panel[market] -->
+
+          <!-- ============ IPEDS TAB ============ -->
+          <!-- Per-institution IPEDS data for the market's universities, one
+               column per school, year selectable. Sourced from ipeds_basic
+               (dbo.IPEDSBasicData). Rendered lazily by renderIpedsTab(). -->
+          <div class="market-tab-panel" data-panel="ipeds" hidden>
+            <section class="card">
+              <header class="card-header">
+                <div>
+                  <h2>IPEDS Data</h2>
+                  <p id="ipeds-sub">-</p>
+                </div>
+                <label class="ipeds-year-control">Year
+                  <select id="ipeds-year" aria-label="IPEDS data year"></select>
+                </label>
+              </header>
+              <div class="card-body">
+                <div class="table-wrap">
+                  <table id="ipeds-table" class="qualifier-table ipeds-table"></table>
+                </div>
+              </div>
+            </section>
+          </div> <!-- /.market-tab-panel[ipeds] -->
 
           <!-- ============ COMPS TAB ============ -->
           <div class="market-tab-panel" data-panel="comps" hidden>

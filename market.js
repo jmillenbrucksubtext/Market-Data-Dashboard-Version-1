@@ -960,6 +960,8 @@ function bindTabs() {
         renderShadowMarketTab();
       } else if (target === "university") {
         renderUniversityTab();
+      } else if (target === "ipeds") {
+        renderIpedsTab();
       }
     });
   });
@@ -968,6 +970,109 @@ function bindTabs() {
   const hash = location.hash.replace(/^#/, "");
   const initial = [...tabs].find((t) => t.dataset.tab === hash);
   if (initial && hash !== "market") initial.click();
+}
+
+/* ----- IPEDS tab ---------------------------------------------- */
+// Per-institution IPEDS data (ipeds_basic <- dbo.IPEDSBasicData) for the
+// market's universities: one column per school, one row per metric, with a
+// year selector. Rendered lazily each time the tab is shown.
+
+const ipedsState = { year: null, bound: false };
+
+const IPEDS_METRIC_GROUPS = [
+  ["Enrollment", [
+    ["Total enrollment", (r) => fmtInt(r.total_enrollment)],
+    ["Full-time enrollment", (r) => fmtInt(r.full_time_enrollment)],
+    ["Distance-ed enrollment", (r) => fmtInt(r.distance_enrollment)],
+    ["Distance-ed share", (r) => fmtPct(r.distance_share)],
+  ]],
+  ["First-Time Undergrads", [
+    ["First-time undergrads", (r) => fmtInt(r.first_time_ugrads)],
+    ["In-state", (r) => fmtInt(r.first_time_in_state)],
+    ["Out-of-state", (r) => fmtInt(r.first_time_oos)],
+    ["International", (r) => fmtInt(r.first_time_intl)],
+    ["Out-of-state share", (r) => fmtPct(r.oos_rate)],
+    ["International share", (r) => fmtPct(r.intl_rate)],
+  ]],
+  ["Admissions", [
+    ["Applications", (r) => fmtInt(r.applications)],
+    ["Admitted", (r) => fmtInt(r.admitted)],
+    ["Admit rate", (r) => fmtPct(r.admit_rate)],
+  ]],
+  ["Test Scores (75th percentile)", [
+    ["ACT composite", (r) => r.act_75 ?? "-"],
+    ["SAT math", (r) => r.sat_math_75 ?? "-"],
+    ["SAT verbal", (r) => r.sat_verbal_75 ?? "-"],
+  ]],
+  ["Cost & Aid", [
+    ["Tuition & fees (in-state)", (r) => fmtUsd(r.tuition_fees_in_state)],
+    ["Tuition & fees (out-of-state)", (r) => fmtUsd(r.tuition_fees_out_of_state)],
+    ["% receiving any aid", (r) => r.pct_any_aid != null ? `${r.pct_any_aid}%` : "-"],
+    ["Financial aid cohort % (SFA)", (r) => r.pct_finaid_cohort != null ? `${r.pct_finaid_cohort}%` : "-"],
+  ]],
+];
+
+function renderIpedsTab() {
+  const all = (DATA.tables.ipeds_basic || []).filter((r) => r.market_key === MARKET.market_key);
+  const sub = document.getElementById("ipeds-sub");
+  const sel = document.getElementById("ipeds-year");
+  const table = document.getElementById("ipeds-table");
+  if (!table) return;
+
+  if (!all.length) {
+    sub.textContent = "No IPEDS data on file for this market.";
+    table.innerHTML = "";
+    if (sel) sel.hidden = true;
+    return;
+  }
+
+  const years = [...new Set(all.map((r) => r.year_))].sort((a, b) => b - a);
+  if (!ipedsState.year || !years.includes(ipedsState.year)) ipedsState.year = years[0];
+
+  if (!ipedsState.bound) {
+    years.forEach((y) => {
+      const o = document.createElement("option");
+      o.value = y;
+      o.textContent = y;
+      sel.appendChild(o);
+    });
+    sel.addEventListener("change", () => {
+      ipedsState.year = Number(sel.value);
+      renderIpedsTab();
+    });
+    ipedsState.bound = true;
+  }
+  sel.value = ipedsState.year;
+
+  // One column per institution reporting in the selected year, largest first.
+  const schools = all
+    .filter((r) => r.year_ === ipedsState.year)
+    .sort((a, b) => (b.total_enrollment || 0) - (a.total_enrollment || 0));
+
+  sub.textContent =
+    `${schools.length} institution${schools.length === 1 ? "" : "s"} reporting · ` +
+    `IPEDS ${ipedsState.year} · years on file ${years[years.length - 1]}-${years[0]}`;
+
+  if (!schools.length) {
+    table.innerHTML = `<tbody><tr><td class="empty-state">No institutions reported in ${ipedsState.year}.</td></tr></tbody>`;
+    return;
+  }
+
+  const head = `<thead><tr>
+    <th>Metric</th>
+    ${schools.map((s) => `<th class="qual-th-metric">${escapeHtml(s.university_name)}</th>`).join("")}
+  </tr></thead>`;
+
+  const body = IPEDS_METRIC_GROUPS.map(([group, metrics]) => `
+    <tr class="ipeds-group-row"><td colspan="${schools.length + 1}">${escapeHtml(group)}</td></tr>
+    ${metrics.map(([label, fmt]) => `
+      <tr>
+        <td class="qual-label">${escapeHtml(label)}</td>
+        ${schools.map((s) => `<td class="ipeds-value">${fmt(s)}</td>`).join("")}
+      </tr>`).join("")}
+  `).join("");
+
+  table.innerHTML = head + `<tbody>${body}</tbody>`;
 }
 
 function bindShadowMarketControls() {

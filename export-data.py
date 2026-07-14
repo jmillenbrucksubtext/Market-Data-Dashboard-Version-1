@@ -160,6 +160,46 @@ QUERIES: dict[str, str] = {
         JOIN dbo.Markets m ON m.[Key] = sd.marketKey
         WHERE sd.enrollmentTotal > 0
     """,
+    # ipeds_basic: per-institution per-year IPEDS data for tracked markets,
+    # from the dbo.IPEDSBasicData view. The view fans out (~13.8M rows), so
+    # DISTINCT collapses it to one row per (UnitID, DataYear). Numeric-ish
+    # varchar columns are TRY_CAST with NULLIF('') so blanks become NULL.
+    # Drives the IPEDS tab on the market page.
+    "ipeds_basic": """
+        WITH cx AS (
+            SELECT DISTINCT IPEDs, marketKey
+            FROM dbo.IPEDS_CH_Crosswalk
+            WHERE marketKey IS NOT NULL
+        )
+        SELECT DISTINCT
+            cx.marketKey                                        AS market_key,
+            b.UnitID                                            AS ipeds_id,
+            b.INSTNM                                            AS university_name,
+            b.DataYear                                          AS year_,
+            TRY_CAST(NULLIF(b.Total, '') AS INT)                AS total_enrollment,
+            TRY_CAST(NULLIF(b.FullTimeEnrollment, '') AS INT)   AS full_time_enrollment,
+            TRY_CAST(NULLIF(b.Dist, '') AS INT)                 AS distance_enrollment,
+            b.DistanceShare                                     AS distance_share,
+            b.FirstTimeUGrads                                   AS first_time_ugrads,
+            b.InStateFirstTimeUGrads                            AS first_time_in_state,
+            b.OOSFirstTimeUGrads                                AS first_time_oos,
+            b.InternationalFirstTimeUGrads                      AS first_time_intl,
+            b.OOSRate                                           AS oos_rate,
+            b.INTRate                                           AS intl_rate,
+            TRY_CAST(NULLIF(b.APPLCN, '') AS INT)               AS applications,
+            TRY_CAST(NULLIF(b.ADMSSN, '') AS INT)               AS admitted,
+            b.AdmissionRate                                     AS admit_rate,
+            TRY_CAST(NULLIF(b.ACTCM75, '') AS INT)              AS act_75,
+            TRY_CAST(NULLIF(b.SATM75, '') AS INT)               AS sat_math_75,
+            TRY_CAST(NULLIF(b.SATV75, '') AS INT)               AS sat_verbal_75,
+            TRY_CAST(NULLIF(b.Tu_Fees_Now_InS, '') AS INT)      AS tuition_fees_in_state,
+            TRY_CAST(NULLIF(b.Tu_Fees_Now_OS, '') AS INT)       AS tuition_fees_out_of_state,
+            TRY_CAST(NULLIF(b.ANYAIDP, '') AS INT)              AS pct_any_aid,
+            TRY_CAST(NULLIF(b.FinAidCohPercSFA, '') AS INT)     AS pct_finaid_cohort
+        FROM dbo.IPEDSBasicData b
+        JOIN cx ON cx.IPEDs = b.UnitID
+        WHERE b.DataYear IS NOT NULL
+    """,
     # university_info: per-school institutional stats from Schools_Denormal -
     # on-campus beds, tuition, admissions funnel, housing rates, student
     # profile. Drives the University Information tab on the market page.

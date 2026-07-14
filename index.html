@@ -80,10 +80,10 @@
         <div class="topbar-right">
           <select id="market-scope" class="market-scope-select" aria-label="Filter markets"
                   title="Filter the map and scorecard. Active markets = Subtext's pipeline board (Upcoming, Assessing, Pursuing); Power 4 = SEC / Big Ten / Big 12 / ACC anchor schools.">
-            <option value="active" selected>Active markets</option>
+            <option value="all" selected>All markets</option>
+            <option value="active">Active markets</option>
             <option value="subtext30">Subtext-30 only</option>
             <option value="power4">Power 4 only</option>
-            <option value="all">All markets</option>
           </select>
           <span class="freshness">
             <span>Data as of</span>
@@ -108,7 +108,7 @@
           <div class="card-body">
             <div class="map-with-legend">
               <div id="industry-map" class="industry-map"></div>
-              <div class="map-legend legend-mode-active">
+              <div class="map-legend">
                 <!-- Active-markets mode: pins coloured by pipeline stage. -->
                 <div class="legend-section legend-status">
                   <div class="legend-section-title">Market Stage</div>

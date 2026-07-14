@@ -194,7 +194,7 @@
         <section class="card">
           <header class="card-header">
             <div>
-              <h2><code>StudentResearch</code> Tables</h2>
+              <h2><code>StudentResearch</code> Tables &amp; Views</h2>
               <p>The dashboard reads only these tables. Read-only via <code>db_datareader</code>.</p>
             </div>
           </header>
@@ -250,12 +250,12 @@
                   <td>1 row per plan &#215; <code>snapshot_date</code></td>
                 </tr>
                 <tr>
-                  <td><code>dbo.IPEDSBasicData</code></td>
+                  <td><code>dbo.IPEDSBasicData</code> <span class="hint">(view)</span></td>
                   <td>Per-institution, per-year IPEDS view: enrollment, first-time undergrad geography, admissions funnel, test scores, tuition &amp; aid. Drives the IPEDS tab on the market page.</td>
                   <td>~1 row per <code>UnitID</code> &#215; <code>DataYear</code> (view fans out - dedupe before use)</td>
                 </tr>
                 <tr>
-                  <td><code>dbo.Enrollments</code></td>
+                  <td><code>dbo.Enrollments</code> <span class="hint">(view)</span></td>
                   <td>Per-school per-year CDS-style history view - the Schools_Denormal vocabulary plus race/ethnicity splits, the financial-aid block, and industry-average benchmarks. Includes 2025 rows. Not yet queried by the export.</td>
                   <td>1 row per <code>schoolKey</code> &#215; <code>enrollmentYear</code> (<code>Key</code> = "school:year")</td>
                 </tr>

@@ -904,6 +904,7 @@ h1, h2, h3, .serif {
   color: var(--slate-70);
 }
 .pipeline-table .muted { color: var(--slate-30); }
+.pipeline-table .flag-yes { color: var(--good); font-weight: 700; }
 
 /* View routing ------------------------------------------------- */
 

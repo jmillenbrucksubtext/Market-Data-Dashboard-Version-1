@@ -289,6 +289,14 @@ function fmtQualScorePill(v) {
   return `<span class="qual-mini qual-mini-${tier}">${pct}%</span>`;
 }
 
+// "Yes"/"No" designation cell: green check for yes, muted dash otherwise.
+// The Excel export writes the raw "Yes"/"No" string instead.
+function fmtYesFlag(v) {
+  return v === "Yes"
+    ? `<span class="flag-yes">✓</span>`
+    : `<span class="muted">-</span>`;
+}
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -429,6 +437,13 @@ function pipelineDerived() {
   const fteGrowth = new Map((t.fte_history || []).map((f) => [f.market_key, f.yoy_fte_growth]));
   const yoyRent = new Map((t.rent_yoy || []).map((r) => [r.market_key, r.yoy_rent_growth]));
   const qualScore = new Map((t.market_qualifiers || []).map((q) => [q.market_key, q.score_pct]));
+  // R1 status comes from the power4_r1 qualifier result rather than a second
+  // copy of the Carnegie list in JS: actual_display is "Power 4 + R1",
+  // "Power 4", "R1", "Neither", or "-" (city market, no anchor).
+  const r1Status = new Map((t.market_qualifiers || []).map((q) => {
+    const disp = (q.results || []).find((r) => r.id === "power4_r1")?.actual_display;
+    return [q.market_key, !disp || disp === "-" ? null : disp.includes("R1") ? "Yes" : "No"];
+  }));
   const onCampus = new Map();
   (t.university_info || []).forEach((u) => {
     const b = u.beds_on_campus_reported ?? u.beds_on_campus_computed ?? 0;
@@ -457,7 +472,7 @@ function pipelineDerived() {
       if (p) rentGrowth.set(pk, c / p - 1);
     }
   }
-  _pipelineDerived = { fteGrowth, yoyRent, qualScore, onCampus, propsByMarket, rentGrowth };
+  _pipelineDerived = { fteGrowth, yoyRent, qualScore, r1Status, onCampus, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
@@ -510,6 +525,8 @@ function pipelineScorecardRows() {
         ...r,
         fte_growth_yoy: d.fteGrowth.get(r.market_key) ?? null,
         qualifier_score: d.qualScore.get(r.market_key) ?? null,
+        is_power4: r.anchor_university ? (POWER4_ANCHORS.has(r.anchor_university) ? "Yes" : "No") : null,
+        is_r1: d.r1Status.get(r.market_key) ?? null,
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
         on_campus_beds: d.onCampus.get(r.market_key) ?? null,
         rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
@@ -536,6 +553,8 @@ const PIPELINE_COLS = [
   { h: "University",           uni: true },
   { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
   { h: "Qualifier Score",      get: (r) => r.qualifier_score,     fmt: fmtQualScorePill, xz: "0%" },
+  { h: "Power 4",              group: "Anchor",            sub: "Power 4",      get: (r) => r.is_power4,           fmt: fmtYesFlag },
+  { h: "R1",                   group: "Anchor",            sub: "R1",           get: (r) => r.is_r1,               fmt: fmtYesFlag },
   { h: "Total Enrollment",     group: "Enrollment",        sub: "Total",        get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
   { h: "FTE",                  group: "Enrollment",        sub: "FTE",          get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
   { h: "FTE Growth",           group: "Enrollment",        sub: "FTE Growth",   get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },

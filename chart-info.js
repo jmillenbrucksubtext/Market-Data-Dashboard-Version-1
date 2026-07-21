@@ -51,6 +51,7 @@
       sig: "Every market Subtext is actively tracking, broken out by pipeline stage.",
       rows: [
         ["Qualifier Score", "Share of evaluable Subtext qualifiers passing (`market_qualifiers.score_pct`) - the same score as the market page's Qualifier Scorecard badge, tiered >= 80% green, 60-79% amber, < 60% rust"],
+        ["Power 4 / R1", "Anchor-university designations, shown as separate check columns: Power-4 conference membership (2024-25 alignment) and Carnegie 2025 R1 (very-high-research) status - the same classifications behind the 'Power 4 or R1 university' qualifier"],
         ["FTE / FTE Growth", "Full-time enrollment and its YoY change (`fte_history.yoy_fte_growth`)"],
         ["Market Occ. / Prelease", "`MarketReports.occupancy` / `prelease` at the latest snapshot"],
         ["Market Rent", "Bed-weighted `avg_rent` across the market"],

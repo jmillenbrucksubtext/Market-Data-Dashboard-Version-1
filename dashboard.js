@@ -447,6 +447,12 @@ function pipelineDerived() {
     const disp = (q.results || []).find((r) => r.id === "power4_r1")?.actual_display;
     return [q.market_key, !disp || disp === "-" ? null : disp.includes("R1") ? "Yes" : "No"];
   }));
+  // Prelease YoY: the prelease_lag qualifier's actual is already the
+  // same-week-of-cycle delta vs the prior leasing cycle (pct points).
+  const preleaseYoY = new Map((t.market_qualifiers || []).map((q) => {
+    const r = (q.results || []).find((x) => x.id === "prelease_lag");
+    return [q.market_key, r?.actual ?? null];
+  }));
   const onCampus = new Map();
   (t.university_info || []).forEach((u) => {
     const b = u.beds_on_campus_reported ?? u.beds_on_campus_computed ?? 0;
@@ -475,7 +481,7 @@ function pipelineDerived() {
       if (p) rentGrowth.set(pk, c / p - 1);
     }
   }
-  _pipelineDerived = { fteGrowth, yoyRent, qualScore, r1Status, onCampus, propsByMarket, rentGrowth };
+  _pipelineDerived = { fteGrowth, yoyRent, qualScore, r1Status, preleaseYoY, onCampus, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
@@ -531,6 +537,7 @@ function pipelineScorecardRows() {
         qualifier_score: d.qualScore.get(r.market_key) ?? null,
         is_power4: r.anchor_university ? (POWER4_ANCHORS.has(r.anchor_university) ? "Yes" : "No") : null,
         is_r1: d.r1Status.get(r.market_key) ?? null,
+        prelease_yoy: d.preleaseYoY.get(r.market_key) ?? null,
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
         on_campus_beds: d.onCampus.get(r.market_key) ?? null,
         rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
@@ -573,6 +580,7 @@ const PIPELINE_COLS = [
   { h: "Prelease - 0.5 Mi",    group: "Prelease",          sub: "0.5 Mi",       get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Prelease - 1.0 Mi",    group: "Prelease",          sub: "1.0 Mi",       get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Market Prelease",      group: "Prelease",          sub: "Market",       get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Prelease YoY",         group: "Prelease",          sub: "YoY",          get: (r) => r.prelease_yoy,        fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Rent - 0.5 Mi",        group: "Rent",              sub: "0.5 Mi",       get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },
   { h: "Rent - 1.0 Mi",        group: "Rent",              sub: "1.0 Mi",       get: (r) => r.rent_one_mi,         fmt: fmtUsd,           xz: "$#,##0" },
   { h: "Market Rent",          group: "Rent",              sub: "Market",       get: (r) => r.avg_rent_per_bed,    fmt: fmtUsd,           xz: "$#,##0" },

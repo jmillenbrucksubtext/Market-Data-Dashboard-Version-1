@@ -55,6 +55,7 @@
         ["Power 4 / R1", "Anchor-university designations, shown as separate check columns: Power-4 conference membership (2024-25 alignment) and Carnegie 2025 R1 (very-high-research) status - the same classifications behind the 'Power 4 or R1 university' qualifier"],
         ["FTE / FTE Growth", "Full-time enrollment and its YoY change (`fte_history.yoy_fte_growth`)"],
         ["Market Occ. / Prelease", "`MarketReports.occupancy` / `prelease` at the latest snapshot"],
+        ["Prelease YoY", "Same-week-of-cycle prelease delta vs the prior leasing cycle, in percentage points - the figure behind the 'prelease not lagging' qualifier (`prelease_velocity`)"],
         ["Market Rent", "Bed-weighted `avg_rent` across the market"],
         ["Rent - 0.5 / 1.0 Mile", "Bed-weighted `avg_rent` of properties within that radius of campus"],
         ["YoY Rent Growth", "`rent_yoy.yoy_rent_growth`"],

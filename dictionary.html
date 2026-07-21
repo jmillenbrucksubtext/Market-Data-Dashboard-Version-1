@@ -107,11 +107,12 @@
 
                 <article class="dict-item">
                   <h4>Market scorecard table</h4>
-                  <p>Active-pipeline markets grouped into a table per CRM stage (Markets - Upcoming / Assessing / Pursuing), a monthly-market-update layout. Markets sort A-Z within each stage; click one to open its page. Download the whole thing to Excel from the card header.</p>
+                  <p>Active-pipeline markets grouped into a table per CRM stage (Markets - Upcoming / Assessing / Pursuing), a monthly-market-update layout, plus a final <strong>Markets - Tracking</strong> section holding every other market the development or acquisitions forward model ranks. CRM stages sort A-Z; the Tracking section sorts by best model rank. Click a market to open its page. Download the whole thing to Excel from the card header.</p>
                   <table class="dict-fields">
                     <thead><tr><th>Column</th><th>Formula</th></tr></thead>
                     <tbody>
                       <tr><td>Qualifier Score</td><td>Share of evaluable Subtext qualifiers passing (<code>market_qualifiers.score_pct</code>) - same score as the market page's Qualifier Scorecard badge, tiered &ge; 80% green, 60-79% amber, &lt; 60% red</td></tr>
+                      <tr><td>Subtext Rank - Dev / Acq</td><td>Forward-model list ranks, lower = better: <code>scorecard.fwd_rank</code> parsed from forward-model.html (development screener) and <code>scorecard.acq_rank</code> from acquisitions-model.html</td></tr>
                       <tr><td>Power 4 / R1</td><td>Anchor-university designations as separate check columns: Power-4 conference membership (2024-25 alignment, <code>POWER4_ANCHORS</code> in dashboard.js) and Carnegie 2025 R1 status (from the <code>power4_r1</code> qualifier result)</td></tr>
                       <tr><td>Total Enrollment / FTE</td><td>Market enrollment and full-time-equivalent enrollment</td></tr>
                       <tr><td>FTE Growth</td><td>YoY change in FTE (<code>fte_history.yoy_fte_growth</code>)</td></tr>

@@ -72,7 +72,7 @@ def main() -> int:
     payload = json.loads(DATA_JSON.read_text(encoding="utf-8"))
     counts = patch_university_qualifiers(payload)
     DATA_JSON.write_text(
-        json.dumps(payload, indent=2, default=str),
+        json.dumps(payload, separators=(",", ":"), default=str),
         encoding="utf-8",
     )
     print(

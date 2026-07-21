@@ -46,10 +46,11 @@
     },
     "scorecard": {
       title: "Market scorecard",
-      formula: "Active-pipeline markets grouped into a table per CRM stage (Upcoming / Assessing / Pursuing), a monthly-market-update layout. Markets sort A-Z within each stage; click one to open it.",
-      sql: "`scorecard` (joined to fte_history, rent_yoy, university_info, properties) where market_status is set",
-      sig: "Every market Subtext is actively tracking, broken out by pipeline stage.",
+      formula: "Active-pipeline markets grouped into a table per CRM stage (Upcoming / Assessing / Pursuing), a monthly-market-update layout, plus a final Markets - Tracking section holding every other market the development or acquisitions forward model ranks. CRM stages sort A-Z; the Tracking section sorts by best model rank. Click a market to open it.",
+      sql: "`scorecard` (joined to fte_history, rent_yoy, university_info, properties) where market_status is set or a model rank exists",
+      sig: "Every market Subtext is actively tracking, broken out by pipeline stage, with the rest of the model-ranked universe at the end.",
       rows: [
+        ["Subtext Rank - Dev / Acq", "Forward-model list ranks (lower = better): `scorecard.fwd_rank` from forward-model.html (development screener) and `scorecard.acq_rank` from acquisitions-model.html"],
         ["Qualifier Score", "Share of evaluable Subtext qualifiers passing (`market_qualifiers.score_pct`) - the same score as the market page's Qualifier Scorecard badge, tiered >= 80% green, 60-79% amber, < 60% rust"],
         ["Power 4 / R1", "Anchor-university designations, shown as separate check columns: Power-4 conference membership (2024-25 alignment) and Carnegie 2025 R1 (very-high-research) status - the same classifications behind the 'Power 4 or R1 university' qualifier"],
         ["FTE / FTE Growth", "Full-time enrollment and its YoY change (`fte_history.yoy_fte_growth`)"],

@@ -82,7 +82,7 @@ def main() -> int:
 
     schools = len({r["ipeds_id"] for r in rows})
     years = sorted({r["year_"] for r in rows})
-    DATA_JSON.write_text(json.dumps(payload, indent=2, default=str), encoding="utf-8")
+    DATA_JSON.write_text(json.dumps(payload, separators=(",", ":"), default=str), encoding="utf-8")
     print(
         f"admissions_history: {len(rows)} rows · {schools} schools"
         f" · years {years[0]}-{years[-1]}" if rows else "admissions_history: 0 rows",

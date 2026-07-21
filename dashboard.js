@@ -427,6 +427,9 @@ const PIPELINE_STAGES = [
   { key: "pursuing",  label: "Markets - Pursuing" },
   { key: "assessing", label: "Markets - Assessing" },
   { key: "upcoming",  label: "Markets - Upcoming" },
+  // Pseudo-stage: every market with no CRM stage that the development or
+  // acquisitions forward model ranks. Sorted by best model rank, not A-Z.
+  { key: "ranked",    label: "Markets - Tracking" },
 ];
 
 // Derived-column maps built once from DATA (the pipeline set is small).
@@ -503,13 +506,14 @@ function uncapturedWithinMile(props, fte, minYear) {
   return 1 - beds / fte;
 }
 
-// Active-market rows (those with a market_status), augmented with the derived
-// columns and filtered by the search box. Grouped by stage at render time.
+// Scorecard rows: active markets (those with a market_status) plus any other
+// market the forward models rank, augmented with the derived columns and
+// filtered by the search box. Grouped by stage at render time.
 function pipelineScorecardRows() {
   const d = pipelineDerived();
   const q = (document.getElementById("market-filter")?.value || "").trim().toLowerCase();
   return DATA.tables.scorecard
-    .filter((r) => r.market_status)
+    .filter((r) => r.market_status || r.fwd_rank != null || r.acq_rank != null)
     .filter((r) => !q
       || (r.anchor_university || "").toLowerCase().includes(q)
       || (r.city || "").toLowerCase().includes(q)
@@ -551,7 +555,8 @@ function pipelineScorecardRows() {
 // ungrouped columns span both rows.
 const PIPELINE_COLS = [
   { h: "University",           uni: true },
-  { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
+  { h: "Dev Rank",             group: "Subtext Rank",      sub: "Dev.",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
+  { h: "Acq Rank",             group: "Subtext Rank",      sub: "Acq.",         get: (r) => r.acq_rank,            fmt: fmtInt,           xz: "#,##0" },
   { h: "Qualifier Score",      get: (r) => r.qualifier_score,     fmt: fmtQualScorePill, xz: "0%" },
   { h: "Power 4",              group: "Anchor",            sub: "Power 4",      get: (r) => r.is_power4,           fmt: fmtYesFlag },
   { h: "R1",                   group: "Anchor",            sub: "R1",           get: (r) => r.is_r1,               fmt: fmtYesFlag },
@@ -586,7 +591,17 @@ function pipelineGroupStart(i) {
 
 function pipelineRowsByStage(rows) {
   const byStage = new Map(PIPELINE_STAGES.map((s) => [s.key, []]));
-  rows.forEach((r) => { if (byStage.has(r.market_status)) byStage.get(r.market_status).push(r); });
+  rows.forEach((r) => {
+    const key = r.market_status || "ranked";
+    if (byStage.has(key)) byStage.get(key).push(r);
+  });
+  // The pseudo-stage orders by best model rank (dev or acq, lower = better)
+  // instead of the A-Z the CRM stages use.
+  const best = (r) => Math.min(r.fwd_rank ?? Infinity, r.acq_rank ?? Infinity);
+  byStage.get("ranked").sort((a, b) =>
+    best(a) - best(b)
+    || (a.fwd_rank ?? Infinity) - (b.fwd_rank ?? Infinity)
+    || (a.anchor_university || "").localeCompare(b.anchor_university || ""));
   return byStage;
 }
 
@@ -926,8 +941,12 @@ function renderScorecard() {
 
   const rc = document.getElementById("result-count");
   if (rc) {
+    const active = rows.filter((r) => r.market_status).length;
+    const ranked = rows.length - active;
+    const activeStages = Math.max(0, stagesShown - (ranked ? 1 : 0));
     rc.textContent = rows.length
-      ? `${rows.length} active markets across ${stagesShown} stage${stagesShown === 1 ? "" : "s"}`
+      ? `${active} active markets across ${activeStages} stage${activeStages === 1 ? "" : "s"}`
+        + (ranked ? ` · ${ranked} more forward-model ranked` : "")
       : "No active-pipeline markets";
   }
 }

@@ -88,7 +88,7 @@ def patch_data_json(data_path: Path = DATA_JSON) -> dict:
     headlines = fetch_dispatch_headlines()
     payload["dispatch_headlines"] = headlines
     data_path.write_text(
-        json.dumps(payload, indent=2, ensure_ascii=False),
+        json.dumps(payload, separators=(",", ":"), ensure_ascii=False),
         encoding="utf-8",
     )
     print(f"  dispatch_headlines: {len(headlines['features'])} features + "

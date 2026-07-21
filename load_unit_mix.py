@@ -254,7 +254,7 @@ def main() -> int:
     total_units = sum(r["total_units"] for r in rows)
 
     DATA_JSON.write_text(
-        json.dumps(payload, indent=2, default=str), encoding="utf-8"
+        json.dumps(payload, separators=(",", ":"), default=str), encoding="utf-8"
     )
     print(
         f"unit_mix: {len(rows)} properties across {len(markets)} markets",

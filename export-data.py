@@ -41,6 +41,8 @@ from pathlib import Path
 
 import pyodbc
 
+from model_ranks import ACQUISITIONS_HTML, FORWARD_HTML, compute_model_ranks
+
 SERVER = "subtextresearch.database.windows.net"
 DATABASE = "StudentResearch"
 
@@ -865,92 +867,15 @@ ACTIVE_MARKET_STATUS: dict[int, str] = {
 
 
 # ============================================================
-# Forward Looking Model - rank per market (from forward-model.html)
+# Forward ranking models - rank per market (from the model HTMLs)
 # ============================================================
-# The data-science team drops a self-contained forward-model.html into this
-# folder (embedded on the Industry page as the "Forward Model" view). We parse
-# its market ranking and stamp fwd_rank onto the scorecard so the Industry table
-# can show each market's screener rank. Re-read every refresh, so a re-dropped
-# HTML updates the column automatically.
-FORWARD_HTML = Path(__file__).parent / "forward-model.html"
-# Screener names that are shorter/variant than the dashboard's anchor name, or
-# ambiguous across multiple campuses - map to the intended flagship. Values are
-# canonical anchor names (resolved through the scorecard, so no hard-coded keys).
-_FORWARD_ALIAS = {
-    "pennsylvania state university": "Penn State",
-    "university at buffalo state university of new york": "University at Buffalo SUNY",
-    "university of illinois urbana champaign": "University of Illinois at Urbana-Champaign",
-    "university of north carolina": "University of North Carolina at Chapel Hill",
-    "university of massachusetts": "University of Massachusetts Amherst",
-    "indiana university": "Indiana University Bloomington",
-    "university of minnesota": "University of Minnesota Twin Cities",
-}
-
-
-def _norm_name(s: str) -> str:
-    s = (s or "").lower().replace("–", "-").replace("—", "-")
-    s = re.sub(r"[^a-z0-9 ]", " ", s)
-    return re.sub(r"\s+", " ", s).strip()
-
-
-def compute_forward_ranks(scorecard: list[dict]) -> dict[int, int]:
-    """Return {market_key: forward_rank} parsed from forward-model.html.
-
-    Non-fatal: a missing or unreadable file just yields no ranks."""
-    if not FORWARD_HTML.exists():
-        print("  forward_ranks: forward-model.html not found (skipping)")
-        return {}
-    try:
-        html = FORWARD_HTML.read_text(encoding="utf-8")
-    except OSError as e:
-        print(f"  forward_ranks SKIPPED (read failed: {e})")
-        return {}
-    # Read the Values tab only, so each market is counted once.
-    start, end = html.find('id="tab-values"'), html.find('id="tab-weightings"')
-    section = html[start:end] if start != -1 and end != -1 else html
-
-    anchor_to_key: dict[str, int] = {}
-    city_to_key: dict[str, int] = {}
-    for r in scorecard:
-        anchor_to_key[_norm_name(r["anchor_university"])] = r["market_key"]
-        city_to_key.setdefault(_norm_name(r["city"]), r["market_key"])
-
-    def resolve(name: str):
-        n = _norm_name(name)
-        if n in _FORWARD_ALIAS:                       # variant / flagship lock
-            n = _norm_name(_FORWARD_ALIAS[n])
-        if n in anchor_to_key:                        # exact anchor
-            return anchor_to_key[n]
-        parts = re.split(r"\s+-\s+", name.replace("–", "-"), maxsplit=1)
-        uni = _norm_name(parts[0])
-        city = _norm_name(parts[1]) if len(parts) > 1 else None
-        if uni in anchor_to_key:                      # "University - City" → university
-            return anchor_to_key[uni]
-        for a, k in anchor_to_key.items():            # single-campus prefix
-            if a.startswith(n + " ") or n.startswith(a + " "):
-                return k
-        if city and city in city_to_key:              # city fallback
-            return city_to_key[city]
-        return None
-
-    ranks: dict[int, int] = {}
-    unmatched: list[str] = []
-    for row in re.findall(r"<tr>(.*?)</tr>", section, re.S):
-        mr = re.search(r'rank-forward">(\d+)<', row)
-        mn = re.search(r'<td class="left">(.*?)</td>', row, re.S)
-        if not (mr and mn):
-            continue
-        name = re.sub(r"<[^>]+>", "", mn.group(1)).replace("&amp;", "&").strip()
-        k = resolve(name)
-        if k is None:
-            unmatched.append(name)
-        elif k not in ranks:                          # first (Values tab) wins
-            ranks[k] = int(mr.group(1))
-    print(f"  forward_ranks: {len(ranks)} markets ranked from forward-model.html")
-    if unmatched:
-        print(f"    {len(unmatched)} screener markets not on the dashboard: "
-              + "; ".join(unmatched))
-    return ranks
+# The data-science team drops self-contained forward-model.html (development
+# screener, embedded on the Industry page as the "Forward Model" view) and
+# acquisitions-model.html into this folder. Their Values-tab rankings are
+# parsed by the shared model_ranks module and stamped onto the scorecard as
+# fwd_rank / acq_rank. Re-read every refresh, so a re-dropped HTML updates the
+# columns automatically; load_model_ranks.py re-stamps standalone between
+# refreshes.
 
 
 def connect(auth: str = "aad"):
@@ -1580,13 +1505,15 @@ def main() -> int:
     # toggle can filter + colour the map off a single field. is_pursuit is kept
     # (derived from status) for backward compat with the market-state report.
     # NOTE: pinned from ACTIVE_MARKET_STATUS for now, not SQL - see that constant.
-    fwd_ranks = compute_forward_ranks(payload["tables"]["scorecard"])
+    fwd_ranks = compute_model_ranks(payload["tables"]["scorecard"], FORWARD_HTML)
+    acq_ranks = compute_model_ranks(payload["tables"]["scorecard"], ACQUISITIONS_HTML)
     for r in payload["tables"]["scorecard"]:
         status = ACTIVE_MARKET_STATUS.get(r["market_key"])
         r["market_status"] = status               # "pursuing"|"assessing"|"upcoming"|None
         r["is_pursuit"] = 1 if status == "pursuing" else 0
         r["pursuit_deals"] = 1 if status == "pursuing" else 0
         r["fwd_rank"] = fwd_ranks.get(r["market_key"])  # None if not in the screener
+        r["acq_rank"] = acq_ranks.get(r["market_key"])
     _sc = payload["tables"]["scorecard"]
     print("  active markets: "
           f"{sum(1 for r in _sc if r.get('market_status') == 'upcoming')} upcoming, "

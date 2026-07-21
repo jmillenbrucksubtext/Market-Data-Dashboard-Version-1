@@ -188,7 +188,7 @@ def main() -> int:
     print(f"fte_growth_2022 qualifier: {counts['fte_growth_2022']} markets moved from N/A to live")
 
     DATA_JSON.write_text(
-        json.dumps(payload, indent=2, default=str), encoding="utf-8"
+        json.dumps(payload, separators=(",", ":"), default=str), encoding="utf-8"
     )
     print(f"Wrote {DATA_JSON} ({DATA_JSON.stat().st_size / 1024:.0f} KB)")
     return 0

@@ -163,7 +163,7 @@ def main() -> int:
     payload = json.loads(DATA_JSON.read_text(encoding="utf-8"))
     stats = patch_comp_set(payload)
     DATA_JSON.write_text(
-        json.dumps(payload, indent=2, default=str),
+        json.dumps(payload, separators=(",", ":"), default=str),
         encoding="utf-8",
     )
     for k, v in stats.items():

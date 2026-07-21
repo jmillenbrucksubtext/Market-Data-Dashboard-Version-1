@@ -15,106 +15,55 @@
     font-size: clamp(10px, 1.05vw, 13px);
   }
 
-  /* ── Header ── */
   .header {
     margin-bottom: 32px;
     border-left: 5px solid #2c4a8a;
     padding-left: 20px;
   }
-  .header h1 {
-    font-size: 26px;
-    font-weight: 700;
-    color: #1a1d2e;
-    letter-spacing: -0.3px;
-  }
-  .header p {
-    font-size: 13px;
-    color: #6b7280;
-    margin-top: 4px;
-  }
+  .header h1 { font-size: 26px; font-weight: 700; color: #1a1d2e; letter-spacing: -0.3px; }
+  .header p  { font-size: 13px; color: #6b7280; margin-top: 4px; }
 
-  /* ── Forecast legend pill ── */
   .fcast-legend {
-    display: inline-flex;
-    align-items: center;
-    gap: 6px;
-    background: #fff8e1;
-    border: 1px solid #f59e0b;
-    border-radius: 20px;
-    padding: 5px 14px;
-    font-size: 11.5px;
-    color: #92400e;
-    font-weight: 600;
-    margin-top: 10px;
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #fff8e1; border: 1px solid #f59e0b; border-radius: 20px;
+    padding: 5px 14px; font-size: 11.5px; color: #92400e;
+    font-weight: 600; margin-top: 10px;
   }
   .fcast-legend .dot {
-    width: 8px; height: 8px;
-    background: #f59e0b;
-    border-radius: 50%;
-    flex-shrink: 0;
+    width: 8px; height: 8px; background: #f59e0b; border-radius: 50%; flex-shrink: 0;
   }
 
-  /* ── Callout / Legend Grid ── */
   .callouts {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-    gap: 10px;
-    margin-bottom: 36px;
+    gap: 10px; margin-bottom: 36px;
   }
   .callout {
-    background: #fff;
-    border: 1px solid #e2e5ee;
-    border-left: 4px solid #2c4a8a;
-    border-radius: 6px;
-    padding: 12px 14px;
+    background: #fff; border: 1px solid #e2e5ee;
+    border-left: 4px solid #2c4a8a; border-radius: 6px; padding: 12px 14px;
   }
   .callout .abbr {
-    font-size: 10.5px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-    color: #2c4a8a;
-    margin-bottom: 4px;
+    font-size: 10.5px; font-weight: 700; text-transform: uppercase;
+    letter-spacing: 0.6px; color: #2c4a8a; margin-bottom: 4px;
   }
-  .callout .def {
-    font-size: 12px;
-    color: #4b5563;
-    line-height: 1.5;
-  }
+  .callout .def { font-size: 12px; color: #4b5563; line-height: 1.5; }
 
-  /* ── Table ── */
   .table-wrap {
-    background: #fff;
-    border: 1px solid #e2e5ee;
-    border-radius: 8px;
-    overflow-x: auto;
-    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    background: #fff; border: 1px solid #e2e5ee; border-radius: 8px;
+    overflow-x: auto; box-shadow: 0 1px 4px rgba(0,0,0,0.06);
   }
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    min-width: 0;
-  }
-  thead tr {
-    background: #2c4a8a;
-    color: #fff;
-  }
+  table { width: 100%; border-collapse: collapse; min-width: 0; }
+  thead tr { background: #2c4a8a; color: #fff; }
   thead th {
-    padding: clamp(5px, 0.7vw, 10px) clamp(5px, 0.8vw, 12px);
-    font-size: clamp(7.5px, 0.75vw, 10.5px);
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    text-align: center;
-    white-space: nowrap;
+    padding: clamp(5px,.7vw,10px) clamp(5px,.8vw,12px);
+    font-size: clamp(7.5px,.75vw,10.5px); font-weight: 600;
+    text-transform: uppercase; letter-spacing: 0.5px;
+    text-align: center; white-space: nowrap;
     border-right: 1px solid rgba(255,255,255,0.12);
   }
   thead th.left { text-align: left; }
   thead th:last-child { border-right: none; }
-  /* Forecast column header - slightly deeper blue to mark forecasted columns */
-  thead th.fcast-col {
-    background: #1e3567;
-  }
+  thead th.fcast-col { background: #1e3567; }
 
   tbody tr { border-bottom: 1px solid #eef0f5; }
   tbody tr:last-child { border-bottom: none; }
@@ -122,112 +71,71 @@
   tbody tr:hover { background: #eef3fc; }
 
   td {
-    padding: clamp(4px, 0.55vw, 8px) clamp(5px, 0.8vw, 12px);
-    text-align: center;
-    color: #374151;
-    font-size: clamp(9px, 0.9vw, 12.5px);
-    border-right: 1px solid #eef0f5;
+    padding: clamp(4px,.55vw,8px) clamp(5px,.8vw,12px);
+    text-align: center; color: #374151;
+    font-size: clamp(9px,.9vw,12.5px); border-right: 1px solid #eef0f5;
   }
   td:last-child { border-right: none; }
   td.left { text-align: left; font-weight: 500; color: #1a1d2e; }
 
-  /* Forecast data cells - no extra tint, inherit row background */
-
-  /* Ranking badges */
   .rank {
-    display: inline-block;
-    min-width: 28px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 700;
-    font-size: 12px;
+    display: inline-block; min-width: 28px; padding: 2px 6px;
+    border-radius: 4px; font-weight: 700; font-size: 12px;
   }
   .rank-forward { background: #2c4a8a; color: #fff; }
-  .rank-current { background: #e9edf6; color: #374151; }
+  .rank-current  { background: #e9edf6; color: #374151; }
 
-  /* Change badges */
   .change {
-    display: inline-block;
-    min-width: 40px;
-    padding: 2px 6px;
-    border-radius: 4px;
-    font-weight: 600;
-    font-size: 11.5px;
+    display: inline-block; min-width: 40px; padding: 2px 6px;
+    border-radius: 4px; font-weight: 600; font-size: 11.5px;
   }
   .change-up   { background: #d1fae5; color: #065f46; }
   .change-down { background: #fee2e2; color: #991b1b; }
   .change-flat { background: #f3f4f6; color: #6b7280; }
 
-  /* Metric coloring */
   .metric-hi  { color: #065f46; font-weight: 600; }
   .metric-lo  { color: #991b1b; font-weight: 600; }
   .metric-mid { color: #374151; }
 
-  /* Strongest / Weakest tags */
   .tag {
-    display: inline-block;
-    padding: 2px 7px;
-    border-radius: 10px;
-    font-size: 10.5px;
-    font-weight: 600;
-    white-space: nowrap;
+    display: inline-block; padding: 2px 7px; border-radius: 10px;
+    font-size: 10.5px; font-weight: 600; white-space: nowrap;
   }
   .tag-strong { background: #d1fae5; color: #065f46; }
   .tag-weak   { background: #fee2e2; color: #991b1b; }
 
-  /* Forecast badge in header - white outline on blue background */
   .fcast-badge {
-    display: inline-block;
-    background: transparent;
-    color: rgba(255,255,255,0.9);
-    border: 1px solid rgba(255,255,255,0.55);
-    font-size: 7px;
-    font-weight: 800;
-    letter-spacing: 0.3px;
-    padding: 1px 4px;
-    border-radius: 3px;
-    vertical-align: middle;
-    margin-left: 3px;
-    text-transform: uppercase;
+    display: inline-block; background: transparent;
+    color: rgba(255,255,255,0.9); border: 1px solid rgba(255,255,255,0.55);
+    font-size: 7px; font-weight: 800; letter-spacing: 0.3px;
+    padding: 1px 4px; border-radius: 3px;
+    vertical-align: middle; margin-left: 3px; text-transform: uppercase;
   }
 
-  /* Footer */
-  .footer {
-    margin-top: 24px;
-    font-size: 11px;
-    color: #9ca3af;
-    text-align: right;
-  }
+  .footer { margin-top: 24px; font-size: 11px; color: #9ca3af; text-align: right; }
 
-  /* ── Tabs ── */
-  .tabs {
-    display: flex;
-    gap: 4px;
-    margin-bottom: 28px;
-  }
+  .tabs { display: flex; gap: 4px; margin-bottom: 28px; }
   .tab-btn {
-    padding: 9px 22px;
-    border: 1px solid #d1d5db;
-    border-radius: 6px 6px 0 0;
-    background: #e9edf6;
-    color: #374151;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    border-bottom: none;
-    transition: background 0.15s;
+    padding: 9px 22px; border: 1px solid #d1d5db; border-radius: 6px 6px 0 0;
+    background: #e9edf6; color: #374151; font-size: 13px; font-weight: 600;
+    cursor: pointer; border-bottom: none; transition: background 0.15s;
   }
   .tab-btn.active { background: #2c4a8a; color: #fff; border-color: #2c4a8a; }
   .tab-btn:not(.active):hover { background: #d4ddf5; }
   .tab-panel { display: none; }
   .tab-panel.active { display: block; }
 
-  /* Weighting score coloring */
   .w-pos  { color: #065f46; font-weight: 600; }
   .w-neg  { color: #991b1b; font-weight: 600; }
   .w-zero { color: #6b7280; }
-  .flag-yes { background: #2c4a8a; color: #fff; border-radius: 4px; padding: 1px 7px; font-weight: 700; font-size: 11px; }
-  .flag-no  { background: #e9edf6; color: #9ca3af; border-radius: 4px; padding: 1px 7px; font-size: 11px; }
+  .flag-yes {
+    background: #2c4a8a; color: #fff; border-radius: 4px;
+    padding: 1px 7px; font-weight: 700; font-size: 11px;
+  }
+  .flag-no {
+    background: #e9edf6; color: #9ca3af; border-radius: 4px;
+    padding: 1px 7px; font-size: 11px;
+  }
 
   @media print {
     body { background: #fff; padding: 20px; font-size: 11px; }
@@ -243,7 +151,6 @@
 </head>
 <body>
 
-<!-- ── Header ── -->
 <div class="header">
   <h1>Forward Looking Model - Acquisition Screener</h1>
   <p>Purpose-Built Student Housing &middot; <span id="current-year"></span> Rankings &amp; Key Metrics</p>
@@ -253,67 +160,27 @@
   </div>
 </div>
 
-<!-- ── Tabs ── -->
 <div class="tabs">
   <button class="tab-btn active" onclick="showTab('values', this)">Forward Looking Values</button>
   <button class="tab-btn" onclick="showTab('weightings', this)">Forward Looking Weightings</button>
 </div>
 
+<!-- VALUES TAB -->
 <div id="tab-values" class="tab-panel active">
-
-<!-- ── Column Definitions ── -->
 <div class="callouts">
-  <div class="callout">
-    <div class="abbr">Fwd. Rank</div>
-    <div class="def">Forward-looking market rank based on a forecasted composite score of demand, supply, and occupancy signals. Lower = more attractive.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Curr. Rank</div>
-    <div class="def">Current-year ranking based on the existing model. Used as a baseline for measuring directional change.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Change</div>
-    <div class="def">Difference between current and forward-looking rank (Current &minus; Forward). Positive = market improved; negative = market declined.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">FT Enrollment</div>
-    <div class="def">Full-time student enrollment at the associated university. A proxy for market size and base demand for off-campus housing.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">TTM Prelease</div>
-    <div class="def">Trailing 12-month prelease rate for purpose-built student housing. Higher prelease indicates stronger near-term demand.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">PBSH Occ.</div>
-    <div class="def">Purpose-Built Student Housing occupancy rate. Measures how fully occupied existing PBSH stock is in the market.</div>
-  </div>
-  <div class="callout fcast">
-    <div class="abbr">3yr Bed/Enroll &Delta; &nbsp;<span class="fcast-badge">Fcst</span></div>
-    <div class="def"><strong>Forecast.</strong> Projected 3-year change in the student-bed-to-enrollment ratio, using forecasted enrollment. Rising ratio signals new supply outpacing enrollment growth.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">TTM Prelease &Delta;</div>
-    <div class="def">Year-over-year change in trailing 12-month prelease rate. Positive means leasing momentum is accelerating.</div>
-  </div>
-  <div class="callout fcast">
-    <div class="abbr">3yr App. Growth &nbsp;<span class="fcast-badge">Fcst</span></div>
-    <div class="def"><strong>Forecast.</strong> Projected 3-year change in university applications, based on enrollment forecasting models. Indicates long-run demand trajectory and enrollment pipeline strength.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">POSH Occ. LY</div>
-    <div class="def">Private Off-Campus Student Housing occupancy from last year. Captures the broader off-campus rental market health.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">FT OoS UG Growth</div>
-    <div class="def">Growth in full-time out-of-state undergraduate enrollment. OoS students are more likely to rent, boosting PBSH demand.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Strongest / Weakest</div>
-    <div class="def">The single variable with the highest or lowest normalized score for that market - flags what is driving or limiting the ranking.</div>
-  </div>
+  <div class="callout"><div class="abbr">Fwd. Rank</div><div class="def">Forward-looking market rank based on a forecasted composite score of demand, supply, and occupancy signals. Lower = more attractive.</div></div>
+  <div class="callout"><div class="abbr">Curr. Rank</div><div class="def">Current-year ranking based on the existing model. Used as a baseline for measuring directional change.</div></div>
+  <div class="callout"><div class="abbr">Change</div><div class="def">Difference between current and forward-looking rank (Current &minus; Forward). Positive = market improved; negative = market declined.</div></div>
+  <div class="callout"><div class="abbr">FT Enrollment</div><div class="def">Full-time student enrollment at the associated university. A proxy for market size and base demand for off-campus housing.</div></div>
+  <div class="callout"><div class="abbr">TTM Prelease</div><div class="def">Trailing 12-month prelease rate for purpose-built student housing. Higher prelease indicates stronger near-term demand.</div></div>
+  <div class="callout"><div class="abbr">PBSH Occ.</div><div class="def">Purpose-Built Student Housing occupancy rate. Measures how fully occupied existing PBSH stock is in the market.</div></div>
+  <div class="callout"><div class="abbr">3yr Bed/Enroll &Delta; &nbsp;<span class="fcast-badge" style="background:#2c4a8a;border-color:#2c4a8a;color:#fff;">Fcst</span></div><div class="def"><strong>Forecast.</strong> Projected 3-year change in the student-bed-to-enrollment ratio. Rising ratio signals new supply outpacing enrollment growth.</div></div>
+  <div class="callout"><div class="abbr">TTM Prelease &Delta;</div><div class="def">Year-over-year change in trailing 12-month prelease rate. Positive means leasing momentum is accelerating.</div></div>
+  <div class="callout"><div class="abbr">3yr App. Growth &nbsp;<span class="fcast-badge" style="background:#2c4a8a;border-color:#2c4a8a;color:#fff;">Fcst</span></div><div class="def"><strong>Forecast.</strong> Projected 3-year change in university applications. Indicates long-run demand trajectory and enrollment pipeline strength.</div></div>
+  <div class="callout"><div class="abbr">POSH Occ. LY</div><div class="def">Private Off-Campus Student Housing occupancy from last year. Captures the broader off-campus rental market health.</div></div>
+  <div class="callout"><div class="abbr">FT OoS UG Growth</div><div class="def">Growth in full-time out-of-state undergraduate enrollment. OoS students are more likely to rent, boosting PBSH demand.</div></div>
+  <div class="callout"><div class="abbr">Strongest / Weakest</div><div class="def">The single variable with the highest or lowest normalized score for that market - flags what is driving or limiting the ranking.</div></div>
 </div>
-
-<!-- ── Main Table ── -->
 <div class="table-wrap">
 <table>
   <thead>
@@ -417,68 +284,28 @@
   </tbody>
 </table>
 </div>
-
 <div class="footer">
-  Source: Acquisition Screener &ndash; 2024.xlsx &middot; Forward Looking Model tab &nbsp;|&nbsp; Generated 2026-07-21
+  Source: Acquisition Screener &ndash; 2024.xlsx &middot; Forward Looking Model tab &nbsp;|&nbsp; Generated 2026-07-21 &nbsp;|&nbsp; <a class="live-src" href="https://collegiatedevelopment.sharepoint.com/sites/Subtext/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis%2FStudent%20Market%20Analysis%2FLive%20Rankings%2F2026%20Rebuild%2FAcquisition%20Screener%20%2D%202024%2Exlsx&parent=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis%2FStudent%20Market%20Analysis%2FLive%20Rankings%2F2026%20Rebuild" target="_blank" rel="noopener" style="color:#2c4a8a; font-weight:600;">Live source on SharePoint &#8599;</a>
   &nbsp;|&nbsp; <span style="color:#2c4a8a; font-weight:600;">FCST</span> = forecasted value
 </div>
-
-</div><!-- /tab-values -->
-
-<!-- ══ WEIGHTINGS TAB ══ -->
-<div id="tab-weightings" class="tab-panel">
-
-<div class="callouts">
-  <div class="callout">
-    <div class="abbr">TTM Prelease &ndash; Score</div>
-    <div class="def">Weighted contribution of TTM prelease rate to the composite score. Positive = above-average prelease performance.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">PBSH Occ. &ndash; Score</div>
-    <div class="def">Weighted contribution of purpose-built student housing occupancy to the composite score.</div>
-  </div>
-  <div class="callout fcast">
-    <div class="abbr">3yr Bed/Enroll &Delta; &ndash; Score &nbsp;<span class="fcast-badge">Fcst</span></div>
-    <div class="def"><strong>Forecast.</strong> Weighted contribution of the projected 3-year change in student-bed-to-enrollment ratio. Negative = supply growing faster than forecasted demand.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">TTM Prelease &Delta; &ndash; Score</div>
-    <div class="def">Weighted contribution of year-over-year prelease momentum. Positive = improving leasing trajectory.</div>
-  </div>
-  <div class="callout fcast">
-    <div class="abbr">3yr App. Growth &ndash; Score &nbsp;<span class="fcast-badge">Fcst</span></div>
-    <div class="def"><strong>Forecast.</strong> Weighted contribution of projected 3-year application growth. Reflects long-run enrollment demand pipeline.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">POSH Occ. LY &ndash; Score</div>
-    <div class="def">Weighted contribution of last year&rsquo;s private off-campus student housing occupancy.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">FT OoS UG Growth &ndash; Score</div>
-    <div class="def">Weighted contribution of out-of-state undergraduate enrollment growth, a key PBSH demand driver.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Transactions (Last 5 / Prev 5)</div>
-    <div class="def">Count of PBSH investment transactions in the most recent 5 years vs. the prior 5-year period. Indicates market liquidity and investor interest.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Construction (Last 5 / Prev 5)</div>
-    <div class="def">Count of new PBSH construction deliveries in the most recent 5 years vs. the prior 5-year period. Measures supply pipeline activity.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Power 4 / R1</div>
-    <div class="def">Binary flags: Power 4 = member of a Power Four athletic conference; R1 = Carnegie Classification R1 (highest research activity) university.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Rent / Price</div>
-    <div class="def">Current rent as a percentage of rough construction cost per bed. Indicates relative yield attractiveness of the market.</div>
-  </div>
-  <div class="callout">
-    <div class="abbr">Current New Property Rent</div>
-    <div class="def">Average asking rent per bed at PBSH properties built in the last 10 years. Benchmarks achievable rents for new development.</div>
-  </div>
 </div>
 
+<!-- WEIGHTINGS TAB -->
+<div id="tab-weightings" class="tab-panel">
+<div class="callouts">
+  <div class="callout"><div class="abbr">TTM Prelease &ndash; Score</div><div class="def">Weighted contribution of TTM prelease rate to the composite score. Positive = above-average prelease performance.</div></div>
+  <div class="callout"><div class="abbr">PBSH Occ. &ndash; Score</div><div class="def">Weighted contribution of purpose-built student housing occupancy to the composite score.</div></div>
+  <div class="callout"><div class="abbr">3yr Bed/Enroll &Delta; &ndash; Score &nbsp;<span class="fcast-badge" style="background:#2c4a8a;border-color:#2c4a8a;color:#fff;">Fcst</span></div><div class="def"><strong>Forecast.</strong> Weighted contribution of the projected 3-year change in student-bed-to-enrollment ratio. Negative = supply growing faster than forecasted demand.</div></div>
+  <div class="callout"><div class="abbr">TTM Prelease &Delta; &ndash; Score</div><div class="def">Weighted contribution of year-over-year prelease momentum. Positive = improving leasing trajectory.</div></div>
+  <div class="callout"><div class="abbr">3yr App. Growth &ndash; Score &nbsp;<span class="fcast-badge" style="background:#2c4a8a;border-color:#2c4a8a;color:#fff;">Fcst</span></div><div class="def"><strong>Forecast.</strong> Weighted contribution of projected 3-year application growth. Reflects long-run enrollment demand pipeline.</div></div>
+  <div class="callout"><div class="abbr">POSH Occ. LY &ndash; Score</div><div class="def">Weighted contribution of last year&rsquo;s private off-campus student housing occupancy.</div></div>
+  <div class="callout"><div class="abbr">FT OoS UG Growth &ndash; Score</div><div class="def">Weighted contribution of out-of-state undergraduate enrollment growth, a key PBSH demand driver.</div></div>
+  <div class="callout"><div class="abbr">Transactions (Last 5 / Prev 5)</div><div class="def">Count of PBSH investment transactions in the most recent 5 years vs. the prior 5-year period. Indicates market liquidity and investor interest.</div></div>
+  <div class="callout"><div class="abbr">Construction (Last 5 / Prev 5)</div><div class="def">Count of new PBSH construction deliveries in the most recent 5 years vs. the prior 5-year period. Measures supply pipeline activity.</div></div>
+  <div class="callout"><div class="abbr">Power 4 / R1</div><div class="def">Binary flags: Power 4 = member of a Power Four athletic conference; R1 = Carnegie Classification R1 (highest research activity) university.</div></div>
+  <div class="callout"><div class="abbr">Rent / Price</div><div class="def">Current rent as a percentage of rough construction cost per bed. Indicates relative yield attractiveness of the market.</div></div>
+  <div class="callout"><div class="abbr">Current New Property Rent</div><div class="def">Average asking rent per bed at PBSH properties built in the last 10 years. Benchmarks achievable rents for new development.</div></div>
+</div>
 <div class="table-wrap">
 <table>
   <thead>
@@ -585,84 +412,60 @@
   </tbody>
 </table>
 </div>
-
 <div class="footer">
-  Source: Acquisition Screener &ndash; 2024.xlsx &middot; Forward Looking Model tab (cols Q&ndash;AE) &nbsp;|&nbsp; Generated 2026-07-21
+  Source: Acquisition Screener &ndash; 2024.xlsx &middot; Forward Looking Model tab (cols Q&ndash;AE) &nbsp;|&nbsp; Generated 2026-07-21 &nbsp;|&nbsp; <a class="live-src" href="https://collegiatedevelopment.sharepoint.com/sites/Subtext/Shared%20Documents/Forms/AllItems.aspx?id=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis%2FStudent%20Market%20Analysis%2FLive%20Rankings%2F2026%20Rebuild%2FAcquisition%20Screener%20%2D%202024%2Exlsx&parent=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis%2FStudent%20Market%20Analysis%2FLive%20Rankings%2F2026%20Rebuild" target="_blank" rel="noopener" style="color:#2c4a8a; font-weight:600;">Live source on SharePoint &#8599;</a>
   &nbsp;|&nbsp; <span style="color:#2c4a8a; font-weight:600;">FCST</span> = forecasted value
 </div>
-
-</div><!-- /tab-weightings -->
+</div>
 
 <script>
 document.getElementById('current-year').textContent = new Date().getFullYear();
 
 function showTab(name, btn) {
-  document.querySelectorAll('.tab-panel').forEach(function(p) { p.classList.remove('active'); });
-  document.querySelectorAll('.tab-btn').forEach(function(b) { b.classList.remove('active'); });
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
 }
 
-// Invert color logic for "3yr Bed/Enroll Delta" - high positive = more supply vs enrollment = bad (red)
-// Values table: td index 7 | Weightings table: td index 4
-document.querySelectorAll('#tab-values tbody tr').forEach(function(row) {
-  var td = row.querySelectorAll('td')[7];
+// Invert 3yr Bed/Enroll Delta: high supply growth = bad, so flip hi/lo
+document.querySelectorAll('#tab-values tbody tr').forEach(row => {
+  const td = row.querySelectorAll('td')[7];
   if (!td) return;
-  if (td.classList.contains('metric-hi')) { td.classList.replace('metric-hi', 'metric-lo'); }
-  else if (td.classList.contains('metric-lo')) { td.classList.replace('metric-lo', 'metric-hi'); }
+  if (td.classList.contains('metric-hi')) td.classList.replace('metric-hi','metric-lo');
+  else if (td.classList.contains('metric-lo')) td.classList.replace('metric-lo','metric-hi');
 });
-document.querySelectorAll('#tab-weightings tbody tr').forEach(function(row) {
-  var td = row.querySelectorAll('td')[4];
+document.querySelectorAll('#tab-weightings tbody tr').forEach(row => {
+  const td = row.querySelectorAll('td')[4];
   if (!td) return;
-  if (td.classList.contains('w-pos')) { td.classList.replace('w-pos', 'w-neg'); }
-  else if (td.classList.contains('w-neg')) { td.classList.replace('w-neg', 'w-pos'); }
+  if (td.classList.contains('w-pos')) td.classList.replace('w-pos','w-neg');
+  else if (td.classList.contains('w-neg')) td.classList.replace('w-neg','w-pos');
 });
 
-// Add fcast-cell class to forecast columns (index 7 = Bed/Enroll, index 9 = App Growth) in values tab
-document.querySelectorAll('#tab-values tbody tr').forEach(function(row) {
-  var tds = row.querySelectorAll('td');
-  if (tds[7]) tds[7].classList.add('fcast-cell');
-  if (tds[9]) tds[9].classList.add('fcast-cell');
-});
-// Weightings tab: index 4 = Bed/Enroll, index 6 = App Growth
-document.querySelectorAll('#tab-weightings tbody tr').forEach(function(row) {
-  var tds = row.querySelectorAll('td');
-  if (tds[4]) tds[4].classList.add('fcast-cell');
-  if (tds[6]) tds[6].classList.add('fcast-cell');
-});
-
-// ── Sortable columns ──
+// Sortable columns
 function parseCell(text) {
-  var s = text.trim().replace(/[$,\s]/g, '');
-  s = s.replace(/^\+/, '').replace(/%$/, '');
-  var n = parseFloat(s);
+  let s = text.trim().replace(/[$,\s]/g,'').replace(/^\+/,'').replace(/%$/,'');
+  const n = parseFloat(s);
   return isNaN(n) ? text.trim().toLowerCase() : n;
 }
-
-function sortTable(table, colIdx, asc) {
-  var tbody = table.querySelector('tbody');
-  var rows = Array.from(tbody.querySelectorAll('tr'));
-  rows.sort(function(a, b) {
-    var aVal = parseCell(a.querySelectorAll('td')[colIdx].textContent);
-    var bVal = parseCell(b.querySelectorAll('td')[colIdx].textContent);
-    if (typeof aVal === 'number' && typeof bVal === 'number') {
-      return asc ? aVal - bVal : bVal - aVal;
-    }
-    if (aVal < bVal) return asc ? -1 : 1;
-    if (aVal > bVal) return asc ? 1 : -1;
-    return 0;
+function sortTable(table, idx, asc) {
+  const tbody = table.querySelector('tbody');
+  const rows  = [...tbody.querySelectorAll('tr')];
+  rows.sort((a, b) => {
+    const av = parseCell(a.querySelectorAll('td')[idx].textContent);
+    const bv = parseCell(b.querySelectorAll('td')[idx].textContent);
+    if (typeof av === 'number' && typeof bv === 'number') return asc ? av-bv : bv-av;
+    return asc ? (av < bv ? -1 : av > bv ? 1 : 0) : (bv < av ? -1 : bv > av ? 1 : 0);
   });
-  rows.forEach(function(r) { tbody.appendChild(r); });
+  rows.forEach(r => tbody.appendChild(r));
 }
-
-document.querySelectorAll('thead th').forEach(function(th) {
-  var asc = true;
+document.querySelectorAll('thead th').forEach(th => {
+  let asc = true;
   th.style.cursor = 'pointer';
   th.title = 'Click to sort';
-  th.addEventListener('click', function() {
-    var table = th.closest('table');
-    var idx = Array.from(th.parentElement.children).indexOf(th);
-    sortTable(table, idx, asc);
+  th.addEventListener('click', () => {
+    const idx = [...th.parentElement.children].indexOf(th);
+    sortTable(th.closest('table'), idx, asc);
     asc = !asc;
   });
 });

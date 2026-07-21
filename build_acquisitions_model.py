@@ -23,9 +23,18 @@ from pathlib import Path
 
 import openpyxl
 
+# read_only workbooks parse lazily, so openpyxl's "extension not supported"
+# warnings fire during row iteration, outside any catch_warnings block around
+# load_workbook. Silence them process-wide: under weekly-refresh.ps1's
+# ErrorActionPreference=Stop, a 2>&1 redirect turns stderr chatter into a
+# terminating error.
+warnings.filterwarnings("ignore", module="openpyxl")
+
 REPO = Path(__file__).resolve().parent
-DEFAULT_XLSX = (REPO.parent / "Aquisitions Ranking Model"
-                / "Acquisition Screener - 2024.xlsx")
+DEFAULT_XLSX = Path(r"C:\Users\JakeMillenbruck\Subtext\Subtext - Documents"
+                    r"\General\Investment\Investment\Research - Analysis"
+                    r"\Student Market Analysis\Live Rankings\2026 Rebuild"
+                    r"\Acquisition Screener - 2024.xlsx")
 TEMPLATE = REPO / "forward-model.html"
 OUTPUT = REPO / "acquisitions-model.html"
 SHEET = "Forward Looking Model"
@@ -33,6 +42,22 @@ SHEET = "Forward Looking Model"
 PAGE_TITLE = "Forward Looking Model - Acquisition Screener 2024"
 PAGE_H1 = "Forward Looking Model - Acquisition Screener"
 SOURCE_NAME = "Acquisition Screener &ndash; 2024.xlsx"
+
+# Canonical SharePoint copy of the source workbook. The template carries the
+# development screener's live-source link in both footers; swap it for ours.
+LIVE_URL = ("https://collegiatedevelopment.sharepoint.com/sites/Subtext/"
+            "Shared%20Documents/Forms/AllItems.aspx"
+            "?id=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral"
+            "%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis"
+            "%2FStudent%20Market%20Analysis%2FLive%20Rankings"
+            "%2F2026%20Rebuild%2FAcquisition%20Screener%20%2D%202024%2Exlsx"
+            "&parent=%2Fsites%2FSubtext%2FShared%20Documents%2FGeneral"
+            "%2FInvestment%2FInvestment%2FResearch%20%2D%20Analysis"
+            "%2FStudent%20Market%20Analysis%2FLive%20Rankings"
+            "%2F2026%20Rebuild")
+LIVE_LINK = (f'<a class="live-src" href="{LIVE_URL}" target="_blank" '
+             f'rel="noopener" style="color:#2c4a8a; font-weight:600;">'
+             f'Live source on SharePoint &#8599;</a>')
 
 # 1-based column index -> exact expected header (row 1)
 EXPECTED_HEADERS = {
@@ -297,6 +322,12 @@ def build(xlsx_path):
     page, n = re.subn(r"Generated \d{4}-\d{2}-\d{2}", f"Generated {today}", page)
     if n != 2:
         die(f"expected 2 'Generated <date>' stamps, found {n}")
+
+    page, n = re.subn(r'<a class="live-src".*?</a>', LIVE_LINK, page,
+                      flags=re.S)
+    if n != 2:
+        die(f"expected 2 live-source links in template, found {n} "
+            "(run build_forward_model.py first)")
 
     OUTPUT.write_text(page, encoding="utf-8")
     print(f"kept {len(rows)} markets, dropped {dropped} invalid rows")

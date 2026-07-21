@@ -51,6 +51,37 @@ if (-not (Test-Path $credFile)) {
 
 $cred = Import-Clixml -Path $credFile
 
+# Sync the Forward Model pages BEFORE the SQL export: export-data.py parses
+# forward_ranks out of forward-model.html. build_forward_model.py copies the
+# data-science team's published "Forward Looking Model Dashboard.html" from
+# OneDrive (soft-skips when the source file is absent, hard-fails if its
+# layout drifted). acquisitions-model.html is then rebuilt from its workbook
+# using the fresh forward page as the design template.
+# Same stderr caveat as the git section below: under EAP=Stop, 2>&1 turns any
+# benign stderr line (e.g. an openpyxl warning) into a terminating error, so
+# drop to Continue around the native python calls and judge by exit code.
+$prevBuildEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+python -u build_forward_model.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value "$_" -Encoding utf8; "$_" } | Out-Host
+if ($LASTEXITCODE -ne 0) {
+    Write-Log "FAIL build_forward_model.py exited $LASTEXITCODE"
+    $ErrorActionPreference = $prevBuildEAP
+    exit $LASTEXITCODE
+}
+
+$acqXlsx = "C:\Users\JakeMillenbruck\Subtext\Subtext - Documents\General\Investment\Investment\Research - Analysis\Student Market Analysis\Live Rankings\2026 Rebuild\Acquisition Screener - 2024.xlsx"
+if (Test-Path $acqXlsx) {
+    python -u build_acquisitions_model.py 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value "$_" -Encoding utf8; "$_" } | Out-Host
+    if ($LASTEXITCODE -ne 0) {
+        Write-Log "FAIL build_acquisitions_model.py exited $LASTEXITCODE"
+        $ErrorActionPreference = $prevBuildEAP
+        exit $LASTEXITCODE
+    }
+} else {
+    Write-Log "Acquisition Screener workbook not found ($acqXlsx); preserving existing acquisitions-model.html"
+}
+$ErrorActionPreference = $prevBuildEAP
+
 $dataBefore = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SHA1).Hash } else { "" }
 $shadowBefore = if (Test-Path "assets\shadow-market") {
     (Get-ChildItem "assets\shadow-market" -Filter *.json -File |

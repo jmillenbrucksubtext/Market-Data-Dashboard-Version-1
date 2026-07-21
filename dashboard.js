@@ -428,7 +428,7 @@ const PIPELINE_STAGES = [
   { key: "assessing", label: "Markets - Assessing" },
   { key: "upcoming",  label: "Markets - Upcoming" },
   // Pseudo-stage: every market with no CRM stage that the development or
-  // acquisitions forward model ranks. Sorted by best model rank, not A-Z.
+  // acquisitions forward model ranks.
   { key: "ranked",    label: "Markets - Tracking" },
 ];
 
@@ -546,7 +546,11 @@ function pipelineScorecardRows() {
         uncaptured_demand: r.penetration_ratio != null ? 1 - r.penetration_ratio : null,
       };
     })
-    .sort((a, b) => (a.anchor_university || "").localeCompare(b.anchor_university || ""));
+    // Every stage section orders by qualifier score, best first (markets
+    // without one sink to the bottom); A-Z only breaks ties.
+    .sort((a, b) =>
+      (b.qualifier_score ?? -Infinity) - (a.qualifier_score ?? -Infinity)
+      || (a.anchor_university || "").localeCompare(b.anchor_university || ""));
 }
 
 // Column set - mirrors the monthly market update. `xz` = Excel number format.
@@ -595,13 +599,6 @@ function pipelineRowsByStage(rows) {
     const key = r.market_status || "ranked";
     if (byStage.has(key)) byStage.get(key).push(r);
   });
-  // The pseudo-stage orders by best model rank (dev or acq, lower = better)
-  // instead of the A-Z the CRM stages use.
-  const best = (r) => Math.min(r.fwd_rank ?? Infinity, r.acq_rank ?? Infinity);
-  byStage.get("ranked").sort((a, b) =>
-    best(a) - best(b)
-    || (a.fwd_rank ?? Infinity) - (b.fwd_rank ?? Infinity)
-    || (a.anchor_university || "").localeCompare(b.anchor_university || ""));
   return byStage;
 }
 
@@ -856,7 +853,8 @@ function renderKpis(rows) {
 /* ----- Scorecard table --------------------------------------- */
 
 // One table per stage: a green stage band, a column header row, then the
-// markets in that stage (A-Z). Clicking a row opens the market page.
+// markets in that stage (qualifier score, best first). Clicking a row opens
+// the market page.
 function renderScorecard() {
   const container = document.getElementById("pipeline-stages");
   if (!container) return;

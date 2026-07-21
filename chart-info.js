@@ -46,7 +46,7 @@
     },
     "scorecard": {
       title: "Market scorecard",
-      formula: "Active-pipeline markets grouped into a table per CRM stage (Upcoming / Assessing / Pursuing), a monthly-market-update layout, plus a final Markets - Tracking section holding every other market the development or acquisitions forward model ranks. CRM stages sort A-Z; the Tracking section sorts by best model rank. Click a market to open it.",
+      formula: "Active-pipeline markets grouped into a table per CRM stage (Upcoming / Assessing / Pursuing), a monthly-market-update layout, plus a final Markets - Tracking section holding every other market the development or acquisitions forward model ranks. Markets sort by qualifier score (best first) within every section. Click a market to open it.",
       sql: "`scorecard` (joined to fte_history, rent_yoy, university_info, properties) where market_status is set or a model rank exists",
       sig: "Every market Subtext is actively tracking, broken out by pipeline stage, with the rest of the model-ranked universe at the end.",
       rows: [

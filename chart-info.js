@@ -50,6 +50,7 @@
       sql: "`scorecard` (joined to fte_history, rent_yoy, university_info, properties) where market_status is set",
       sig: "Every market Subtext is actively tracking, broken out by pipeline stage.",
       rows: [
+        ["Qualifier Score", "Share of evaluable Subtext qualifiers passing (`market_qualifiers.score_pct`) - the same score as the market page's Qualifier Scorecard badge, tiered >= 80% green, 60-79% amber, < 60% rust"],
         ["FTE / FTE Growth", "Full-time enrollment and its YoY change (`fte_history.yoy_fte_growth`)"],
         ["Market Occ. / Prelease", "`MarketReports.occupancy` / `prelease` at the latest snapshot"],
         ["Market Rent", "Bed-weighted `avg_rent` across the market"],

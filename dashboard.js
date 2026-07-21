@@ -280,6 +280,15 @@ function qualifierPill(row) {
   return `<span class="qual-mini qual-mini-${tier}" title="${label} of evaluable Subtext qualifiers passing">${pct}%</span>`;
 }
 
+// Qualifier score as a tier-coloured pill - same 80/60 thresholds as the
+// market page badge and qualifierPill(), but keyed off the bare fraction so
+// it can serve as a PIPELINE_COLS formatter.
+function fmtQualScorePill(v) {
+  const pct = Math.round(v * 100);
+  const tier = pct >= 80 ? "good" : pct >= 60 ? "warn" : "bad";
+  return `<span class="qual-mini qual-mini-${tier}">${pct}%</span>`;
+}
+
 function escapeHtml(s) {
   return String(s).replace(/[&<>"']/g, (c) => ({
     "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;",
@@ -419,6 +428,7 @@ function pipelineDerived() {
   const t = DATA.tables;
   const fteGrowth = new Map((t.fte_history || []).map((f) => [f.market_key, f.yoy_fte_growth]));
   const yoyRent = new Map((t.rent_yoy || []).map((r) => [r.market_key, r.yoy_rent_growth]));
+  const qualScore = new Map((t.market_qualifiers || []).map((q) => [q.market_key, q.score_pct]));
   const onCampus = new Map();
   (t.university_info || []).forEach((u) => {
     const b = u.beds_on_campus_reported ?? u.beds_on_campus_computed ?? 0;
@@ -447,7 +457,7 @@ function pipelineDerived() {
       if (p) rentGrowth.set(pk, c / p - 1);
     }
   }
-  _pipelineDerived = { fteGrowth, yoyRent, onCampus, propsByMarket, rentGrowth };
+  _pipelineDerived = { fteGrowth, yoyRent, qualScore, onCampus, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
@@ -499,6 +509,7 @@ function pipelineScorecardRows() {
       return {
         ...r,
         fte_growth_yoy: d.fteGrowth.get(r.market_key) ?? null,
+        qualifier_score: d.qualScore.get(r.market_key) ?? null,
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
         on_campus_beds: d.onCampus.get(r.market_key) ?? null,
         rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
@@ -524,6 +535,7 @@ function pipelineScorecardRows() {
 const PIPELINE_COLS = [
   { h: "University",           uni: true },
   { h: "Subtext Rank",         get: (r) => r.fwd_rank,            fmt: fmtInt,           xz: "#,##0" },
+  { h: "Qualifier Score",      get: (r) => r.qualifier_score,     fmt: fmtQualScorePill, xz: "0%" },
   { h: "Total Enrollment",     group: "Enrollment",        sub: "Total",        get: (r) => r.total_enrollment,    fmt: fmtInt,           xz: "#,##0" },
   { h: "FTE",                  group: "Enrollment",        sub: "FTE",          get: (r) => r.enr_full_time,       fmt: fmtInt,           xz: "#,##0" },
   { h: "FTE Growth",           group: "Enrollment",        sub: "FTE Growth",   get: (r) => r.fte_growth_yoy,      fmt: (v) => fmtPct(v), xz: "0.0%" },

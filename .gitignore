@@ -21,6 +21,9 @@ venv/
 refresh.log
 refresh.log.1
 
+# Local Claude Code session config (weekly refresh pushes with `git add -A`)
+.claude/
+
 # Editors / IDEs
 .vscode/
 .idea/

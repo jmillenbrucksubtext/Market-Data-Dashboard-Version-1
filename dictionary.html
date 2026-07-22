@@ -121,10 +121,9 @@
                       <tr><td>Market Rent</td><td>Bed-weighted <code>avg_rent</code> across the market</td></tr>
                       <tr><td>Rent - 0.5 / 1.0 Mile</td><td>Bed-weighted <code>avg_rent</code> of properties within that radius of campus</td></tr>
                       <tr><td>YoY Rent Growth</td><td><code>rent_yoy.yoy_rent_growth</code></td></tr>
-                      <tr><td>On-Campus Beds</td><td>Sum of on-campus beds across the market's universities</td></tr>
-                      <tr><td>PBSH Beds</td><td>Existing purpose-built student-housing beds (<code>existing_beds</code>)</td></tr>
-                      <tr><td>Pipeline</td><td>Lease-up + under-construction + planned beds</td></tr>
+                      <tr><td>Pipeline - Total / 0.5 / 1.0 Mi</td><td>Lease-up + under-construction + planned beds: market-wide (<code>beds_pipeline_total</code>) and summed for pipeline properties within that radius of campus</td></tr>
                       <tr><td>UD as FTE %</td><td><code>1 - (existing_beds / enr_full_time)</code> - uncaptured demand; negative if over-supplied</td></tr>
+                      <tr><td>Student Affluence</td><td>Mean household income of the market's student origin zips (<code>market_affluence.mean_origin_income</code>, Opportunity Insights + Census via the Migration CSVs); blank when the migration sample is under 100 students</td></tr>
                     </tbody>
                   </table>
                 </article>

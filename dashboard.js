@@ -453,11 +453,10 @@ function pipelineDerived() {
     const r = (q.results || []).find((x) => x.id === "prelease_lag");
     return [q.market_key, r?.actual ?? null];
   }));
-  const onCampus = new Map();
-  (t.university_info || []).forEach((u) => {
-    const b = u.beds_on_campus_reported ?? u.beds_on_campus_computed ?? 0;
-    onCampus.set(u.market_key, (onCampus.get(u.market_key) || 0) + (b || 0));
-  });
+  // Student affluence (mean origin income), with the same minimum-sample
+  // guard the all-markets table and income qualifier use.
+  const affluence = new Map((t.market_affluence || []).map((a) =>
+    [a.market_key, a.n_students >= 100 ? a.mean_origin_income : null]));
   const propsByMarket = new Map();
   (t.properties || []).forEach((p) => {
     if (!propsByMarket.has(p.market_key)) propsByMarket.set(p.market_key, []);
@@ -481,7 +480,7 @@ function pipelineDerived() {
       if (p) rentGrowth.set(pk, c / p - 1);
     }
   }
-  _pipelineDerived = { fteGrowth, yoyRent, qualScore, r1Status, preleaseYoY, onCampus, propsByMarket, rentGrowth };
+  _pipelineDerived = { fteGrowth, yoyRent, qualScore, r1Status, preleaseYoY, affluence, propsByMarket, rentGrowth };
   return _pipelineDerived;
 }
 
@@ -496,6 +495,20 @@ function bedWeighted(props, maxMi, getter) {
     num += v * p.beds; den += p.beds;
   }
   return den ? num / den : null;
+}
+
+// Pipeline beds within `maxMi` of campus. Same phase set as the market
+// pipeline total (beds_lease_up + beds_under_construction + beds_planned)
+// and the Pipeline tab on the market page.
+const PIPELINE_BED_PHASES = new Set(["under construction", "lease up", "planned"]);
+function pipelineBedsWithin(props, maxMi) {
+  let beds = 0;
+  for (const p of props) {
+    if (!PIPELINE_BED_PHASES.has(p.phase) || !p.beds) continue;
+    if (p.milesToClosestCampus == null || p.milesToClosestCampus > maxMi) continue;
+    beds += p.beds;
+  }
+  return beds;
 }
 
 // Uncaptured demand within 1 mile: share of FTE not yet served by PBSH beds
@@ -537,8 +550,10 @@ function pipelineScorecardRows() {
         is_power4: r.anchor_university ? (POWER4_ANCHORS.has(r.anchor_university) ? "Yes" : "No") : null,
         is_r1: d.r1Status.get(r.market_key) ?? null,
         prelease_yoy: d.preleaseYoY.get(r.market_key) ?? null,
+        mean_origin_income: d.affluence.get(r.market_key) ?? null,
+        pipe_half_mi: pipelineBedsWithin(props, 0.5),
+        pipe_one_mi: pipelineBedsWithin(props, 1.0),
         yoy_rent_growth: d.yoyRent.get(r.market_key) ?? null,
-        on_campus_beds: d.onCampus.get(r.market_key) ?? null,
         rent_half_mi: bedWeighted(props, 0.5, (p) => p.avg_rent),
         rent_one_mi: bedWeighted(props, 1.0, (p) => p.avg_rent),
         occ_half_mi: bedWeighted(props, 0.5, occ),
@@ -582,12 +597,13 @@ const PIPELINE_COLS = [
   { h: "Rent Growth - 0.5 Mi", group: "Rent Growth",       sub: "0.5 Mi",       get: (r) => r.rent_growth_half_mi, fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Rent Growth - 1.0 Mi", group: "Rent Growth",       sub: "1.0 Mi",       get: (r) => r.rent_growth_one_mi,  fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Market Rent Growth",   group: "Rent Growth",       sub: "Market",       get: (r) => r.yoy_rent_growth,     fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "On-Campus Beds",       group: "Beds",              sub: "On-Campus",    get: (r) => r.on_campus_beds,      fmt: fmtInt,           xz: "#,##0" },
-  { h: "PBSH Beds",            group: "Beds",              sub: "PBSH",         get: (r) => r.existing_beds,       fmt: fmtInt,           xz: "#,##0" },
-  { h: "Pipeline",             group: "Beds",              sub: "Pipeline",     get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline - Total",     group: "Pipeline",          sub: "Total",        get: (r) => r.beds_pipeline_total, fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline - 0.5 Mi",    group: "Pipeline",          sub: "0.5 Mi",       get: (r) => r.pipe_half_mi,        fmt: fmtInt,           xz: "#,##0" },
+  { h: "Pipeline - 1.0 Mi",    group: "Pipeline",          sub: "1.0 Mi",       get: (r) => r.pipe_one_mi,         fmt: fmtInt,           xz: "#,##0" },
   { h: "UD - 1.0 Mi",          group: "Uncaptured Demand", sub: "1.0 Mi",       get: (r) => r.ud_one_mi,           fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "UD - 1.0 Mi (2010+)",  group: "Uncaptured Demand", sub: "1.0 Mi 2010+", get: (r) => r.ud_one_mi_2010,      fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "UD as FTE %",          group: "Uncaptured Demand", sub: "Market",       get: (r) => r.uncaptured_demand,   fmt: (v) => fmtPct(v), xz: "0.0%" },
+  { h: "Student Affluence",    get: (r) => r.mean_origin_income,  fmt: fmtUsd,           xz: "$#,##0" },
 ];
 
 // True when column `i` opens a new header group (used for divider borders).

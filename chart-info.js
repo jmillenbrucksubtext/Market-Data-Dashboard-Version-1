@@ -59,9 +59,9 @@
         ["Market Rent", "Bed-weighted `avg_rent` across the market"],
         ["Rent - 0.5 / 1.0 Mile", "Bed-weighted `avg_rent` of properties within that radius of campus"],
         ["YoY Rent Growth", "`rent_yoy.yoy_rent_growth`"],
-        ["On-Campus Beds", "Sum of on-campus beds across the market's universities"],
-        ["PBSH Beds", "Existing purpose-built student-housing beds (`existing_beds`)"],
-        ["UD as FTE %", "Uncaptured demand: `1 - existing_beds / enr_full_time`"]
+        ["Pipeline - Total / 0.5 / 1.0 Mi", "Lease-up + under-construction + planned beds: market-wide (`beds_pipeline_total`) and summed for pipeline properties within that radius of campus"],
+        ["UD as FTE %", "Uncaptured demand: `1 - existing_beds / enr_full_time`"],
+        ["Student Affluence", "Mean household income of the market's student origin zips (`market_affluence.mean_origin_income`, Opportunity Insights + Census via the Migration CSVs); blank when the migration sample is under 100 students"]
       ]
     },
     /* ================= MARKET PAGE (market.html) ================= */

@@ -76,6 +76,9 @@ QUERIES: dict[str, str] = {
     # tracked-bed volume. The multi-year line chart is unreadable beyond
     # ~30 series anyway; users will filter to a market in the UI.
     "prelease_velocity": """
+        -- Every tracked market, last 3 cycles. (A TOP-50-by-beds cap here
+        -- used to blank the prelease YoY / prelease_lag qualifier for 35
+        -- scorecard markets; removed 2026-07-22.)
         WITH cycle_calc AS (
             SELECT
                 mr.market_key,
@@ -91,14 +94,7 @@ QUERIES: dict[str, str] = {
               AND mr.beds_tracked_by_prelease > 0
               AND mr.market_key IS NOT NULL
         ),
-        max_cycle AS (SELECT MAX(leasing_cycle) AS yr FROM cycle_calc),
-        top_markets AS (
-            SELECT TOP 50 market_key
-            FROM cycle_calc, max_cycle
-            WHERE leasing_cycle = max_cycle.yr
-            GROUP BY market_key
-            ORDER BY SUM(beds_tracked_by_prelease) DESC
-        )
+        max_cycle AS (SELECT MAX(leasing_cycle) AS yr FROM cycle_calc)
         SELECT
             cc.market_key,
             cc.leasing_cycle,
@@ -108,7 +104,6 @@ QUERIES: dict[str, str] = {
             MAX(cc.snapshot_date)                    AS data_as_of
         FROM cycle_calc cc, max_cycle
         WHERE cc.leasing_cycle >= max_cycle.yr - 2
-          AND cc.market_key IN (SELECT market_key FROM top_markets)
         GROUP BY cc.market_key, cc.leasing_cycle, cc.week_of_cycle
     """,
     "existing_beds": """

@@ -1,0 +1,970 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Market Analysis - BETA DNU</title>
+  <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
+  <link rel="stylesheet" href="style.css?v=60">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+  <style>
+    :root {
+      --slate: #2b2825; --slate70: #5a544f; --slate50: #837c75;
+      --slate30: #b6b1ab; --everest: #16352e; --birch: #a95818;
+      --beige: #f7f1e3; --beige-deep: #ede5cf; --gold: #c79830; --blue: #3d8aa6;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; }
+    .ma-body {
+      font-family: "Pragmatica", -apple-system, "Segoe UI", sans-serif;
+      color: var(--slate); background: #f3eee2;
+      font-variant-numeric: tabular-nums;
+      padding: 22px 26px 60px;
+      min-height: 100vh;
+    }
+    .ma-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; flex-wrap: wrap; }
+    .ma-head h1 { font-family: "Mencken Std", Georgia, serif; font-size: 26px; font-weight: 700; margin: 0; letter-spacing: -0.01em; }
+    .ma-head h1 .ma-beta { font: 700 11px "Pragmatica", sans-serif; vertical-align: middle; background: var(--gold); color: #fff; border-radius: 10px; padding: 3px 9px; margin-left: 8px; letter-spacing: .05em; }
+    .ma-head p { margin: 4px 0 0; color: var(--slate70); font-size: 12.5px; max-width: 760px; }
+    .ma-asof { font-size: 11px; color: var(--slate50); white-space: nowrap; text-align: right; }
+    .ma-asof .v { font-weight: 700; color: var(--slate); }
+
+    .ma-search { position: relative; margin: 18px 0 4px; max-width: 480px; }
+    .ma-search input {
+      width: 100%; padding: 11px 14px; font: 600 15px "Pragmatica", sans-serif;
+      border: 2px solid var(--everest); border-radius: 9px; background: #fff; color: var(--slate);
+    }
+    .ma-search input::placeholder { color: var(--slate50); font-weight: 400; }
+    .ma-suggest {
+      position: absolute; top: calc(100% + 4px); left: 0; right: 0; z-index: 40;
+      background: #fff; border: 1px solid var(--slate30); border-radius: 9px;
+      box-shadow: 0 10px 26px rgba(43,40,37,.16); max-height: 320px; overflow-y: auto;
+    }
+    .ma-suggest[hidden] { display: none; }
+    .ma-suggest button {
+      display: flex; justify-content: space-between; gap: 10px; width: 100%;
+      border: none; background: none; text-align: left; padding: 9px 13px; cursor: pointer;
+      font: 600 13.5px "Pragmatica", sans-serif; color: var(--slate);
+    }
+    .ma-suggest button:hover, .ma-suggest button.hl { background: var(--beige); }
+    .ma-suggest .ip { color: var(--slate50); font-weight: 400; font-size: 12px; }
+    .ma-selected { display: flex; align-items: baseline; gap: 12px; margin: 10px 0 2px; flex-wrap: wrap; }
+    .ma-selected h2 { font-family: "Mencken Std", Georgia, serif; font-size: 21px; margin: 0; }
+    .ma-ipeds-pill { font: 700 11px "Pragmatica", sans-serif; background: var(--everest); color: #fff; border-radius: 999px; padding: 4px 11px; }
+
+    .ma-tabs { display: flex; gap: 6px; margin: 16px 0 16px; border-bottom: 2px solid var(--beige-deep); flex-wrap: wrap; }
+    .ma-tabs button {
+      border: none; background: none; padding: 9px 14px; cursor: pointer;
+      font: 700 13px "Pragmatica", sans-serif; color: var(--slate70);
+      border-bottom: 3px solid transparent; margin-bottom: -2px; white-space: nowrap;
+    }
+    .ma-tabs button.active { color: var(--everest); border-bottom-color: var(--everest); }
+
+    .ma-panel[hidden] { display: none; }
+    .ma-grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(430px, 1fr)); }
+    .ma-card { background: #fff; border: 1px solid var(--beige-deep); border-radius: 12px; padding: 16px 18px 14px; }
+    .ma-card h3 { margin: 0 0 2px; font: 700 14px "Pragmatica", sans-serif; }
+    .ma-card .sub { margin: 0 0 10px; font-size: 11.5px; color: var(--slate50); }
+    .ma-chart { position: relative; height: 260px; }
+    .ma-chart.tall { height: 320px; }
+    .ma-note { font-size: 11.5px; color: var(--slate50); margin-top: 8px; }
+    .ma-empty { color: var(--slate50); font-size: 13px; padding: 30px 0; text-align: center; }
+
+    .ma-controls { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 0 0 14px; }
+    .ma-control { font-size: 11px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--slate50); display: inline-flex; align-items: center; gap: 7px; }
+    .ma-control select {
+      font: 600 13px "Pragmatica", sans-serif; color: var(--slate);
+      padding: 6px 10px; border: 1px solid var(--slate30); border-radius: 7px; background: #fff; text-transform: none; letter-spacing: 0;
+    }
+
+    table.ma-table { width: 100%; border-collapse: collapse; font-size: 12.5px; }
+    table.ma-table th {
+      text-align: right; font: 700 10.5px "Pragmatica", sans-serif; letter-spacing: .05em; text-transform: uppercase;
+      color: var(--slate50); padding: 7px 9px; border-bottom: 2px solid var(--beige-deep); white-space: nowrap;
+    }
+    table.ma-table th:first-child, table.ma-table td:first-child { text-align: left; }
+    table.ma-table td { padding: 7px 9px; border-bottom: 1px solid var(--beige); text-align: right; white-space: nowrap; }
+    table.ma-table tr:hover td { background: var(--beige); }
+    .ma-neg { color: #9c3a1d; }
+    .ma-scroll { overflow-x: auto; }
+
+    .ma-comp-pick td:first-child { text-align: center; }
+    .ma-comp-pick input[type="checkbox"] { width: 15px; height: 15px; accent-color: var(--everest); cursor: pointer; }
+    .ma-comp-count { font: 700 12px "Pragmatica", sans-serif; color: var(--everest); }
+
+    .ma-peers { display: flex; gap: 6px; flex-wrap: wrap; }
+    .ma-peer-chip { border: 1px solid var(--slate30); background: #fff; color: var(--slate70); padding: 5px 11px; border-radius: 999px; font: 700 11px "Pragmatica", sans-serif; cursor: pointer; }
+    .ma-peer-chip .x { margin-left: 5px; color: var(--slate50); }
+    .ma-loading { padding: 80px 0; text-align: center; color: var(--slate70); font-size: 14px; }
+  </style>
+</head>
+<body>
+<div class="ma-body">
+
+  <div class="ma-top">
+    <div class="ma-head">
+      <h1>Market Analysis <span class="ma-beta">BETA - DO NOT USE</span></h1>
+      <p>Web recreation of the Market Analysis Template workbook. Search a market and every
+         chart below re-runs the template's logic for that university - the same queries the
+         Excel macros fire, precomputed for all tracked schools. Figures are unvalidated.</p>
+    </div>
+    <div class="ma-asof">Data as of <span class="v" id="ma-asof">-</span><br>
+      <span id="ma-workbook" style="color:var(--slate50)"></span></div>
+  </div>
+
+  <div class="ma-search">
+    <input id="ma-q" type="text" placeholder="Search a market or university (e.g. Purdue)..." autocomplete="off">
+    <div class="ma-suggest" id="ma-suggest" hidden></div>
+  </div>
+
+  <div class="ma-selected" id="ma-selected" hidden>
+    <h2 id="ma-uniname"></h2>
+    <span class="ma-ipeds-pill">IPEDS <span id="ma-uniipeds"></span></span>
+  </div>
+
+  <div id="ma-loading" class="ma-loading">Loading market-analysis data...</div>
+
+  <div id="ma-app" hidden>
+    <div class="ma-tabs" id="ma-tabs">
+      <button data-tab="overview" class="active">Overview</button>
+      <button data-tab="uncap">Uncaptured Demand</button>
+      <button data-tab="rg">Rent Growth</button>
+      <button data-tab="occ">Occupancy</button>
+      <button data-tab="pre">Prelease</button>
+      <button data-tab="comps">Comps</button>
+      <button data-tab="university">University</button>
+      <button data-tab="affluence">Affluence</button>
+    </div>
+
+    <!-- Overview -->
+    <section class="ma-panel" id="panel-overview">
+      <div class="ma-card" style="margin-bottom:16px">
+        <h3>Supply, Demand and Performance Summary</h3>
+        <p class="sub">Mirrors the Tables sheet: FTE, purpose-built + student-competitive beds, on-campus beds, uncaptured demand.</p>
+        <div class="ma-scroll"><table class="ma-table" id="ma-summary"></table></div>
+      </div>
+      <div class="ma-grid">
+        <div class="ma-card">
+          <h3>Monthly YoY Rent Growth</h3>
+          <p class="sub">Trailing series by geography cut</p>
+          <div class="ma-chart tall"><canvas id="ch-month-rg"></canvas></div>
+        </div>
+        <div class="ma-card">
+          <h3>Monthly Occupancy</h3>
+          <p class="sub">Trailing series by geography cut</p>
+          <div class="ma-chart tall"><canvas id="ch-month-occ"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Uncaptured Demand -->
+    <section class="ma-panel" id="panel-uncap" hidden>
+      <div class="ma-controls">
+        <span class="ma-control">Supply Year
+          <select id="ma-uncap-year"></select>
+        </span>
+        <span class="ma-control">Peer Markets</span>
+        <div class="ma-peers" id="ma-peers"></div>
+        <span class="ma-control">
+          <select id="ma-peer-add"><option value="">+ add peer...</option></select>
+        </span>
+      </div>
+      <div class="ma-grid" id="uncap-charts">
+        <div class="ma-card"><h3>Market</h3><p class="sub">Uncaptured share (bars) with occupancy (line)</p><div class="ma-chart tall"><canvas id="ch-uncap-all"></canvas></div></div>
+        <div class="ma-card"><h3>One Mile</h3><p class="sub">Uncaptured share (bars) with occupancy (line)</p><div class="ma-chart tall"><canvas id="ch-uncap-one"></canvas></div></div>
+        <div class="ma-card"><h3>Half Mile</h3><p class="sub">Uncaptured share (bars) with occupancy (line)</p><div class="ma-chart tall"><canvas id="ch-uncap-half"></canvas></div></div>
+        <div class="ma-card"><h3>One Mile, New Product</h3><p class="sub">Uncaptured share (bars) with occupancy (line)</p><div class="ma-chart tall"><canvas id="ch-uncap-new"></canvas></div></div>
+      </div>
+      <div class="ma-card" style="margin-top:16px">
+        <h3>Uncaptured Demand Detail</h3>
+        <p class="sub">FTE less on-campus and off-campus purpose-built beds, at the selected supply year</p>
+        <div class="ma-scroll"><table class="ma-table" id="ma-uncap-table"></table></div>
+      </div>
+    </section>
+
+    <!-- Rent Growth by year -->
+    <section class="ma-panel" id="panel-rg" hidden>
+      <div class="ma-grid" id="rg-charts"></div>
+    </section>
+
+    <!-- Occupancy by year -->
+    <section class="ma-panel" id="panel-occ" hidden>
+      <div class="ma-grid" id="occ-charts"></div>
+    </section>
+
+    <!-- Prelease by year -->
+    <section class="ma-panel" id="panel-pre" hidden>
+      <div class="ma-controls">
+        <span class="ma-control">Prelease As-Of Month
+          <select id="ma-pre-month"></select>
+        </span>
+        <span class="ma-note" id="ma-pre-note"></span>
+      </div>
+      <div class="ma-grid" id="pre-charts"></div>
+    </section>
+
+    <!-- Comps -->
+    <section class="ma-panel" id="panel-comps" hidden>
+      <div class="ma-card" style="margin-bottom:16px">
+        <h3>Pick Comps <span class="ma-comp-count" id="ma-comp-count"></span></h3>
+        <p class="sub">Tick the properties that form the competitive set. The Comp Set series on every
+           by-year chart and the table below update immediately.</p>
+        <div class="ma-scroll" style="max-height:420px; overflow-y:auto">
+          <table class="ma-table ma-comp-pick" id="ma-pick-table"></table>
+        </div>
+      </div>
+      <div class="ma-card" style="margin-bottom:16px">
+        <h3>Competitive Set - Last Month Detail</h3>
+        <p class="sub">Rent, rent growth, occupancy and prelease for the selected comps (latest closed month)</p>
+        <div class="ma-scroll"><table class="ma-table" id="ma-compset-table"></table></div>
+      </div>
+      <div class="ma-grid">
+        <div class="ma-card">
+          <h3>Comp Set - Property Snapshot</h3>
+          <p class="sub">YoY rent growth (bars) and occupancy (line) per comp</p>
+          <div class="ma-chart tall"><canvas id="ch-comp-snapshot"></canvas></div>
+        </div>
+        <div class="ma-card">
+          <h3>Comp Set - Trend By Year</h3>
+          <p class="sub">Aggregated across the selected comps</p>
+          <div class="ma-chart tall"><canvas id="ch-comp-trend"></canvas></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- University -->
+    <section class="ma-panel" id="panel-university" hidden>
+      <div class="ma-grid">
+        <div class="ma-card"><h3>Application Index (2018 = 100)</h3><p class="sub">IPEDS applications, indexed</p><div class="ma-chart"><canvas id="ch-app-index"></canvas></div></div>
+        <div class="ma-card"><h3>Admission Rate</h3><p class="sub">Admitted / applied</p><div class="ma-chart"><canvas id="ch-adm-rate"></canvas></div></div>
+        <div class="ma-card"><h3>Enrollment Yield</h3><p class="sub">First-time enrollees / admitted</p><div class="ma-chart"><canvas id="ch-yield"></canvas></div></div>
+        <div class="ma-card"><h3>Full-Time Enrollment (000s)</h3><p class="sub">Manual counts where available, IPEDS otherwise</p><div class="ma-chart"><canvas id="ch-fte"></canvas></div></div>
+        <div class="ma-card"><h3>Full-Time Enrollment Index (2018 = 100)</h3><p class="sub">Indexed against benchmarks</p><div class="ma-chart"><canvas id="ch-fte-index"></canvas></div></div>
+      </div>
+    </section>
+
+    <!-- Affluence -->
+    <section class="ma-panel" id="panel-affluence" hidden>
+      <p class="ma-note" style="margin:0 0 12px">The affluence comp set is the template's manual list
+         (it does not follow the searched market yet - same as the workbook, where comp-market IPEDS
+         numbers are keyed in by hand).</p>
+      <div class="ma-grid">
+        <div class="ma-card"><h3>High Income Students vs High Income Beds</h3><p class="sub">Scaled high-income student counts against beds priced for them</p><div class="ma-chart tall"><canvas id="ch-affl-beds"></canvas></div></div>
+        <div class="ma-card"><h3>Income</h3><p class="sub">Median family income of in-migrating students</p><div class="ma-chart tall"><canvas id="ch-affl-income"></canvas></div></div>
+        <div class="ma-card"><h3>Tuition + Rent as Share of Income</h3><p class="sub">Cost burden by market</p><div class="ma-chart tall"><canvas id="ch-affl-share"></canvas></div></div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<script>
+"use strict";
+/* Market Analysis - BETA DNU.
+   Recreates the Market Analysis Template workbook charts from
+   market-analysis-data.json (built by build_market_analysis.py). */
+
+const C = {
+  school: "#a95818",   // rust - selected market (matches dashboard anchor color)
+  p4:     "#3d8aa6",   // blue - Power 4
+  s30:    "#16352e",   // everest - Subtext 30
+  comp:   "#c79830",   // gold - comp set
+  peer:   "#b6b1ab",   // slate30 - peers on uncap charts
+  occ:    "#5a544f",   // line overlays
+};
+const CUT_LABELS = { all: "Market", one_mile: "One Mile", half_mile: "Half Mile", comp: "Comp Set", one_mile_new: "One Mile, New Product" };
+const DEFAULT_PEERS = ["University of Tennessee", "University of Kentucky", "University of Georgia", "University of South Carolina", "University of Florida"];
+
+let D = null;                 // full dataset
+let SEL = null;               // selected ipeds (string)
+let SEL_NAME = "";
+let PEERS = [];               // uncap peer names
+let COMP_KEYS = new Set();    // selected comp property keys (string)
+let PRE_MONTH = 5;
+let UNCAP_YEAR = new Date().getFullYear() + 3;
+const CHARTS = {};
+
+const $ = (id) => document.getElementById(id);
+const pct = (v, d = 1) => v == null || !isFinite(v) ? "-" : (v * 100).toFixed(d) + "%";
+const int = (v) => v == null || !isFinite(v) ? "-" : Math.round(v).toLocaleString("en-US");
+const money = (v) => v == null || !isFinite(v) ? "-" : "$" + Math.round(v).toLocaleString("en-US");
+
+function shortName(full) {
+  if (!full) return "";
+  return full.replace(/-.*$/, "").replace(/^(The )?University of /i, "")
+             .replace(/ University.*$/i, "").replace(/ Main Campus$/i, "").trim() || full;
+}
+
+function makeChart(id, cfg) {
+  if (CHARTS[id]) CHARTS[id].destroy();
+  const el = $(id);
+  if (!el) return;
+  CHARTS[id] = new Chart(el.getContext("2d"), cfg);
+}
+
+const AXIS_PCT = { ticks: { callback: (v) => v + "%" , font: { size: 10.5 } }, grid: { color: "#f0ead9" } };
+const TT_PCT = { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : c.parsed.y.toFixed(1) + "%"}` } };
+Chart.defaults.font.family = '"Pragmatica", "Segoe UI", sans-serif';
+Chart.defaults.color = "#5a544f";
+Chart.defaults.plugins.legend.labels.boxWidth = 12;
+Chart.defaults.plugins.legend.labels.boxHeight = 12;
+/* charts are created inside hidden tab panels (0x0 canvas); animations there
+   never complete, so draw synchronously and resize on tab show instead */
+Chart.defaults.animation = false;
+
+/* ---------------- data access helpers ---------------- */
+const mkt = () => (D.markets || {})[SEL] || {};
+const bench = (k) => (D.benchmarks || {})[k] || {};
+
+function yearlySeries(block, cut, years) {
+  return years.map((y) => {
+    const v = block?.[cut]?.[String(y)];
+    return v == null ? null : v * 100;
+  });
+}
+function preSeries(block, cut, years, month) {
+  return years.map((y) => {
+    const v = block?.[cut]?.[`${y}-${month}`];
+    return v == null ? null : v * 100;
+  });
+}
+function displayYears(kind) {
+  // years available for the selected school, most recent 6
+  const block = kind === "pre" ? mkt().pre_yearly : kind === "occ" ? mkt().occ_yearly : mkt().rg_yearly;
+  const set = new Set();
+  for (const cut of Object.keys(block || {})) {
+    for (const k of Object.keys(block[cut] || {})) set.add(parseInt(k, 10));
+  }
+  const now = new Date().getFullYear();
+  const yrs = [...set].filter((y) => y >= 2021 && y <= now).sort((a, b) => a - b);
+  return yrs.slice(-6);
+}
+
+/* comp set aggregation: SUM(num)/SUM(den) over the picked properties */
+function compAgg(kind, years, month) {
+  const src = kind === "rg" ? mkt().comp_rg : kind === "occ" ? mkt().comp_occ : mkt().comp_pre;
+  if (!src) return years.map(() => null);
+  return years.map((y) => {
+    let n = 0, d = 0;
+    for (const pk of COMP_KEYS) {
+      const cell = src[pk]?.[String(y)];
+      if (cell) { n += cell[0]; d += cell[1]; }
+    }
+    if (!d) return null;
+    const v = kind === "pre" ? 1 - n / d : n / d;
+    return v * 100;
+  });
+}
+
+/* supply-side sums (RPProperties replica): rows are [built, beds, dist] */
+function rpSum(rows, maxYear, opts = {}) {
+  let s = 0;
+  const nowY = new Date().getFullYear();
+  for (const [built, beds, dist] of rows || []) {
+    if (built > maxYear) continue;
+    if (opts.exactYear != null && built !== opts.exactYear) continue;
+    if (opts.maxDist != null && !(dist != null && dist <= opts.maxDist)) continue;
+    if (opts.newOnly && built < nowY - 15) continue;
+    s += beds || 0;
+  }
+  return s;
+}
+function bedsDelivered(rows, year, maxDist) {
+  let s = 0;
+  for (const [built, beds, dist] of rows || []) {
+    if (built !== year) continue;
+    if (maxDist != null && !(dist != null && dist <= maxDist)) continue;
+    s += beds || 0;
+  }
+  return s;
+}
+
+function sdRow(ipeds, year) { return (D.supply_demand[String(ipeds)] || {})[String(year)] || {}; }
+/* some CollegeHouse tables carry aggregate rows with Month=0; the workbook's
+   VLOOKUPs skip them implicitly, we drop them explicitly */
+function realMonths(arr) { return (arr || []).filter((r) => r[1] >= 1 && r[1] <= 12); }
+function lastMonthly(arr, idx) {
+  const a = realMonths(arr);
+  if (!a.length) return null;
+  return a[a.length - 1][idx];
+}
+
+/* ---------------- search ---------------- */
+function bindSearch() {
+  const q = $("ma-q"), box = $("ma-suggest");
+  let hl = -1, hits = [];
+  function render() {
+    box.innerHTML = "";
+    hits.forEach((u, i) => {
+      const b = document.createElement("button");
+      b.innerHTML = `<span>${u.name}</span><span class="ip">IPEDS ${u.ipeds}</span>`;
+      if (i === hl) b.classList.add("hl");
+      b.addEventListener("mousedown", (e) => { e.preventDefault(); choose(u); });
+      box.appendChild(b);
+    });
+    box.hidden = !hits.length;
+  }
+  function choose(u) {
+    box.hidden = true; q.value = u.name;
+    selectMarket(u);
+  }
+  q.addEventListener("input", () => {
+    const t = q.value.trim().toLowerCase();
+    hl = -1;
+    hits = !t ? [] : D.universities.filter((u) => u.name.toLowerCase().includes(t)).slice(0, 12);
+    render();
+  });
+  q.addEventListener("keydown", (e) => {
+    if (box.hidden) return;
+    if (e.key === "ArrowDown") { hl = Math.min(hl + 1, hits.length - 1); render(); e.preventDefault(); }
+    else if (e.key === "ArrowUp") { hl = Math.max(hl - 1, 0); render(); e.preventDefault(); }
+    else if (e.key === "Enter" && hits.length) { choose(hits[Math.max(hl, 0)]); e.preventDefault(); }
+    else if (e.key === "Escape") box.hidden = true;
+  });
+  q.addEventListener("blur", () => setTimeout(() => (box.hidden = true), 120));
+  q.addEventListener("focus", () => { if (hits.length) box.hidden = false; });
+}
+
+function selectMarket(u) {
+  SEL = String(u.ipeds);
+  SEL_NAME = u.name;
+  $("ma-uniname").textContent = u.name;
+  $("ma-uniipeds").textContent = u.ipeds;
+  $("ma-selected").hidden = false;
+  defaultComps();
+  renderAll();
+}
+
+function defaultComps() {
+  // sensible starting comp set: walkable, institutional-size, nearest first
+  COMP_KEYS = new Set();
+  const props = (mkt().properties || [])
+    .filter((p) => p.dist != null && p.dist <= 1 && (p.beds || 0) >= 100)
+    .sort((a, b) => a.dist - b.dist)
+    .slice(0, 8);
+  props.forEach((p) => COMP_KEYS.add(String(p.key)));
+}
+
+/* ---------------- overview ---------------- */
+function renderSummary() {
+  const rows = [];
+  const rp = D.rp[SEL] || [];
+  const nowY = new Date().getFullYear();
+  const rgM = realMonths(mkt().monthly_rg), occM = realMonths(mkt().monthly_occ);
+  const rgByYM = {}, occByYM = {};
+  rgM.forEach((r) => { rgByYM[`${r[0]}-${r[1]}`] = r[2]; });
+  occM.forEach((r) => { occByYM[`${r[0]}-${r[1]}`] = r[2]; });
+  for (let y = 2021; y <= nowY + 3; y++) {
+    const sd = sdRow(SEL, y);
+    const fte = sd.fte, onc = sd.on_campus;
+    if (typeof fte !== "number" || fte <= 0) continue;   // no forecast row = skip
+    const pbsh = rpSum(rp, y);
+    const deliv = rpSum(rp, y, { exactYear: y });
+    const uncap = fte - pbsh - (onc || 0);
+    rows.push({
+      y, fte, pbsh, onc, deliv, uncap,
+      share: (uncap != null && fte) ? uncap / fte : null,
+      rg: rgByYM[`${y}-9`],
+      occ: occByYM[`${y}-12`],
+    });
+  }
+  const t = $("ma-summary");
+  t.innerHTML = `<thead><tr><th>Year</th><th>On-Campus FTE</th><th>PBSH + SC Beds</th>
+    <th>On-Campus Beds</th><th>Beds Deliv.</th><th>Uncap. Demand</th><th>% of FTE</th>
+    <th>Rent Growth (Sep)</th><th>Occ. (Dec)</th></tr></thead><tbody>` +
+    rows.map((r) => `<tr><td>${r.y}</td><td>${int(r.fte)}</td><td>${int(r.pbsh)}</td>
+      <td>${int(r.onc)}</td><td>${int(r.deliv)}</td>
+      <td class="${r.uncap < 0 ? "ma-neg" : ""}">${int(r.uncap)}</td><td>${pct(r.share)}</td>
+      <td class="${r.rg < 0 ? "ma-neg" : ""}">${pct(r.rg)}</td><td>${pct(r.occ)}</td></tr>`).join("") +
+    "</tbody>";
+}
+
+function renderMonthly() {
+  const cuts = [
+    { idx: 2, label: "Market", color: C.school },
+    { idx: 3, label: "One Mile", color: C.s30 },
+    { idx: 4, label: "Half Mile", color: C.p4 },
+    { idx: 5, label: "One Mile, New", color: C.comp },
+  ];
+  for (const [id, src, axis] of [
+    ["ch-month-rg", realMonths(mkt().monthly_rg), "rg"],
+    ["ch-month-occ", realMonths(mkt().monthly_occ), "occ"],
+  ]) {
+    const labels = src.map((r) => `${r[0]}-${String(r[1]).padStart(2, "0")}`);
+    makeChart(id, {
+      type: "line",
+      data: {
+        labels,
+        datasets: cuts.map((c) => ({
+          label: c.label, data: src.map((r) => r[c.idx] == null ? null : r[c.idx] * 100),
+          borderColor: c.color, backgroundColor: c.color, borderWidth: 2,
+          pointRadius: 0, pointHoverRadius: 4, spanGaps: true, tension: .25,
+        })),
+      },
+      options: {
+        maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+        plugins: { legend: { position: "bottom" }, tooltip: TT_PCT },
+        scales: { y: AXIS_PCT, x: { ticks: { maxTicksLimit: 12, font: { size: 10 } }, grid: { display: false } } },
+      },
+    });
+  }
+}
+
+/* ---------------- by-year chart groups (rg / occ / pre) ---------------- */
+function renderByYear(kind, mount, month) {
+  const years = displayYears(kind);
+  const host = $(mount);
+  host.innerHTML = "";
+  const blockKey = kind === "rg" ? "rg_yearly" : kind === "occ" ? "occ_yearly" : "pre_yearly";
+  const cuts = ["all", "one_mile", "half_mile", "comp", "one_mile_new"];
+  for (const cut of cuts) {
+    const card = document.createElement("div");
+    card.className = "ma-card";
+    const cid = `ch-${kind}-${cut}`;
+    card.innerHTML = `<h3>${CUT_LABELS[cut]}</h3>
+      <p class="sub">${kind === "rg" ? "YoY rent growth" : kind === "occ" ? "Average occupancy" : "Prelease"} by year</p>
+      <div class="ma-chart"><canvas id="${cid}"></canvas></div>`;
+    host.appendChild(card);
+    const datasets = [];
+    if (cut === "comp") {
+      datasets.push({ label: "Comp Set", data: compAgg(kind, years, month), backgroundColor: C.comp, borderRadius: 3, maxBarThickness: 42 });
+      datasets.push({ label: shortName(SEL_NAME), data: kind === "pre"
+          ? preSeries(mkt()[blockKey], "all", years, month)
+          : yearlySeries(mkt()[blockKey], "all", years),
+        backgroundColor: C.school, borderRadius: 3, maxBarThickness: 42 });
+    } else {
+      datasets.push({ label: shortName(SEL_NAME), data: kind === "pre"
+          ? preSeries(mkt()[blockKey], cut, years, month) : yearlySeries(mkt()[blockKey], cut, years),
+        backgroundColor: C.school, borderRadius: 3, maxBarThickness: 42 });
+      datasets.push({ label: "Power 4", data: kind === "pre"
+          ? preSeries(bench("p4")[blockKey], cut, years, month) : yearlySeries(bench("p4")[blockKey], cut, years),
+        backgroundColor: C.p4, borderRadius: 3, maxBarThickness: 42 });
+      datasets.push({ label: "Subtext 30", data: kind === "pre"
+          ? preSeries(bench("s30")[blockKey], cut, years, month) : yearlySeries(bench("s30")[blockKey], cut, years),
+        backgroundColor: C.s30, borderRadius: 3, maxBarThickness: 42 });
+    }
+    makeChart(cid, {
+      type: "bar",
+      data: { labels: years, datasets },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" }, tooltip: TT_PCT },
+        scales: {
+          y: { ...AXIS_PCT, ...(kind !== "rg" ? { suggestedMin: kind === "occ" ? 80 : 40, suggestedMax: 100 } : {}) },
+          x: { grid: { display: false } },
+        },
+      },
+    });
+  }
+  // beds delivered companion (the workbook overlays this on a second axis;
+  // here it gets its own small chart to keep one axis per chart)
+  const rp = D.rp[SEL] || [];
+  const card = document.createElement("div");
+  card.className = "ma-card";
+  const cid = `ch-${kind}-beds`;
+  card.innerHTML = `<h3>Beds Delivered</h3><p class="sub">New PBSH beds by delivery year (market / one mile)</p>
+    <div class="ma-chart"><canvas id="${cid}"></canvas></div>`;
+  host.appendChild(card);
+  makeChart(cid, {
+    type: "bar",
+    data: {
+      labels: years,
+      datasets: [
+        { label: "Market", data: years.map((y) => bedsDelivered(rp, y, null)), backgroundColor: C.school, borderRadius: 3, maxBarThickness: 42 },
+        { label: "One Mile", data: years.map((y) => bedsDelivered(rp, y, 1)), backgroundColor: C.s30, borderRadius: 3, maxBarThickness: 42 },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" },
+        tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${int(c.parsed.y)}` } } },
+      scales: { y: { ticks: { font: { size: 10.5 } }, grid: { color: "#f0ead9" } }, x: { grid: { display: false } } },
+    },
+  });
+}
+
+/* ---------------- uncaptured demand ---------------- */
+function uncapEntity(name, ipeds, isBench) {
+  const T = UNCAP_YEAR;
+  const nowY = new Date().getFullYear();
+  let fte, onc, rows;
+  if (isBench) {
+    const sb = (D.supply_demand_bench[ipeds] || {})[String(T)] || {};
+    fte = sb.fte; onc = sb.on_campus;
+    rows = ipeds === "s30" ? D.rp_bench_s30 : D.rp_bench_p4;
+  } else {
+    const sd = sdRow(ipeds, T);
+    fte = sd.fte; onc = sd.on_campus;
+    rows = D.rp[String(ipeds)] || [];
+  }
+  const cuts = {};
+  for (const [key, maxDist, newOnly] of [["all", null, false], ["one", 1, false], ["half", 0.5, false], ["new", 1, true]]) {
+    let pb = 0;
+    for (const [built, beds, dist] of rows || []) {
+      if (built > T) continue;
+      if (maxDist != null && !(dist != null && dist <= maxDist)) continue;
+      if (newOnly && built < nowY - 15) continue;
+      pb += beds || 0;
+    }
+    const uncap = typeof fte === "number" ? fte - (onc || 0) - pb : null;
+    cuts[key] = { pbsh: pb, uncap, share: (uncap != null && fte) ? uncap / fte : null };
+  }
+  // latest monthly rent growth + occupancy per cut
+  const mm = isBench ? (bench(ipeds).monthly_rg || []) : ((D.markets[String(ipeds)] || {}).monthly_rg || []);
+  const mo = isBench ? (bench(ipeds).monthly_occ || []) : ((D.markets[String(ipeds)] || {}).monthly_occ || []);
+  const idxs = { all: 2, one: 3, half: 4, new: 5 };
+  for (const k of Object.keys(idxs)) {
+    cuts[k].rg = lastMonthly(mm, idxs[k]);
+    cuts[k].occ = lastMonthly(mo, idxs[k]);
+  }
+  return { name, fte, onc, cuts };
+}
+
+function renderUncap() {
+  // year selector
+  const ysel = $("ma-uncap-year");
+  if (!ysel.options.length) {
+    const nowY = new Date().getFullYear();
+    for (let y = nowY - 1; y <= nowY + 5; y++) {
+      const o = document.createElement("option");
+      o.value = y; o.textContent = y;
+      if (y === UNCAP_YEAR) o.selected = true;
+      ysel.appendChild(o);
+    }
+    ysel.addEventListener("change", () => { UNCAP_YEAR = parseInt(ysel.value, 10); renderUncap(); });
+  }
+  // peer chips
+  const chips = $("ma-peers");
+  chips.innerHTML = "";
+  PEERS.forEach((p) => {
+    const b = document.createElement("button");
+    b.className = "ma-peer-chip";
+    b.innerHTML = `${shortName(p)}<span class="x">x</span>`;
+    b.title = "Remove " + p;
+    b.addEventListener("click", () => { PEERS = PEERS.filter((x) => x !== p); renderUncap(); });
+    chips.appendChild(b);
+  });
+  const add = $("ma-peer-add");
+  add.innerHTML = '<option value="">+ add peer...</option>';
+  D.universities.filter((u) => u.name !== SEL_NAME && !PEERS.includes(u.name)).forEach((u) => {
+    const o = document.createElement("option");
+    o.value = u.name; o.textContent = u.name;
+    add.appendChild(o);
+  });
+  add.onchange = () => { if (add.value) { PEERS.push(add.value); renderUncap(); } };
+
+  const nameToIp = Object.fromEntries(D.universities.map((u) => [u.name, u.ipeds]));
+  const entities = [uncapEntity(shortName(SEL_NAME), SEL, false)];
+  for (const p of PEERS) {
+    if (nameToIp[p]) entities.push(uncapEntity(shortName(p), nameToIp[p], false));
+  }
+  entities.push(uncapEntity("Power 4", "p4", true));
+  entities.push(uncapEntity("Subtext 30", "s30", true));
+
+  const cutMap = { all: "ch-uncap-all", one: "ch-uncap-one", half: "ch-uncap-half", new: "ch-uncap-new" };
+  for (const [cut, cid] of Object.entries(cutMap)) {
+    makeChart(cid, {
+      type: "bar",
+      data: {
+        labels: entities.map((e) => e.name),
+        datasets: [
+          { type: "bar", label: "Uncaptured Share",
+            data: entities.map((e) => e.cuts[cut].share == null ? null : e.cuts[cut].share * 100),
+            backgroundColor: entities.map((_, i) => i === 0 ? C.school : C.peer),
+            borderRadius: 3, maxBarThickness: 46, order: 2 },
+          { type: "line", label: "Occupancy",
+            data: entities.map((e) => e.cuts[cut].occ == null ? null : e.cuts[cut].occ * 100),
+            borderColor: C.s30, backgroundColor: C.s30, borderWidth: 2,
+            pointRadius: 4, pointBackgroundColor: C.s30, order: 1, spanGaps: true },
+        ],
+      },
+      options: {
+        maintainAspectRatio: false,
+        plugins: { legend: { position: "bottom" }, tooltip: TT_PCT },
+        scales: { y: AXIS_PCT, x: { grid: { display: false }, ticks: { font: { size: 10.5 } } } },
+      },
+    });
+  }
+
+  const t = $("ma-uncap-table");
+  t.innerHTML = `<thead><tr><th>Market</th><th>FTE (${UNCAP_YEAR})</th><th>On-Campus</th>
+      <th>PBSH+SC</th><th>Uncap.</th><th>Share</th>
+      <th>1-Mi Share</th><th>Half-Mi Share</th><th>Latest Rent Gr.</th><th>Latest Occ.</th></tr></thead><tbody>` +
+    entities.map((e) => `<tr><td>${e.name}</td><td>${int(e.fte)}</td><td>${int(e.onc)}</td>
+      <td>${int(e.cuts.all.pbsh)}</td>
+      <td class="${e.cuts.all.uncap < 0 ? "ma-neg" : ""}">${int(e.cuts.all.uncap)}</td>
+      <td>${pct(e.cuts.all.share)}</td><td>${pct(e.cuts.one.share)}</td><td>${pct(e.cuts.half.share)}</td>
+      <td class="${e.cuts.all.rg < 0 ? "ma-neg" : ""}">${pct(e.cuts.all.rg)}</td>
+      <td>${pct(e.cuts.all.occ)}</td></tr>`).join("") + "</tbody>";
+}
+
+/* ---------------- comps ---------------- */
+function renderPickTable() {
+  const props = (mkt().properties || []).slice().sort((a, b) => (a.dist ?? 99) - (b.dist ?? 99));
+  const t = $("ma-pick-table");
+  t.innerHTML = `<thead><tr><th></th><th>Building Name</th><th>Year Built</th>
+      <th>Beds</th><th>Dist. To Campus</th></tr></thead><tbody>` +
+    props.map((p) => `<tr><td><input type="checkbox" data-key="${p.key}"
+        ${COMP_KEYS.has(String(p.key)) ? "checked" : ""}></td>
+      <td style="text-align:left">${p.name || p.key}</td><td>${p.built ?? "-"}</td>
+      <td>${int(p.beds)}</td><td>${p.dist == null ? "-" : p.dist.toFixed(1) + " mi"}</td></tr>`).join("") +
+    "</tbody>";
+  t.querySelectorAll("input[type=checkbox]").forEach((cb) => {
+    cb.addEventListener("change", () => {
+      const k = cb.dataset.key;
+      if (cb.checked) COMP_KEYS.add(k); else COMP_KEYS.delete(k);
+      renderCompDependents();
+    });
+  });
+}
+
+function renderCompDependents() {
+  $("ma-comp-count").textContent = `(${COMP_KEYS.size} selected)`;
+  const props = mkt().properties || [];
+  const byKey = Object.fromEntries(props.map((p) => [String(p.key), p]));
+  const picked = [...COMP_KEYS].map((k) => ({ key: k, ...(byKey[k] || {}), latest: D.latest_detail[k] || {} }))
+    .sort((a, b) => (a.dist ?? 99) - (b.dist ?? 99));
+
+  const t = $("ma-compset-table");
+  t.innerHTML = `<thead><tr><th>Project Name</th><th>Year Built</th><th>Units</th><th>Beds</th>
+      <th>Rent/Bed</th><th>YoY Rent Growth</th><th>Occupancy</th><th>Prelease</th></tr></thead><tbody>` +
+    picked.map((p) => `<tr><td style="text-align:left">${p.name || p.key}</td>
+      <td>${p.built ?? "-"}</td><td>${int(p.latest.units)}</td><td>${int(p.beds)}</td>
+      <td>${money(p.latest.rent_bed)}</td>
+      <td class="${p.latest.rg < 0 ? "ma-neg" : ""}">${pct(p.latest.rg)}</td>
+      <td>${pct(p.latest.occ)}</td><td>${pct(p.latest.pre)}</td></tr>`).join("") + "</tbody>";
+
+  // snapshot chart: per-property rent growth bars + occupancy line
+  makeChart("ch-comp-snapshot", {
+    type: "bar",
+    data: {
+      labels: picked.map((p) => p.name || p.key),
+      datasets: [
+        { type: "bar", label: "YoY Rent Growth", data: picked.map((p) => p.latest.rg == null ? null : p.latest.rg * 100),
+          backgroundColor: C.comp, borderRadius: 3, maxBarThickness: 40, order: 2 },
+        { type: "line", label: "Occupancy", data: picked.map((p) => p.latest.occ == null ? null : p.latest.occ * 100),
+          borderColor: C.s30, backgroundColor: C.s30, borderWidth: 2, pointRadius: 4, order: 1, spanGaps: true },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" }, tooltip: TT_PCT },
+      scales: { y: AXIS_PCT, x: { ticks: { font: { size: 9.5 }, maxRotation: 40, minRotation: 20 }, grid: { display: false } } },
+    },
+  });
+
+  // trend chart: comp-set aggregate rg + occ by year
+  const years = displayYears("rg");
+  makeChart("ch-comp-trend", {
+    type: "bar",
+    data: {
+      labels: years,
+      datasets: [
+        { type: "bar", label: "Rent Growth", data: compAgg("rg", years, PRE_MONTH),
+          backgroundColor: C.comp, borderRadius: 3, maxBarThickness: 42, order: 2 },
+        { type: "line", label: "Occupancy", data: compAgg("occ", years, PRE_MONTH),
+          borderColor: C.s30, backgroundColor: C.s30, borderWidth: 2, pointRadius: 4, order: 1, spanGaps: true },
+      ],
+    },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { position: "bottom" }, tooltip: TT_PCT },
+      scales: { y: AXIS_PCT, x: { grid: { display: false } } },
+    },
+  });
+
+  // comp bars inside the by-year groups need refreshing too
+  renderByYear("rg", "rg-charts");
+  renderByYear("occ", "occ-charts");
+  renderByYear("pre", "pre-charts", PRE_MONTH);
+}
+
+/* ---------------- university (applications + enrollment) ---------------- */
+function renderUniversity() {
+  const hist = D.ipeds_history[SEL] || {};
+  const years = [];
+  for (let y = 2018; y <= 2025; y++) if (hist[String(y)] || D.ipeds_bench.s30[String(y)]) years.push(y);
+  const get = (y, i) => { const r = hist[String(y)]; return r && typeof r[i] === "number" ? r[i] : null; };
+  const getB = (k, y, i) => { const r = D.ipeds_bench[k][String(y)]; return r && r[i] ? r[i] : null; };
+  // [fte, adm, app, ftug]
+  const app0 = get(2018, 2), appB0 = { s30: getB("s30", 2018, 2), p4: getB("p4", 2018, 2) };
+  const lineOpts = (fmt) => ({
+    maintainAspectRatio: false, interaction: { mode: "index", intersect: false },
+    plugins: { legend: { position: "bottom" },
+      tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : fmt(c.parsed.y)}` } } },
+    scales: { y: { ticks: { font: { size: 10.5 } }, grid: { color: "#f0ead9" } }, x: { grid: { display: false } } },
+  });
+  const mkLine = (id, series, fmt, pctAxis) => {
+    const cfg = {
+      type: "line",
+      data: { labels: years, datasets: series.map((s) => ({
+        label: s.label, data: s.data, borderColor: s.color, backgroundColor: s.color,
+        borderWidth: 2, pointRadius: 3, spanGaps: true, tension: .2 })) },
+      options: lineOpts(fmt),
+    };
+    if (pctAxis) cfg.options.scales.y = { ...AXIS_PCT };
+    makeChart(id, cfg);
+  };
+
+  mkLine("ch-app-index", [
+    { label: shortName(SEL_NAME), color: C.school, data: years.map((y) => { const v = get(y, 2); return v && app0 ? v / app0 * 100 : null; }) },
+    { label: "Subtext 30", color: C.s30, data: years.map((y) => { const v = getB("s30", y, 2); return v && appB0.s30 ? v / appB0.s30 * 100 : null; }) },
+    { label: "Power 4", color: C.p4, data: years.map((y) => { const v = getB("p4", y, 2); return v && appB0.p4 ? v / appB0.p4 * 100 : null; }) },
+  ], (v) => v.toFixed(0));
+
+  mkLine("ch-adm-rate", [
+    { label: shortName(SEL_NAME), color: C.school, data: years.map((y) => { const a = get(y, 1), p = get(y, 2); return a && p ? a / p * 100 : null; }) },
+    { label: "Subtext 30", color: C.s30, data: years.map((y) => { const a = getB("s30", y, 1), p = getB("s30", y, 2); return a && p ? a / p * 100 : null; }) },
+    { label: "Power 4", color: C.p4, data: years.map((y) => { const a = getB("p4", y, 1), p = getB("p4", y, 2); return a && p ? a / p * 100 : null; }) },
+  ], (v) => v.toFixed(1) + "%", true);
+
+  mkLine("ch-yield", [
+    { label: shortName(SEL_NAME), color: C.school, data: years.map((y) => { const f = get(y, 3), a = get(y, 1); return f && a ? f / a * 100 : null; }) },
+    { label: "Subtext 30", color: C.s30, data: years.map((y) => { const f = getB("s30", y, 3), a = getB("s30", y, 1); return f && a ? f / a * 100 : null; }) },
+    { label: "Power 4", color: C.p4, data: years.map((y) => { const f = getB("p4", y, 3), a = getB("p4", y, 1); return f && a ? f / a * 100 : null; }) },
+  ], (v) => v.toFixed(1) + "%", true);
+
+  // FTE: manual counts win when present (Enrollment sheet logic U=IF(Z=0,AB,Z))
+  const man = D.manual_enrollment[SEL] || {};
+  const fteOf = (y) => {
+    const m = man[String(y)];
+    if (typeof m === "number" && m !== 0) return m;
+    return get(y, 0);
+  };
+  const eyears = [];
+  for (let y = 2018; y <= 2026; y++) if (fteOf(y) != null || D.manual_bench.s30[String(y)]) eyears.push(y);
+  const f0 = fteOf(2018);
+  const mb0 = { s30: D.manual_bench.s30["2018"] || getB("s30", 2018, 0), p4: D.manual_bench.p4["2018"] || getB("p4", 2018, 0) };
+  const benchFte = (k, y) => D.manual_bench[k][String(y)] || getB(k, y, 0);
+
+  makeChart("ch-fte", {
+    type: "line",
+    data: { labels: eyears, datasets: [{
+      label: shortName(SEL_NAME), data: eyears.map((y) => { const v = fteOf(y); return v == null ? null : v / 1000; }),
+      borderColor: C.school, backgroundColor: C.school, borderWidth: 2, pointRadius: 3, spanGaps: true, tension: .2 }] },
+    options: {
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false },
+        tooltip: { callbacks: { label: (c) => `${c.parsed.y == null ? "-" : c.parsed.y.toFixed(1)}k full-time students` } } },
+      scales: { y: { ticks: { callback: (v) => v + "k", font: { size: 10.5 } }, grid: { color: "#f0ead9" } }, x: { grid: { display: false } } },
+    },
+  });
+
+  mkLine("ch-fte-index", [
+    { label: shortName(SEL_NAME), color: C.school, data: eyears.map((y) => { const v = fteOf(y); return v && f0 ? v / f0 * 100 : null; }) },
+    { label: "Subtext 30", color: C.s30, data: eyears.map((y) => { const v = benchFte("s30", y); return v && mb0.s30 ? v / mb0.s30 * 100 : null; }) },
+    { label: "Power 4", color: C.p4, data: eyears.map((y) => { const v = benchFte("p4", y); return v && mb0.p4 ? v / mb0.p4 * 100 : null; }) },
+  ], (v) => v.toFixed(0));
+}
+
+/* ---------------- affluence (template's manual comp set) ---------------- */
+function renderAffluence() {
+  const rows = (D.affluence || []).slice();
+  const labels = rows.map((r) => shortName(r.name));
+  const barOpts = (fmt) => ({
+    maintainAspectRatio: false,
+    plugins: { legend: { position: "bottom" },
+      tooltip: { callbacks: { label: (c) => `${c.dataset.label}: ${c.parsed.y == null ? "-" : fmt(c.parsed.y)}` } } },
+    scales: { y: { ticks: { font: { size: 10.5 } }, grid: { color: "#f0ead9" } },
+      x: { ticks: { font: { size: 10 }, maxRotation: 35, minRotation: 20 }, grid: { display: false } } },
+  });
+  makeChart("ch-affl-beds", {
+    type: "bar",
+    data: { labels, datasets: [
+      { label: "High Income Students", data: rows.map((r) => r.hi_income_students), backgroundColor: C.school, borderRadius: 3, maxBarThickness: 34 },
+      { label: "High Income Beds", data: rows.map((r) => r.hi_income_beds), backgroundColor: C.s30, borderRadius: 3, maxBarThickness: 34 },
+    ] },
+    options: barOpts((v) => int(v)),
+  });
+  makeChart("ch-affl-income", {
+    type: "bar",
+    data: { labels, datasets: [
+      { label: "Income", data: rows.map((r) => r.income), backgroundColor: C.s30, borderRadius: 3, maxBarThickness: 40 },
+    ] },
+    options: { ...barOpts((v) => money(v)), plugins: { legend: { display: false },
+      tooltip: { callbacks: { label: (c) => money(c.parsed.y) } } } },
+  });
+  makeChart("ch-affl-share", {
+    type: "bar",
+    data: { labels, datasets: [
+      { label: "Tuition + Rent Share of Income", data: rows.map((r) => r.tr_share == null ? null : r.tr_share * 100), backgroundColor: C.comp, borderRadius: 3, maxBarThickness: 40 },
+    ] },
+    options: { ...barOpts((v) => v.toFixed(1) + "%"), plugins: { legend: { display: false }, tooltip: TT_PCT },
+      scales: { y: AXIS_PCT, x: { ticks: { font: { size: 10 }, maxRotation: 35, minRotation: 20 }, grid: { display: false } } } },
+  });
+}
+
+/* ---------------- orchestration ---------------- */
+function renderAll() {
+  if (!SEL) return;
+  renderSummary();
+  renderMonthly();
+  renderUncap();
+  renderPickTable();
+  renderCompDependents();   // also renders the three by-year groups
+  renderUniversity();
+  renderAffluence();
+}
+
+function bindTabs() {
+  const tabs = $("ma-tabs");
+  tabs.querySelectorAll("button").forEach((b) => {
+    b.addEventListener("click", () => {
+      tabs.querySelectorAll("button").forEach((x) => x.classList.toggle("active", x === b));
+      document.querySelectorAll(".ma-panel").forEach((p) => { p.hidden = p.id !== `panel-${b.dataset.tab}`; });
+      requestAnimationFrame(() => Object.values(CHARTS).forEach((c) => { try { c.resize(); } catch (e) {} }));
+    });
+  });
+}
+
+function bindPreMonth() {
+  const sel = $("ma-pre-month");
+  const names = ["January","February","March","April","May","June","July","August","September","October","November","December"];
+  names.forEach((n, i) => {
+    const o = document.createElement("option");
+    o.value = i + 1; o.textContent = n;
+    if (i + 1 === PRE_MONTH) o.selected = true;
+    sel.appendChild(o);
+  });
+  sel.addEventListener("change", () => {
+    PRE_MONTH = parseInt(sel.value, 10);
+    $("ma-pre-note").textContent = PRE_MONTH === D.comp_prelease_month ? "" :
+      `Note: the Comp Set chart stays at month ${D.comp_prelease_month} in this beta.`;
+    renderByYear("pre", "pre-charts", PRE_MONTH);
+  });
+}
+
+async function boot() {
+  try {
+    const res = await fetch("market-analysis-data.json");
+    if (!res.ok) throw new Error(res.status);
+    D = await res.json();
+  } catch (e) {
+    $("ma-loading").textContent =
+      "market-analysis-data.json is missing or unreadable. Run build_market_analysis.py first.";
+    return;
+  }
+  PRE_MONTH = D.comp_prelease_month || 5;
+  PEERS = DEFAULT_PEERS.filter((p) => D.universities.some((u) => u.name === p));
+  $("ma-asof").textContent = (D.generated || "").slice(0, 10);
+  $("ma-workbook").textContent = D.workbook || "";
+  $("ma-loading").hidden = true;
+  $("ma-app").hidden = false;
+  bindSearch();
+  bindTabs();
+  bindPreMonth();
+  // start on Purdue like the template, if present (exact match first - IUPUI
+  // also contains "Purdue" in its name)
+  const first = D.universities.find((u) => u.name === "Purdue University")
+    || D.universities.find((u) => /purdue/i.test(u.name)) || D.universities[0];
+  if (first) { $("ma-q").value = first.name; selectMarket(first); }
+  // ?tab=rg deep link (also handy for headless screenshots)
+  const tab = new URLSearchParams(location.search).get("tab");
+  if (tab) {
+    const btn = document.querySelector(`#ma-tabs button[data-tab="${tab}"]`);
+    if (btn) btn.click();
+  }
+}
+boot();
+</script>
+</body>
+</html>

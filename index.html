@@ -35,6 +35,10 @@
           <svg class="icon" viewBox="0 0 24 24"><path d="M3 17l6-6 4 4 8-8"/><path d="M17 7h4v4"/></svg>
           Forward Model
         </a>
+        <a class="nav-item" data-view="marketanalysis" href="#marketanalysis">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M3 9h18"/><path d="M9 9v12"/></svg>
+          Market Analysis - BETA DNU
+        </a>
         <a class="nav-item" href="dictionary.html">
           <svg class="icon" viewBox="0 0 24 24"><path d="M4 4h12a4 4 0 0 1 4 4v12H8a4 4 0 0 1-4-4z"/><path d="M4 4v12"/><path d="M8 8h8"/><path d="M8 12h8"/></svg>
           Dictionary
@@ -2697,6 +2701,19 @@
                 title="Forward Looking Model - Market Screener" loading="lazy"></iframe>
         <iframe class="forward-frame fwd-hidden" id="forward-frame-acq" data-src="acquisitions-model.html"
                 title="Forward Looking Model - Acquisition Screener" loading="lazy"></iframe>
+      </section>
+
+      <!-- ============================================================
+           View: Market Analysis - BETA DNU
+           Web recreation of the Market Analysis Template workbook
+           (Market Analysis/Market Analysis Template 04092026.xlsm).
+           Self-contained app in an iframe, like Market State.
+           Data comes from market-analysis-data.json, rebuilt by
+           build_market_analysis.py.
+           ============================================================ -->
+      <section id="marketanalysis-view" class="view">
+        <iframe class="forward-frame" src="market-analysis.html"
+                title="Market Analysis - BETA DNU" loading="lazy"></iframe>
       </section>
 
       <!-- ============================================================

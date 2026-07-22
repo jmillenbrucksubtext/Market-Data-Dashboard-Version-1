@@ -147,7 +147,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
 /* ----- View routing ------------------------------------------ */
 
-const VALID_VIEWS = ["industry", "marketstate", "sources", "forward", "tools"];
+const VALID_VIEWS = ["industry", "marketstate", "sources", "forward", "marketanalysis", "tools"];
 
 function bindNav() {
   const items = document.querySelectorAll(".nav-item[data-view]");

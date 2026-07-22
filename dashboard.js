@@ -526,10 +526,9 @@ function pipelineScorecardRows() {
       || (r.state_abbr || "").toLowerCase().includes(q))
     .map((r) => {
       const props = d.propsByMarket.get(r.market_key) || [];
-      // Zero occupancy/prelease means "not reporting" in the export (under-
-      // construction / pre-delivery assets), not a real 0% - drop them.
+      // Zero occupancy means "not reporting" in the export (under-
+      // construction / pre-delivery assets), not a real 0% - drop it.
       const occ = (p) => p.occupancy || null;
-      const pre = (p) => p.prelease || null;
       const growth = (p) => d.rentGrowth.get(p.property_key) ?? null;
       return {
         ...r,
@@ -544,8 +543,6 @@ function pipelineScorecardRows() {
         rent_one_mi: bedWeighted(props, 1.0, (p) => p.avg_rent),
         occ_half_mi: bedWeighted(props, 0.5, occ),
         occ_one_mi: bedWeighted(props, 1.0, occ),
-        pre_half_mi: bedWeighted(props, 0.5, pre),
-        pre_one_mi: bedWeighted(props, 1.0, pre),
         rent_growth_half_mi: bedWeighted(props, 0.5, growth),
         rent_growth_one_mi: bedWeighted(props, 1.0, growth),
         ud_one_mi: uncapturedWithinMile(props, r.enr_full_time, null),
@@ -577,8 +574,6 @@ const PIPELINE_COLS = [
   { h: "Occ - 0.5 Mi",         group: "Occupancy",         sub: "0.5 Mi",       get: (r) => r.occ_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Occ - 1.0 Mi",         group: "Occupancy",         sub: "1.0 Mi",       get: (r) => r.occ_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Market Occ.",          group: "Occupancy",         sub: "Market",       get: (r) => r.occupancy,           fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Prelease - 0.5 Mi",    group: "Prelease",          sub: "0.5 Mi",       get: (r) => r.pre_half_mi,         fmt: (v) => fmtPct(v), xz: "0.0%" },
-  { h: "Prelease - 1.0 Mi",    group: "Prelease",          sub: "1.0 Mi",       get: (r) => r.pre_one_mi,          fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Market Prelease",      group: "Prelease",          sub: "Market",       get: (r) => r.prelease,            fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Prelease YoY",         group: "Prelease",          sub: "YoY",          get: (r) => r.prelease_yoy,        fmt: (v) => fmtPct(v), xz: "0.0%" },
   { h: "Rent - 0.5 Mi",        group: "Rent",              sub: "0.5 Mi",       get: (r) => r.rent_half_mi,        fmt: fmtUsd,           xz: "$#,##0" },

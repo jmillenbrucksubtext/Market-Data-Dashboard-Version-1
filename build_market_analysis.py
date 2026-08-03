@@ -4,7 +4,8 @@ build_market_analysis.py
 Data builder for the "Market Analysis - BETA DNU" tab (market-analysis.html).
 
 Replicates the SQL pulls and static reference data of the Excel workbook
-  Market Analysis/Market Analysis Template 04092026.xlsm
+  Market Analysis/Market Analysis Template *.xlsm (newest copy is used;
+  logic verified against the 06122026 release)
 so the web app can re-render every chart for ANY university instantly,
 with no live SQL from the browser.
 
@@ -408,12 +409,13 @@ def pull_comp_series(cn, out):
     for ipeds, pk, y, n, d in run(cn, "comp rg num/den", sql):
         c = out.setdefault(str(ipeds), {}).setdefault("comp_rg", {}).setdefault(str(pk), {})
         c[str(y)] = [num(n), num(d)]
+    # workbook comp-set occupancy excludes zero-occupancy months (RG.Occupancy>0)
     sql = f"""
     SELECT STP.IPEDS, MO.Property_Key, MO.[Year],
            SUM(MO.[Occupancy] * MO.[TotalBeds]), SUM(MO.[TotalBeds])
     FROM StudentResearch.[dbo].[MonthlyPropertyOccupancy_CH] MO
     JOIN StudentResearch.dbo.School_To_Property STP ON MO.Property_Key = STP.PropertyKey
-    WHERE MO.[Year] >= {COMP_MIN_YEAR}
+    WHERE MO.[Year] >= {COMP_MIN_YEAR} AND MO.Occupancy > 0
     GROUP BY STP.IPEDS, MO.Property_Key, MO.[Year]
     """
     for ipeds, pk, y, n, d in run(cn, "comp occ num/den", sql):

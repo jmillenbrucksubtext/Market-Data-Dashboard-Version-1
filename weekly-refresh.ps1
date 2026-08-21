@@ -102,10 +102,17 @@ $env:SQLPASSWORD = $cred.GetNetworkCredential().Password
 # shows only the start line — exactly the blind spot we hit before. With it,
 # the log records the last step reached, so a future hang is diagnosable.
 $env:PYTHONUNBUFFERED = "1"
+# Same stderr caveat as the build/git sections: under EAP=Stop, 2>&1 turns the
+# first stderr line (e.g. line 1 of a python traceback) into a terminating
+# error, killing the pipeline before anything is logged. Drop to Continue so
+# the full traceback lands in refresh.log and judge by exit code.
+$prevExportEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
 try {
-    python -u export-data.py --auth env 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value $_ -Encoding utf8; $_ } | Out-Host
+    python -u export-data.py --auth env 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value "$_" -Encoding utf8; "$_" } | Out-Host
     $py = $LASTEXITCODE
 } finally {
+    $ErrorActionPreference = $prevExportEAP
     Remove-Item Env:\SQLUSER         -ErrorAction SilentlyContinue
     Remove-Item Env:\SQLPASSWORD     -ErrorAction SilentlyContinue
     Remove-Item Env:\PYTHONUNBUFFERED -ErrorAction SilentlyContinue

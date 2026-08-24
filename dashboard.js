@@ -145,7 +145,13 @@ document.addEventListener("DOMContentLoaded", async () => {
     if (!MARKET_UNIS.has(c.market_key)) MARKET_UNIS.set(c.market_key, []);
     const list = MARKET_UNIS.get(c.market_key);
     if (!list.some((u) => u.school_key === c.school_key)) {
-      list.push({ school_key: c.school_key, name: c.university_name, enrollment: c.total_enrollment });
+      list.push({
+        school_key: c.school_key,
+        name: c.university_name,
+        enrollment: c.total_enrollment,
+        lat: c.campus_lat,
+        lng: c.campus_lng,
+      });
     }
   }
   for (const [mk, list] of MARKET_UNIS) {
@@ -1427,33 +1433,32 @@ function renderIndustryMap() {
   const fillFor = (r) =>
     (activeMode && r.market_status && STATUS_COLOR[r.market_status]) || pinColor(r.qualifier_score);
 
-  for (const r of rows) {
-    const coords = ANCHOR_COORDS.get(r.market_key);
-    if (!coords) continue;
-    const isS30 = r.is_subtext30 === 1;
-    const marker = L.circleMarker([coords.lat, coords.lng], {
-      radius: isS30 ? 9 : 6,
-      fillColor: fillFor(r),
-      color: isS30 ? "#c1d100" : "#ffffff",        // lime ring for Subtext-30, white for others
-      weight: isS30 ? 3 : 1.5,
-      fillOpacity: 0.92,
-    });
+  // Shared popup for both anchor and non-anchor pins. `uni` is null for the
+  // anchor (market) pin; for a school pin the popup leads with that school
+  // and its CTA deep-links to the University tab. The stats are market-wide
+  // either way - SQL only carries beds/rent/score per market.
+  function popupHtml(r, uni, isS30) {
     const scorePct = r.qualifier_score == null
       ? "-"
       : `${Math.round(r.qualifier_score * 100)}%`;
     const beds = r.existing_beds != null ? fmtInt(r.existing_beds) : "-";
     const rent = r.avg_rent_per_bed != null ? fmtUsd(r.avg_rent_per_bed) : "-";
     const accent = fillFor(r);
-    marker.bindPopup(`
+    const title = uni ? uni.name : (r.anchor_university || "");
+    const siblings = (MARKET_UNIS.get(r.market_key) || [])
+      .filter((u) => u.name !== title)
+      .map((u) => u.name === r.anchor_university
+        ? `<a href="market.html?id=${r.market_key}">${escapeHtml(u.name)}</a>`
+        : `<a href="market.html?id=${r.market_key}&school=${u.school_key}#university">${escapeHtml(u.name)}</a>`)
+      .join(" · ");
+    const cta = uni
+      ? `market.html?id=${r.market_key}&school=${uni.school_key}#university`
+      : `market.html?id=${r.market_key}`;
+    return `
       <div class="market-popup" style="--popup-accent:${accent}">
         <div class="market-popup-head">
-          <div class="market-popup-title">${escapeHtml(r.anchor_university || "")}</div>
-          ${(MARKET_UNIS.get(r.market_key) || []).filter((u) => u.name !== r.anchor_university).length
-            ? `<div class="market-popup-unis">${MARKET_UNIS.get(r.market_key)
-                .filter((u) => u.name !== r.anchor_university)
-                .map((u) => `<a href="market.html?id=${r.market_key}&school=${u.school_key}#university">${escapeHtml(u.name)}</a>`)
-                .join(" · ")}</div>`
-            : ""}
+          <div class="market-popup-title">${escapeHtml(title)}</div>
+          ${siblings ? `<div class="market-popup-unis">${siblings}</div>` : ""}
           <div class="market-popup-sub">
             <span class="market-popup-loc">${escapeHtml(r.city || "")}, ${escapeHtml(r.state_abbr || "")}</span>
             ${r.market_status ? `<span class="market-popup-badge" style="background:${STATUS_COLOR[r.market_status]};color:#fff">${r.market_status.charAt(0).toUpperCase() + r.market_status.slice(1)}</span>` : ""}
@@ -1474,11 +1479,45 @@ function renderIndustryMap() {
             <div class="market-popup-stat-label">Qualifier</div>
           </div>
         </div>
-        <a href="market.html?id=${r.market_key}" class="market-popup-cta">Open market →</a>
+        <a href="${cta}" class="market-popup-cta">Open market →</a>
       </div>
-    `, { maxWidth: 320, minWidth: 280, className: "market-popup-wrapper" });
+    `;
+  }
+
+  for (const r of rows) {
+    const coords = ANCHOR_COORDS.get(r.market_key);
+    if (!coords) continue;
+    const isS30 = r.is_subtext30 === 1;
+    const marker = L.circleMarker([coords.lat, coords.lng], {
+      radius: isS30 ? 9 : 6,
+      fillColor: fillFor(r),
+      color: isS30 ? "#c1d100" : "#ffffff",        // lime ring for Subtext-30, white for others
+      weight: isS30 ? 3 : 1.5,
+      fillOpacity: 0.92,
+    });
+    marker.bindPopup(popupHtml(r, null, isS30),
+      { maxWidth: 320, minWidth: 280, className: "market-popup-wrapper" });
     marker.on("click", () => marker.openPopup());
     marker.addTo(industryMarkerLayer);
+
+    // Every other university in the market gets its own (smaller) pin at its
+    // campus - no school hides behind the anchor. Same market color; the
+    // Subtext-30 ring stays on the anchor pin only.
+    for (const uni of MARKET_UNIS.get(r.market_key) || []) {
+      if (uni.name === r.anchor_university) continue;
+      if (uni.lat == null || uni.lng == null) continue;
+      const uniMarker = L.circleMarker([uni.lat, uni.lng], {
+        radius: 5,
+        fillColor: fillFor(r),
+        color: "#ffffff",
+        weight: 1.5,
+        fillOpacity: 0.85,
+      });
+      uniMarker.bindPopup(popupHtml(r, uni, isS30),
+        { maxWidth: 320, minWidth: 280, className: "market-popup-wrapper" });
+      uniMarker.on("click", () => uniMarker.openPopup());
+      uniMarker.addTo(industryMarkerLayer);
+    }
   }
 }
 

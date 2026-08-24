@@ -90,6 +90,7 @@ const POWER4_ANCHORS = new Set([
 let DATA = null;
 let LABELS = new Map(); // market_key → {anchor_university, city, state_abbr, is_subtext30}
 let ANCHOR_COORDS = new Map(); // market_key → {lat, lng}
+let MARKET_UNIS = new Map(); // market_key → [{school_key, name, enrollment}] anchor first, then by size
 let activeMarketKey = null;
 // Default sort: best qualifier score on top. NA scores fall to the bottom
 // of the desc sort because the comparator below pushes nulls last.
@@ -135,6 +136,24 @@ document.addEventListener("DOMContentLoaded", async () => {
     const list = byMarket.get(r.market_key) || [];
     const anchor = list.find((c) => c.university_name === r.anchor_university) || list[0];
     if (anchor) ANCHOR_COORDS.set(r.market_key, { lat: anchor.campus_lat, lng: anchor.campus_lng });
+  }
+
+  // Every university in every market, anchor first - no school is hidden
+  // behind the anchor. campus_locations can carry one row per school per
+  // year, so dedupe by school_key.
+  for (const c of campuses) {
+    if (!MARKET_UNIS.has(c.market_key)) MARKET_UNIS.set(c.market_key, []);
+    const list = MARKET_UNIS.get(c.market_key);
+    if (!list.some((u) => u.school_key === c.school_key)) {
+      list.push({ school_key: c.school_key, name: c.university_name, enrollment: c.total_enrollment });
+    }
+  }
+  for (const [mk, list] of MARKET_UNIS) {
+    const anchorName = LABELS.get(mk)?.anchor_university;
+    list.sort((a, b) =>
+      (b.name === anchorName ? 1 : 0) - (a.name === anchorName ? 1 : 0)
+      || (b.enrollment || 0) - (a.enrollment || 0)
+      || a.name.localeCompare(b.name));
   }
 
   setFreshness();
@@ -326,11 +345,7 @@ function visibleScorecardRows() {
     // A search reaches the entire tracked universe - the scope dropdown
     // (Active / Subtext-30 / Power 4 / All) is bypassed so any market can be
     // found, not just the ones currently filtered onto the map.
-    rows = rows.filter((r) =>
-      (r.anchor_university || "").toLowerCase().includes(q) ||
-      (r.city || "").toLowerCase().includes(q) ||
-      (r.state_abbr || "").toLowerCase().includes(q),
-    );
+    rows = rows.filter((r) => marketMatchesQuery(r, q));
   } else if (scope === "subtext30") {
     rows = rows.filter((r) => r.is_subtext30 === 1);
   } else if (scope === "power4") {
@@ -533,10 +548,7 @@ function pipelineScorecardRows() {
   const q = (document.getElementById("market-filter")?.value || "").trim().toLowerCase();
   return DATA.tables.scorecard
     .filter((r) => r.market_status || r.fwd_rank != null || r.acq_rank != null)
-    .filter((r) => !q
-      || (r.anchor_university || "").toLowerCase().includes(q)
-      || (r.city || "").toLowerCase().includes(q)
-      || (r.state_abbr || "").toLowerCase().includes(q))
+    .filter((r) => !q || marketMatchesQuery(r, q))
     .map((r) => {
       const props = d.propsByMarket.get(r.market_key) || [];
       // Zero occupancy means "not reporting" in the export (under-
@@ -715,16 +727,49 @@ let MARKET_SEARCH = [];          // [{ key, name, place, hay }]
 const SEARCH_SUGGEST_MAX = 5;
 
 function buildMarketSearchIndex() {
+  // One suggestion per university, not per market, so every school in a
+  // multi-university market (e.g. University of Miami alongside FIU) is
+  // findable in its own right. Non-anchor entries deep-link to the market's
+  // University tab with that school preselected.
   const seen = new Set();
-  MARKET_SEARCH = DATA.tables.scorecard
-    .filter((r) => r.anchor_university && !seen.has(r.market_key) && seen.add(r.market_key))
-    .map((r) => ({
-      key: r.market_key,
-      name: r.anchor_university,
-      place: [r.city, r.state_abbr].filter(Boolean).join(", "),
-      hay: `${r.anchor_university} ${r.city || ""} ${r.state_abbr || ""}`.toLowerCase(),
-    }))
-    .sort((a, b) => a.name.localeCompare(b.name));
+  MARKET_SEARCH = [];
+  for (const r of DATA.tables.scorecard) {
+    if (seen.has(r.market_key)) continue;
+    seen.add(r.market_key);
+    const place = [r.city, r.state_abbr].filter(Boolean).join(", ");
+    const unis = MARKET_UNIS.get(r.market_key) || [];
+    const names = new Set();
+    for (const u of unis) {
+      if (names.has(u.name)) continue;
+      names.add(u.name);
+      MARKET_SEARCH.push({
+        key: r.market_key,
+        school: u.name === r.anchor_university ? null : u.school_key,
+        name: u.name,
+        place,
+        hay: `${u.name} ${r.city || ""} ${r.state_abbr || ""}`.toLowerCase(),
+      });
+    }
+    if (r.anchor_university && !names.has(r.anchor_university)) {
+      MARKET_SEARCH.push({
+        key: r.market_key,
+        school: null,
+        name: r.anchor_university,
+        place,
+        hay: `${r.anchor_university} ${r.city || ""} ${r.state_abbr || ""}`.toLowerCase(),
+      });
+    }
+  }
+  MARKET_SEARCH.sort((a, b) => a.name.localeCompare(b.name));
+}
+
+// Does this scorecard row match the search query? Matches the anchor, the
+// city/state, or ANY university in the market.
+function marketMatchesQuery(r, q) {
+  return (r.anchor_university || "").toLowerCase().includes(q)
+    || (r.city || "").toLowerCase().includes(q)
+    || (r.state_abbr || "").toLowerCase().includes(q)
+    || (MARKET_UNIS.get(r.market_key) || []).some((u) => u.name.toLowerCase().includes(q));
 }
 
 function currentSearchMatches() {
@@ -745,7 +790,7 @@ function renderSearchSuggestions() {
     return;
   }
   box.innerHTML = matches.map((m) =>
-    `<button type="button" class="search-suggest-item" role="option" data-key="${m.key}">
+    `<button type="button" class="search-suggest-item" role="option" data-key="${m.key}"${m.school != null ? ` data-school="${m.school}"` : ""}>
        <span class="search-suggest-name">${escapeHtml(m.name)}</span>
        <span class="search-suggest-place">${escapeHtml(m.place)}</span>
      </button>`).join("");
@@ -753,8 +798,13 @@ function renderSearchSuggestions() {
   input.setAttribute("aria-expanded", "true");
 }
 
-function openMarket(key) {
-  if (key != null) window.location.href = `market.html?id=${key}`;
+function openMarket(key, school) {
+  if (key == null) return;
+  // A non-anchor school opens the market page on its University tab with
+  // that school preselected (market.js reads ?school= and #university).
+  window.location.href = school != null
+    ? `market.html?id=${key}&school=${school}#university`
+    : `market.html?id=${key}`;
 }
 
 function bindMarketSearch() {
@@ -767,13 +817,14 @@ function bindMarketSearch() {
     const item = e.target.closest(".search-suggest-item");
     if (!item) return;
     e.preventDefault();             // keep focus; fire before input blur
-    openMarket(Number(item.dataset.key));
+    openMarket(Number(item.dataset.key),
+      item.dataset.school != null ? Number(item.dataset.school) : null);
   });
 
   input.addEventListener("keydown", (e) => {
     if (e.key === "Enter") {
       const top = currentSearchMatches()[0];
-      if (top) { e.preventDefault(); openMarket(top.key); }
+      if (top) { e.preventDefault(); openMarket(top.key, top.school); }
     } else if (e.key === "Escape") {
       box.hidden = true;
       input.setAttribute("aria-expanded", "false");
@@ -910,7 +961,11 @@ function renderScorecard() {
         ? `<span class="s30-star" title="Subtext-30 focus market">★</span>` : "";
       const cells = PIPELINE_COLS.map((c, i) => {
         if (c.uni) {
-          return `<td class="university-cell">${star}${escapeHtml(r.anchor_university || "")}`
+          const others = (MARKET_UNIS.get(r.market_key) || [])
+            .filter((u) => u.name !== r.anchor_university)
+            .map((u) => `<span class="uni-extra">${escapeHtml(u.name)}</span>`)
+            .join("");
+          return `<td class="university-cell">${star}${escapeHtml(r.anchor_university || "")}${others}`
             + `<span class="city-state">${escapeHtml([r.city, r.state_abbr].filter(Boolean).join(", "))}</span></td>`;
         }
         const v = c.get(r);
@@ -1393,6 +1448,12 @@ function renderIndustryMap() {
       <div class="market-popup" style="--popup-accent:${accent}">
         <div class="market-popup-head">
           <div class="market-popup-title">${escapeHtml(r.anchor_university || "")}</div>
+          ${(MARKET_UNIS.get(r.market_key) || []).filter((u) => u.name !== r.anchor_university).length
+            ? `<div class="market-popup-unis">${MARKET_UNIS.get(r.market_key)
+                .filter((u) => u.name !== r.anchor_university)
+                .map((u) => `<a href="market.html?id=${r.market_key}&school=${u.school_key}#university">${escapeHtml(u.name)}</a>`)
+                .join(" · ")}</div>`
+            : ""}
           <div class="market-popup-sub">
             <span class="market-popup-loc">${escapeHtml(r.city || "")}, ${escapeHtml(r.state_abbr || "")}</span>
             ${r.market_status ? `<span class="market-popup-badge" style="background:${STATUS_COLOR[r.market_status]};color:#fff">${r.market_status.charAt(0).toUpperCase() + r.market_status.slice(1)}</span>` : ""}

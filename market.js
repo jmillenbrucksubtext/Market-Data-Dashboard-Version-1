@@ -513,7 +513,14 @@ function deltaSpan(v) {
 /* ----- Header + KPIs ----------------------------------------- */
 
 function renderHeader() {
-  document.getElementById("market-name").textContent = MARKET.anchor_university;
+  // When the visitor arrived for a specific non-anchor school (?school=,
+  // e.g. University of Miami inside the FIU-anchored Miami market), lead
+  // with that school's name so it isn't presented under the anchor's
+  // banner. The market-wide stats below are unchanged either way.
+  const wantedKey = Number(new URLSearchParams(location.search).get("school"));
+  const wanted = (CAMPUSES || []).find((c) => c.school_key === wantedKey);
+  const headline = wanted?.university_name || MARKET.anchor_university;
+  document.getElementById("market-name").textContent = headline;
   const reportLink = document.getElementById("report-link");
   if (reportLink) {
     reportLink.style.display = "";
@@ -529,14 +536,18 @@ function renderHeader() {
     reportLink.oncontextmenu = syncReportHref;   // right-click > open link
   }
   const region = MARKET.region ? ` · ${MARKET.region}` : "";
-  const anchorCampus = (CAMPUSES || []).find(
+  const headCampus = wanted || (CAMPUSES || []).find(
     (c) => c.university_name === MARKET.anchor_university,
   ) || CAMPUSES[0];
-  const ipeds = anchorCampus?.ipeds_id ? ` · IPEDS ${anchorCampus.ipeds_id}` : "";
+  const ipeds = headCampus?.ipeds_id ? ` · IPEDS ${headCampus.ipeds_id}` : "";
+  // Name the market's anchor in the subtitle when a non-anchor school leads,
+  // so it stays clear whose market-wide stats are shown below.
+  const anchorNote = wanted && wanted.university_name !== MARKET.anchor_university
+    ? ` · ${MARKET.anchor_university} market` : "";
   document.getElementById("market-subtitle").textContent =
-    `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}${ipeds}`;
+    `${MARKET.city || ""}, ${MARKET.state_abbr || ""}${region}${ipeds}${anchorNote}`;
 
-  document.title = `SubHouse - ${MARKET.anchor_university}`;
+  document.title = `SubHouse - ${headline}`;
 
   if (MARKET.is_subtext30 === 1) {
     document.getElementById("s30-badge").style.display = "inline-flex";
@@ -3331,7 +3342,11 @@ function renderUniversityTab() {
     });
   }
 
-  selectUniversity(schools[0].school_key);
+  // Deep link: ?school=<school_key> preselects that university (used by the
+  // dashboard search, which lists every school in the market individually).
+  const wanted = Number(new URLSearchParams(location.search).get("school"));
+  const initial = schools.find((s) => s.school_key === wanted) || schools[0];
+  selectUniversity(initial.school_key);
 }
 
 function selectUniversity(schoolKey) {

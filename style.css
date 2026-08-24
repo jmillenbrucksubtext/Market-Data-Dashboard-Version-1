@@ -903,6 +903,14 @@ h1, h2, h3, .serif {
   font-size: 10px;
   color: var(--slate-70);
 }
+/* Additional (non-anchor) universities in the market - shown so no school
+   is hidden behind the anchor. */
+.pipeline-table .uni-extra {
+  display: block;
+  font-weight: 600;
+  font-size: 11px;
+  color: var(--slate-70);
+}
 .pipeline-table .muted { color: var(--slate-30); }
 .pipeline-table .flag-yes { color: var(--good); font-weight: 700; }
 
@@ -2004,6 +2012,18 @@ h1, h2, h3, .serif {
   letter-spacing: -0.005em;
   padding-right: 18px; /* clear of close button */
 }
+.market-popup-unis {
+  margin-top: 3px;
+  font-size: 11px;
+  color: var(--slate-70);
+  line-height: 1.4;
+}
+.market-popup-unis a {
+  color: var(--slate-70);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.market-popup-unis a:hover { color: var(--slate); }
 .market-popup-sub {
   margin-top: 5px;
   display: flex;

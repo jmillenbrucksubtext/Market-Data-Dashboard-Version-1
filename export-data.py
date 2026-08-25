@@ -850,14 +850,13 @@ ACTIVE_MARKET_STATUS: dict[int, str] = {
     118: "pursuing",   # Indiana - Bloomington
     12: "pursuing",    # Georgia - Athens
     11: "pursuing",    # Clemson
-    # Markets - Assessing (1)
+    # Markets - Assessing (2)
     334: "assessing",  # Wisconsin - Madison
-    # Markets - Upcoming (5)
-    975: "upcoming",   # San Diego (SDSU)
-    940: "upcoming",   # Washington - Seattle
-    15: "upcoming",    # Ole Miss - Oxford
-    383: "upcoming",   # Kansas - Lawrence
-    418: "upcoming",   # South Florida - Tampa
+    122: "assessing",  # Oklahoma - Norman
+    # Markets - Upcoming (3)
+    13: "upcoming",    # Auburn
+    18: "upcoming",    # Florida State - Tallahassee
+    629: "upcoming",   # Nebraska - Lincoln
 }
 
 

@@ -1724,12 +1724,31 @@ function renderScheduleTab() {
   }
   if (!SCHED_UNI_INDEX) buildScheduleUniIndex();
 
-  // Group by sheet section, preserving sheet order.
+  // Group by sheet section; within each section the most recent analysis
+  // sorts to the top. Dates are usually ISO (real date cells) but the sheet
+  // also holds text like "Thursday, April 2, 2027" or "9/19/2025*" - parse
+  // everything to a timestamp; unparseable/undated rows keep their sheet
+  // order at the bottom (Array.sort is stable).
+  const schedDateValue = (d) => {
+    if (!d) return null;
+    const t = Date.parse(String(d).replace(/\*/g, "").trim());
+    return Number.isNaN(t) ? null : t;
+  };
   const groups = new Map();
   for (const r of all) {
     const cat = r.category || "Schedule";
     if (!groups.has(cat)) groups.set(cat, []);
     groups.get(cat).push(r);
+  }
+  for (const rows of groups.values()) {
+    rows.sort((a, b) => {
+      const av = schedDateValue(a.initial_analysis_date);
+      const bv = schedDateValue(b.initial_analysis_date);
+      if (av == null && bv == null) return 0;
+      if (av == null) return 1;
+      if (bv == null) return -1;
+      return bv - av;
+    });
   }
 
   let linked = 0;

@@ -97,7 +97,7 @@
                 <header class="dict-tab-header">
                   <span class="dict-tab-chip">Industry tab</span>
                   <h3>Industry tab</h3>
-                  <p>Map + scorecard table.</p>
+                  <p>Two in-page tabs: Overview (map + scorecard table) and Analysis Schedule (the team's market-analysis tracker).</p>
                 </header>
 
                 <article class="dict-item">
@@ -126,6 +126,11 @@
                       <tr><td>Student Affluence</td><td>Mean household income of the market's student origin zips (<code>market_affluence.mean_origin_income</code>, Opportunity Insights + Census via the Migration CSVs); blank when the migration sample is under 100 students</td></tr>
                     </tbody>
                   </table>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Market Analysis Schedule table</h4>
+                  <p>The team's market-analysis tracker rendered as-is from <code>Market Analysis Schedule.xlsx</code> on OneDrive (<code>market_analysis_schedule</code> in data.json, read by export-data.py each weekly refresh or <code>load_market_schedule.py</code> standalone). Rows are grouped by their sheet section (Deferred and Assessing Markets, Future Analyses) and carry the market type, analyst, initial-analysis and IC dates, decisions, status, estimated potential sites, and notes. Market names that resolve to a tracked university - by exact name, an alias (<code>TCU</code>, <code>Ole Miss</code>, <code>UConn</code>, ...), or a <code>University of X</code> / <code>X University</code> expansion after stripping parentheticals and trailing "- note" segments - link to that market's page; a non-anchor school opens the market's University tab with that school preselected. Submarket rows (Charlotte / DFW / NW Arkansas) and untracked markets stay plain text. Deep link: <code>index.html#schedule</code>.</p>
                 </article>
 
               </section>

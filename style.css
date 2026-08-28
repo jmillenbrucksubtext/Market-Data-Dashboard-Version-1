@@ -2746,6 +2746,86 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 }
 .market-tab-panel[hidden] { display: none; }
 
+/* ---- Industry-page tabs (Overview | Analysis Schedule) ---- */
+.industry-tabs { margin-bottom: 18px; }
+.industry-tab-panel[hidden] { display: none; }
+
+/* ---- Market Analysis Schedule table ---- */
+/* The tracker runs ~200 rows - give it more window than the default
+   540px .table-wrap cap; the sticky thead keeps headers in view. */
+.sched-wrap { max-height: 76vh; }
+.sched-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+.sched-table thead th {
+  text-align: left;
+  font-weight: 700;
+  color: var(--slate-70);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 10.5px;
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  white-space: nowrap;
+  position: sticky;
+  top: 0;
+  background: var(--surface);
+  z-index: 1;
+}
+.sched-table thead th.num,
+.sched-table tbody td.num { text-align: right; }
+.sched-table tbody td {
+  padding: 8px 12px;
+  border-bottom: 1px solid var(--beige-deep);
+  vertical-align: top;
+  color: var(--slate);
+  line-height: 1.45;
+}
+.sched-table td.sched-market { font-weight: 700; white-space: nowrap; }
+.sched-table td.sched-date { white-space: nowrap; }
+.sched-table td.sched-notes {
+  min-width: 280px;
+  max-width: 460px;
+  color: var(--slate-70);
+  font-size: 12.5px;
+}
+.sched-market-link {
+  color: var(--everest);
+  text-decoration: none;
+  border-bottom: 1px solid var(--lime);
+}
+.sched-market-link:hover { color: var(--slate); border-bottom-color: var(--everest); }
+.sched-table tr.sched-section td {
+  background: var(--bg);
+  color: var(--slate);
+  font-family: "Mencken Std", Georgia, serif;
+  font-weight: 700;
+  font-size: 13px;
+  letter-spacing: -0.005em;
+  padding: 12px 12px 8px;
+  border-top: 2px solid var(--lime);
+}
+.sched-section-count {
+  font-family: inherit;
+  font-weight: 400;
+  color: var(--slate-70);
+  font-size: 12px;
+  margin-left: 4px;
+}
+.sched-status {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+.sched-status-good  { background: var(--good-soft); color: var(--good); }
+.sched-status-warn  { background: var(--warn-soft); color: var(--warn); }
+.sched-status-muted { background: var(--beige-deep); color: var(--slate-70); }
+
 /* Competitive Set detail tables (Rates / Rent Growth / Pre-lease /
    Occupancy). Excel-style: dark header band, soft cream body cells, bold
    aggregate footer with growth rows. Each table sits in its own card. */

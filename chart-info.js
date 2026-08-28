@@ -64,6 +64,12 @@
         ["Student Affluence", "Mean household income of the market's student origin zips (`market_affluence.mean_origin_income`, Opportunity Insights + Census via the Migration CSVs); blank when the migration sample is under 100 students"]
       ]
     },
+    "analysis-schedule": {
+      title: "Market Analysis Schedule",
+      formula: "The team's market-analysis tracker, rendered as-is: every row of the Market Analysis Schedule workbook grouped by its sheet section (Deferred and Assessing Markets, Future Analyses), with the market type, analyst, analysis / IC dates, decisions, status, estimated sites, and notes. Market names that resolve to a tracked university (exact name, alias like `TCU` / `Ole Miss` / `UConn`, or a `University of X` / `X University` expansion) link to that market's page - a non-anchor school opens its University tab. Submarket and untracked rows stay plain text.",
+      sql: "`market_analysis_schedule` <- Market Analysis Schedule.xlsx on OneDrive (`Market Analysis Schedule` sheet), read by export-data.py each weekly refresh or load_market_schedule.py standalone",
+      sig: "Where every market sits in the analysis pipeline: what has been reviewed, what was deferred and why, and what is queued next."
+    },
     /* ================= MARKET PAGE (market.html) ================= */
     "qualifier-list": {
       title: "Subtext Qualifier Scorecard",
@@ -574,7 +580,7 @@
 
   /* element ids that live alone in a plain card -> mount in the card-header h2 */
   var CARD_IDS = [
-    "industry-map", "scorecard", "map", "properties-all",
+    "industry-map", "scorecard", "analysis-schedule", "map", "properties-all",
     "comp-map-canvas", "properties-comps", "qualifier-list",
     "student-migration-in-map", "student-migration-out-map",
     "student-migration-in-metros", "student-migration-out-metros",

@@ -102,15 +102,6 @@
            View: Industry (default)
            ============================================================ -->
       <section id="industry-view" class="view active">
-
-        <!-- In-page tabs: Overview (map + scorecard) | Analysis Schedule
-             (the team's Market Analysis Schedule.xlsx, refreshed weekly) -->
-        <nav class="market-tabs industry-tabs" role="tablist">
-          <button class="market-tab active" data-itab="overview" role="tab" aria-selected="true">Overview</button>
-          <button class="market-tab" data-itab="schedule" role="tab" aria-selected="false">Analysis Schedule <span class="market-tab-count" id="schedule-tab-count"></span></button>
-        </nav>
-
-        <div class="industry-tab-panel" data-ipanel="overview">
         <!-- National map: every tracked market, anchored on its university -->
         <section class="card industry-map-card">
           <header class="card-header">
@@ -169,8 +160,16 @@
           </div>
         </section>
 
+        <!-- Tabs for the lower card area: Market Scorecard | Analysis Schedule
+             (the team's Market Analysis Schedule.xlsx, refreshed weekly).
+             The map above stays visible on both. -->
+        <nav class="market-tabs industry-tabs" role="tablist">
+          <button class="market-tab active" data-itab="scorecard" role="tab" aria-selected="true">Market Scorecard</button>
+          <button class="market-tab" data-itab="schedule" role="tab" aria-selected="false">Analysis Schedule <span class="market-tab-count" id="schedule-tab-count"></span></button>
+        </nav>
+
         <!-- Market Scorecard: one table per pipeline stage (monthly update layout) -->
-        <section class="card">
+        <section class="card industry-tab-panel" data-ipanel="scorecard">
           <header class="card-header">
             <div>
               <h2>Market Scorecard</h2>
@@ -186,26 +185,23 @@
             <div id="pipeline-stages"></div>
           </div>
         </section>
-        </div><!-- /overview panel -->
 
         <!-- Analysis Schedule: the team's market-analysis tracker, read from
              Market Analysis Schedule.xlsx on OneDrive each weekly refresh.
              Market names that resolve to a tracked university link to that
              market's page. Populated by dashboard.js into #analysis-schedule. -->
-        <div class="industry-tab-panel" data-ipanel="schedule" hidden>
-          <section class="card">
-            <header class="card-header">
-              <div>
-                <h2>Market Analysis Schedule</h2>
-                <p>Every market analysis on the team's schedule, grouped as on the tracker. Click a market to open its page.</p>
-              </div>
-            </header>
-            <div class="result-count" id="schedule-count">-</div>
-            <div class="table-wrap sched-wrap">
-              <div id="analysis-schedule"></div>
+        <section class="card industry-tab-panel" data-ipanel="schedule" hidden>
+          <header class="card-header">
+            <div>
+              <h2>Market Analysis Schedule</h2>
+              <p>Every market analysis on the team's schedule, grouped as on the tracker. Click a market to open its page.</p>
             </div>
-          </section>
-        </div><!-- /schedule panel -->
+          </header>
+          <div class="result-count" id="schedule-count">-</div>
+          <div class="table-wrap sched-wrap">
+            <div id="analysis-schedule"></div>
+          </div>
+        </section>
 
         <footer class="page-footer">
           <p>
@@ -2857,7 +2853,7 @@
     </div>
   </div>
 
-  <script src="dashboard.js?v=26"></script>
+  <script src="dashboard.js?v=27"></script>
   <script src="chart-download.js?v=7"></script>
   <script src="chart-info.js?v=2"></script>
 </body>

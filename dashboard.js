@@ -1532,7 +1532,8 @@ function renderIndustryMap() {
 
 /* ----- Master render ----------------------------------------- */
 
-/* ----- Industry tabs (Overview | Analysis Schedule) ------------ */
+/* ----- Industry lower-card tabs (Market Scorecard | Analysis Schedule) -- */
+/* The national map stays visible on both; only the card below swaps. */
 
 function bindIndustryTabs() {
   document.querySelectorAll(".industry-tabs .market-tab").forEach((btn) => {
@@ -1549,8 +1550,6 @@ function setIndustryTab(name) {
   document.querySelectorAll("#industry-view .industry-tab-panel").forEach((p) => {
     p.hidden = p.dataset.ipanel !== name;
   });
-  // Leaflet mis-sizes a map that was resized while hidden - kick it on return.
-  if (name === "overview" && industryMap) industryMap.invalidateSize();
 }
 
 /* ----- Market Analysis Schedule tab ---------------------------- */

@@ -3758,6 +3758,7 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 .tool-art-playbook { background: #24435c; color: #bcd9f2; }
 .tool-art-screener { background: #2c4a3a; color: #b9e39a; }
 .tool-art-acq { background: #5c3a2e; color: #f0c9a8; }
+.tool-art-construction { background: #2f3b47; color: #f5b04c; }
 .tool-info {
   flex: 1;
   display: flex;

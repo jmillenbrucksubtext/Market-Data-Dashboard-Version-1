@@ -1751,9 +1751,14 @@ function renderScheduleTab() {
     });
   }
 
+  // Section order: "Future Analyses" always leads (it is the forward-looking
+  // list people open this tab for); the remaining sections keep sheet order.
+  const sectionRank = (cat) => (/future/i.test(cat) ? 0 : 1);
+  const ordered = [...groups.entries()].sort((a, b) => sectionRank(a[0]) - sectionRank(b[0]));
+
   let linked = 0;
   const body = [];
-  for (const [cat, rows] of groups) {
+  for (const [cat, rows] of ordered) {
     body.push(`<tr class="sched-section"><td colspan="10">${escapeHtml(cat)} <span class="sched-section-count">${rows.length}</span></td></tr>`);
     for (const r of rows) {
       const m = resolveScheduleMarket(r.market_name);

@@ -695,9 +695,10 @@ function marketDecks() {
 }
 
 function initAnalysisTab() {
+  // The tab is always available; markets without a rendered deck get the
+  // napping-sloth empty state from renderDeckEmptyState() instead of a
+  // hidden tab, so nobody wonders whether the analysis exists.
   deckState.decks = marketDecks();
-  const btn = document.getElementById("analysis-tab-btn");
-  if (btn) btn.hidden = deckState.decks.length === 0;
 }
 
 function openAnalysisDeck(deckPath) {
@@ -710,9 +711,103 @@ function openAnalysisDeck(deckPath) {
 
 const slideFile = (d, i, thumb) => `${d.slides.dir}/${thumb ? "t" : "s"}${String(i).padStart(2, "0")}.jpg`;
 
+/* No rendered deck for this market: swap the slate stage for a napping
+   sloth and a one-line explanation, hide the slide controls, and point at
+   the Analysis Schedule. Caption is picked at random per page load. */
+const DECK_EMPTY_CAPTIONS = [
+  "No market analysis deck yet. Our analyst sloth is still getting to it.",
+  "Nothing to see here yet. The sloth has this market on the list, somewhere.",
+  "No presentation on file. The sloth promises it is moving as fast as it can.",
+  "This market has not been analyzed yet. The sloth is conserving energy for it.",
+];
+
+const DECK_EMPTY_SVG = `
+<svg viewBox="0 0 420 260" role="img" aria-label="A sloth napping on a branch" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="sloth-sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f7f1e3"/><stop offset="1" stop-color="#ede5cf"/>
+    </linearGradient>
+  </defs>
+  <rect width="420" height="260" fill="url(#sloth-sky)"/>
+  <!-- leaves -->
+  <g fill="#c1d100" opacity="0.9">
+    <ellipse cx="46" cy="44" rx="26" ry="11" transform="rotate(-28 46 44)"/>
+    <ellipse cx="78" cy="30" rx="22" ry="9" transform="rotate(18 78 30)"/>
+    <ellipse cx="372" cy="36" rx="26" ry="11" transform="rotate(24 372 36)"/>
+    <ellipse cx="340" cy="26" rx="20" ry="9" transform="rotate(-16 340 26)"/>
+  </g>
+  <g fill="#8fa300" opacity="0.9">
+    <ellipse cx="60" cy="58" rx="18" ry="7" transform="rotate(-10 60 58)"/>
+    <ellipse cx="356" cy="52" rx="18" ry="7" transform="rotate(12 356 52)"/>
+  </g>
+  <!-- branch -->
+  <path d="M0 52 C 90 44, 160 58, 210 50 S 330 40, 420 54" fill="none" stroke="#512213" stroke-width="16" stroke-linecap="round"/>
+  <path d="M0 52 C 90 44, 160 58, 210 50 S 330 40, 420 54" fill="none" stroke="#6b3a20" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
+  <!-- arms gripping the branch -->
+  <path d="M150 60 C 140 100, 160 130, 190 150" fill="none" stroke="#8a6d4b" stroke-width="26" stroke-linecap="round"/>
+  <path d="M270 58 C 282 100, 262 130, 232 150" fill="none" stroke="#8a6d4b" stroke-width="26" stroke-linecap="round"/>
+  <!-- claws -->
+  <g fill="none" stroke="#3a3633" stroke-width="4" stroke-linecap="round">
+    <path d="M143 46 v-12 M151 44 v-13 M159 46 v-12"/>
+    <path d="M262 44 v-12 M270 42 v-13 M278 44 v-12"/>
+  </g>
+  <!-- body -->
+  <ellipse cx="210" cy="176" rx="76" ry="58" fill="#8a6d4b"/>
+  <ellipse cx="210" cy="184" rx="52" ry="40" fill="#a98a63"/>
+  <!-- legs dangling -->
+  <path d="M170 220 C 160 240, 166 250, 176 252" fill="none" stroke="#8a6d4b" stroke-width="22" stroke-linecap="round"/>
+  <path d="M250 220 C 260 240, 254 250, 244 252" fill="none" stroke="#8a6d4b" stroke-width="22" stroke-linecap="round"/>
+  <!-- head -->
+  <circle cx="210" cy="118" r="46" fill="#8a6d4b"/>
+  <ellipse cx="210" cy="124" rx="36" ry="30" fill="#e9dcc2"/>
+  <!-- eye patches -->
+  <ellipse cx="190" cy="118" rx="15" ry="8" fill="#5a3b22" transform="rotate(-18 190 118)"/>
+  <ellipse cx="230" cy="118" rx="15" ry="8" fill="#5a3b22" transform="rotate(18 230 118)"/>
+  <!-- closed eyes -->
+  <path d="M182 119 q 8 5 16 0" fill="none" stroke="#f7f1e3" stroke-width="2.5" stroke-linecap="round"/>
+  <path d="M222 119 q 8 5 16 0" fill="none" stroke="#f7f1e3" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- nose + smile -->
+  <ellipse cx="210" cy="134" rx="7" ry="5" fill="#3a3633"/>
+  <path d="M196 144 q 14 12 28 0" fill="none" stroke="#3a3633" stroke-width="2.5" stroke-linecap="round"/>
+  <!-- blush -->
+  <circle cx="180" cy="136" r="5" fill="#e8b4a0" opacity="0.7"/>
+  <circle cx="240" cy="136" r="5" fill="#e8b4a0" opacity="0.7"/>
+  <!-- zzz -->
+  <g class="deck-empty-z" fill="#16352e" font-family="Mencken Std, Georgia, serif" font-weight="700">
+    <text x="300" y="118" font-size="16">z</text>
+    <text x="318" y="100" font-size="22">z</text>
+    <text x="342" y="82" font-size="30">Z</text>
+  </g>
+</svg>`;
+
+function renderDeckEmptyState() {
+  const stage = document.getElementById("deck-stage");
+  const empty = document.getElementById("deck-empty");
+  if (!stage || !empty) return;
+  stage.classList.add("is-empty");
+  stage.style.aspectRatio = "auto";   // size to the sloth card, not a 16:9 slide
+  const caption = DECK_EMPTY_CAPTIONS[Math.floor(Math.random() * DECK_EMPTY_CAPTIONS.length)];
+  empty.hidden = false;
+  empty.innerHTML = `
+    <div class="deck-empty-art">${DECK_EMPTY_SVG}</div>
+    <div class="deck-empty-text">
+      <p class="deck-empty-title">${escapeHtml(caption)}</p>
+      <p class="deck-empty-sub">Decks appear here once a market analysis has been presented and rendered.
+        See the <a href="index.html#schedule">Analysis Schedule</a> for what is coming up.</p>
+    </div>`;
+  const meta = document.getElementById("deck-meta");
+  if (meta) meta.textContent = "No analysis deck on file for this market";
+  ["deck-picker", "deck-open", "deck-prev", "deck-next", "deck-filmstrip"].forEach((id) => {
+    const el = document.getElementById(id);
+    if (el) el.hidden = true;
+  });
+  const viewer = document.getElementById("deck-viewer");
+  if (viewer) viewer.classList.add("is-empty");
+}
+
 function renderAnalysisTab() {
   const decks = deckState.decks;
-  if (!decks.length) return;
+  if (!decks.length) { renderDeckEmptyState(); return; }
   const picker = document.getElementById("deck-picker");
   if (!deckState.bound) {
     deckState.bound = true;

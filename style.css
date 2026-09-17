@@ -1827,6 +1827,49 @@ h1, h2, h3, .serif {
   cursor: pointer;
 }
 .deck-stage img { display: block; width: 100%; max-width: 100%; height: auto; max-height: 100%; object-fit: contain; }
+
+/* No-deck empty state: the slate stage becomes a beige card with a napping
+   sloth (inline SVG from market.js DECK_EMPTY_SVG) and a caption; the slide
+   controls hide and the stage fills the viewer's full width. */
+.deck-stage.is-empty { background: var(--beige-deep); border: 1px solid var(--beige-deep); aspect-ratio: auto; min-height: 320px; }
+.deck-stage.is-empty img,
+.deck-stage.is-empty figcaption { display: none; }
+.deck-viewer.is-empty { grid-template-columns: minmax(0, 1fr); }
+/* The nav buttons and the PowerPoint link set display themselves, which
+   beats the hidden attribute - force them off in the empty state. */
+.deck-nav[hidden], .deck-open[hidden], .deck-filmstrip[hidden] { display: none !important; }
+.deck-empty {
+  display: grid;
+  grid-template-columns: minmax(0, 420px) minmax(0, 1fr);
+  align-items: center;
+  gap: 8px 32px;
+  padding: 18px 28px 18px 18px;
+  height: 100%;
+}
+.deck-empty[hidden] { display: none; }
+.deck-empty-art svg { display: block; width: 100%; height: auto; border-radius: var(--radius); }
+.deck-empty-z text { animation: deck-empty-drift 3.2s ease-in-out infinite; }
+.deck-empty-z text:nth-child(2) { animation-delay: 0.5s; }
+.deck-empty-z text:nth-child(3) { animation-delay: 1s; }
+@keyframes deck-empty-drift {
+  0%, 100% { opacity: 0.35; transform: translateY(0); }
+  50%      { opacity: 1;    transform: translateY(-4px); }
+}
+@media (prefers-reduced-motion: reduce) { .deck-empty-z text { animation: none; } }
+.deck-empty-title {
+  margin: 0 0 10px;
+  font-family: "Mencken Std", Georgia, serif;
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--slate);
+}
+.deck-empty-sub { margin: 0; font-size: 13px; line-height: 1.55; color: var(--slate-70); }
+.deck-empty-sub a { color: var(--everest); font-weight: 700; }
+@media (max-width: 900px) {
+  .deck-empty { grid-template-columns: 1fr; text-align: center; padding: 14px; }
+  .deck-empty-art { max-width: 360px; margin: 0 auto; }
+}
 .deck-stage figcaption {
   position: absolute;
   right: 12px;

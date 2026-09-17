@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=64">
+  <link rel="stylesheet" href="style.css?v=65">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -97,9 +97,11 @@
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
             <button class="market-tab" data-tab="student-migration" role="tab" aria-selected="false">Student Migration</button>
             <button class="market-tab" data-tab="shadow-market" role="tab" aria-selected="false">Shadow Market</button>
-            <!-- Shown only when this market has a rendered analysis deck
-                 (tables.analysis_docs[].slides); market.js initAnalysisTab(). -->
-            <button class="market-tab" data-tab="analysis" role="tab" aria-selected="false" id="analysis-tab-btn" hidden>Market Analysis</button>
+            <!-- Always shown. Markets with a rendered analysis deck
+                 (tables.analysis_docs[].slides) get the slide viewer; the
+                 rest get the napping-sloth empty state. market.js
+                 initAnalysisTab() / renderAnalysisTab(). -->
+            <button class="market-tab" data-tab="analysis" role="tab" aria-selected="false" id="analysis-tab-btn">Market Analysis</button>
             <!-- Shown only when a school in this market has Common Data Set
                  filings on file (tables.cds_index); market.js initCdsTab(). -->
             <button class="market-tab" data-tab="cds" role="tab" aria-selected="false" id="cds-tab-btn" hidden>Common Data Set</button>
@@ -875,6 +877,9 @@
                   <figure class="deck-stage" id="deck-stage">
                     <img id="deck-slide" alt="" decoding="async">
                     <figcaption id="deck-counter">-</figcaption>
+                    <!-- No-deck state: a napping sloth instead of an empty
+                         slate stage. Filled by market.js renderDeckEmptyState(). -->
+                    <div id="deck-empty" class="deck-empty" hidden></div>
                   </figure>
                   <button type="button" class="deck-nav" id="deck-next" aria-label="Next slide">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
@@ -1131,7 +1136,7 @@
 
   <script src="schedule-resolver.js?v=1" defer></script>
   <script src="cds-fields.js?v=1" defer></script>
-  <script src="market.js?v=59" defer></script>
+  <script src="market.js?v=60" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=10" defer></script>
   <script src="uni-map.js?v=3" defer></script>

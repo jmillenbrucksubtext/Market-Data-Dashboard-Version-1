@@ -1725,7 +1725,7 @@ function renderScheduleTab() {
   if (!SCHED_UNI_INDEX) buildScheduleUniIndex();
 
   // Group by sheet section; within each section the most recent analysis
-  // sorts to the top. Dates are usually ISO (real date cells) but the sheet
+  // (presentation date, col E) sorts to the top. Dates are usually ISO (real date cells) but the sheet
   // also holds text like "Thursday, April 2, 2027" or "9/19/2025*" - parse
   // everything to a timestamp; unparseable/undated rows keep their sheet
   // order at the bottom (Array.sort is stable).
@@ -1759,7 +1759,7 @@ function renderScheduleTab() {
   let linked = 0;
   const body = [];
   for (const [cat, rows] of ordered) {
-    body.push(`<tr class="sched-section"><td colspan="10">${escapeHtml(cat)} <span class="sched-section-count">${rows.length}</span></td></tr>`);
+    body.push(`<tr class="sched-section"><td colspan="12">${escapeHtml(cat)} <span class="sched-section-count">${rows.length}</span></td></tr>`);
     for (const r of rows) {
       const m = resolveScheduleMarket(r.market_name);
       if (m) linked++;
@@ -1771,6 +1771,8 @@ function renderScheduleTab() {
         <td>${escapeHtml(r.market_type || "")}</td>
         <td>${escapeHtml(r.analyst || "")}</td>
         <td class="sched-date">${fmtSchedDate(r.initial_analysis_date)}</td>
+        <td class="sched-date">${fmtSchedDate(r.assigned_date)}</td>
+        <td class="sched-type">${escapeHtml(r.analysis_type || "")}</td>
         <td>${escapeHtml(r.initial_decision || "")}</td>
         <td class="sched-date">${fmtSchedDate(r.ic_date)}</td>
         <td>${escapeHtml(r.ic_decision || "")}</td>
@@ -1785,7 +1787,8 @@ function renderScheduleTab() {
     <table class="sched-table">
       <thead>
         <tr>
-          <th>Market</th><th>Type</th><th>Analyst</th><th>Initial Analysis</th>
+          <th>Market</th><th>Type</th><th>Analyst</th><th>Presentation Date</th>
+          <th>Assigned Date</th><th>Analysis Type</th>
           <th>Decision</th><th>IC Date</th><th>IC Decision</th><th>Status</th>
           <th class="num">Est. Sites</th><th>Notes</th>
         </tr>

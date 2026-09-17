@@ -917,11 +917,15 @@ EXCEL_PATH = Path(
 
 # Map the Schedule sheet's row-2 headers to clean JSON keys.
 # Two columns share the label "Decision" - we disambiguate by position.
+# Cols F/G have no row-2 header; the Future Analyses sub-header row names
+# them "Assigned Date" and "Analysis Type".
 SCHEDULE_COLUMNS = {
     2: "market_type",            # col B
     3: "market_name",            # col C ("New Market Review")
     4: "analyst",                # col D ("Analyst/Intern")
-    5: "initial_analysis_date",  # col E
+    5: "initial_analysis_date",  # col E ("Initial Analysis" / "Presentation Date")
+    6: "assigned_date",          # col F ("Assigned Date" - unlabeled in row 2)
+    7: "analysis_type",          # col G ("Analysis Type": Market Analysis / Market Refresh / New Market)
     8: "initial_decision",       # col H ("Decision" #1)
     9: "ic_date",                # col I
     10: "ic_decision",           # col J ("Decision" #2)

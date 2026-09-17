@@ -2785,6 +2785,7 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 }
 .sched-table td.sched-market { font-weight: 700; white-space: nowrap; }
 .sched-table td.sched-date { white-space: nowrap; }
+.sched-table td.sched-type { white-space: nowrap; }
 .sched-table td.sched-notes {
   min-width: 280px;
   max-width: 460px;

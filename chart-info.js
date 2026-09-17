@@ -64,6 +64,11 @@
         ["Student Affluence", "Mean household income of the market's student origin zips (`market_affluence.mean_origin_income`, Opportunity Insights + Census via the Migration CSVs); blank when the migration sample is under 100 students"]
       ]
     },
+    "deck-viewer": {
+      title: "Market Analysis Deck",
+      formula: "The team's market-analysis PowerPoint for this market, rendered slide by slide (1600px JPEGs) so it can be read without opening PowerPoint. The picker lists every registered deck for the market by presentation date; the arrows, arrow keys, or the filmstrip move between slides; Open in PowerPoint opens the source file in SharePoint.",
+      sql: "`analysis_docs` <- analysis_docs.json registry (market_key, presentation_date, OneDrive path); slides rendered by render_analysis_decks.py (PDF twin via PyMuPDF, else PowerPoint COM) into decks/<market_key>/<yyyymmdd>/ (sNN.jpg + tNN.jpg + meta.json), listed in each row's `slides`",
+    },
     "analysis-schedule": {
       title: "Market Analysis Schedule",
       formula: "The team's market-analysis tracker, rendered as-is: every row of the Market Analysis Schedule workbook grouped by its sheet section (Deferred and Assessing Markets, Future Analyses), with the market type, analyst, presentation and assigned dates, analysis type (Market Analysis / Market Refresh / New Market), and notes. The workbook's Decision / IC Date / Status / Est. Sites columns are intentionally not shown. Market names that resolve to a tracked university (exact name, alias like `TCU` / `Ole Miss` / `UConn`, or a `University of X` / `X University` expansion) link to that market's page - a non-anchor school opens its University tab. Submarket and untracked rows stay plain text.",
@@ -580,7 +585,7 @@
 
   /* element ids that live alone in a plain card -> mount in the card-header h2 */
   var CARD_IDS = [
-    "industry-map", "scorecard", "analysis-schedule", "map", "properties-all",
+    "industry-map", "scorecard", "analysis-schedule", "map", "properties-all", "deck-viewer",
     "comp-map-canvas", "properties-comps", "qualifier-list",
     "student-migration-in-map", "student-migration-out-map",
     "student-migration-in-metros", "student-migration-out-metros",

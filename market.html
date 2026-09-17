@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=62">
+  <link rel="stylesheet" href="style.css?v=63">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -97,6 +97,9 @@
             <button class="market-tab" data-tab="pipeline" role="tab" aria-selected="false">Pipeline</button>
             <button class="market-tab" data-tab="student-migration" role="tab" aria-selected="false">Student Migration</button>
             <button class="market-tab" data-tab="shadow-market" role="tab" aria-selected="false">Shadow Market</button>
+            <!-- Shown only when this market has a rendered analysis deck
+                 (tables.analysis_docs[].slides); market.js initAnalysisTab(). -->
+            <button class="market-tab" data-tab="analysis" role="tab" aria-selected="false" id="analysis-tab-btn" hidden>Market Analysis</button>
           </nav>
 
           <!-- ============ MARKET TAB ============ -->
@@ -838,6 +841,47 @@
           </div> <!-- /.market-tab-panel[shadow-market] -->
 
           <!-- ============ UNIVERSITY INFORMATION TAB ============ -->
+          <!-- ============ MARKET ANALYSIS TAB (deck viewer) ============
+               The team's market-analysis PowerPoint, rendered slide by slide
+               by render_analysis_decks.py into decks/<market_key>/<yyyymmdd>/. Deck
+               list + metadata come from tables.analysis_docs; market.js
+               renderAnalysisTab() drives the picker, stage and filmstrip. -->
+          <div class="market-tab-panel" data-panel="analysis" hidden>
+            <section class="card deck-card">
+              <header class="card-header">
+                <div>
+                  <h2>Market Analysis Deck</h2>
+                </div>
+                <!-- Card-header <p> is hidden site-wide, so the deck's
+                     metadata (presented / analyst / slide count) sits with
+                     the controls instead. -->
+                <div class="deck-controls">
+                  <span id="deck-meta" class="deck-meta">-</span>
+                  <select id="deck-picker" class="deck-picker" aria-label="Choose an analysis" hidden></select>
+                  <a id="deck-open" class="report-btn deck-open" href="#" target="_blank" rel="noopener">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+                    Open in PowerPoint
+                  </a>
+                </div>
+              </header>
+              <div class="card-body">
+                <div id="deck-viewer" class="deck-viewer">
+                  <button type="button" class="deck-nav" id="deck-prev" aria-label="Previous slide">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                  </button>
+                  <figure class="deck-stage" id="deck-stage">
+                    <img id="deck-slide" alt="" decoding="async">
+                    <figcaption id="deck-counter">-</figcaption>
+                  </figure>
+                  <button type="button" class="deck-nav" id="deck-next" aria-label="Next slide">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg>
+                  </button>
+                </div>
+                <div id="deck-filmstrip" class="deck-filmstrip" role="listbox" aria-label="Slides"></div>
+              </div>
+            </section>
+          </div>
+
           <div class="market-tab-panel" data-panel="university" hidden>
 
           <!-- University picker - only shown when the market has more than
@@ -975,12 +1019,12 @@
   </div>
 
   <script src="schedule-resolver.js?v=1" defer></script>
-  <script src="market.js?v=57" defer></script>
+  <script src="market.js?v=58" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=10" defer></script>
   <script src="uni-map.js?v=3" defer></script>
   <script src="chart-download.js?v=7" defer></script>
-  <script src="chart-info.js?v=1" defer></script>
+  <script src="chart-info.js?v=3" defer></script>
   <script src="edit-mode.js?v=1" defer></script>
 </body>
 </html>

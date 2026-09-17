@@ -32,6 +32,9 @@ Usage:
         Append an entry (derives relative path, analyst initials and file
         date from the filename), then rebuild data.json.
 
+Slide images for the Market Analysis tab: see render_analysis_decks.py
+(decks/<market_key>/<yyyymmdd>/sNN.jpg, tNN.jpg, meta.json).
+
 Also called by export-data.py each weekly refresh (build_analysis_docs), so
 the table survives the Monday rebuild. Never edit data.json by hand.
 """
@@ -71,6 +74,44 @@ def local_path(rel_path: str) -> Path:
     return SYNC_ROOT / rel_path.replace("/", "\\")
 
 
+# Slide images live at decks/<market_key>/<yyyymmdd>/sNN.jpg (+ tNN.jpg thumbs,
+# meta.json). Deliberately terse: this repo sits ~220 characters deep in
+# OneDrive and Windows still enforces a 260-character path limit, so a
+# descriptive slug pushed the first render past it.
+DECKS_DIR = HERE / "decks"
+
+
+def deck_slug(entry: dict) -> str:
+    """Folder name per deck: the presentation date as yyyymmdd (one deck per
+    market per presentation date; a second deck on the same date must be
+    given a different presentation_date in the registry)."""
+    return str(entry["presentation_date"]).replace("-", "")
+
+
+def deck_dir(entry: dict) -> Path:
+    return DECKS_DIR / str(int(entry["market_key"])) / deck_slug(entry)
+
+
+def slides_info(entry: dict) -> dict | None:
+    """Slide manifest written by render_analysis_decks.py, or None if the deck
+    has not been rendered. `dir` is site-relative (what market.js fetches)."""
+    mf = deck_dir(entry) / "meta.json"
+    if not mf.exists():
+        return None
+    try:
+        m = json.loads(mf.read_text(encoding="utf-8"))
+        return {
+            "dir": deck_dir(entry).relative_to(HERE).as_posix(),
+            "count": int(m["slides"]),
+            "width": m.get("width"),
+            "height": m.get("height"),
+            "route": m.get("route"),
+            "rendered_at": m.get("rendered_at"),
+        }
+    except Exception:  # noqa: BLE001 - a bad manifest just means "no slides"
+        return None
+
+
 def load_registry() -> list[dict]:
     if not REGISTRY.exists():
         return []
@@ -101,11 +142,13 @@ def build_analysis_docs(verbose: bool = True) -> list[dict]:
             "local_path": str(lp),
             "url": web_url(rel),
             "exists": exists,
+            "slides": slides_info(e) if (e.get("kind") or KIND_BY_EXT.get(lp.suffix.lower())) == "deck" else None,
         })
     rows.sort(key=lambda r: (r["market_key"], r["presentation_date"], r["title"]))
     if verbose:
+        rendered = sum(1 for r in rows if r.get("slides"))
         print(f"  analysis_docs: {len(rows)} artifact(s) across "
-              f"{len({r['market_key'] for r in rows})} market(s)  ({REGISTRY.name})")
+              f"{len({r['market_key'] for r in rows})} market(s), {rendered} with slides  ({REGISTRY.name})")
     return rows
 
 

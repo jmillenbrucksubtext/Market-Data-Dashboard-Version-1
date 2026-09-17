@@ -93,6 +93,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   setFreshness();
   renderHeader();
   renderAnalysisHistory();
+  initAnalysisTab();
   renderPipelineKpis();
   renderOriginIncomeKpi();
   renderQualifiers();
@@ -625,7 +626,11 @@ function renderAnalysisHistory() {
       const school = it.school && !it.school.isAnchor ? `<div class="ah-item-school">${escapeHtml(it.school.name)}</div>` : "";
       const note = r.notes ? `<div class="ah-item-note">${escapeHtml(r.notes)}</div>` : "";
       const docs = docsFor(r);
-      const docLinks = docs.length ? `<div class="ah-item-docs">${docs.map((d) => `
+      const docLinks = docs.length ? `<div class="ah-item-docs">${docs.map((d) => `${d.slides && d.slides.count ? `
+            <a class="ah-doc ah-doc-slides" href="#analysis" data-deck-path="${escapeHtml(d.path)}" title="Open the Market Analysis tab on this deck">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="4" width="18" height="12" rx="1.5"/><path d="M8 20h8M12 16v4"/></svg>
+              View slides<span class="ah-doc-title">${escapeHtml(String(d.slides.count))} slides</span>
+            </a>` : ""}
             <a class="ah-doc ah-doc-${escapeHtml(d.kind || "file")}" href="${escapeHtml(d.url)}" target="_blank" rel="noopener" title="${escapeHtml(d.local_path || d.path || "")}">
               <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
               ${escapeHtml(d.kind === "deck" ? "Open deck" : d.kind === "workbook" ? "Open workbook" : "Open file")}<span class="ah-doc-title">${escapeHtml(d.title || d.filename || "")}</span>
@@ -646,6 +651,15 @@ function renderAnalysisHistory() {
     }).join("")}
     <a class="ah-menu-foot" href="index.html#schedule">Open the full Analysis Schedule</a>`;
 
+  // "View slides" -> jump to the Market Analysis tab on that deck.
+  menu.querySelectorAll(".ah-doc-slides").forEach((a) => {
+    a.addEventListener("click", (e) => {
+      e.preventDefault();
+      openAnalysisDeck(a.dataset.deckPath);
+      close();
+    });
+  });
+
   const close = () => {
     menu.hidden = true;
     btn.setAttribute("aria-expanded", "false");
@@ -665,6 +679,119 @@ function renderAnalysisHistory() {
     wrap.addEventListener("keydown", (e) => { if (e.key === "Escape") { close(); btn.focus(); } });
   }
 }
+
+/* ----- Market Analysis tab (deck viewer) ------------------------ */
+/* tables.analysis_docs rows for this market that have rendered slides
+   (render_analysis_decks.py -> decks/<market_key>/<yyyymmdd>/sNN.jpg).
+   The tab button stays hidden for markets without a rendered deck. Slides
+   are plain JPEGs fetched on demand, so nothing loads until the tab opens. */
+const deckState = { decks: [], idx: 0, slide: 1, bound: false };
+
+function marketDecks() {
+  return (DATA.tables.analysis_docs || [])
+    .filter((d) => d.market_key === MARKET.market_key && d.slides && d.slides.count > 0)
+    .sort((a, b) => String(b.presentation_date).localeCompare(String(a.presentation_date)));
+}
+
+function initAnalysisTab() {
+  deckState.decks = marketDecks();
+  const btn = document.getElementById("analysis-tab-btn");
+  if (btn) btn.hidden = deckState.decks.length === 0;
+}
+
+function openAnalysisDeck(deckPath) {
+  const i = deckState.decks.findIndex((d) => d.path === deckPath);
+  if (i >= 0) { deckState.idx = i; deckState.slide = 1; }
+  const btn = document.getElementById("analysis-tab-btn");
+  if (btn) btn.click();
+  window.scrollTo({ top: 0, behavior: "smooth" });
+}
+
+const slideFile = (d, i, thumb) => `${d.slides.dir}/${thumb ? "t" : "s"}${String(i).padStart(2, "0")}.jpg`;
+
+function renderAnalysisTab() {
+  const decks = deckState.decks;
+  if (!decks.length) return;
+  const picker = document.getElementById("deck-picker");
+  if (!deckState.bound) {
+    deckState.bound = true;
+    picker.innerHTML = decks.map((d, i) =>
+      `<option value="${i}">${escapeHtml(SubtextSchedule.fmtDate(d.presentation_date))} - ${escapeHtml(d.title || d.filename || "deck")}</option>`).join("");
+    picker.onchange = () => showDeck(Number(picker.value), 1);
+    document.getElementById("deck-prev").onclick = () => stepSlide(-1);
+    document.getElementById("deck-next").onclick = () => stepSlide(1);
+    document.getElementById("deck-stage").onclick = () => stepSlide(1);
+    document.getElementById("deck-filmstrip").onclick = (e) => {
+      const t = e.target.closest(".deck-thumb");
+      if (t) showSlide(Number(t.dataset.i));
+    };
+    document.addEventListener("keydown", (e) => {
+      const panel = document.querySelector('.market-tab-panel[data-panel="analysis"]');
+      if (!panel || panel.hidden) return;
+      if (e.target && /^(INPUT|SELECT|TEXTAREA)$/.test(e.target.tagName)) return;
+      if (e.key === "ArrowRight" || e.key === "PageDown") { e.preventDefault(); stepSlide(1); }
+      else if (e.key === "ArrowLeft" || e.key === "PageUp") { e.preventDefault(); stepSlide(-1); }
+      else if (e.key === "Home") { e.preventDefault(); showSlide(1); }
+      else if (e.key === "End") { e.preventDefault(); showSlide(deckState.decks[deckState.idx].slides.count); }
+    });
+  }
+  picker.hidden = decks.length < 2;
+  showDeck(deckState.idx, deckState.slide);
+}
+
+function showDeck(idx, slide) {
+  const d = deckState.decks[idx];
+  if (!d) return;
+  deckState.idx = idx;
+  document.getElementById("deck-picker").value = String(idx);
+  const bits = [
+    `Presented ${SubtextSchedule.fmtDate(d.presentation_date)}`,
+    d.analyst ? `Analyst ${d.analyst}` : "",
+    d.file_date ? `deck dated ${SubtextSchedule.fmtDate(d.file_date)}` : "",
+    `${d.slides.count} slides`,
+  ].filter(Boolean);
+  document.getElementById("deck-meta").textContent = bits.join(" · ");
+  const open = document.getElementById("deck-open");
+  open.href = d.url;
+  open.title = d.local_path || d.path || "";
+  const stage = document.getElementById("deck-stage");
+  if (d.slides.width && d.slides.height) stage.style.aspectRatio = `${d.slides.width} / ${d.slides.height}`;
+  document.getElementById("deck-filmstrip").innerHTML = Array.from({ length: d.slides.count }, (_, k) => k + 1).map((i) => `
+    <button type="button" class="deck-thumb" data-i="${i}" role="option" aria-label="Slide ${i}">
+      <img src="${slideFile(d, i, true)}" alt="" loading="lazy" decoding="async"><span>${i}</span>
+    </button>`).join("");
+  showSlide(slide || 1);
+}
+
+function showSlide(i) {
+  const d = deckState.decks[deckState.idx];
+  if (!d) return;
+  const n = d.slides.count;
+  i = Math.min(Math.max(1, i), n);
+  deckState.slide = i;
+  const img = document.getElementById("deck-slide");
+  img.src = slideFile(d, i, false);
+  img.alt = `${d.title || "Market analysis deck"} - slide ${i} of ${n}`;
+  document.getElementById("deck-counter").textContent = `Slide ${i} of ${n}`;
+  document.getElementById("deck-prev").disabled = i <= 1;
+  document.getElementById("deck-next").disabled = i >= n;
+  document.querySelectorAll("#deck-filmstrip .deck-thumb").forEach((t) => {
+    const on = Number(t.dataset.i) === i;
+    t.classList.toggle("active", on);
+    t.setAttribute("aria-selected", on ? "true" : "false");
+    if (on) {
+      // Centre the active thumb in the filmstrip without moving the page
+      // (scrollIntoView would also scroll the document when the strip is
+      // below the fold).
+      const strip = t.parentElement;
+      strip.scrollLeft = t.offsetLeft - (strip.clientWidth - t.offsetWidth) / 2;
+    }
+  });
+  // Warm the next slide so arrowing feels instant.
+  if (i < n) { const pre = new Image(); pre.src = slideFile(d, i + 1, false); }
+}
+
+function stepSlide(delta) { showSlide(deckState.slide + delta); }
 
 function renderPipelineKpis() {
   document.getElementById("pipe-kpi-total").textContent = fmtInt(MARKET.beds_pipeline_total);
@@ -1094,6 +1221,8 @@ function bindTabs() {
         renderUniversityTab();
       } else if (target === "ipeds") {
         renderIpedsTab();
+      } else if (target === "analysis") {
+        renderAnalysisTab();
       }
     });
   });

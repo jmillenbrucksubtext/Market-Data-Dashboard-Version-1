@@ -1705,15 +1705,6 @@ function fmtSchedDate(iso) {
   return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
 }
 
-function schedStatusHtml(status) {
-  if (!status) return "";
-  const s = status.toLowerCase();
-  const cls = s.includes("approved") ? "sched-status-good"
-    : s.includes("assessing") ? "sched-status-warn"
-    : "sched-status-muted";
-  return `<span class="sched-status ${cls}">${escapeHtml(status)}</span>`;
-}
-
 function renderScheduleTab() {
   const container = document.getElementById("analysis-schedule");
   if (!container) return;
@@ -1759,7 +1750,7 @@ function renderScheduleTab() {
   let linked = 0;
   const body = [];
   for (const [cat, rows] of ordered) {
-    body.push(`<tr class="sched-section"><td colspan="12">${escapeHtml(cat)} <span class="sched-section-count">${rows.length}</span></td></tr>`);
+    body.push(`<tr class="sched-section"><td colspan="7">${escapeHtml(cat)} <span class="sched-section-count">${rows.length}</span></td></tr>`);
     for (const r of rows) {
       const m = resolveScheduleMarket(r.market_name);
       if (m) linked++;
@@ -1773,11 +1764,6 @@ function renderScheduleTab() {
         <td class="sched-date">${fmtSchedDate(r.initial_analysis_date)}</td>
         <td class="sched-date">${fmtSchedDate(r.assigned_date)}</td>
         <td class="sched-type">${escapeHtml(r.analysis_type || "")}</td>
-        <td>${escapeHtml(r.initial_decision || "")}</td>
-        <td class="sched-date">${fmtSchedDate(r.ic_date)}</td>
-        <td>${escapeHtml(r.ic_decision || "")}</td>
-        <td>${schedStatusHtml(r.status)}</td>
-        <td class="num">${escapeHtml(r.est_sites != null ? String(r.est_sites) : "")}</td>
         <td class="sched-notes">${escapeHtml(r.notes || "")}</td>
       </tr>`);
     }
@@ -1788,16 +1774,12 @@ function renderScheduleTab() {
       <thead>
         <tr>
           <th>Market</th><th>Type</th><th>Analyst</th><th>Presentation Date</th>
-          <th>Assigned Date</th><th>Analysis Type</th>
-          <th>Decision</th><th>IC Date</th><th>IC Decision</th><th>Status</th>
-          <th class="num">Est. Sites</th><th>Notes</th>
+          <th>Assigned Date</th><th>Analysis Type</th><th>Notes</th>
         </tr>
       </thead>
       <tbody>${body.join("")}</tbody>
     </table>`;
 
-  const tabCount = document.getElementById("schedule-tab-count");
-  if (tabCount) tabCount.textContent = all.length;
   const count = document.getElementById("schedule-count");
   if (count) count.textContent = `${all.length} analyses on the schedule · ${linked} linked to a market page`;
 }

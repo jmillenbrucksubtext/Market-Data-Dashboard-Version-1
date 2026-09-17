@@ -10,16 +10,6 @@
     "path": "General/Markets/Arizona State (Tempe)/A. Research and Analysis/1. Market Analysis/Market Analysis PPT_Arizona State_20250102 JM.pptx"
   },
   {
-    "market_key": 13,
-    "market": "Auburn University",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Auburn (September 2026)",
-    "analyst": "TE",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Auburn/A. Research and Analysis/Market Diligence/Market Depth Analysis_Auburn_20260908 TE.pptx"
-  },
-  {
     "market_key": 11,
     "market": "Clemson University",
     "presentation_date": "2026-04-10",
@@ -28,16 +18,6 @@
     "analyst": "JM",
     "file_date": "2026-04-10",
     "path": "General/Markets/Clemson/A. Research and Analysis/1. Market Analysis/Market Analysis_Clemson_20260410 JM.pptx"
-  },
-  {
-    "market_key": 11,
-    "market": "Clemson University",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Clemson (September 2026)",
-    "analyst": "JM",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Clemson/A. Research and Analysis/5. Market Depth Analysis/Market_Depth_Analysis_Clemson_20260908 JM.pptx"
   },
   {
     "market_key": 18,
@@ -70,16 +50,6 @@
     "path": "General/Markets/Indiana (Bloomington)/A. Research and Analysis/1. Market Analysis/Market Analysis_Indiana_20260410 JM.pptx"
   },
   {
-    "market_key": 118,
-    "market": "Indiana University Bloomington",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Indiana University Bloomington (September 2026)",
-    "analyst": "JM",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Indiana (Bloomington)/A. Research and Analysis/4. Market Depth Analysis/Market_Depth_Analysis_Indiana_20260908 JM.pptx"
-  },
-  {
     "market_key": 1804,
     "market": "Louisiana State University",
     "presentation_date": "2026-05-18",
@@ -88,16 +58,6 @@
     "analyst": "JTR",
     "file_date": "2026-05-18",
     "path": "General/Markets/Louisiana State University/A. Research and Analysis/1. Market Analysis/Market Analysis Presentation/Market Overview PPT_LSU_20260518 JTR.pptx"
-  },
-  {
-    "market_key": 1804,
-    "market": "Louisiana State University",
-    "presentation_date": "2026-09-09",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Louisiana State (September 2026)",
-    "analyst": "JTR",
-    "file_date": "2026-09-09",
-    "path": "General/Markets/Louisiana State University/A. Research and Analysis/1. Market Analysis/Market Analysis Presentation/2026 August Market_Depth_Analysis_LSU JTR.pptx"
   },
   {
     "market_key": 1560,
@@ -110,26 +70,6 @@
     "path": "General/Markets/Michigan State (East Lansing)/A. Research and Analysis/1. Market Analysis/Market Analysis Michigan State_20251205 JB.pptx"
   },
   {
-    "market_key": 1560,
-    "market": "Michigan State University",
-    "presentation_date": "2026-09-04",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Michigan State (September 2026)",
-    "analyst": "AH",
-    "file_date": "2026-09-04",
-    "path": "General/Markets/Michigan State (East Lansing)/Market_Depth_Analysis_Michigan State_20260904 AH.pptx"
-  },
-  {
-    "market_key": 100,
-    "market": "North Carolina State University",
-    "presentation_date": "2026-09-09",
-    "kind": "deck",
-    "title": "Market Depth Analysis - North Carolina State (September 2026)",
-    "analyst": "JTR",
-    "file_date": "2026-09-09",
-    "path": "General/Markets/North Carolina State (Raleigh)/A. Research and Analysis/1. Market Analysis/2026 August Market_Depth_Analysis_NCState JTR.pptx"
-  },
-  {
     "market_key": 155,
     "market": "Ohio State University",
     "presentation_date": "2026-04-09",
@@ -138,16 +78,6 @@
     "analyst": "JB",
     "file_date": "2026-04-09",
     "path": "General/Markets/Ohio State (Columbus)/A. Research and Analysis/3. Market Analysis/Market Analysis_OSU_20260409 JB.pptx"
-  },
-  {
-    "market_key": 155,
-    "market": "Ohio State University",
-    "presentation_date": "2026-09-03",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Ohio State (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-03",
-    "path": "General/Markets/Ohio State (Columbus)/A. Research and Analysis/3. Market Analysis/Market_Depth_Analysis_OhioState_20260903 JB.pptx"
   },
   {
     "market_key": 823,
@@ -170,16 +100,6 @@
     "path": "General/Markets/Pennsylvania State (State College)/A. Research and Analysis/1. Market Analysis/Market Analysis PPT_Penn State_20250912 TE.pptx"
   },
   {
-    "market_key": 2375,
-    "market": "Penn State",
-    "presentation_date": "2026-08-27",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Penn State (August 2026)",
-    "analyst": "TE",
-    "file_date": "2026-08-27",
-    "path": "General/Markets/Pennsylvania State (State College)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Penn State_20260827 TE.pptx"
-  },
-  {
     "market_key": 611,
     "market": "Purdue University",
     "presentation_date": "2025-08-04",
@@ -188,16 +108,6 @@
     "analyst": "JI",
     "file_date": "2025-08-01",
     "path": "General/Markets/Purdue (West Lafayette)/A. Research and Analysis/1. Market Analysis/MarketUpdate_Purdue_20250801 JI.pptx"
-  },
-  {
-    "market_key": 611,
-    "market": "Purdue University",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Purdue (September 2026)",
-    "analyst": "TE",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Purdue (West Lafayette)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Purdue_20260908 TE.pptx"
   },
   {
     "market_key": 2417,
@@ -210,16 +120,6 @@
     "path": "General/Markets/Rutgers (New Brunswick)/A. Research and Analysis/Market Analysis/Market Analysis PPT_Rutgers_20250815 JTR.pptx"
   },
   {
-    "market_key": 2417,
-    "market": "Rutgers University",
-    "presentation_date": "2026-09-03",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Rutgers (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-03",
-    "path": "General/Markets/Rutgers (New Brunswick)/A. Research and Analysis/Market Analysis/Market_Depth_Analysis_Rutgers_20260903 JB.pptx"
-  },
-  {
     "market_key": 732,
     "market": "Syracuse University",
     "presentation_date": "2026-08-17",
@@ -228,16 +128,6 @@
     "analyst": null,
     "file_date": "2026-08-17",
     "path": "General/Markets/Syracuse/A.Research and Analysis/Market Analysis/MarketAnalysis PH.I_Syracuse_20260817.pptx"
-  },
-  {
-    "market_key": 732,
-    "market": "Syracuse University",
-    "presentation_date": "2026-09-07",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Syracuse (September 2026)",
-    "analyst": "JTR",
-    "file_date": "2026-09-07",
-    "path": "General/Markets/Syracuse/A.Research and Analysis/Market Analysis/2026 August_Market_Depth_Analysis_Syracuse JTR.pptx"
   },
   {
     "market_key": 1002,
@@ -260,16 +150,6 @@
     "path": "General/Markets/Arizona (Tucson)/A. Research and Analysis/1. Market Analysis/MarketAnalysis_University of Arizona_20260615 LE.pptx"
   },
   {
-    "market_key": 180,
-    "market": "University of Arkansas",
-    "presentation_date": "2026-09-04",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Arkansas (September 2026)",
-    "analyst": "AH",
-    "file_date": "2026-09-04",
-    "path": "General/Markets/Arkansas (Fayetteville)/Market_Depth_Analysis_Arkansas_20260904 AH.pptx"
-  },
-  {
     "market_key": 141,
     "market": "University of Central Florida",
     "presentation_date": "2025-11-20",
@@ -278,16 +158,6 @@
     "analyst": "TE",
     "file_date": "2025-11-20",
     "path": "General/Markets/Central Florida (Orlando)/A. Research and Analysis/1. Market Analysis/Market Analysis PPT_UCF_20251120 TE.pptx"
-  },
-  {
-    "market_key": 141,
-    "market": "University of Central Florida",
-    "presentation_date": "2026-08-27",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Central Florida (August 2026)",
-    "analyst": "TE",
-    "file_date": "2026-08-27",
-    "path": "General/Markets/Central Florida (Orlando)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_UCF_20260827 TE.pptx"
   },
   {
     "market_key": 2354,
@@ -300,36 +170,6 @@
     "path": "General/Markets/Cincinnati (Cincinnati)/A. Research and Analysis/A. Market Analysis/MarketAnalysisPresentation_Cincinnati_20251103 KB+TE.pptx"
   },
   {
-    "market_key": 2354,
-    "market": "University of Cincinnati",
-    "presentation_date": "2026-08-27",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Cincinnati (August 2026)",
-    "analyst": "TE",
-    "file_date": "2026-08-27",
-    "path": "General/Markets/Cincinnati (Cincinnati)/A. Research and Analysis/C. Market Diligence/Market Depth Analysis_Cincinnati_20260827 TE.pptx"
-  },
-  {
-    "market_key": 977,
-    "market": "University of Colorado Boulder",
-    "presentation_date": "2026-08-27",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Colorado Boulder (August 2026)",
-    "analyst": "TE",
-    "file_date": "2026-08-27",
-    "path": "General/Markets/Colorado (Boulder)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Colorado_Boulder_20260827 TE.pptx"
-  },
-  {
-    "market_key": 590,
-    "market": "University of Florida",
-    "presentation_date": "2026-09-03",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Florida (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-03",
-    "path": "General/Markets/Florida (Gainesville)/A. Research and Analysis/Market Analysis/Market_Depth_Analysis_UF_20260903 JB.pptx"
-  },
-  {
     "market_key": 12,
     "market": "University of Georgia",
     "presentation_date": "2026-07-24",
@@ -338,26 +178,6 @@
     "analyst": "AH",
     "file_date": "2026-07-20",
     "path": "General/Markets/Georgia (Athens)/A. Research and Analysis/Market Analysis/Phase 2 Market Analysis/MarketAnalysis_UGA_P2_20260720 AH.pptx"
-  },
-  {
-    "market_key": 12,
-    "market": "University of Georgia",
-    "presentation_date": "2026-09-04",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Georgia (September 2026)",
-    "analyst": "AH",
-    "file_date": "2026-09-04",
-    "path": "General/Markets/Georgia (Athens)/Market_Depth_Analysis_Georgia_20260904 AH.pptx"
-  },
-  {
-    "market_key": 48,
-    "market": "University of Illinois at Urbana-Champaign",
-    "presentation_date": "2026-09-04",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Illinois at Urbana-Champaign (September 2026)",
-    "analyst": "AH",
-    "file_date": "2026-09-04",
-    "path": "General/Markets/Illinois (Urbana-Champaign)/Market_Depth_Analysis_Illinois_20260904 AH.pptx"
   },
   {
     "market_key": 364,
@@ -380,16 +200,6 @@
     "path": "General/Markets/Kansas (Lawrence)/A. Research and Analysis/1. Market Analysis/Market Analysis P1_Kansas_20260707 JM.pptx"
   },
   {
-    "market_key": 567,
-    "market": "University of Kentucky",
-    "presentation_date": "2026-09-01",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Kentucky (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-01",
-    "path": "General/Markets/Kentucky (Lexington)/A. Research and Analysis/Market Analysis/Market_Depth_Analysis_UK_20260901 JB.pptx"
-  },
-  {
     "market_key": 2294,
     "market": "University of Maryland College Park",
     "presentation_date": "2025-09-26",
@@ -398,16 +208,6 @@
     "analyst": "SR",
     "file_date": "2025-09-26",
     "path": "General/Markets/Maryland (College Park)/A. Research and Analysis/1. Market Analysis/Market Analysis PPT_Maryland_20250926 SR.pptx"
-  },
-  {
-    "market_key": 2294,
-    "market": "University of Maryland College Park",
-    "presentation_date": "2026-08-27",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Maryland College Park (August 2026)",
-    "analyst": "TE",
-    "file_date": "2026-08-27",
-    "path": "General/Markets/Maryland (College Park)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Maryland_20260827 TE.pptx"
   },
   {
     "market_key": 25,
@@ -450,16 +250,6 @@
     "path": "General/Markets/Missouri (Columbia)/A. Research and Analysis/Market Analysis/MarketAnalysis_Missouri_20260610 JB.pptx"
   },
   {
-    "market_key": 86,
-    "market": "University of Missouri",
-    "presentation_date": "2026-09-03",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Missouri (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-03",
-    "path": "General/Markets/Missouri (Columbia)/A. Research and Analysis/Market Analysis/Market_Depth_Analysis_Mizzou_20260903 JB.pptx"
-  },
-  {
     "market_key": 629,
     "market": "University of Nebraska Lincoln",
     "presentation_date": "2026-09-11",
@@ -480,16 +270,6 @@
     "path": "General/Markets/North Carolina (Chapel Hill)/A. Market Research and Analysis/Market Analysis/MarketAnalysis_UNCChapel Hill_20251212 AH+TE.pptx"
   },
   {
-    "market_key": 2344,
-    "market": "University of North Carolina at Chapel Hill",
-    "presentation_date": "2026-09-01",
-    "kind": "deck",
-    "title": "Market Depth Analysis - North Carolina at Chapel Hill (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-01",
-    "path": "General/Markets/North Carolina (Chapel Hill)/A. Market Research and Analysis/Market Analysis/Market_Depth_Analysis_UNC_20260901 JB.pptx"
-  },
-  {
     "market_key": 122,
     "market": "University of Oklahoma",
     "presentation_date": "2026-08-07",
@@ -498,16 +278,6 @@
     "analyst": "LE",
     "file_date": "2026-07-30",
     "path": "General/Markets/Oklahoma (Norman)/A. Research and Analysis/1. Market Analysis/MarketAnalysis P1_OU_20260730 LE.pptx"
-  },
-  {
-    "market_key": 122,
-    "market": "University of Oklahoma",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Oklahoma (September 2026)",
-    "analyst": "TE",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Oklahoma (Norman)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Oklahoma_20260908 TE.pptx"
   },
   {
     "market_key": 1299,
@@ -550,16 +320,6 @@
     "path": "General/Markets/Southern California (USC)/A. Research and Analysis/1. Market Analysis/Market Analysis PPT_USC_20260223 JB.pptx"
   },
   {
-    "market_key": 553,
-    "market": "University of Tennessee",
-    "presentation_date": "2026-09-09",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Tennessee (September 2026)",
-    "analyst": "JTR",
-    "file_date": "2026-09-09",
-    "path": "General/Markets/Tennessee (Knoxville)/A. Research and Analysis/1. Market Analysis/2026 August Market_Depth_Analysis_Tennessee JTR.pptx"
-  },
-  {
     "market_key": 27,
     "market": "University of Texas at Austin",
     "presentation_date": "2026-05-02",
@@ -570,16 +330,6 @@
     "path": "General/Markets/Texas (Austin)/A. Research and Analysis/Market Analysis/MarketAnalysis_UT_202605025MK.pptx"
   },
   {
-    "market_key": 27,
-    "market": "University of Texas at Austin",
-    "presentation_date": "2026-09-01",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Texas at Austin (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-01",
-    "path": "General/Markets/Texas (Austin)/A. Research and Analysis/Market Analysis/Market_Depth_Analysis_UT_20260901 JB.pptx"
-  },
-  {
     "market_key": 1012,
     "market": "University of Utah",
     "presentation_date": "2026-04-17",
@@ -588,16 +338,6 @@
     "analyst": "JTR",
     "file_date": "2026-04-09",
     "path": "General/Markets/Utah (Salt Lake)/A. Research and Analysis/1. Market Analysis/Market Overview PPT_Utah_20260409 JTR.pptx"
-  },
-  {
-    "market_key": 1012,
-    "market": "University of Utah",
-    "presentation_date": "2026-09-04",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Utah (September 2026)",
-    "analyst": "AH",
-    "file_date": "2026-09-04",
-    "path": "General/Markets/Utah (Salt Lake)/Market_Depth_Analysis_Utah_20260904 AH.pptx"
   },
   {
     "market_key": 568,
@@ -620,16 +360,6 @@
     "path": "General/Markets/Washington (Seattle)/A. Research and Analysis/1. Market Analysis/MarketAnalysis P1_UW-Seattle_20260807 TE.pptx"
   },
   {
-    "market_key": 940,
-    "market": "University of Washington",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Washington (September 2026)",
-    "analyst": "TE",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Washington (Seattle)/A. Research and Analysis/3. Market Diligence/Market Depth Analysis_Washington_20260908 TE.pptx"
-  },
-  {
     "market_key": 334,
     "market": "University of Wisconsin Madison",
     "presentation_date": "2026-07-07",
@@ -640,16 +370,6 @@
     "path": "General/Markets/Wisconsin (Madison)/A. Research and Analysis/1. Market Analysis/Market Analysis P1_Wisconsin_20260707 JM v2.pptx"
   },
   {
-    "market_key": 334,
-    "market": "University of Wisconsin Madison",
-    "presentation_date": "2026-09-08",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Wisconsin Madison (September 2026)",
-    "analyst": "JM",
-    "file_date": "2026-09-08",
-    "path": "General/Markets/Wisconsin (Madison)/A. Research and Analysis/5. Market Depth Analysis/Market_Depth_Analysis_Wisconsin_20260908 JM.pptx"
-  },
-  {
     "market_key": 2400,
     "market": "Virginia Polytechnic Institute and State University",
     "presentation_date": "2026-05-15",
@@ -658,15 +378,5 @@
     "analyst": "JB",
     "file_date": "2026-05-15",
     "path": "General/Markets/Virginia Tech  (Blacksburg)/A. Research and Analysis/1. Market Analysis/Market Analysis_VT_2026513 JB.pptx"
-  },
-  {
-    "market_key": 2400,
-    "market": "Virginia Polytechnic Institute and State University",
-    "presentation_date": "2026-09-03",
-    "kind": "deck",
-    "title": "Market Depth Analysis - Virginia Polytechnic Institute and State (September 2026)",
-    "analyst": "JB",
-    "file_date": "2026-09-03",
-    "path": "General/Markets/Virginia Tech  (Blacksburg)/A. Research and Analysis/1. Market Analysis/Market_Depth_Analysis_VT_20260903 JB.pptx"
   }
 ]

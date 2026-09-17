@@ -94,6 +94,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   renderHeader();
   renderAnalysisHistory();
   initAnalysisTab();
+  initCdsTab();
   renderPipelineKpis();
   renderOriginIncomeKpi();
   renderQualifiers();
@@ -1223,6 +1224,8 @@ function bindTabs() {
         renderIpedsTab();
       } else if (target === "analysis") {
         renderAnalysisTab();
+      } else if (target === "cds") {
+        renderCdsTab();
       }
     });
   });
@@ -1351,6 +1354,403 @@ function renderIpedsTab() {
   `).join("");
 
   table.innerHTML = head + `<tbody>${body}</tbody>`;
+}
+
+/* ----- Common Data Set tab ------------------------------------ */
+// Every fact extracted from the school's Common Data Set PDFs
+// (dbo.cds_documents + dbo.cds_facts, via load_cds.py), one column per CDS
+// year. tables.cds_index lists the markets with CDS on file - the tab button
+// stays hidden for everyone else. The rows live in assets/cds/<market_key>.json
+// (same lazy pattern as the IPEDS tab) and are fetched on first visit.
+// Field labels + display order come from cds-fields.js (window.CDS_FIELDS /
+// window.CDS_SECTIONS); a field missing from that list still renders, with a
+// humanised name, so a new extraction field never disappears.
+
+const cdsState = { data: null, loading: false, school: 0, bound: false, showEmpty: false };
+const cdsCharts = {};
+const CDS_LABELS = new Map((window.CDS_FIELDS || []).map(([f, l]) => [f, l]));
+const CDS_ORDER = new Map((window.CDS_FIELDS || []).map(([f], i) => [f, i]));
+const CDS_COLORS = { rust: "#a95818", blue: "#3d8aa6", everest: "#16352e", gold: "#c79830", slate: "#5a544f", sand: "#cdbd93" };
+const CDS_FONT = "Pragmatica, sans-serif";
+
+function initCdsTab() {
+  const btn = document.getElementById("cds-tab-btn");
+  if (!btn) return;
+  btn.hidden = !(DATA.tables.cds_index || []).some((r) => r.market_key === MARKET.market_key);
+}
+
+function cdsLabel(field) {
+  return CDS_LABELS.get(field)
+    || field.toLowerCase().replace(/_/g, " ").replace(/^./, (c) => c.toUpperCase());
+}
+
+/* "2020-2021" -> "'20-21" for axis labels. */
+function cdsShortYear(y) {
+  const m = /^(\d{4})-(\d{4})$/.exec(String(y));
+  return m ? `'${m[1].slice(2)}-${m[2].slice(2)}` : String(y);
+}
+
+/* Format one fact by its CDS unit. Percentages are stored 0-100 as printed. */
+function cdsFmt(unit, v, t) {
+  if (v == null) return t != null ? escapeHtml(t) : "-";
+  switch (unit) {
+    case "count": return fmtInt(v);
+    case "percent": return `${Number(v).toFixed(1)}%`;
+    case "usd": return fmtUsd(v);
+    case "gpa": return Number(v).toFixed(2);
+    case "years": return Number(v).toFixed(1);
+    default: return escapeHtml(String(v));
+  }
+}
+
+/* Accessors over one school's fields: cell / value / text by (field, year),
+   the latest year carrying a value for a field, and a per-year series. */
+function cdsSeries(school) {
+  const map = new Map(school.fields.map((f) => [f.field, f]));
+  const years = school.years;
+  const cell = (field, year) => { const f = map.get(field); return f ? f.values[year] : undefined; };
+  const val = (field, year) => { const c = cell(field, year); return c && c.v != null ? Number(c.v) : null; };
+  const text = (field, year) => { const c = cell(field, year); return c ? (c.t ?? (c.v != null ? c.v : null)) : null; };
+  const latest = (field) => {
+    for (let i = years.length - 1; i >= 0; i--) {
+      const v = val(field, years[i]);
+      if (v != null) return { v, year: years[i] };
+    }
+    return { v: null, year: null };
+  };
+  const series = (field) => years.map((y) => val(field, y));
+  return { map, years, cell, val, text, latest, series };
+}
+
+function renderCdsTab() {
+  const host = document.getElementById("cds-tables");
+  if (!host) return;
+
+  if (cdsState.data === null) {
+    if (cdsState.loading) return;
+    cdsState.loading = true;
+    host.innerHTML = `<div class="empty-state">Loading Common Data Set…</div>`;
+    fetch(`assets/cds/${MARKET.market_key}.json`, { cache: "no-cache" })
+      .then((res) => (res.ok ? res.json() : { schools: [] }))
+      .catch(() => ({ schools: [] }))
+      .then((d) => { cdsState.data = d; cdsState.loading = false; renderCdsTab(); });
+    return;
+  }
+
+  const schools = cdsState.data.schools || [];
+  if (!schools.length) {
+    host.innerHTML = `<div class="empty-state">No Common Data Set on file for this market.</div>`;
+    return;
+  }
+
+  if (!cdsState.bound) {
+    cdsState.bound = true;
+    const chk = document.getElementById("cds-show-empty");
+    if (chk) chk.addEventListener("change", () => {
+      cdsState.showEmpty = chk.checked;
+      renderCdsTables(schools[cdsState.school] || schools[0]);
+    });
+    const picker = document.getElementById("cds-picker");
+    if (picker && schools.length > 1) {
+      picker.hidden = false;
+      picker.innerHTML = schools.map((s, i) => `
+        <button type="button" class="uni-pill${i === 0 ? " active" : ""}" data-i="${i}">${escapeHtml(s.university)}</button>`).join("");
+      picker.querySelectorAll(".uni-pill").forEach((btn) => btn.addEventListener("click", () => {
+        cdsState.school = Number(btn.dataset.i);
+        picker.querySelectorAll(".uni-pill").forEach((b) => b.classList.toggle("active", b === btn));
+        renderCdsSchool(schools[cdsState.school]);
+      }));
+    }
+  }
+  renderCdsSchool(schools[cdsState.school] || schools[0]);
+}
+
+function renderCdsSchool(school) {
+  renderCdsKpis(school);
+  renderCdsCharts(school);
+  renderCdsTables(school);
+  renderCdsDocuments(school);
+}
+
+/* Six headline tiles, each from the latest CDS year that reports it. Labels
+   are deliberately distinct from the University tab's tiles so chart-info.js
+   (keyed by label) shows the CDS source. */
+function renderCdsKpis(school) {
+  const S = cdsSeries(school);
+  const applied = S.latest("ADM_FY_APPLIED_TOTAL");
+  const admitted = S.val("ADM_FY_ADMITTED_TOTAL", applied.year);
+  const enrolled = S.val("ADM_FY_ENROLLED_TOTAL", applied.year);
+  const acceptance = applied.v && admitted != null ? admitted / applied.v : null;
+  const yieldRate = admitted && enrolled != null ? enrolled / admitted : null;
+  const off = S.latest("HOUSING_PCT_OFF_CAMPUS_UG");
+  const on = S.val("HOUSING_PCT_ON_CAMPUS_UG", off.year);
+  const oos = S.latest("RES_PCT_OUT_OF_STATE_UG");
+  const inState = S.val("RES_PCT_IN_STATE_UG", oos.year);
+  const ret = S.latest("RET_FRESHMAN_PCT");
+  const grad6 = S.val("GRAD_6YR_PCT", ret.year);
+  const tuit = S.latest("TUIT_INSTATE_UG_USD");
+  const tuitOos = S.val("TUIT_OUTSTATE_UG_USD", tuit.year);
+  const costYear = S.text("TUIT_COST_YEAR", tuit.year);
+
+  const kpis = [
+    { label: "First-Year Applications", value: fmtInt(applied.v),
+      sub: applied.year ? `CDS ${applied.year} · ${fmtInt(admitted)} admitted` : "-" },
+    { label: "Acceptance Rate", value: fmtPct(acceptance),
+      sub: enrolled != null ? `${fmtInt(enrolled)} enrolled · ${fmtPct(yieldRate)} yield` : "-" },
+    { label: "Undergrads Off Campus", value: cdsFmt("percent", off.v),
+      sub: off.year ? `${cdsFmt("percent", on)} in college housing · CDS ${off.year}` : "-" },
+    { label: "Out-of-State Undergrads", value: cdsFmt("percent", oos.v),
+      sub: oos.year ? `${cdsFmt("percent", inState)} in-state · CDS ${oos.year}` : "-" },
+    { label: "First-Year Retention", value: cdsFmt("percent", ret.v),
+      sub: ret.year ? `${cdsFmt("percent", grad6)} six-year graduation rate` : "-" },
+    { label: "In-State Tuition", value: fmtUsd(tuit.v),
+      sub: tuit.year ? `${fmtUsd(tuitOos)} out-of-state${costYear ? ` · ${escapeHtml(String(costYear))}` : ""}` : "-" },
+  ];
+
+  document.getElementById("cds-kpis").innerHTML = kpis.map((k) => `
+    <div class="kpi">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${k.value}</div>
+      <div class="kpi-sub">${k.sub}</div>
+    </div>`).join("");
+}
+
+function cdsChart(id, config) {
+  const canvas = document.getElementById(id);
+  if (!canvas || typeof Chart === "undefined") return;
+  if (cdsCharts[id]) { cdsCharts[id].destroy(); delete cdsCharts[id]; }
+  cdsCharts[id] = new Chart(canvas.getContext("2d"), config);
+}
+
+/* Shared chart options: bottom legend, index tooltips, datalabels off (the
+   plugin is registered globally for the admissions chart), axes passed in.
+   Tooltip formatting keys off the dataset's axis id: pct / usd / n. */
+function cdsOptions(scales) {
+  const tip = (c) => {
+    const v = c.parsed.y;
+    if (v == null) return `${c.dataset.label}: -`;
+    if (c.dataset.yAxisID === "pct") return `${c.dataset.label}: ${v.toFixed(1)}%`;
+    if (c.dataset.yAxisID === "usd") return `${c.dataset.label}: ${fmtUsd(v)}`;
+    return `${c.dataset.label}: ${fmtInt(v)}`;
+  };
+  return {
+    responsive: true,
+    maintainAspectRatio: false,
+    layout: { padding: { top: 8, right: 6, left: 4, bottom: 4 } },
+    interaction: { mode: "index", intersect: false },
+    plugins: {
+      legend: {
+        position: "bottom",
+        labels: { font: { size: 11, family: CDS_FONT }, color: "#2b2825", boxWidth: 14, boxHeight: 10, padding: 12 },
+      },
+      datalabels: { display: false },
+      tooltip: { callbacks: { label: tip } },
+    },
+    scales,
+  };
+}
+
+const cdsXScale = (stacked) => ({
+  stacked: !!stacked, grid: { display: false }, border: { display: false },
+  ticks: { font: { size: 12, weight: 700, family: CDS_FONT }, color: "#2b2825" },
+});
+const cdsYScale = (fmt, extra) => Object.assign({
+  type: "linear", beginAtZero: true,
+  grid: { color: "#f5efde", drawTicks: false }, border: { display: false },
+  ticks: { font: { size: 10, family: CDS_FONT }, color: "#5a544f", callback: fmt },
+}, extra || {});
+
+function renderCdsCharts(school) {
+  const S = cdsSeries(school);
+  const labels = S.years.map(cdsShortYear);
+  const sub = document.getElementById("cds-trends-sub");
+  if (sub) {
+    sub.textContent = `${school.university} · CDS ${S.years[0]} to ${S.years[S.years.length - 1]} · source dbo.cds_facts`;
+  }
+
+  const line = (label, data, color, axis, dashed) => ({
+    type: "line", label, data, yAxisID: axis, order: 1,
+    borderColor: color, backgroundColor: color, borderWidth: 2.5,
+    pointRadius: 3, pointBackgroundColor: color, tension: 0.25, spanGaps: true,
+    borderDash: dashed ? [5, 4] : undefined,
+  });
+  const bar = (label, data, color, axis, stack) => ({
+    type: "bar", label, data, yAxisID: axis, order: 2, stack,
+    backgroundColor: color, borderRadius: 2, categoryPercentage: 0.7, barPercentage: 0.9,
+  });
+  const pct = (v) => `${v}%`;
+  const ratio = (num, den) => num.map((n, i) => (den[i] && n != null ? (n / den[i]) * 100 : null));
+
+  /* 1. First-year admissions funnel (C1). */
+  const applied = S.series("ADM_FY_APPLIED_TOTAL");
+  const admitted = S.series("ADM_FY_ADMITTED_TOTAL");
+  const enrolled = S.series("ADM_FY_ENROLLED_TOTAL");
+  cdsChart("cds-admissions-chart", {
+    data: { labels, datasets: [
+      bar("Applied", applied, CDS_COLORS.everest, "n"),
+      bar("Admitted", admitted, CDS_COLORS.blue, "n"),
+      bar("Enrolled", enrolled, CDS_COLORS.rust, "n"),
+      line("Acceptance rate", ratio(admitted, applied), CDS_COLORS.gold, "pct"),
+      line("Yield", ratio(enrolled, admitted), CDS_COLORS.slate, "pct", true),
+    ] },
+    options: cdsOptions({
+      x: cdsXScale(),
+      n: cdsYScale((v) => fmtInt(v)),
+      pct: cdsYScale(pct, { position: "right", max: 100, grid: { display: false } }),
+    }),
+  });
+
+  /* 2. Enrollment by level (B1): undergraduate + graduate stacked. */
+  cdsChart("cds-enrollment-chart", {
+    data: { labels, datasets: [
+      bar("Undergraduate", S.series("ENR_UG_TOTAL"), CDS_COLORS.everest, "n", "enr"),
+      bar("Graduate", S.series("ENR_GR_TOTAL"), CDS_COLORS.blue, "n", "enr"),
+    ] },
+    options: cdsOptions({ x: cdsXScale(true), n: cdsYScale((v) => fmtInt(v), { stacked: true }) }),
+  });
+
+  /* 3. Housing (F1): undergrads in college housing vs off campus, first-years as a line. */
+  cdsChart("cds-housing-chart", {
+    data: { labels, datasets: [
+      bar("In college housing (all undergrads)", S.series("HOUSING_PCT_ON_CAMPUS_UG"), CDS_COLORS.everest, "pct", "h"),
+      bar("Off campus or commuting (all undergrads)", S.series("HOUSING_PCT_OFF_CAMPUS_UG"), CDS_COLORS.sand, "pct", "h"),
+      line("First-years in college housing", S.series("HOUSING_PCT_ON_CAMPUS_FTFY"), CDS_COLORS.rust, "pct"),
+    ] },
+    options: cdsOptions({ x: cdsXScale(true), pct: cdsYScale(pct, { stacked: true, max: 100 }) }),
+  });
+
+  /* 4. Residency (F1): in-state vs out-of-state undergrads, first-year out-of-state as a line. */
+  cdsChart("cds-residency-chart", {
+    data: { labels, datasets: [
+      bar("In-state (all undergrads)", S.series("RES_PCT_IN_STATE_UG"), CDS_COLORS.blue, "pct", "r"),
+      bar("Out-of-state (all undergrads)", S.series("RES_PCT_OUT_OF_STATE_UG"), CDS_COLORS.gold, "pct", "r"),
+      line("First-years out-of-state", S.series("RES_PCT_OUT_OF_STATE_FTFY"), CDS_COLORS.rust, "pct"),
+    ] },
+    options: cdsOptions({ x: cdsXScale(true), pct: cdsYScale(pct, { stacked: true, max: 100 }) }),
+  });
+
+  /* 5. Cost of attendance (G1), undergraduate figures. */
+  cdsChart("cds-cost-chart", {
+    data: { labels, datasets: [
+      line("Tuition, in-state", S.series("TUIT_INSTATE_UG_USD"), CDS_COLORS.everest, "usd"),
+      line("Tuition, out-of-state", S.series("TUIT_OUTSTATE_UG_USD"), CDS_COLORS.rust, "usd"),
+      line("Room and board", S.series("ROOM_BOARD_UG_USD"), CDS_COLORS.blue, "usd"),
+      line("Required fees", S.series("FEES_REQUIRED_UG_USD"), CDS_COLORS.gold, "usd"),
+    ] },
+    options: cdsOptions({
+      x: cdsXScale(),
+      usd: cdsYScale((v) => `$${Math.round(v / 1000)}k`),
+    }),
+  });
+
+  /* 6. Outcomes: first-year retention (B22) and 4 / 6-year graduation rates (B4-B21). */
+  cdsChart("cds-outcomes-chart", {
+    data: { labels, datasets: [
+      line("First-year retention", S.series("RET_FRESHMAN_PCT"), CDS_COLORS.everest, "pct"),
+      line("6-year graduation rate", S.series("GRAD_6YR_PCT"), CDS_COLORS.blue, "pct"),
+      line("4-year graduation rate", S.series("GRAD_4YR_PCT"), CDS_COLORS.gold, "pct"),
+    ] },
+    options: cdsOptions({ x: cdsXScale(), pct: cdsYScale(pct, { max: 100 }) }),
+  });
+}
+
+/* One table cell. Absent items (confidence NULL / source none) show a dash
+   with the extraction note as a tooltip; medium-confidence and raw-text
+   recoveries get a dotted underline + tooltip so the reader knows to verify. */
+function cdsTd(unit, c) {
+  if (!c || (c.v == null && c.t == null)) {
+    const note = c && c.n ? ` title="${escapeHtml(c.n)}"` : "";
+    return `<td class="cds-empty"${note}>-</td>`;
+  }
+  const flags = [];
+  if (c.c === "MEDIUM") flags.push("Medium-confidence extraction");
+  if (c.m === "raw") flags.push("Recovered from raw PDF text");
+  if (c.n) flags.push(c.n);
+  const cls = c.c === "MEDIUM" || c.m === "raw" ? ' class="cds-med"' : "";
+  const title = flags.length ? ` title="${escapeHtml(flags.join(" - "))}"` : "";
+  return `<td${cls}${title}>${cdsFmt(unit, c.v, c.t)}</td>`;
+}
+
+/* Every fact, grouped by CDS section in cds-fields.js order, one column per
+   CDS year. Rows with no value in any year are hidden unless the "Show fields
+   with no data" box is ticked. */
+function renderCdsTables(school) {
+  const S = cdsSeries(school);
+  const host = document.getElementById("cds-tables");
+  const sub = document.getElementById("cds-detail-sub");
+  if (!host) return;
+  const years = S.years;
+
+  const sections = (window.CDS_SECTIONS || []).slice();
+  const known = new Set(sections.map((s) => s.item));
+  school.fields.forEach((f) => {
+    const it = f.cds_item || "Other";
+    if (!known.has(it)) { known.add(it); sections.push({ item: it, title: `Section ${it}` }); }
+  });
+
+  let total = 0, populated = 0, hiddenRows = 0;
+  const hasValue = (c) => !!c && (c.v != null || c.t != null);
+  const cards = sections.map((sec) => {
+    const rows = school.fields
+      .filter((f) => (f.cds_item || "Other") === sec.item)
+      .sort((a, b) => ((CDS_ORDER.get(a.field) ?? 1e9) - (CDS_ORDER.get(b.field) ?? 1e9)) || a.field.localeCompare(b.field));
+    const body = rows.map((f) => {
+      const cells = years.map((y) => f.values[y]);
+      const filled = cells.filter(hasValue).length;
+      total += years.length;
+      populated += filled;
+      if (!filled && !cdsState.showEmpty) { hiddenRows++; return ""; }
+      return `<tr${filled ? "" : ' class="cds-row-empty"'}>
+        <td class="property-cell" title="${escapeHtml(f.field)}">${escapeHtml(cdsLabel(f.field))}</td>
+        ${cells.map((c) => cdsTd(f.unit, c)).join("")}
+      </tr>`;
+    }).join("");
+    if (!body) return "";
+    const id = `cds-table-${String(sec.item).toLowerCase()}`;
+    return `<div class="comp-table-card cds-table-card">
+      <div class="comp-table-title"><span>${escapeHtml(sec.title)} <span class="cds-section-ref">CDS ${escapeHtml(sec.item)}</span></span></div>
+      <div class="table-wrap">
+        <table id="${id}" class="comp-detail-table cds-table">
+          <thead><tr><th class="property-cell">Item</th>${years.map((y) => `<th>${escapeHtml(y)}</th>`).join("")}</tr></thead>
+          <tbody>${body}</tbody>
+        </table>
+      </div>
+    </div>`;
+  }).join("");
+
+  host.innerHTML = cards || `<div class="empty-state">No Common Data Set facts on file.</div>`;
+  if (sub) {
+    sub.textContent =
+      `${school.university} · ${fmtInt(populated)} of ${fmtInt(total)} facts populated across ${years.length} CDS editions` +
+      (hiddenRows ? ` · ${hiddenRows} fields with no reported value hidden` : "");
+  }
+}
+
+/* The CDS PDFs behind the numbers, one row per edition, with a link to the
+   university's published file. */
+function renderCdsDocuments(school) {
+  const table = document.getElementById("cds-documents");
+  const sub = document.getElementById("cds-docs-sub");
+  if (!table) return;
+  const docs = school.documents || [];
+  if (sub) {
+    sub.textContent =
+      `${docs.length} CDS edition${docs.length === 1 ? "" : "s"} on file · IPEDS ${school.ipeds_id ?? "-"} · source dbo.cds_documents`;
+  }
+  table.innerHTML = `
+    <thead><tr>
+      <th class="property-cell">CDS year</th><th>Format</th><th class="property-cell">File</th>
+      <th>Pages</th><th>Sections</th><th class="property-cell">Supplements</th><th>Source</th>
+    </tr></thead>
+    <tbody>${docs.map((d) => `<tr>
+      <td class="property-cell">${escapeHtml(d.cds_year)}</td>
+      <td>${escapeHtml(d.era || "-")}</td>
+      <td class="property-cell cds-file">${escapeHtml(d.file_name || "-")}</td>
+      <td>${d.page_count != null ? fmtInt(d.page_count) : "-"}</td>
+      <td>${escapeHtml(d.sections_present || "-")}</td>
+      <td class="property-cell">${escapeHtml(d.supplements ? String(d.supplements).split(";").join(", ") : "-")}</td>
+      <td>${d.source_url ? `<a href="${escapeHtml(d.source_url)}" target="_blank" rel="noopener">PDF</a>` : "-"}</td>
+    </tr>`).join("")}</tbody>`;
 }
 
 function bindShadowMarketControls() {

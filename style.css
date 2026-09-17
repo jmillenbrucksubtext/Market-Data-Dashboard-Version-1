@@ -2980,6 +2980,61 @@ tr.qual-na .qual-label { color: var(--slate-70); font-weight: 400; }
 }
 .market-tab-panel[hidden] { display: none; }
 
+/* Common Data Set tab - six KPI tiles, per-section detail tables (one column
+   per CDS year, stacked in a single column because sections range from 3 to
+   60 rows), source-document list. Rendered by market.js renderCdsTab(). */
+.kpi-row-cds { grid-template-columns: repeat(6, 1fr); }
+@media (max-width: 1180px) { .kpi-row-cds { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 760px)  { .kpi-row-cds { grid-template-columns: repeat(2, 1fr); } }
+.kpi-row-cds .kpi-value { font-size: 28px; }
+.cds-tables-grid { grid-template-columns: 1fr; }
+/* The tab's job is to show every fact, so section tables grow to full
+   height instead of scrolling inside the 540px .table-wrap cap. */
+.cds-table-card .table-wrap { max-height: none; overflow: visible; }
+.cds-section-ref {
+  font-family: "Pragmatica", sans-serif;
+  font-weight: 600;
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  opacity: 0.7;
+  margin-left: 8px;
+}
+.cds-table tbody td.property-cell { white-space: normal; min-width: 280px; font-weight: 500; }
+.cds-table thead th.property-cell { text-align: left; }
+.cds-table tbody td.cds-empty { color: var(--slate-50); }
+.cds-table tbody tr.cds-row-empty td { color: var(--slate-50); }
+.cds-table tbody td.cds-med {
+  text-decoration: underline dotted var(--slate-50);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  cursor: help;
+}
+.cds-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12.5px;
+  font-weight: 700;
+  color: var(--slate);
+  cursor: pointer;
+  white-space: nowrap;
+}
+.cds-toggle input { accent-color: var(--everest); }
+.cds-note {
+  margin: 12px 0 0;
+  font-size: 11.5px;
+  line-height: 1.5;
+  color: var(--slate-70);
+}
+.cds-docs-table thead th.property-cell { text-align: left; }
+.cds-docs-table tbody td.cds-file {
+  font-family: ui-monospace, "SF Mono", Menlo, monospace;
+  font-size: 11px;
+  font-weight: 400;
+}
+.cds-docs-table a { color: var(--everest); font-weight: 700; }
+
 /* ---- Industry-page tabs (Overview | Analysis Schedule) ---- */
 .industry-tabs { margin-bottom: 18px; }
 .industry-tab-panel[hidden] { display: none; }

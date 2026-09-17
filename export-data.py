@@ -1620,6 +1620,18 @@ def main() -> int:
         )
     print(f"  ipeds_basic split into {len(ipeds_by_market)} per-market files in {ipeds_dir}/")
 
+    # --- Common Data Set: dbo.cds_documents + dbo.cds_facts -> assets/cds/<market_key>.json
+    # plus tables.cds_index (which markets / schools have CDS on file). The
+    # market page shows its Common Data Set tab only for markets in the index.
+    # Logic lives in load_cds.py (also runs standalone). A failure keeps the
+    # prior index and leaves the existing asset files alone.
+    try:
+        from load_cds import export_cds
+        payload["tables"]["cds_index"] = export_cds(cur, OUTPUT.parent / "assets" / "cds")
+    except Exception as e:
+        print(f"  cds SKIPPED ({type(e).__name__}: {e}) - keeping prior")
+        payload["tables"]["cds_index"] = _prior_table("cds_index")
+
     # --- unit_mix: per-property beds/units by bedroom type --------------
     # Built from the same in-memory plan rows (single source of truth lives
     # in load_unit_mix.py). Drives the Unit & Bed Mix section on market.html.

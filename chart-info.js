@@ -333,6 +333,62 @@
       sig: "Orientation map of campus geography and student-life nodes."
     },
 
+    /* ---- Common Data Set tab (market.html) ---- */
+    "cds-admissions-chart": {
+      title: "First-Year Admissions Funnel",
+      formula: "Applied, admitted and enrolled first-time first-year totals per CDS year (bars). Acceptance rate = admitted / applied; yield = enrolled / admitted (lines, right axis).",
+      sql: "assets/cds/<market>.json <- dbo.cds_facts fields ADM_FY_APPLIED_TOTAL, ADM_FY_ADMITTED_TOTAL, ADM_FY_ENROLLED_TOTAL (CDS item C1), via load_cds.py",
+      sig: "The university's own admissions funnel, a year or two fresher than IPEDS. A falling acceptance rate with steady enrollment signals rising selectivity."
+    },
+    "cds-enrollment-chart": {
+      title: "Enrollment by Level",
+      formula: "Undergraduate and graduate headcount per CDS year, stacked.",
+      sql: "dbo.cds_facts fields ENR_UG_TOTAL, ENR_GR_TOTAL (CDS item B1)",
+      sig: "Scale of the student base as the university reports it in its CDS."
+    },
+    "cds-housing-chart": {
+      title: "Undergraduates in College Housing vs Off Campus",
+      formula: "Percent of undergraduates living in college-owned, -operated or -affiliated housing vs off campus or commuting, stacked to 100%. First-year share in college housing as a line.",
+      sql: "dbo.cds_facts fields HOUSING_PCT_ON_CAMPUS_UG, HOUSING_PCT_OFF_CAMPUS_UG, HOUSING_PCT_ON_CAMPUS_FTFY (CDS item F1)",
+      sig: "The off-campus share is the addressable demand pool for purpose-built student housing. IPEDS does not report this split."
+    },
+    "cds-residency-chart": {
+      title: "Undergraduate Residency",
+      formula: "Percent of undergraduates who are in-state vs out-of-state, stacked to 100%. First-year out-of-state share as a line.",
+      sql: "dbo.cds_facts fields RES_PCT_IN_STATE_UG, RES_PCT_OUT_OF_STATE_UG, RES_PCT_OUT_OF_STATE_FTFY (CDS item F1)",
+      sig: "Out-of-state students are more likely to need housing near campus and pay out-of-state tuition."
+    },
+    "cds-cost-chart": {
+      title: "Cost of Attendance",
+      formula: "Undergraduate in-state tuition, out-of-state tuition, on-campus room and board, and required fees per CDS year, as published in the CDS cost table (TUIT_COST_YEAR gives the academic year the figures apply to).",
+      sql: "dbo.cds_facts fields TUIT_INSTATE_UG_USD, TUIT_OUTSTATE_UG_USD, ROOM_BOARD_UG_USD, FEES_REQUIRED_UG_USD (CDS item G1)",
+      sig: "Room and board is the on-campus price a purpose-built rent competes against."
+    },
+    "cds-outcomes-chart": {
+      title: "Retention and Graduation Rates",
+      formula: "First-year to second-year retention rate (B22) and the four- and six-year graduation rates of the tracked cohort (B4-B21), per CDS year.",
+      sql: "dbo.cds_facts fields RET_FRESHMAN_PCT, GRAD_4YR_PCT, GRAD_6YR_PCT",
+      sig: "Retention and time-to-degree shape how long a student stays in the housing market."
+    },
+    "cds-table-b1": { title: "Enrollment by Level, Status and Gender", formula: "CDS section B1: undergraduate and graduate headcount by full-time / part-time, first-time status and gender, one column per CDS year.", sql: "dbo.cds_facts where cds_item = 'B1' (ENR_* fields)", sig: "The full enrollment table as printed in the CDS." },
+    "cds-table-b2": { title: "Race, Ethnicity and Nonresident Enrollment", formula: "CDS section B2: headcount by race / ethnicity and nonresident status for first-time first-years, degree-seeking undergrads and all undergrads.", sql: "dbo.cds_facts where cds_item = 'B2' (RACE_*, ENR_NONRESIDENT_* fields)", sig: "Student-body composition." },
+    "cds-table-b22": { title: "First-Year Retention", formula: "CDS section B22: share of the prior fall's first-time full-time cohort enrolled again the following fall.", sql: "dbo.cds_facts where cds_item = 'B22' (RET_* fields)", sig: "Stickiness of the incoming class." },
+    "cds-table-b4-b21": { title: "Graduation Rates", formula: "CDS sections B4-B21: tracked cohort size and the counts / rates completing within four and six years.", sql: "dbo.cds_facts where cds_item = 'B4-B21' (GRAD_* fields)", sig: "Time to degree." },
+    "cds-table-c1": { title: "First-Year Admissions Funnel", formula: "CDS section C1: applied, admitted and enrolled first-time first-years by gender and, from 2023-24, by in-state / out-of-state / international residency.", sql: "dbo.cds_facts where cds_item = 'C1' (ADM_FY_* fields)", sig: "Selectivity and yield, with the residency split IPEDS lacks." },
+    "cds-table-c12": { title: "High School GPA", formula: "CDS section C12: average high school GPA of enrolled first-years and the share who submitted one. Weighted scales above 4.0 are not capped.", sql: "dbo.cds_facts where cds_item = 'C12'", sig: "Academic profile of the incoming class." },
+    "cds-table-d2": { title: "Transfer Admissions", formula: "CDS section D2: transfer applicants, admits and enrollees by gender.", sql: "dbo.cds_facts where cds_item = 'D2' (TRAN_* fields)", sig: "Transfers arrive without the first-year housing requirement." },
+    "cds-table-f1": { title: "Student Life", formula: "CDS section F1: percent in college housing vs off campus, in-state vs out-of-state, fraternity / sorority participation, average age and share age 25+, for first-time first-years and all undergrads. The 'F1 table basis' row records which population the second CDS column described.", sql: "dbo.cds_facts where cds_item = 'F1' (HOUSING_*, RES_*, GREEK_*, AGE_* fields)", sig: "The most housing-relevant page of the CDS." },
+    "cds-table-g1": { title: "Tuition, Fees and Room and Board", formula: "CDS section G1: in-state and out-of-state tuition, required fees and on-campus room and board for first-years and undergraduates, in the academic year given by 'Cost figures apply to academic year'.", sql: "dbo.cds_facts where cds_item = 'G1' (TUIT_*, FEES_*, ROOM_BOARD_* fields)", sig: "Published cost of attendance." },
+    "cds-table-h2": { title: "Need-Based Financial Aid", formula: "CDS section H2: degree-seeking counts, aid applicants, students with need, aid recipients, need fully met, average percent of need met and average package, for first-time full-time, all full-time and less-than-full-time undergrads.", sql: "dbo.cds_facts where cds_item = 'H2' (AID_UG_* fields)", sig: "Share of students with demonstrated need and how much of it is covered." },
+    "cds-table-h5": { title: "Student Debt at Graduation", formula: "CDS section H5: share and number of graduates who borrowed and their average cumulative debt.", sql: "dbo.cds_facts where cds_item = 'H5' (DEBT_* fields)", sig: "Affordability pressure on the student base." },
+    "cds-table-j1": { title: "Bachelor's Degrees Conferred by Field", formula: "CDS section J1: percent of bachelor's degrees conferred in each CIP field. Degrees conferred, not enrollment.", sql: "dbo.cds_facts where cds_item = 'J1' (DEG_CIP_*_PCT fields)", sig: "Academic mix of the graduating class." },
+    "cds-documents": {
+      title: "Source Documents",
+      formula: "One row per Common Data Set edition on file: CDS year, format era (legacy vs current CDS layout), PDF file name, page count, sections present (A-J), supplement files, and a link to the university's published PDF.",
+      sql: "assets/cds/<market>.json <- dbo.cds_documents (doc_id, university, ipeds_id, cds_year, era, file_name, supplements, page_count, sections_present, source_url), mapped to the market via IPEDS_CH_Crosswalk",
+      sig: "Provenance for every number on this tab."
+    },
+
     /* ================= PROPERTY PAGE (property.html) ================= */
     "plans": {
       title: "Floor Plans",
@@ -374,6 +430,13 @@
 
   /* KPI tiles, keyed by normalised tile label (en-dashes -> hyphens). */
   var KPI = {
+    /* Common Data Set tab - latest CDS year that reports each figure */
+    "first-year applications": { title: "First-Year Applications", formula: "`ADM_FY_APPLIED_TOTAL` in the latest CDS year reporting it; sub-line shows admits.", sql: "assets/cds/<market>.json <- dbo.cds_facts (CDS item C1)", sig: "Demand for the incoming class as the university reports it." },
+    "acceptance rate": { title: "Acceptance Rate", formula: "`ADM_FY_ADMITTED_TOTAL / ADM_FY_APPLIED_TOTAL`; yield = enrolled / admitted.", sql: "dbo.cds_facts (CDS item C1)", sig: "Selectivity from the CDS, fresher than the IPEDS admit rate on the University tab." },
+    "undergrads off campus": { title: "Undergrads Off Campus", formula: "`HOUSING_PCT_OFF_CAMPUS_UG`; sub-line is the share in college housing.", sql: "dbo.cds_facts (CDS item F1)", sig: "The addressable off-campus demand pool." },
+    "out-of-state undergrads": { title: "Out-of-State Undergrads", formula: "`RES_PCT_OUT_OF_STATE_UG`; sub-line is the in-state share.", sql: "dbo.cds_facts (CDS item F1)", sig: "Out-of-state students lean on off-campus housing." },
+    "first-year retention": { title: "First-Year Retention", formula: "`RET_FRESHMAN_PCT`; sub-line is the six-year graduation rate from the same edition.", sql: "dbo.cds_facts (CDS items B22, B4-B21)", sig: "How much of the incoming class stays for a second year." },
+    "in-state tuition": { title: "In-State Tuition", formula: "`TUIT_INSTATE_UG_USD` with out-of-state tuition and the cost year in the sub-line.", sql: "dbo.cds_facts (CDS item G1)", sig: "Published undergraduate tuition." },
     /* Industry */
     "pipeline beds": { title: "Pipeline Beds", formula: "`beds_lease_up + beds_under_construction + beds_planned`.", sql: "scorecard pipeline fields <- dbo.MarketReports", sig: "Forward supply still to deliver." },
     /* Pipeline tab KPIs */
@@ -591,7 +654,7 @@
     "student-migration-in-metros", "student-migration-out-metros",
     "student-migration-states", "shadow-market-map", "shadow-market-rings",
     "uni-profile-table", "uni-stats-grid", "uni-map-canvas", "plans",
-    "ipeds-table"
+    "ipeds-table", "cds-documents"
   ];
 
   function attach() {

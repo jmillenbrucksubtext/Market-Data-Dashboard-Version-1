@@ -67,6 +67,7 @@
               <a href="#compset-tab">Competitive Set tab</a>
               <a href="#student-migration-tab">Student Migration tab</a>
               <a href="#shadow-market-tab">Shadow Market tab</a>
+              <a href="#cds-tab">Common Data Set tab</a>
               <a href="#qualifier-sidebar">Qualifier sidebar (both tabs)</a>
             </div>
             <div class="toc-group">
@@ -152,7 +153,7 @@
               <header class="dict-page-header">
                 <span class="dict-page-tag dict-tag-market">Market detail page</span>
                 <h2><code>market.html?id=&lt;market_key&gt;</code></h2>
-                <p>Market, University, IPEDS, Competitive Set, Pipeline, Student Migration, and Shadow Market tabs plus the Qualifier Scorecard at the top of the Market tab.</p>
+                <p>Market, University, IPEDS, Competitive Set, Pipeline, Student Migration, Shadow Market, and (where filings exist) Common Data Set tabs plus the Qualifier Scorecard at the top of the Market tab.</p>
               </header>
 
               <section class="dict-tab" id="market-tab">
@@ -329,6 +330,35 @@
                 <article class="dict-item">
                   <h4>Scope and overlap controls</h4>
                   <p>Each dashboard market is generated once by market key and uses only its anchor university. Repeated campus records are collapsed, CoStar properties are deduplicated by PropertyID or location, and every Census block group is assigned once.</p>
+                </article>
+              </section>
+
+              <section class="dict-tab" id="cds-tab">
+                <header class="dict-tab-header">
+                  <span class="dict-tab-chip">Common Data Set tab</span>
+                  <h3>Common Data Set tab</h3>
+                  <p>Every fact extracted from the university's own Common Data Set (CDS) filings, one column per CDS year. Appears only on markets with CDS on file (pilot: University of Tennessee Knoxville, 2020-21 through 2025-26). Deep link: <code>market.html?id=N#cds</code>.</p>
+                </header>
+
+                <article class="dict-item">
+                  <h4>Where it comes from</h4>
+                  <p>Universities publish a Common Data Set PDF each year on a shared template (sections A-J). The extraction lands in two SQL tables: <code>dbo.cds_documents</code>, one row per university and CDS year (PDF name, hash, page count, sections present, format era, source URL), and <code>dbo.cds_facts</code>, one row per document and field (numeric value or text, unit, CDS item such as B1 or C1, extraction source, confidence grade, notes). <code>load_cds.py</code> maps each document's IPEDS ID to a market through <code>IPEDS_CH_Crosswalk</code> and <code>dbo.Schools</code>, writes <code>assets/cds/&lt;market_key&gt;.json</code>, and stamps <code>tables.cds_index</code> into data.json; the Monday export runs the same code. A school that appears in two markets gets the tab on both. Universities whose IPEDS ID is not in the crosswalk are skipped and named in the refresh log.</p>
+                </article>
+
+                <article class="dict-item">
+                  <h4>Reading the tab</h4>
+                  <p>The six KPI tiles and the trend charts use the latest CDS year that reports each figure (the tile sub-line names the year). The detail tables list every field grouped by CDS section: B1 enrollment, B2 race and ethnicity, B22 retention, B4-B21 graduation, C1 first-year admissions, C12 GPA, D2 transfers, F1 student life (housing, residency, Greek life, age), G1 cost, H2 need-based aid, H5 debt, J1 degrees by field. A dash means the university did not report that item in that edition; hover for the extraction note (for example the C1 residency block only exists from 2023-24). Dotted values were extracted with medium confidence or recovered from raw PDF text, so verify before quoting. Fields with no value in any year are hidden unless "Show fields with no data" is ticked. Percentages are as printed in the CDS (0-100), GPA is on the school's own scale (weighted scales above 4.0 are not capped). Labels and row order live in <code>cds-fields.js</code>.</p>
+                  <table class="dict-fields">
+                    <thead><tr><th>Chart</th><th>Fields</th></tr></thead>
+                    <tbody>
+                      <tr><td>First-Year Admissions Funnel</td><td><code>ADM_FY_APPLIED_TOTAL</code>, <code>ADM_FY_ADMITTED_TOTAL</code>, <code>ADM_FY_ENROLLED_TOTAL</code>; acceptance = admitted / applied, yield = enrolled / admitted</td></tr>
+                      <tr><td>Enrollment by Level</td><td><code>ENR_UG_TOTAL</code> + <code>ENR_GR_TOTAL</code> stacked</td></tr>
+                      <tr><td>Undergraduates in College Housing vs Off Campus</td><td><code>HOUSING_PCT_ON_CAMPUS_UG</code>, <code>HOUSING_PCT_OFF_CAMPUS_UG</code>; line <code>HOUSING_PCT_ON_CAMPUS_FTFY</code></td></tr>
+                      <tr><td>Undergraduate Residency</td><td><code>RES_PCT_IN_STATE_UG</code>, <code>RES_PCT_OUT_OF_STATE_UG</code>; line <code>RES_PCT_OUT_OF_STATE_FTFY</code></td></tr>
+                      <tr><td>Cost of Attendance</td><td><code>TUIT_INSTATE_UG_USD</code>, <code>TUIT_OUTSTATE_UG_USD</code>, <code>ROOM_BOARD_UG_USD</code>, <code>FEES_REQUIRED_UG_USD</code></td></tr>
+                      <tr><td>Retention and Graduation Rates</td><td><code>RET_FRESHMAN_PCT</code>, <code>GRAD_4YR_PCT</code>, <code>GRAD_6YR_PCT</code></td></tr>
+                    </tbody>
+                  </table>
                 </article>
               </section>
 

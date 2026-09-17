@@ -285,6 +285,11 @@
                   <td>~1 row per <code>UnitID</code> &#215; <code>DataYear</code> (view fans out - dedupe before use)</td>
                 </tr>
                 <tr>
+                  <td><code>dbo.cds_documents</code> / <code>dbo.cds_facts</code></td>
+                  <td>Common Data Set extractions from each university's published CDS PDFs: one document row per university &#215; CDS year (file, hash, sections present, source URL) and one fact row per document &#215; field (value or text, unit, CDS item, extraction confidence, notes). Mapped to markets via <code>IPEDS_CH_Crosswalk</code>. Drives the Common Data Set tab on the market page (pilot: UT Knoxville, 2020-21 to 2025-26).</td>
+                  <td>1 row per <code>doc_id</code>; 1 row per <code>doc_id</code> &#215; <code>field</code></td>
+                </tr>
+                <tr>
                   <td><code>dbo.Enrollments</code> <span class="hint">(view)</span></td>
                   <td>Per-school per-year CDS-style history view - enrollment splits plus race/ethnicity, the financial-aid block, and industry-average benchmarks. Includes 2025 rows. <strong>The go-to source for all school-level enrollment figures</strong> (University Information tab, campus pins, enrollment_total, scorecard anchor). The IPEDS tab stays on <code>dbo.IPEDSBasicData</code>.</td>
                   <td>1 row per <code>schoolKey</code> &#215; <code>enrollmentYear</code> (<code>Key</code> = "school:year")</td>

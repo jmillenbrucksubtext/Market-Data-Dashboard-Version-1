@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SubHouse - Market Detail</title>
   <link rel="icon" type="image/png" href="assets/subtext-lime.png" />
-  <link rel="stylesheet" href="style.css?v=63">
+  <link rel="stylesheet" href="style.css?v=64">
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
@@ -100,6 +100,9 @@
             <!-- Shown only when this market has a rendered analysis deck
                  (tables.analysis_docs[].slides); market.js initAnalysisTab(). -->
             <button class="market-tab" data-tab="analysis" role="tab" aria-selected="false" id="analysis-tab-btn" hidden>Market Analysis</button>
+            <!-- Shown only when a school in this market has Common Data Set
+                 filings on file (tables.cds_index); market.js initCdsTab(). -->
+            <button class="market-tab" data-tab="cds" role="tab" aria-selected="false" id="cds-tab-btn" hidden>Common Data Set</button>
           </nav>
 
           <!-- ============ MARKET TAB ============ -->
@@ -882,6 +885,114 @@
             </section>
           </div>
 
+          <!-- ============ COMMON DATA SET TAB ============
+               Every fact extracted from the university's Common Data Set PDFs
+               (dbo.cds_documents + dbo.cds_facts via load_cds.py), one column
+               per CDS year: KPI strip + trend charts + per-section detail
+               tables + the source-document list. Shown only for markets in
+               tables.cds_index; rows live in assets/cds/<market_key>.json and
+               are fetched on first visit. market.js renderCdsTab(); field
+               labels in cds-fields.js. -->
+          <div class="market-tab-panel" data-panel="cds" hidden>
+
+            <!-- School picker - only when more than one school in the market has CDS filings. -->
+            <div class="uni-picker" id="cds-picker" hidden></div>
+
+            <!-- Headline KPI strip - latest CDS year that reports each figure. -->
+            <div class="kpi-row kpi-row-cds" id="cds-kpis"></div>
+
+            <section class="card">
+              <header class="card-header">
+                <div>
+                  <h2>Common Data Set Trends</h2>
+                  <p id="cds-trends-sub">-</p>
+                </div>
+              </header>
+              <div class="card-body">
+                <div class="perf-grid">
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">First-Year Admissions Funnel</span>
+                      <span class="perf-title-sub">CDS C1</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-admissions-chart"></canvas></div>
+                  </figure>
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">Enrollment by Level</span>
+                      <span class="perf-title-sub">CDS B1</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-enrollment-chart"></canvas></div>
+                  </figure>
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">Undergraduates in College Housing vs Off Campus</span>
+                      <span class="perf-title-sub">CDS F1</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-housing-chart"></canvas></div>
+                  </figure>
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">Undergraduate Residency</span>
+                      <span class="perf-title-sub">CDS F1</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-residency-chart"></canvas></div>
+                  </figure>
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">Cost of Attendance</span>
+                      <span class="perf-title-sub">CDS G1</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-cost-chart"></canvas></div>
+                  </figure>
+                  <figure class="perf-chart">
+                    <figcaption class="perf-title">
+                      <span class="perf-title-text">Retention and Graduation Rates</span>
+                      <span class="perf-title-sub">CDS B22, B4-B21</span>
+                    </figcaption>
+                    <div class="perf-chart-wrap perf-chart-wrap-tall"><canvas id="cds-outcomes-chart"></canvas></div>
+                  </figure>
+                </div>
+              </div>
+            </section>
+
+            <!-- Every extracted fact, grouped by CDS section, one column per
+                 CDS year. Built by renderCdsTables(). -->
+            <section class="card">
+              <header class="card-header">
+                <div>
+                  <h2>Common Data Set Detail</h2>
+                  <p id="cds-detail-sub">-</p>
+                </div>
+                <label class="cds-toggle"><input type="checkbox" id="cds-show-empty"> Show fields with no data</label>
+              </header>
+              <div class="card-body">
+                <div class="comp-tables-grid cds-tables-grid" id="cds-tables"></div>
+                <p class="cds-note">
+                  A dash means the university did not report that item in that edition (hover for the note).
+                  Dotted values were extracted with medium confidence or recovered from raw PDF text.
+                  Percentages are as printed in the CDS.
+                </p>
+              </div>
+            </section>
+
+            <!-- The CDS PDFs behind the numbers - one row per edition. -->
+            <section class="card">
+              <header class="card-header">
+                <div>
+                  <h2>Source Documents</h2>
+                  <p id="cds-docs-sub">-</p>
+                </div>
+              </header>
+              <div class="card-body">
+                <div class="table-wrap">
+                  <table id="cds-documents" class="comp-detail-table cds-docs-table" data-dl-title="Common Data Set Documents"></table>
+                </div>
+              </div>
+            </section>
+
+          </div> <!-- /.market-tab-panel[cds] -->
+
           <div class="market-tab-panel" data-panel="university" hidden>
 
           <!-- University picker - only shown when the market has more than
@@ -1019,12 +1130,13 @@
   </div>
 
   <script src="schedule-resolver.js?v=1" defer></script>
-  <script src="market.js?v=58" defer></script>
+  <script src="cds-fields.js?v=1" defer></script>
+  <script src="market.js?v=59" defer></script>
   <script src="student-migration.js?v=2" defer></script>
   <script src="comp-map.js?v=10" defer></script>
   <script src="uni-map.js?v=3" defer></script>
   <script src="chart-download.js?v=7" defer></script>
-  <script src="chart-info.js?v=3" defer></script>
+  <script src="chart-info.js?v=4" defer></script>
   <script src="edit-mode.js?v=1" defer></script>
 </body>
 </html>

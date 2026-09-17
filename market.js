@@ -695,8 +695,8 @@ function marketDecks() {
 }
 
 function initAnalysisTab() {
-  // The tab is always available; markets without a rendered deck get the
-  // napping-sloth empty state from renderDeckEmptyState() instead of a
+  // The tab is always available; markets without a rendered deck get a
+  // real-estate-joke empty state from renderDeckEmptyState() instead of a
   // hidden tab, so nobody wonders whether the analysis exists.
   deckState.decks = marketDecks();
 }
@@ -711,87 +711,130 @@ function openAnalysisDeck(deckPath) {
 
 const slideFile = (d, i, thumb) => `${d.slides.dir}/${thumb ? "t" : "s"}${String(i).padStart(2, "0")}.jpg`;
 
-/* No rendered deck for this market: swap the slate stage for a napping
-   sloth and a one-line explanation, hide the slide controls, and point at
-   the Analysis Schedule. Caption is picked at random per page load. */
-const DECK_EMPTY_CAPTIONS = [
-  "No market analysis deck yet. Our analyst sloth is still getting to it.",
-  "Nothing to see here yet. The sloth has this market on the list, somewhere.",
-  "No presentation on file. The sloth promises it is moving as fast as it can.",
-  "This market has not been analyzed yet. The sloth is conserving energy for it.",
+/* No rendered deck for this market: swap the slate stage for one of four
+   real-estate-joke scenes (inline SVG, brand palette) with its caption, hide
+   the slide controls, and point at the Analysis Schedule. The scene is
+   picked at random per page load. Add a scene = add an entry here. */
+const DECK_EMPTY_SCENES = [
+  {
+    caption: "Zoned for analysis. Not yet built.",
+    svg: `
+<svg viewBox="0 0 420 260" role="img" aria-label="A vacant lot with a sign reading Future Site of Market Analysis" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="de-sky1" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f1e3"/><stop offset="1" stop-color="#ede5cf"/></linearGradient></defs>
+  <rect width="420" height="260" fill="url(#de-sky1)"/>
+  <g fill="#d8d4ce" opacity="0.7">
+    <rect x="18" y="128" width="42" height="52"/><rect x="68" y="116" width="26" height="64"/>
+    <rect x="330" y="122" width="34" height="58"/><rect x="372" y="136" width="40" height="44"/>
+  </g>
+  <rect x="0" y="180" width="420" height="80" fill="#d9c9a3"/>
+  <path d="M0 180 C 120 172, 300 188, 420 180 V196 H0 Z" fill="#cdbd93"/>
+  <g fill="#bda97e"><ellipse cx="60" cy="232" rx="7" ry="3"/><ellipse cx="300" cy="244" rx="9" ry="3.5"/><ellipse cx="392" cy="222" rx="5" ry="2.5"/></g>
+  <path d="M118 236 l 22 6 l 14 -4" fill="none" stroke="#bda97e" stroke-width="2" stroke-linecap="round"/>
+  <rect x="146" y="150" width="8" height="70" fill="#512213"/><rect x="266" y="150" width="8" height="70" fill="#512213"/>
+  <rect x="120" y="60" width="180" height="104" rx="6" fill="#ffffff" stroke="#16352e" stroke-width="4"/>
+  <path d="M120 66 a6 6 0 0 1 6 -6 h168 a6 6 0 0 1 6 6 v16 h-180 z" fill="#16352e"/>
+  <text x="210" y="77" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="11" letter-spacing="2.5" fill="#c1d100">FUTURE SITE OF</text>
+  <text x="210" y="118" text-anchor="middle" font-family="Mencken Std, Georgia, serif" font-weight="700" font-size="25" fill="#16352e">MARKET</text>
+  <text x="210" y="148" text-anchor="middle" font-family="Mencken Std, Georgia, serif" font-weight="700" font-size="25" fill="#16352e">ANALYSIS</text>
+  <path d="M340 214 l 12 -46 h 10 l 12 46 z" fill="#a95818"/>
+  <path d="M345.2 194 L347.3 186 L366.7 186 L368.8 194 Z" fill="#ffffff"/>
+  <rect x="332" y="212" width="50" height="7" rx="2" fill="#512213"/>
+  <g class="deck-empty-roll" fill="none" stroke="#a98a63" stroke-width="2" stroke-linecap="round">
+    <circle cx="70" cy="200" r="16"/>
+    <path d="M58 190 q 12 8 24 0 M56 206 q 14 -10 28 0 M62 188 q 8 24 16 0 M70 184 v32 M56 200 h28"/>
+  </g>
+</svg>`,
+  },
+  {
+    caption: "The analyst has the pencil. That is as far as it got.",
+    svg: `
+<svg viewBox="0 0 420 260" role="img" aria-label="A blank blueprint on a drafting table with a coffee mug and a pencil" xmlns="http://www.w3.org/2000/svg">
+  <rect width="420" height="260" fill="#f7f1e3"/>
+  <rect x="0" y="40" width="420" height="220" fill="#8a6d4b"/>
+  <rect x="0" y="40" width="420" height="6" fill="#6b4f33"/>
+  <path d="M0 90 H420 M0 140 H420 M0 190 H420 M0 240 H420" stroke="#7a5f40" stroke-width="1"/>
+  <g transform="rotate(-4 210 150)">
+    <rect x="70" y="70" width="280" height="170" fill="#dfe8e4" stroke="#16352e" stroke-width="3"/>
+    <path d="M70 90H350M70 110H350M70 130H350M70 150H350M70 170H350M70 190H350M70 210H350M70 230H350M90 70V240M110 70V240M130 70V240M150 70V240M170 70V240M190 70V240M210 70V240M230 70V240M250 70V240M270 70V240M290 70V240M310 70V240M330 70V240" stroke="#16352e" stroke-width="0.6" opacity="0.35"/>
+    <text x="200" y="150" text-anchor="middle" font-family="Mencken Std, Georgia, serif" font-weight="700" font-size="15" fill="#16352e" opacity="0.4">[ intentionally blank ]</text>
+    <rect x="228" y="198" width="112" height="34" fill="#ffffff" stroke="#16352e" stroke-width="1.5"/>
+    <text x="284" y="212" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-size="8" letter-spacing="1.5" fill="#16352e">SHEET A-000</text>
+    <text x="284" y="225" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="9" fill="#16352e">MARKET ANALYSIS: TBD</text>
+    <circle cx="130" cy="105" r="17" fill="none" stroke="#a95818" stroke-width="3" opacity="0.45"/>
+  </g>
+  <rect x="300" y="50" width="52" height="58" rx="8" fill="#ffffff" stroke="#2b2825" stroke-width="3"/>
+  <path d="M352 66 q 22 0 22 18 q 0 18 -22 18" fill="none" stroke="#2b2825" stroke-width="3"/>
+  <ellipse cx="326" cy="56" rx="22" ry="6" fill="#512213"/>
+  <path d="M316 40 q 4 -8 0 -14 M328 42 q 4 -8 0 -14" fill="none" stroke="#b6b1ab" stroke-width="2" stroke-linecap="round" opacity="0.8"/>
+  <g transform="rotate(28 120 215)">
+    <rect x="60" y="208" width="120" height="12" fill="#c1d100"/>
+    <rect x="60" y="208" width="120" height="3" fill="#8fa300"/>
+    <rect x="172" y="208" width="14" height="12" fill="#e8b4a0"/>
+    <path d="M60 208 l -18 6 l 18 6 z" fill="#e9dcc2"/>
+    <path d="M42 214 l 7 -2.3 v4.6 z" fill="#2b2825"/>
+  </g>
+</svg>`,
+  },
+  {
+    caption: "Sign up early for a deck that does not exist yet.",
+    svg: `
+<svg viewBox="0 0 420 260" role="img" aria-label="A building with a banner reading Now Pre-Analyzing" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="de-sky3" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f1e3"/><stop offset="1" stop-color="#ede5cf"/></linearGradient></defs>
+  <rect width="420" height="260" fill="url(#de-sky3)"/>
+  <rect x="60" y="40" width="300" height="220" fill="#e9dcc2" stroke="#2b2825" stroke-width="3"/>
+  <rect x="60" y="40" width="300" height="14" fill="#16352e"/>
+  <g fill="#3d8aa6" opacity="0.55" stroke="#2b2825" stroke-width="2">
+    <rect x="80" y="70" width="36" height="30"/><rect x="136" y="70" width="36" height="30"/><rect x="192" y="70" width="36" height="30"/><rect x="248" y="70" width="36" height="30"/><rect x="304" y="70" width="36" height="30"/>
+    <rect x="80" y="170" width="36" height="30"/><rect x="136" y="170" width="36" height="30"/><rect x="248" y="170" width="36" height="30"/><rect x="304" y="170" width="36" height="30"/>
+  </g>
+  <rect x="188" y="212" width="44" height="48" fill="#512213"/><circle cx="224" cy="238" r="2.5" fill="#c1d100"/>
+  <rect x="0" y="252" width="420" height="8" fill="#cdbd93"/>
+  <g transform="rotate(-5 210 130)">
+    <rect x="44" y="104" width="332" height="54" fill="#c1d100" stroke="#16352e" stroke-width="3"/>
+    <text x="210" y="128" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="22" letter-spacing="3" fill="#16352e">NOW PRE-ANALYZING</text>
+    <text x="210" y="148" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="10" letter-spacing="2" fill="#16352e">RESERVE YOUR SLIDE TODAY</text>
+    <g fill="#ffffff" stroke="#2b2825" stroke-width="1.5"><circle cx="54" cy="114" r="3"/><circle cx="366" cy="114" r="3"/><circle cx="54" cy="148" r="3"/><circle cx="366" cy="148" r="3"/></g>
+  </g>
+</svg>`,
+  },
+  {
+    caption: "Space available. Analysis not included.",
+    svg: `
+<svg viewBox="0 0 420 260" role="img" aria-label="A For Lease yard sign reading Call the Analyst" xmlns="http://www.w3.org/2000/svg">
+  <defs><linearGradient id="de-sky4" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7f1e3"/><stop offset="1" stop-color="#ede5cf"/></linearGradient></defs>
+  <rect width="420" height="260" fill="url(#de-sky4)"/>
+  <rect x="0" y="200" width="420" height="60" fill="#d6e06a"/>
+  <path d="M0 200 C 100 194, 320 206, 420 200 V210 H0 Z" fill="#c1d100"/>
+  <path d="M40 200 v-14 M46 200 v-10 M330 200 v-12 M336 200 v-8 M380 200 v-14 M90 200 v-9" fill="none" stroke="#8fa300" stroke-width="2" stroke-linecap="round"/>
+  <rect x="120" y="60" width="8" height="150" fill="#512213"/><rect x="292" y="60" width="8" height="150" fill="#512213"/>
+  <rect x="128" y="44" width="164" height="26" rx="3" fill="#a95818"/>
+  <text x="210" y="62" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="12" letter-spacing="2" fill="#ffffff">AVAILABLE NOW</text>
+  <rect x="104" y="78" width="212" height="110" rx="4" fill="#ffffff" stroke="#16352e" stroke-width="4"/>
+  <text x="210" y="128" text-anchor="middle" font-family="Mencken Std, Georgia, serif" font-weight="700" font-size="36" fill="#16352e" textLength="180" lengthAdjust="spacingAndGlyphs">FOR LEASE</text>
+  <path d="M124 140 H296" stroke="#c1d100" stroke-width="3"/>
+  <text x="210" y="160" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-weight="700" font-size="12" letter-spacing="1.5" fill="#2b2825">CALL THE ANALYST</text>
+  <text x="210" y="176" text-anchor="middle" font-family="Pragmatica, Arial, sans-serif" font-size="10" fill="#5a544f">no market analysis on file</text>
+</svg>`,
+  },
 ];
-
-const DECK_EMPTY_SVG = `
-<svg viewBox="0 0 420 260" role="img" aria-label="A sloth napping on a branch" xmlns="http://www.w3.org/2000/svg">
-  <defs>
-    <linearGradient id="sloth-sky" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#f7f1e3"/><stop offset="1" stop-color="#ede5cf"/>
-    </linearGradient>
-  </defs>
-  <rect width="420" height="260" fill="url(#sloth-sky)"/>
-  <!-- leaves -->
-  <g fill="#c1d100" opacity="0.9">
-    <ellipse cx="46" cy="44" rx="26" ry="11" transform="rotate(-28 46 44)"/>
-    <ellipse cx="78" cy="30" rx="22" ry="9" transform="rotate(18 78 30)"/>
-    <ellipse cx="372" cy="36" rx="26" ry="11" transform="rotate(24 372 36)"/>
-    <ellipse cx="340" cy="26" rx="20" ry="9" transform="rotate(-16 340 26)"/>
-  </g>
-  <g fill="#8fa300" opacity="0.9">
-    <ellipse cx="60" cy="58" rx="18" ry="7" transform="rotate(-10 60 58)"/>
-    <ellipse cx="356" cy="52" rx="18" ry="7" transform="rotate(12 356 52)"/>
-  </g>
-  <!-- branch -->
-  <path d="M0 52 C 90 44, 160 58, 210 50 S 330 40, 420 54" fill="none" stroke="#512213" stroke-width="16" stroke-linecap="round"/>
-  <path d="M0 52 C 90 44, 160 58, 210 50 S 330 40, 420 54" fill="none" stroke="#6b3a20" stroke-width="7" stroke-linecap="round" opacity="0.6"/>
-  <!-- arms gripping the branch -->
-  <path d="M150 60 C 140 100, 160 130, 190 150" fill="none" stroke="#8a6d4b" stroke-width="26" stroke-linecap="round"/>
-  <path d="M270 58 C 282 100, 262 130, 232 150" fill="none" stroke="#8a6d4b" stroke-width="26" stroke-linecap="round"/>
-  <!-- claws -->
-  <g fill="none" stroke="#3a3633" stroke-width="4" stroke-linecap="round">
-    <path d="M143 46 v-12 M151 44 v-13 M159 46 v-12"/>
-    <path d="M262 44 v-12 M270 42 v-13 M278 44 v-12"/>
-  </g>
-  <!-- body -->
-  <ellipse cx="210" cy="176" rx="76" ry="58" fill="#8a6d4b"/>
-  <ellipse cx="210" cy="184" rx="52" ry="40" fill="#a98a63"/>
-  <!-- legs dangling -->
-  <path d="M170 220 C 160 240, 166 250, 176 252" fill="none" stroke="#8a6d4b" stroke-width="22" stroke-linecap="round"/>
-  <path d="M250 220 C 260 240, 254 250, 244 252" fill="none" stroke="#8a6d4b" stroke-width="22" stroke-linecap="round"/>
-  <!-- head -->
-  <circle cx="210" cy="118" r="46" fill="#8a6d4b"/>
-  <ellipse cx="210" cy="124" rx="36" ry="30" fill="#e9dcc2"/>
-  <!-- eye patches -->
-  <ellipse cx="190" cy="118" rx="15" ry="8" fill="#5a3b22" transform="rotate(-18 190 118)"/>
-  <ellipse cx="230" cy="118" rx="15" ry="8" fill="#5a3b22" transform="rotate(18 230 118)"/>
-  <!-- closed eyes -->
-  <path d="M182 119 q 8 5 16 0" fill="none" stroke="#f7f1e3" stroke-width="2.5" stroke-linecap="round"/>
-  <path d="M222 119 q 8 5 16 0" fill="none" stroke="#f7f1e3" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- nose + smile -->
-  <ellipse cx="210" cy="134" rx="7" ry="5" fill="#3a3633"/>
-  <path d="M196 144 q 14 12 28 0" fill="none" stroke="#3a3633" stroke-width="2.5" stroke-linecap="round"/>
-  <!-- blush -->
-  <circle cx="180" cy="136" r="5" fill="#e8b4a0" opacity="0.7"/>
-  <circle cx="240" cy="136" r="5" fill="#e8b4a0" opacity="0.7"/>
-  <!-- zzz -->
-  <g class="deck-empty-z" fill="#16352e" font-family="Mencken Std, Georgia, serif" font-weight="700">
-    <text x="300" y="118" font-size="16">z</text>
-    <text x="318" y="100" font-size="22">z</text>
-    <text x="342" y="82" font-size="30">Z</text>
-  </g>
-</svg>`;
 
 function renderDeckEmptyState() {
   const stage = document.getElementById("deck-stage");
   const empty = document.getElementById("deck-empty");
   if (!stage || !empty) return;
   stage.classList.add("is-empty");
-  stage.style.aspectRatio = "auto";   // size to the sloth card, not a 16:9 slide
-  const caption = DECK_EMPTY_CAPTIONS[Math.floor(Math.random() * DECK_EMPTY_CAPTIONS.length)];
+  stage.style.aspectRatio = "auto";   // size to the scene card, not a 16:9 slide
+  // ?scene=1..4 forces a scene (handy for previewing them all); otherwise random.
+  const forced = Number(new URLSearchParams(location.search).get("scene"));
+  const scene = DECK_EMPTY_SCENES[
+    forced >= 1 && forced <= DECK_EMPTY_SCENES.length
+      ? forced - 1
+      : Math.floor(Math.random() * DECK_EMPTY_SCENES.length)];
   empty.hidden = false;
   empty.innerHTML = `
-    <div class="deck-empty-art">${DECK_EMPTY_SVG}</div>
+    <div class="deck-empty-art">${scene.svg}</div>
     <div class="deck-empty-text">
-      <p class="deck-empty-title">${escapeHtml(caption)}</p>
+      <p class="deck-empty-title">${escapeHtml(scene.caption)}</p>
       <p class="deck-empty-sub">Decks appear here once a market analysis has been presented and rendered.
         See the <a href="index.html#schedule">Analysis Schedule</a> for what is coming up.</p>
     </div>`;

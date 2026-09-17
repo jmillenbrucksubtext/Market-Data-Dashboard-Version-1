@@ -1828,9 +1828,9 @@ h1, h2, h3, .serif {
 }
 .deck-stage img { display: block; width: 100%; max-width: 100%; height: auto; max-height: 100%; object-fit: contain; }
 
-/* No-deck empty state: the slate stage becomes a beige card with a napping
-   sloth (inline SVG from market.js DECK_EMPTY_SVG) and a caption; the slide
-   controls hide and the stage fills the viewer's full width. */
+/* No-deck empty state: the slate stage becomes a beige card with one of the
+   real-estate-joke scenes (inline SVG from market.js DECK_EMPTY_SCENES) and
+   its caption; the slide controls hide and the stage fills the viewer. */
 .deck-stage.is-empty { background: var(--beige-deep); border: 1px solid var(--beige-deep); aspect-ratio: auto; min-height: 320px; }
 .deck-stage.is-empty img,
 .deck-stage.is-empty figcaption { display: none; }
@@ -1848,14 +1848,10 @@ h1, h2, h3, .serif {
 }
 .deck-empty[hidden] { display: none; }
 .deck-empty-art svg { display: block; width: 100%; height: auto; border-radius: var(--radius); }
-.deck-empty-z text { animation: deck-empty-drift 3.2s ease-in-out infinite; }
-.deck-empty-z text:nth-child(2) { animation-delay: 0.5s; }
-.deck-empty-z text:nth-child(3) { animation-delay: 1s; }
-@keyframes deck-empty-drift {
-  0%, 100% { opacity: 0.35; transform: translateY(0); }
-  50%      { opacity: 1;    transform: translateY(-4px); }
-}
-@media (prefers-reduced-motion: reduce) { .deck-empty-z text { animation: none; } }
+/* Vacant-lot scene: the tumbleweed turns slowly in place. */
+.deck-empty-roll { transform-box: fill-box; transform-origin: center; animation: deck-empty-roll 9s linear infinite; }
+@keyframes deck-empty-roll { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .deck-empty-roll { animation: none; } }
 .deck-empty-title {
   margin: 0 0 10px;
   font-family: "Mencken Std", Georgia, serif;

@@ -1526,6 +1526,18 @@ def main() -> int:
         lambda: _prior_table("market_analysis_schedule"),
     )
 
+    # --- Market-analysis artifacts (decks etc.) registered in analysis_docs.json
+    # Hand-curated registry -> SharePoint links in each market page's "Last
+    # analyzed" dropdown. Logic lives in load_analysis_docs.py (also runs
+    # standalone). Only stat()s local files, so no cloud-recall risk; still
+    # non-fatal so a bad registry entry can't block the refresh.
+    try:
+        from load_analysis_docs import build_analysis_docs
+        payload["tables"]["analysis_docs"] = build_analysis_docs()
+    except Exception as e:  # noqa: BLE001
+        print(f"  analysis_docs SKIPPED ({type(e).__name__}: {e}) - keeping prior")
+        payload["tables"]["analysis_docs"] = _prior_table("analysis_docs")
+
     # --- Compute per-market affluence from migration CSV ---
     # Source: ../Affluence Data/MigrationAllRents*.csv (newest file).
     # Logic lives in load_affluence.py so it can also run standalone

@@ -571,6 +571,13 @@ function renderAnalysisHistory() {
   if (!wrap || !btn || !valueEl || !menu || !window.SubtextSchedule) return;
 
   const items = SubtextSchedule.forMarket(DATA, MARKET.market_key);
+  // Registered artifacts (analysis_docs.json -> tables.analysis_docs) for
+  // this market, joined to a schedule row on presentation_date. The link is
+  // the SharePoint twin of the OneDrive file; the local path rides along as
+  // the tooltip so it can be found in Explorer too.
+  const docsFor = (r) => (DATA.tables.analysis_docs || []).filter(
+    (d) => d.market_key === MARKET.market_key && d.presentation_date === r.initial_analysis_date,
+  );
   wrap.hidden = false;
 
   if (!items.length) {
@@ -599,8 +606,9 @@ function renderAnalysisHistory() {
     valueEl.textContent = "date not recorded";
   }
 
-  // One dated row and nothing else: a plain pill, no dropdown.
-  const multiple = items.length > 1;
+  // A single analysis that has a registered deck still needs the dropdown
+  // (that is where the link lives); otherwise one dated row is a plain pill.
+  const multiple = items.length > 1 || items.some((it) => docsFor(it.row).length);
   wrap.classList.toggle("has-menu", multiple);
   btn.disabled = !multiple;
   if (!multiple) return;
@@ -616,6 +624,12 @@ function renderAnalysisHistory() {
         .filter(Boolean).join(" · ");
       const school = it.school && !it.school.isAnchor ? `<div class="ah-item-school">${escapeHtml(it.school.name)}</div>` : "";
       const note = r.notes ? `<div class="ah-item-note">${escapeHtml(r.notes)}</div>` : "";
+      const docs = docsFor(r);
+      const docLinks = docs.length ? `<div class="ah-item-docs">${docs.map((d) => `
+            <a class="ah-doc ah-doc-${escapeHtml(d.kind || "file")}" href="${escapeHtml(d.url)}" target="_blank" rel="noopener" title="${escapeHtml(d.local_path || d.path || "")}">
+              <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>
+              ${escapeHtml(d.kind === "deck" ? "Open deck" : d.kind === "workbook" ? "Open workbook" : "Open file")}<span class="ah-doc-title">${escapeHtml(d.title || d.filename || "")}</span>
+            </a>`).join("")}</div>` : "";
       return `
         <div class="ah-item${isLatest ? " is-latest" : ""}${isUpcoming ? " is-upcoming" : ""}" role="option" aria-selected="${isLatest ? "true" : "false"}">
           <div class="ah-item-top">
@@ -627,6 +641,7 @@ function renderAnalysisHistory() {
           ${meta ? `<div class="ah-item-meta">${escapeHtml(meta)}</div>` : ""}
           ${school}
           ${note}
+          ${docLinks}
         </div>`;
     }).join("")}
     <a class="ah-menu-foot" href="index.html#schedule">Open the full Analysis Schedule</a>`;

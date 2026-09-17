@@ -157,7 +157,9 @@ commit, forever. The current `data.json` includes:
 - Licensed market data (rents, occupancy, prelease from third-party providers)
 - The Subtext-30 focus list and anchor universities
 - Internal pipeline tracker (analyst initials, assignment and presentation dates;
-  also surfaces as each market page's "Last analyzed" pill) from the
+  also surfaces as each market page's "Last analyzed" pill and drives
+  sync_analysis_decks.py, which renders each market's newest Market Analysis
+  PowerPoint into the Market Analysis tab) from the
   Market Analysis Schedule Excel
 
 Before promoting this URL widely, decide whether an access gate is needed.

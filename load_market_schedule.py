@@ -11,7 +11,14 @@ workbook has changed and you don't want to wait for Monday (matches the
 load_*.py qualifier-patcher pattern).
 
 Usage (standalone):
-    python load_market_schedule.py
+    python load_market_schedule.py              patch the schedule, then sync analysis decks
+    python load_market_schedule.py --no-decks   schedule only
+
+After patching, this also runs sync_analysis_decks.py: any analysis whose
+Presentation Date has passed gets its market folder scanned for a newer
+Market Analysis PowerPoint, which is registered, rendered and shown on the
+market page's Market Analysis tab. (Jake's rule 2026-09-17: the schedule
+update is the trigger for refreshing decks.)
 """
 
 from __future__ import annotations
@@ -118,5 +125,19 @@ def patch_data_json(data_path: Path = DATA_JSON) -> list[dict]:
     return rows
 
 
+def _sync_decks() -> None:
+    """Follow-on: new/updated Market Analysis decks for recently presented
+    analyses. Non-fatal - a PowerPoint hiccup must not undo the schedule patch."""
+    try:
+        from sync_analysis_decks import sync
+        print("  syncing analysis decks with the schedule ...")
+        sync(lookback_days=60, all_markets=False, only_market=None, dry_run=False,
+             render=True, budget_min=12.0)
+    except Exception as e:  # noqa: BLE001
+        print(f"  deck sync skipped: {type(e).__name__}: {e}")
+
+
 if __name__ == "__main__":
     patch_data_json()
+    if "--no-decks" not in sys.argv:
+        _sync_decks()

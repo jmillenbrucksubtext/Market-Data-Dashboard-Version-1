@@ -165,6 +165,26 @@ if (Test-Path $studentMigrationSource) {
     Write-Log "student migration source not found; preserving existing student-origin assets"
 }
 
+# Market Analysis decks: the export above re-read the Market Analysis
+# Schedule; any analysis whose Presentation Date has passed gets its OneDrive
+# market folder scanned for a newer Market Analysis PowerPoint, which is
+# rendered to slide images for the market page's Market Analysis tab.
+# Drives PowerPoint via COM, so it needs this task's interactive logon (it
+# has one: LogonType Interactive). Non-fatal and time-boxed (12 min of the
+# task's 30) - whatever is deferred is picked up next week.
+$prevDeckEAP = $ErrorActionPreference
+$ErrorActionPreference = "Continue"
+try {
+    $env:PYTHONUNBUFFERED = "1"
+    python -u sync_analysis_decks.py --budget-min 12 2>&1 | ForEach-Object { Add-Content -Path $logFile -Value "decks: $_" -Encoding utf8; $_ } | Out-Host
+    if ($LASTEXITCODE -ne 0) { Write-Log "WARN sync_analysis_decks.py exited $LASTEXITCODE (continuing; schedule + data are still fresh)" }
+} catch {
+    Write-Log "WARN deck sync step failed: $($_.Exception.Message) (continuing)"
+} finally {
+    $ErrorActionPreference = $prevDeckEAP
+    Remove-Item Env:\PYTHONUNBUFFERED -ErrorAction SilentlyContinue
+}
+
 $dataAfter = if (Test-Path "data.json") { (Get-FileHash data.json -Algorithm SHA1).Hash } else { "" }
 $shadowAfter = if (Test-Path "assets\shadow-market") {
     (Get-ChildItem "assets\shadow-market" -Filter *.json -File |

@@ -1,0 +1,1881 @@
+[
+ {
+  "market_key": 2443,
+  "market": "Abilene Christian University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2453,
+  "market": "Albany State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2386,
+  "market": "Angelo State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2341,
+  "market": "Appalachian State University",
+  "folder": "Appalachian State (Boone, NC)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1152,
+  "market": "Arizona State University",
+  "folder": "Arizona State (Tempe)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2427,
+  "market": "Arkansas State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2256,
+  "market": "Arkansas Tech University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 13,
+  "market": "Auburn University",
+  "folder": "Auburn",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 700,
+  "market": "Austin Peay State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 560,
+  "market": "Ball State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 294,
+  "market": "Baylor University",
+  "folder": "Texas (Waco)",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 2419,
+  "market": "Binghamton University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1104,
+  "market": "Boise State University",
+  "folder": "Boise State (Boise)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2347,
+  "market": "Bowling Green State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 414,
+  "market": "Bradley University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 734,
+  "market": "Brandeis University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2392,
+  "market": "Brigham Young University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2435,
+  "market": "Brigham Young University-Idaho",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2488,
+  "market": "California Institute of Technology",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1780,
+  "market": "California Polytechnic State University Pomona",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1063,
+  "market": "California Polytechnic State University San Luis Obispo",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "California Polytech (San Luis Obispo)"
+  ]
+ },
+ {
+  "market_key": 1027,
+  "market": "California State University Chico",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 931,
+  "market": "California State University Fresno",
+  "folder": "California State (Fresno)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1084,
+  "market": "California State University Fullerton",
+  "folder": "California State (Fullerton)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 933,
+  "market": "California State University Sacramento",
+  "folder": "California State (Sacramento)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2260,
+  "market": "California State University San Bernardino",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2442,
+  "market": "California State University Stanislaus",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1258,
+  "market": "Central Connecticut State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2300,
+  "market": "Central Michigan University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2402,
+  "market": "Central Washington University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2438,
+  "market": "Claremont McKenna College",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 11,
+  "market": "Clemson University",
+  "folder": "Clemson",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 465,
+  "market": "Cleveland State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 297,
+  "market": "Coastal Carolina",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2339,
+  "market": "College at Brockport SUNY",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 149,
+  "market": "College of Charleston",
+  "folder": "College of Charleston (Charleston)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 624,
+  "market": "College of William and Mary",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1099,
+  "market": "Colorado State University",
+  "folder": "Colorado State (Fort Collins)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 509,
+  "market": "Columbus State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Ohio State (Columbus)"
+  ]
+ },
+ {
+  "market_key": 710,
+  "market": "Commonwealth University of Pennsylvania",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 555,
+  "market": "Cornell University",
+  "folder": "Cornell (Ithaca, NY)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2308,
+  "market": "Dartmouth College",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 596,
+  "market": "Drake University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 146,
+  "market": "Duke University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 521,
+  "market": "East Carolina University",
+  "folder": "East Carolina (Greenville)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 843,
+  "market": "East Tennessee State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 215,
+  "market": "Eastern Michigan University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 976,
+  "market": "Eastern Washington University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2342,
+  "market": "Elon University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2272,
+  "market": "Embry-Riddle Aeronautical University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2267,
+  "market": "Fairfield University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 483,
+  "market": "Ferris State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 454,
+  "market": "Florida Atlantic University",
+  "folder": "Florida Atlantic (Boca Raton)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2273,
+  "market": "Florida Gulf Coast University",
+  "folder": "Florida Gulf Coast (Fort Myers)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1242,
+  "market": "Florida Institute of Technology",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 317,
+  "market": "Florida International University",
+  "folder": "Florida International (Sweetwater)",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 18,
+  "market": "Florida State University",
+  "folder": "Florida State (Tallahassee)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2478,
+  "market": "Fox Valley Technical College",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2450,
+  "market": "Gainesville, GA",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Florida (Gainesville)"
+  ]
+ },
+ {
+  "market_key": 65,
+  "market": "George Mason University",
+  "folder": "George Mason (Fairfax)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 109,
+  "market": "George Washington University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Washington University (St. Louis)",
+   "Washington (Seattle)"
+  ]
+ },
+ {
+  "market_key": 16,
+  "market": "Georgia College & State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 17,
+  "market": "Georgia Institute of Technology",
+  "folder": "Georgia Tech (Atlanta)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2415,
+  "market": "Georgia Southern University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2430,
+  "market": "Gonzaga University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 942,
+  "market": "Grand Canyon University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 921,
+  "market": "Grand Valley State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2447,
+  "market": "Gulf Coast State College",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2484,
+  "market": "Harrisburg, PA",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 496,
+  "market": "Illinois State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1995,
+  "market": "Indiana State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 118,
+  "market": "Indiana University Bloomington",
+  "folder": "Indiana (Bloomington)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2369,
+  "market": "Indiana University of Pennsylvania",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic wrongly matched Indiana (Bloomington)"
+ },
+ {
+  "market_key": 194,
+  "market": "Indiana University-Purdue University Indianapolis",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 66,
+  "market": "Iowa State University",
+  "folder": "Iowa State (Ames)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2251,
+  "market": "Jacksonville State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2397,
+  "market": "James Madison University",
+  "folder": "James Madison (Harrisonburg)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 93,
+  "market": "Johns Hopkins University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2282,
+  "market": "Kansas State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1620,
+  "market": "Kennesaw State University",
+  "folder": "Kennesaw St (Kennesaw, GA)",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 2349,
+  "market": "Kent State University",
+  "folder": "Kent State",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2475,
+  "market": "Key West, FL",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2362,
+  "market": "Kutztown University of Pennsylvania",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2387,
+  "market": "Lamar University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2454,
+  "market": "Lancaster, PA",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1090,
+  "market": "Lehigh University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1760,
+  "market": "Liberty University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1804,
+  "market": "Louisiana State University",
+  "folder": "Louisiana State University",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 682,
+  "market": "Louisiana Tech University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 104,
+  "market": "Mercer University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1093,
+  "market": "Mesa, AZ",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2350,
+  "market": "Miami University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Ole Miss (Oxford)"
+  ]
+ },
+ {
+  "market_key": 1560,
+  "market": "Michigan State University",
+  "folder": "Michigan State (East Lansing)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 914,
+  "market": "Middle Tennessee State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 595,
+  "market": "Midwestern State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2302,
+  "market": "Minnesota State University Mankato",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 21,
+  "market": "Mississippi State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1574,
+  "market": "Missouri State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1040,
+  "market": "Montana State University",
+  "folder": "Montana State (Bozeman)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2285,
+  "market": "Murray State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 992,
+  "market": "New Mexico State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1771,
+  "market": "New York University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 100,
+  "market": "North Carolina State University",
+  "folder": "North Carolina State (Raleigh)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 549,
+  "market": "North Dakota State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 82,
+  "market": "Northeastern University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Boston"
+  ]
+ },
+ {
+  "market_key": 1905,
+  "market": "Northern Arizona University",
+  "folder": "Arizona (Flagstaff)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2451,
+  "market": "Northern Iowa University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2449,
+  "market": "Northwestern State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 43,
+  "market": "Northwestern University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 155,
+  "market": "Ohio State University",
+  "folder": "Ohio State (Columbus)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 524,
+  "market": "Ohio University",
+  "folder": "Ohio U. (Athens, OH)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 823,
+  "market": "Oklahoma State University",
+  "folder": "Oklahoma State (Stillwater)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 504,
+  "market": "Old Dominion University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 960,
+  "market": "Oregon State University",
+  "folder": "Oregon State (Corvallis)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2375,
+  "market": "Penn State",
+  "folder": "Pennsylvania State (State College)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 1183,
+  "market": "Pepperdine University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 941,
+  "market": "Portland State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2441,
+  "market": "Prairie View A&M University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Texas A&M (College Station)"
+  ]
+ },
+ {
+  "market_key": 611,
+  "market": "Purdue University",
+  "folder": "Purdue (West Lafayette)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 1988,
+  "market": "Purdue University Fort Wayne",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2399,
+  "market": "Radford University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 347,
+  "market": "Rensselaer Polytechnic Institute",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 395,
+  "market": "Rhode Island College",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 333,
+  "market": "Rochester Institute of Technology",
+  "folder": "Rochester Inst. of Tec (Rochester, NY)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2417,
+  "market": "Rutgers University",
+  "folder": "Rutgers (New Brunswick)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 154,
+  "market": "Rutgers University Newark",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Delaware (Newark)"
+  ]
+ },
+ {
+  "market_key": 562,
+  "market": "SUNY Cortland",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2333,
+  "market": "SUNY Oneonta",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2437,
+  "market": "Salisbury University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1401,
+  "market": "Sam Houston State University",
+  "folder": "Sam Houston State Univ",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 1055,
+  "market": "San Jose State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1160,
+  "market": "Santa Clara University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 621,
+  "market": "Savannah College of Art & Design",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2479,
+  "market": "Shreveport, LA",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2377,
+  "market": "Slippery Rock University of Pennsylvania",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 593,
+  "market": "Southeast Missouri State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 189,
+  "market": "Southern Illinois University Carbondale",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 261,
+  "market": "Southern Illinois University Edwardsville",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 37,
+  "market": "Southern Methodist University",
+  "folder": "Texas (Dallas)",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 2487,
+  "market": "Stanford University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2323,
+  "market": "State University of New York at Oswego",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 578,
+  "market": "Stephen F. Austin State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 732,
+  "market": "Syracuse University",
+  "folder": "Syracuse",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2388,
+  "market": "Tarleton State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2425,
+  "market": "Temple College",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: Temple University folder is a different school"
+ },
+ {
+  "market_key": 107,
+  "market": "Temple University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2383,
+  "market": "Tennessee Technological University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2389,
+  "market": "Texas A&M International University",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: not College Station"
+ },
+ {
+  "market_key": 24,
+  "market": "Texas A&M University",
+  "folder": "Texas A&M (College Station)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 580,
+  "market": "Texas A&M University Corpus Christi",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: not College Station"
+ },
+ {
+  "market_key": 2391,
+  "market": "Texas A&M University Kingsville",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: not College Station"
+ },
+ {
+  "market_key": 60,
+  "market": "Texas Christian University",
+  "folder": "Texas (TCU)",
+  "confidence": "manual"
+ },
+ {
+  "market_key": 69,
+  "market": "Texas State University",
+  "folder": "Texas State (San Marcos)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1002,
+  "market": "Texas Tech University",
+  "folder": "Texas Tech (Lubbock)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2448,
+  "market": "The Ohio State University at Mansfield",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 404,
+  "market": "The University of Alabama in Huntsville",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2170,
+  "market": "Towson University",
+  "folder": "Towson U (Towson, MD)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2416,
+  "market": "Troy University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2489,
+  "market": "Tufts University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 526,
+  "market": "Tulane University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 807,
+  "market": "University at Albany SUNY",
+  "folder": "SUNY (Albany)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 650,
+  "market": "University at Buffalo SUNY",
+  "folder": "Buffalo",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 800,
+  "market": "University of Akron",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 14,
+  "market": "University of Alabama",
+  "folder": "Alabama (Tuscaloosa)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 322,
+  "market": "University of Alabama at Birmingham",
+  "folder": "Alabama (Birmingham)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1005,
+  "market": "University of Arizona",
+  "folder": "Arizona (Tucson)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 180,
+  "market": "University of Arkansas",
+  "folder": "Arkansas (Fayetteville)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1006,
+  "market": "University of California Berkeley",
+  "folder": "California (Berkeley)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1598,
+  "market": "University of California Davis",
+  "folder": "California (Davis)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1069,
+  "market": "University of California Irvine",
+  "folder": "California (Irvine)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 994,
+  "market": "University of California Merced",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1410,
+  "market": "University of California Riverside",
+  "folder": "California (RIverside)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 975,
+  "market": "University of California San Diego",
+  "folder": "California (San Diego)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 935,
+  "market": "University of California Santa Barbara",
+  "folder": "California (Santa Barbara)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1924,
+  "market": "University of Central Arkansas",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 141,
+  "market": "University of Central Florida",
+  "folder": "Central Florida (Orlando)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2422,
+  "market": "University of Central Missouri",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 78,
+  "market": "University of Central Oklahoma",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2354,
+  "market": "University of Cincinnati",
+  "folder": "Cincinnati (Cincinnati)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 977,
+  "market": "University of Colorado Boulder",
+  "folder": "Colorado (Boulder)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 936,
+  "market": "University of Colorado Colorado Springs",
+  "folder": "Colorado Springs",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1558,
+  "market": "University of Colorado Denver",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2418,
+  "market": "University of Connecticut",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2269,
+  "market": "University of Delaware",
+  "folder": "Delaware (Newark)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 590,
+  "market": "University of Florida",
+  "folder": "Florida (Gainesville)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 12,
+  "market": "University of Georgia",
+  "folder": "Georgia (Athens)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 1029,
+  "market": "University of Hawaii at Manoa",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 31,
+  "market": "University of Houston",
+  "folder": "Houston",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2275,
+  "market": "University of Idaho",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 42,
+  "market": "University of Illinois at Chicago",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 48,
+  "market": "University of Illinois at Urbana-Champaign",
+  "folder": "Illinois (Urbana-Champaign)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 364,
+  "market": "University of Iowa",
+  "folder": "Iowa (Iowa City)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 383,
+  "market": "University of Kansas",
+  "folder": "Kansas (Lawrence)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 567,
+  "market": "University of Kentucky",
+  "folder": "Kentucky (Lexington)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 451,
+  "market": "University of Louisiana at LaFayette",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "Purdue (West Lafayette)"
+  ]
+ },
+ {
+  "market_key": 353,
+  "market": "University of Louisville",
+  "folder": "Louisville",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2290,
+  "market": "University of Maine",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2294,
+  "market": "University of Maryland College Park",
+  "folder": "Maryland (College Park)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2295,
+  "market": "University of Massachusetts Amherst",
+  "folder": "Massachusetts (Amherst)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 757,
+  "market": "University of Massachusetts Lowell",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 288,
+  "market": "University of Memphis",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 25,
+  "market": "University of Michigan",
+  "folder": "Michigan (Ann Arbor)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2227,
+  "market": "University of Michigan Dearborn",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 185,
+  "market": "University of Minnesota Twin Cities",
+  "folder": "Minnesota (Minneapolis)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 15,
+  "market": "University of Mississippi",
+  "folder": "Ole Miss (Oxford)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 86,
+  "market": "University of Missouri",
+  "folder": "Missouri (Columbia)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 769,
+  "market": "University of Missouri St. Louis",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: 'St. Louis' folder likely WashU/general - confirm before mapping"
+ },
+ {
+  "market_key": 1653,
+  "market": "University of Montana",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 629,
+  "market": "University of Nebraska Lincoln",
+  "folder": "Nebraska (Lincoln)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 74,
+  "market": "University of Nebraska at Omaha",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1060,
+  "market": "University of Nevada Las Vegas",
+  "folder": "Nevada (Las Vegas)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1028,
+  "market": "University of Nevada Reno",
+  "folder": "Nevada (Reno)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2310,
+  "market": "University of New Hampshire",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1065,
+  "market": "University of New Mexico",
+  "folder": "New Mexico (Albuquerque)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2253,
+  "market": "University of North Alabama",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 847,
+  "market": "University of North Carolina Greensboro",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "North Carolina (Wilmington)",
+   "North Carolina (Charlotte)"
+  ]
+ },
+ {
+  "market_key": 321,
+  "market": "University of North Carolina Wilmington",
+  "folder": "North Carolina (Wilmington)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 175,
+  "market": "University of North Carolina at Asheville",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "North Carolina (Wilmington)",
+   "North Carolina (Charlotte)"
+  ]
+ },
+ {
+  "market_key": 2344,
+  "market": "University of North Carolina at Chapel Hill",
+  "folder": "North Carolina (Chapel Hill)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 99,
+  "market": "University of North Carolina at Charlotte",
+  "folder": "North Carolina (Charlotte)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2345,
+  "market": "University of North Carolina at Pembroke",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": [
+   "North Carolina (Wilmington)",
+   "North Carolina (Charlotte)"
+  ]
+ },
+ {
+  "market_key": 106,
+  "market": "University of North Dakota",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 211,
+  "market": "University of North Florida",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2421,
+  "market": "University of North Georgia",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 38,
+  "market": "University of North Texas",
+  "folder": "North Texas (Denton)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2264,
+  "market": "University of Northern Colorado",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 896,
+  "market": "University of Notre Dame",
+  "folder": "Notre Dame (South Bend)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 122,
+  "market": "University of Oklahoma",
+  "folder": "Oklahoma (Norman)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 1299,
+  "market": "University of Oregon",
+  "folder": "Oregon (Eugene)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 52,
+  "market": "University of Pittsburgh",
+  "folder": "Pittsburgh",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 984,
+  "market": "University of San Francisco",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2146,
+  "market": "University of South Alabama",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 20,
+  "market": "University of South Carolina",
+  "folder": "South Carolina (Columbia)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 1353,
+  "market": "University of South Carolina Upstate",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2381,
+  "market": "University of South Dakota",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 418,
+  "market": "University of South Florida",
+  "folder": "South Florida (Tampa Bay)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 946,
+  "market": "University of Southern California",
+  "folder": "Southern California (USC)",
+  "confidence": "registry",
+  "exclude": "PITT",
+  "note": "a Pittsburgh deck (MarketAnalysis P1_PITT_20260910 AH.pptx) is misfiled in this folder"
+ },
+ {
+  "market_key": 330,
+  "market": "University of Southern Mississippi",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 553,
+  "market": "University of Tennessee",
+  "folder": "Tennessee (Knoxville)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2420,
+  "market": "University of Tennessee at Chattanooga",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1666,
+  "market": "University of Texas Rio Grande Valley",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 541,
+  "market": "University of Texas at Arlington",
+  "folder": "Texas (Arlington)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 27,
+  "market": "University of Texas at Austin",
+  "folder": "Texas (Austin)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 2423,
+  "market": "University of Texas at Dallas",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 29,
+  "market": "University of Texas at San Antonio",
+  "folder": "Texas (San Antonio)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2486,
+  "market": "University of Texas at Tyler",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 903,
+  "market": "University of Toledo",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1012,
+  "market": "University of Utah",
+  "folder": "Utah (Salt Lake)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 838,
+  "market": "University of Vermont",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 568,
+  "market": "University of Virginia",
+  "folder": "Virginia (Charlottesville)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 940,
+  "market": "University of Washington",
+  "folder": "Washington (Seattle)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 303,
+  "market": "University of West Florida",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 22,
+  "market": "University of West Georgia",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 334,
+  "market": "University of Wisconsin Madison",
+  "folder": "Wisconsin (Madison)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 296,
+  "market": "University of Wisconsin Milwaukee",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 970,
+  "market": "University of Wyoming",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2393,
+  "market": "Utah State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1967,
+  "market": "Utah Tech University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1447,
+  "market": "Utah Valley University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 714,
+  "market": "Valdosta State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 494,
+  "market": "Valparaiso University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 121,
+  "market": "Vanderbilt University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2364,
+  "market": "Villanova University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 512,
+  "market": "Virginia Commonwealth University",
+  "folder": "Virginia Commonwealth U (Richmond)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2400,
+  "market": "Virginia Polytechnic Institute and State University",
+  "folder": "Virginia Tech  (Blacksburg)",
+  "confidence": "registry"
+ },
+ {
+  "market_key": 667,
+  "market": "Wake Forest University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2403,
+  "market": "Washington State University",
+  "folder": "Washington State (Pullman)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 1492,
+  "market": "West Chester University of Pennsylvania",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 1066,
+  "market": "West Texas A&M University",
+  "folder": null,
+  "confidence": "unmapped",
+  "note": "heuristic match rejected: not College Station"
+ },
+ {
+  "market_key": 2407,
+  "market": "West Virginia University",
+  "folder": "West Virginia (Morgantown)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 2147,
+  "market": "Western Carolina University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 2287,
+  "market": "Western Kentucky University",
+  "folder": "Western Kentucky (Bowling Green)",
+  "confidence": "auto"
+ },
+ {
+  "market_key": 95,
+  "market": "Western Michigan University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 982,
+  "market": "Western Washington University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 500,
+  "market": "Wichita State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 410,
+  "market": "Winthrop University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 224,
+  "market": "Wright State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 538,
+  "market": "Yale University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ },
+ {
+  "market_key": 635,
+  "market": "Youngstown State University",
+  "folder": null,
+  "confidence": "unmapped",
+  "candidates": []
+ }
+]

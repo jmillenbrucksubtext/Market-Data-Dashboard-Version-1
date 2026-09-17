@@ -1673,6 +1673,104 @@ h1, h2, h3, .serif {
   transition: background 0.15s ease;
 }
 .report-btn:hover { background: var(--slate); }
+
+/* ---- Last analyzed (market topbar) ---- */
+/* Pill matches .freshness / .report-btn; when the market has more than one
+   schedule row it becomes a dropdown trigger and the menu below lists every
+   analysis, newest first. */
+.analysis-history { position: relative; margin-right: 14px; }
+.analysis-history[hidden] { display: none; }
+.analysis-history-btn {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 6px;
+  padding: 5px 12px;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: 999px;
+  color: var(--slate);
+  font-family: inherit;
+  font-size: 12px;
+  line-height: 1.3;
+  cursor: default;
+}
+.analysis-history-btn .ah-label { color: var(--slate-70); }
+.analysis-history-btn .ah-value { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.analysis-history-btn .ah-chevron { display: none; align-self: center; color: var(--slate-50); }
+.analysis-history.is-empty .analysis-history-btn .ah-value { font-weight: 400; color: var(--slate-50); }
+.analysis-history.has-menu .analysis-history-btn { cursor: pointer; transition: border-color 0.15s, background 0.15s; }
+.analysis-history.has-menu .analysis-history-btn:hover,
+.analysis-history.has-menu .analysis-history-btn[aria-expanded="true"] {
+  border-color: var(--lime);
+  background: var(--lime-soft);
+}
+.analysis-history.has-menu .analysis-history-btn .ah-chevron { display: inline-block; }
+.analysis-history-btn:focus-visible { outline: none; box-shadow: 0 0 0 3px var(--lime-soft); }
+
+.analysis-history-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  right: 0;
+  z-index: 2100;
+  width: 400px;
+  max-width: calc(100vw - 32px);
+  max-height: min(70vh, 520px);
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--beige-deep);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px rgba(22, 53, 46, 0.16);
+  text-align: left;
+}
+.analysis-history-menu[hidden] { display: none; }
+.ah-menu-head {
+  padding: 9px 14px 7px;
+  font-size: 10.5px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--slate-70);
+  border-bottom: 1px solid var(--beige-deep);
+  background: var(--bg);
+  position: sticky;
+  top: 0;
+}
+.ah-item {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--beige);
+  font-size: 12.5px;
+  line-height: 1.4;
+}
+.ah-item:last-of-type { border-bottom: none; }
+.ah-item.is-latest { background: rgba(193, 209, 0, 0.10); }
+.ah-item.is-upcoming .ah-item-date { color: var(--slate-70); }
+.ah-item-top { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.ah-item-date { font-weight: 700; color: var(--slate); font-variant-numeric: tabular-nums; }
+.ah-item-sheet { margin-left: auto; color: var(--slate-50); font-size: 11.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 55%; }
+.ah-item-meta { color: var(--slate-70); font-size: 11.5px; margin-top: 2px; }
+.ah-item-school { color: var(--everest); font-size: 11.5px; margin-top: 2px; }
+.ah-item-note { color: var(--slate-70); font-size: 11.5px; margin-top: 4px; }
+.ah-tag {
+  display: inline-block;
+  padding: 1px 7px;
+  border-radius: 999px;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+.ah-tag-latest { background: var(--lime); color: var(--slate); }
+.ah-tag-upcoming { background: var(--beige-deep); color: var(--slate-70); }
+.ah-menu-foot {
+  display: block;
+  padding: 9px 14px;
+  border-top: 1px solid var(--beige-deep);
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--everest);
+  text-decoration: none;
+}
+.ah-menu-foot:hover { background: var(--lime-soft); }
 .comp-map-download-btn {
   background: var(--everest);
   color: #fff;

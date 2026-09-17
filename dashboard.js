@@ -1555,155 +1555,16 @@ function setIndustryTab(name) {
 /* ----- Market Analysis Schedule tab ---------------------------- */
 /* tables.market_analysis_schedule mirrors Market Analysis Schedule.xlsx
    (read by export-data.py each weekly refresh, or load_market_schedule.py
-   standalone). Market names on the sheet are informal ("TCU", "Ole Miss",
-   "Kansas (Lawrence) - High level update"), so each row is resolved to a
-   tracked university at render time: exact name -> alias -> "University of
-   X" / "X University" expansions, after stripping parentheticals and
-   trailing "- note" segments. Unresolved rows render as plain text. */
+   standalone). Informal sheet names are resolved to tracked universities
+   by schedule-resolver.js; unresolved rows render as plain text. */
 
-// Informal schedule name -> exact university_name in campus_locations.
-// Keys are schedNorm()-normalised. Values that drift out of the data just
-// leave the row unlinked - nothing breaks.
-const SCHEDULE_ALIASES = {
-  "ann arbor":            "University of Michigan",
-  "app state":            "Appalachian State University",
-  "boulder":              "University of Colorado Boulder",
-  "cal poly":             "California Polytechnic State University Pomona", // only Cal-Poly row on the sheet is Pomona
-  "cal riverside":        "University of California Riverside",
-  "cal state fullerton":  "California State University Fullerton",
-  "cincinatti":           "University of Cincinnati", // sheet misspelling
-  "colorado":             "University of Colorado Boulder",
-  "fau":                  "Florida Atlantic University",
-  "fiu":                  "Florida International University",
-  "georgia tech":         "Georgia Institute of Technology",
-  "illinois":             "University of Illinois at Urbana-Champaign",
-  "indiana":              "Indiana University Bloomington",
-  "indiana university":   "Indiana University Bloomington",
-  "kennesaw":             "Kennesaw State University",
-  "kennessaw":            "Kennesaw State University", // sheet misspelling
-  "kennessaw state":      "Kennesaw State University",
-  "knoxville":            "University of Tennessee",
-  "lsu":                  "Louisiana State University",
-  "maryland":             "University of Maryland College Park",
-  "maryland college park": "University of Maryland College Park",
-  "minnesota":            "University of Minnesota Twin Cities",
-  "university of minnesota": "University of Minnesota Twin Cities",
-  "mizzou":               "University of Missouri",
-  "nau":                  "Northern Arizona University",
-  "nau flagstaff":        "Northern Arizona University",
-  "nebraska":             "University of Nebraska Lincoln",
-  "nw arkansas":          "University of Arkansas",
-  "ole miss":             "University of Mississippi",
-  "ou":                   "University of Oklahoma",
-  "sdsu":                 "San Diego State University",
-  "tcu":                  "Texas Christian University",
-  "texas":                "University of Texas at Austin",
-  "uab":                  "University of Alabama at Birmingham",
-  "uc berkeley":          "University of California Berkeley",
-  "uc davis":             "University of California Davis",
-  "uc irvine":            "University of California Irvine",
-  "uc riverside":         "University of California Riverside",
-  "uc san diego":         "University of California San Diego",
-  "ucla":                 "University of California Los Angeles",
-  "ucsd":                 "University of California San Diego",
-  "uconn":                "University of Connecticut",
-  "umass":                "University of Massachusetts Amherst",
-  "umass amherst":        "University of Massachusetts Amherst",
-  "umass amerhurst":      "University of Massachusetts Amherst", // sheet misspelling
-  "unc":                  "University of North Carolina at Chapel Hill",
-  "unc chapel hill":      "University of North Carolina at Chapel Hill",
-  "unc charlotte":        "University of North Carolina at Charlotte",
-  "usf":                  "University of South Florida",
-  "uw seattle":           "University of Washington",
-  "washington":           "University of Washington",
-  "washington seattle":   "University of Washington",
-  "vcu":                  "Virginia Commonwealth University",
-  "virginia commonwealtrh university": "Virginia Commonwealth University", // sheet misspelling
-  "virginia tech":        "Virginia Polytechnic Institute and State University",
-  "west lafayette":       "Purdue University",
-  "wisconsin":            "University of Wisconsin Madison",
-};
-
-let SCHED_UNI_INDEX = null; // schedNorm(university_name) -> {market_key, school_key, name, isAnchor}
-
-function schedNorm(s) {
-  return String(s).toLowerCase()
-    .replace(/&/g, " and ")
-    .replace(/[^a-z0-9]+/g, " ")
-    .replace(/\b(?:the|at)\b/g, " ")
-    .replace(/\s+/g, " ").trim();
-}
-
-function buildScheduleUniIndex() {
-  SCHED_UNI_INDEX = new Map();
-  // Anchors first so a normalisation collision resolves to the anchor school.
-  for (const pass of ["anchor", "other"]) {
-    for (const [mk, list] of MARKET_UNIS) {
-      const anchorName = LABELS.get(mk)?.anchor_university;
-      for (const u of list) {
-        const isAnchor = u.name === anchorName;
-        if ((pass === "anchor") !== isAnchor) continue;
-        const key = schedNorm(u.name);
-        if (key && !SCHED_UNI_INDEX.has(key)) {
-          SCHED_UNI_INDEX.set(key, { market_key: mk, school_key: u.school_key, name: u.name, isAnchor });
-        }
-      }
-    }
-  }
-}
-
-function resolveScheduleMarket(raw) {
-  if (!raw || !SCHED_UNI_INDEX) return null;
-  const rawNorm = schedNorm(raw);
-  // Submarket rows ("Belmont - Charlotte Submarket") share names with
-  // unrelated universities - never link them.
-  if (!rawNorm || rawNorm.includes("submarket")) return null;
-
-  const variants = [];
-  const push = (s) => {
-    const n = typeof s === "string" ? schedNorm(s) : "";
-    if (n && !variants.includes(n)) variants.push(n);
-  };
-  push(raw);
-  const noParens = String(raw).replace(/\([^)]*\)/g, " ");
-  push(noParens);
-  // Progressively drop trailing "- note" segments ("Georgia Tech - Email Update").
-  const segs = noParens.split(/\s+-\s+/);
-  for (let i = segs.length - 1; i >= 1; i--) push(segs.slice(0, i).join(" "));
-  // Drop trailing update-noise words ("USF Update").
-  const NOISE = new Set(["update", "updated", "email", "market", "high", "level", "only", "summary", "prelease"]);
-  const toks = schedNorm(noParens).split(" ");
-  while (toks.length > 1 && NOISE.has(toks[toks.length - 1])) {
-    toks.pop();
-    push(toks.join(" "));
-  }
-
-  for (const v of variants) {
-    const alias = SCHEDULE_ALIASES[v];
-    const hit = SCHED_UNI_INDEX.get(v)
-      || (alias && SCHED_UNI_INDEX.get(schedNorm(alias)))
-      || SCHED_UNI_INDEX.get(`university of ${v}`)
-      || SCHED_UNI_INDEX.get(`${v} university`);
-    if (hit) return hit;
-  }
-  return null;
-}
-
-// Anchor school -> market page; any other school -> its University tab
-// (market.js reads ?school= and #university), same as the search suggest.
-function scheduleMarketHref(m) {
-  return m.isAnchor
-    ? `market.html?id=${m.market_key}`
-    : `market.html?id=${m.market_key}&school=${m.school_key}#university`;
-}
-
-function fmtSchedDate(iso) {
-  if (!iso) return "";
-  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(iso);
-  if (!m) return escapeHtml(iso);
-  const MONTHS = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  return `${MONTHS[Number(m[2]) - 1]} ${Number(m[3])}, ${m[1]}`;
-}
+// Name matching, aliases and date helpers live in schedule-resolver.js
+// (shared with market.js, which shows the same rows as the market page's
+// "Last analyzed" widget). Thin wrappers keep the call sites below readable.
+function buildScheduleUniIndex() { SubtextSchedule.buildIndex(DATA); }
+function resolveScheduleMarket(raw) { return SubtextSchedule.resolve(raw); }
+function scheduleMarketHref(m) { return SubtextSchedule.href(m); }
+function fmtSchedDate(d) { return escapeHtml(SubtextSchedule.fmtDate(d)); }
 
 function renderScheduleTab() {
   const container = document.getElementById("analysis-schedule");
@@ -1713,18 +1574,14 @@ function renderScheduleTab() {
     container.innerHTML = `<div class="empty-state">No schedule rows in data.json - re-run export-data.py or load_market_schedule.py.</div>`;
     return;
   }
-  if (!SCHED_UNI_INDEX) buildScheduleUniIndex();
+  buildScheduleUniIndex();
 
   // Group by sheet section; within each section the most recent analysis
   // (presentation date, col E) sorts to the top. Dates are usually ISO (real date cells) but the sheet
   // also holds text like "Thursday, April 2, 2027" or "9/19/2025*" - parse
   // everything to a timestamp; unparseable/undated rows keep their sheet
   // order at the bottom (Array.sort is stable).
-  const schedDateValue = (d) => {
-    if (!d) return null;
-    const t = Date.parse(String(d).replace(/\*/g, "").trim());
-    return Number.isNaN(t) ? null : t;
-  };
+  const schedDateValue = SubtextSchedule.dateValue;
   const groups = new Map();
   for (const r of all) {
     const cat = r.category || "Schedule";

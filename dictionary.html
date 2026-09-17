@@ -163,6 +163,9 @@
                 </header>
 
                 <article class="dict-item">
+                  <h4>Last analyzed (topbar)</h4>
+                  <p>Top right of every market page. The most recent Market Analysis Schedule row whose market name resolves to this market (same name matching as the Industry page's Analysis Schedule tab, shared in <code>schedule-resolver.js</code>), shown as its presentation date. Markets analyzed more than once become a dropdown listing every analysis newest first with the analysis type, analyst, assigned date, notes, and the name as written on the sheet; rows dated after today are tagged Upcoming. A market with no schedule row reads "Not yet analyzed". Nothing is precomputed - refreshing <code>market_analysis_schedule</code> in data.json (<code>load_market_schedule.py</code> or the Monday export) updates this on the next page load.</p>
+
                   <h4>Where the old KPI strip went</h4>
                   <p>The nine-tile KPI strip was retired - most tiles duplicated the scorecard. The scorecard now carries context lines under the relevant qualifiers (pipeline bed breakdown, penetration, latest pre-lease cycle, total enrollment). The pipeline bed tiles moved to the Pipeline tab, and Mean Origin Income moved to the Student Migration tab.</p>
                 </article>

@@ -92,6 +92,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   setFreshness();
   renderHeader();
+  renderAnalysisHistory();
   renderPipelineKpis();
   renderOriginIncomeKpi();
   renderQualifiers();
@@ -551,6 +552,102 @@ function renderHeader() {
 
   if (MARKET.is_subtext30 === 1) {
     document.getElementById("s30-badge").style.display = "inline-flex";
+  }
+}
+
+/* ----- Last analyzed (topbar) ---------------------------------- */
+/* Every Market Analysis Schedule row that resolves to this market, via the
+   shared schedule-resolver.js. The pill shows the most recent presentation
+   date on or before today; if the market has been analyzed more than once
+   (or has an upcoming analysis on the schedule) it becomes a dropdown
+   listing each analysis with its type, analyst and notes. Nothing here is
+   precomputed: load_market_schedule.py / the Monday export refresh
+   tables.market_analysis_schedule and this re-derives on load. */
+function renderAnalysisHistory() {
+  const wrap = document.getElementById("analysis-history");
+  const btn = document.getElementById("analysis-history-btn");
+  const valueEl = document.getElementById("analysis-history-value");
+  const menu = document.getElementById("analysis-history-menu");
+  if (!wrap || !btn || !valueEl || !menu || !window.SubtextSchedule) return;
+
+  const items = SubtextSchedule.forMarket(DATA, MARKET.market_key);
+  wrap.hidden = false;
+
+  if (!items.length) {
+    wrap.classList.add("is-empty");
+    btn.querySelector(".ah-label").textContent = "Analysis";
+    valueEl.textContent = "Not yet analyzed";
+    btn.disabled = true;
+    return;
+  }
+
+  const today = new Date();
+  const todayStart = new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  const past = items.filter((it) => it.when != null && it.when <= todayStart);
+  const upcoming = items.filter((it) => it.when != null && it.when > todayStart);
+  const latest = past[0] || null;
+
+  if (latest) {
+    btn.querySelector(".ah-label").textContent = "Last analyzed";
+    valueEl.textContent = SubtextSchedule.fmtDate(latest.row.initial_analysis_date);
+  } else if (upcoming.length) {
+    // Only future rows: say so rather than claim a past analysis.
+    btn.querySelector(".ah-label").textContent = "Analysis scheduled";
+    valueEl.textContent = SubtextSchedule.fmtDate(upcoming[upcoming.length - 1].row.initial_analysis_date);
+  } else {
+    btn.querySelector(".ah-label").textContent = "Last analyzed";
+    valueEl.textContent = "date not recorded";
+  }
+
+  // One dated row and nothing else: a plain pill, no dropdown.
+  const multiple = items.length > 1;
+  wrap.classList.toggle("has-menu", multiple);
+  btn.disabled = !multiple;
+  if (!multiple) return;
+
+  const typeLabel = (r) => r.analysis_type || (/update|refresh/i.test(r.market_name) ? "Market update" : "");
+  menu.innerHTML = `
+    <div class="ah-menu-head">${items.length} analyses on the schedule</div>
+    ${items.map((it) => {
+      const r = it.row;
+      const isUpcoming = it.when != null && it.when > todayStart;
+      const isLatest = latest && it === latest;
+      const meta = [typeLabel(r), r.analyst ? `Analyst ${r.analyst}` : "", r.assigned_date ? `assigned ${SubtextSchedule.fmtDate(r.assigned_date)}` : ""]
+        .filter(Boolean).join(" · ");
+      const school = it.school && !it.school.isAnchor ? `<div class="ah-item-school">${escapeHtml(it.school.name)}</div>` : "";
+      const note = r.notes ? `<div class="ah-item-note">${escapeHtml(r.notes)}</div>` : "";
+      return `
+        <div class="ah-item${isLatest ? " is-latest" : ""}${isUpcoming ? " is-upcoming" : ""}" role="option" aria-selected="${isLatest ? "true" : "false"}">
+          <div class="ah-item-top">
+            <span class="ah-item-date">${escapeHtml(SubtextSchedule.fmtDate(r.initial_analysis_date) || "Date not recorded")}</span>
+            ${isUpcoming ? '<span class="ah-tag ah-tag-upcoming">Upcoming</span>' : ""}
+            ${isLatest ? '<span class="ah-tag ah-tag-latest">Most recent</span>' : ""}
+            <span class="ah-item-sheet" title="Name as written on the schedule">${escapeHtml(r.market_name)}</span>
+          </div>
+          ${meta ? `<div class="ah-item-meta">${escapeHtml(meta)}</div>` : ""}
+          ${school}
+          ${note}
+        </div>`;
+    }).join("")}
+    <a class="ah-menu-foot" href="index.html#schedule">Open the full Analysis Schedule</a>`;
+
+  const close = () => {
+    menu.hidden = true;
+    btn.setAttribute("aria-expanded", "false");
+  };
+  const open = () => {
+    menu.hidden = false;
+    btn.setAttribute("aria-expanded", "true");
+  };
+  btn.onclick = (e) => {
+    e.stopPropagation();
+    if (menu.hidden) open(); else close();
+  };
+  // Bound once per page (guarded) so repeated renders don't stack listeners.
+  if (!wrap.dataset.bound) {
+    wrap.dataset.bound = "1";
+    document.addEventListener("click", (e) => { if (!wrap.contains(e.target)) close(); });
+    wrap.addEventListener("keydown", (e) => { if (e.key === "Escape") { close(); btn.focus(); } });
   }
 }
 

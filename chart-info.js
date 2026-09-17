@@ -67,7 +67,7 @@
     "deck-viewer": {
       title: "Market Analysis Deck",
       formula: "The team's market-analysis PowerPoint for this market, rendered slide by slide (1600px JPEGs) so it can be read without opening PowerPoint. The picker lists every registered deck for the market by presentation date; the arrows, arrow keys, or the filmstrip move between slides; Open in PowerPoint opens the source file in SharePoint.",
-      sql: "`analysis_docs` <- analysis_docs.json registry (market_key, presentation_date, OneDrive path); slides rendered by render_analysis_decks.py (PDF twin via PyMuPDF, else PowerPoint COM) into decks/<market_key>/<yyyymmdd>/ (sNN.jpg + tNN.jpg + meta.json), listed in each row's `slides`",
+      sql: "`analysis_docs` <- analysis_docs.json registry (market_key, presentation_date, OneDrive path); slides rendered by render_analysis_decks.py from the .pptx via PowerPoint COM (a PDF beside the deck is only a fallback - they go stale) into decks/<market_key>/<yyyymmdd>/ (sNN.jpg + tNN.jpg + meta.json), listed in each row's `slides`",
     },
     "analysis-schedule": {
       title: "Market Analysis Schedule",

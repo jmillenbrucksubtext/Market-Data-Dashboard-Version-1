@@ -14,12 +14,14 @@ Output, per deck:
     (Terse on purpose: the repo path is ~220 chars and Windows caps paths at 260.)
 
 Two render routes:
-    pdf   a PDF twin sits beside the .pptx (same stem) -> PyMuPDF, ~2s/deck,
-          no Office needed.
-    ppt   no PDF -> PowerPoint itself, invisibly, via COM (pywin32); ~10s/deck.
-          Requires PowerPoint on this machine, so this script is manual /
-          separate task - NOT part of the Monday export (which also must
-          never trigger OneDrive cloud recalls of 50 MB decks).
+    ppt   the .pptx itself, rendered by PowerPoint running invisibly via COM
+          (pywin32); ~10s/deck. Always preferred - the deck is the source of
+          truth. Requires PowerPoint on this machine, so this script is a
+          manual / separate task - NOT part of the Monday export (which also
+          must never trigger OneDrive cloud recalls of 50 MB decks).
+    pdf   fallback only: a PDF twin beside the .pptx (same stem) -> PyMuPDF.
+          Used when PowerPoint is unavailable or its export fails; warns when
+          the PDF is older than the deck (they are stale exports, not twins).
 
 Idempotent: a deck is re-rendered only when its source file's size or mtime
 changed since the manifest was written (or with --force).
@@ -128,6 +130,27 @@ def render_ppt(pptx: Path, out: Path) -> tuple[int, int, int]:
     return n, SLIDE_W, h
 
 
+def _render_best(src: Path, out: Path) -> tuple[str, int, int, int]:
+    """The .pptx is the source of truth: render it with PowerPoint whenever
+    PowerPoint is available. A PDF twin is only a fallback (no Office on the
+    machine, or the COM export failed) - PDFs beside decks are exports from
+    some earlier moment and go stale as the deck is edited (Kansas: PDF dated
+    07-07, deck saved 07-17, findings slide differed)."""
+    pdf_twin = src.with_suffix(".pdf")
+    try:
+        n, w, h = render_ppt(src, out)
+        return "ppt", n, w, h
+    except Exception as e:  # noqa: BLE001 - fall through to the PDF
+        print(f"  PowerPoint export failed ({type(e).__name__}: {e})")
+        if not pdf_twin.exists():
+            raise
+    if pdf_twin.stat().st_mtime < src.stat().st_mtime:
+        print(f"  WARNING: falling back to a PDF older than the deck "
+              f"({pdf_twin.name}) - slides may be out of date")
+    n, w, h = render_pdf(pdf_twin, out)
+    return "pdf", n, w, h
+
+
 def render_entry(entry: dict, force: bool = False) -> dict | None:
     if (entry.get("kind") or "deck") != "deck":
         return None
@@ -145,14 +168,8 @@ def render_entry(entry: dict, force: bool = False) -> dict | None:
     out.mkdir(parents=True, exist_ok=True)
     for old in out.glob("*.jpg"):
         old.unlink()
-    pdf_twin = src.with_suffix(".pdf")
     t0 = time.time()
-    if pdf_twin.exists():
-        route = "pdf"
-        n, w, h = render_pdf(pdf_twin, out)
-    else:
-        route = "ppt"
-        n, w, h = render_ppt(src, out)
+    route, n, w, h = _render_best(src, out)
     _make_thumbs(out, n)
     size, mtime = _source_sig(src)
     manifest = {

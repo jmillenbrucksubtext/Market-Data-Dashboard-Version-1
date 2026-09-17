@@ -102,23 +102,72 @@ def render_pdf(pdf: Path, out: Path) -> tuple[int, int, int]:
     return n, w, h
 
 
+_PPT = None  # one private PowerPoint automation instance for the whole run
+
+
+def _ppt():
+    """Our own hidden PowerPoint (DispatchEx = a NEW instance). Never
+    Dispatch(): that attaches to whatever PowerPoint the user has open, and
+    Quit() would then close their work."""
+    global _PPT
+    if _PPT is None:
+        import pythoncom
+        import win32com.client
+        pythoncom.CoInitialize()
+        _PPT = win32com.client.DispatchEx("PowerPoint.Application")
+    return _PPT
+
+
+def _ppt_quit():
+    global _PPT
+    if _PPT is not None:
+        try:
+            _PPT.Quit()
+        except Exception:  # noqa: BLE001
+            pass
+        _PPT = None
+
+
+def _hydrate(src: Path, tries: int = 3) -> None:
+    """Force OneDrive to pull a Files-On-Demand placeholder down before
+    PowerPoint touches it (PowerPoint's Open fails opaquely on a stub or on a
+    file another process still holds). Reading the bytes is enough."""
+    for attempt in range(1, tries + 1):
+        try:
+            with open(src, "rb") as fh:
+                while fh.read(1 << 22):
+                    pass
+            return
+        except PermissionError:
+            if attempt == tries:
+                raise
+            print(f"  file busy/not yet local, retry {attempt}/{tries - 1} in 15s: {src.name}")
+            time.sleep(15)
+
+
 def render_ppt(pptx: Path, out: Path) -> tuple[int, int, int]:
-    import pythoncom
-    import win32com.client
-    pythoncom.CoInitialize()
-    app = win32com.client.Dispatch("PowerPoint.Application")
+    _hydrate(pptx)
     tmp = out / "_export"
     tmp.mkdir(exist_ok=True)
+    pres = None
+    for attempt in (1, 2):
+        try:
+            pres = _ppt().Presentations.Open(str(pptx), ReadOnly=True, Untitled=False, WithWindow=False)
+            break
+        except Exception:  # noqa: BLE001 - restart PowerPoint once and retry
+            if attempt == 2:
+                raise
+            print("  PowerPoint Open failed - restarting the automation instance and retrying")
+            _ppt_quit()
+            time.sleep(5)
     try:
-        pres = app.Presentations.Open(str(pptx), ReadOnly=True, Untitled=False, WithWindow=False)
         n = int(pres.Slides.Count)
         ratio = float(pres.PageSetup.SlideHeight) / float(pres.PageSetup.SlideWidth)
         h = int(round(SLIDE_W * ratio))
         pres.Export(str(tmp), "JPG", SLIDE_W, h)
-        pres.Close()
     finally:
         try:
-            app.Quit()
+            pres.Close()
         except Exception:  # noqa: BLE001
             pass
     # PowerPoint names files Slide1.JPG ... SlideN.JPG (unpadded) - normalise.
@@ -194,11 +243,29 @@ def main() -> None:
     if not entries:
         sys.exit("nothing to render (no matching registry entries)")
     DECKS_DIR.mkdir(parents=True, exist_ok=True)
-    for e in entries:
-        render_entry(e, force=args.force)
+    failures: list[tuple[str, str]] = []
+    t_all = time.time()
+    try:
+        for i, e in enumerate(entries, 1):
+            label = f"{e.get('market', e['market_key'])} @ {e['presentation_date']}"
+            print(f"[{i}/{len(entries)}] {label}")
+            try:
+                render_entry(e, force=args.force)
+            except Exception as ex:  # noqa: BLE001 - one bad deck must not stop the batch
+                msg = f"{type(ex).__name__}: {str(ex)[:160]}"
+                print(f"  FAILED {label}: {msg}")
+                failures.append((label, msg))
+                shutil.rmtree(deck_dir(e) / "_export", ignore_errors=True)
+    finally:
+        _ppt_quit()
+    print(f"\nDone in {(time.time() - t_all) / 60:.1f} min - {len(entries) - len(failures)} ok, {len(failures)} failed")
+    for label, msg in failures:
+        print(f"  FAILED {label}: {msg}")
     # Refresh data.json so tables.analysis_docs picks up slide manifests.
     os.chdir(HERE)
     patch_data_json()
+    if failures:
+        sys.exit(1)
 
 
 if __name__ == "__main__":
